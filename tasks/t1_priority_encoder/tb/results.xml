@@ -1,0 +1,7 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1783508865" />
+    <testcase name="smoke_reset" classname="test_t1_priority_encoder" file="/work/tasks/t1_priority_encoder/tb/test_t1_priority_encoder.py" lineno="32" time="0.0009009838104248047" sim_time_ns="11.001" ratio_time="12209.986320190526" />
+    <testcase name="smoke_single_and_priority" classname="test_t1_priority_encoder" file="/work/tasks/t1_priority_encoder/tb/test_t1_priority_encoder.py" lineno="45" time="0.001581430435180664" sim_time_ns="131.001" ratio_time="82837.02974581637" />
+  </testsuite>
+</testsuites>

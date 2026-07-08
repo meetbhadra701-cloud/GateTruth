@@ -23,13 +23,18 @@ module fifo_props #(
     localparam logic [CW-1:0] CAP = CW'(DEPTH);    // capacity as a same-width constant
 
     logic [CW-1:0] m;
+    // Gate assertions until a reset has established a known state: formal starts `m` and the DUT's
+    // occupancy at arbitrary values, so the properties only hold once both have been reset (and then
+    // `m` tracks the DUT's count identically). Without this, the checker false-fails at the initial step.
+    logic seen_reset = 1'b0;
     wire do_wr = wr_en & ~full;
     wire do_rd = rd_en & ~empty;
 
     always_ff @(posedge clk) begin
-        if (rst)
-            m <= '0;
-        else
+        if (rst) begin
+            m          <= '0;
+            seen_reset <= 1'b1;
+        end else
             case ({do_wr, do_rd})
                 2'b10:   m <= m + 1'b1;
                 2'b01:   m <= m - 1'b1;
@@ -38,7 +43,7 @@ module fifo_props #(
     end
 
     always_ff @(posedge clk) begin
-        if (!rst) begin
+        if (!rst && seen_reset) begin
             assert (m <= CAP);              // P1 bounded occupancy
             assert (full  == (m == CAP));   // P2 full flag matches model
             assert (empty == (m == '0));    // P3 empty flag matches model

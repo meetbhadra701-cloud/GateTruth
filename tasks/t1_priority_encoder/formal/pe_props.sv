@@ -17,12 +17,12 @@ module pe_props #(
     // All-zeros with a single low bit set, WIDTH-wide: used to certify the priority property.
     localparam logic [WIDTH-1:0] ONE = {{(WIDTH-1){1'b0}}, 1'b1};
 
+    // No-X is checked in simulation (cocotb), not here: formal runs 2-state and yosys-slang does not
+    // support $isunknown. This checker proves the logic properties P1-P4.
     logic past_valid = 1'b0;
-    logic seen_reset = 1'b0;
 
     always_ff @(posedge clk) begin
         past_valid <= 1'b1;
-        if (rst) seen_reset <= 1'b1;
 
         // P4 - reset value
         if (past_valid && $past(rst)) begin
@@ -38,12 +38,6 @@ module pe_props #(
             // `out` leaves exactly 1 (that bit set, nothing above it).
             if (valid)
                 assert (($past(in) >> out) == ONE);
-        end
-
-        // no-X once reset observed
-        if (seen_reset) begin
-            assert (!$isunknown(out));
-            assert (!$isunknown(valid));
         end
     end
 endmodule

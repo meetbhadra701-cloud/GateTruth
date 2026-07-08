@@ -13,12 +13,12 @@ module gray_props #(
     input logic             en,
     input logic [WIDTH-1:0] gray
 );
+    // No-X (F4) is checked in simulation (cocotb `is_resolvable`), not here: formal runs 2-state and
+    // yosys-slang does not support $isunknown. This checker proves the logic properties F1-F3.
     logic past_valid = 1'b0;
-    logic seen_reset = 1'b0;
 
     always_ff @(posedge clk) begin
         past_valid <= 1'b1;
-        if (rst) seen_reset <= 1'b1;
 
         // F3 — after a reset edge, output is zero.
         if (past_valid && $past(rst))
@@ -31,10 +31,6 @@ module gray_props #(
         // F2 — a disabled, non-reset cycle holds the output.
         if (past_valid && !$past(rst) && !$past(en))
             assert (gray == $past(gray));
-
-        // F4 — once reset has been observed, the output is never X.
-        if (seen_reset)
-            assert (!$isunknown(gray));
     end
 endmodule
 

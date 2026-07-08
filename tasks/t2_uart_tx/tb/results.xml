@@ -1,0 +1,7 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1783508864" />
+    <testcase name="smoke_reset_idle" classname="test_t2_uart_tx" file="/work/tasks/t2_uart_tx/tb/test_t2_uart_tx.py" lineno="70" time="0.0008077621459960938" sim_time_ns="11.001" ratio_time="13619.108118063754" />
+    <testcase name="smoke_transmit_byte_lsb_first" classname="test_t2_uart_tx" file="/work/tasks/t2_uart_tx/tb/test_t2_uart_tx.py" lineno="79" time="0.007639884948730469" sim_time_ns="1560.001" ratio_time="204191.68750168517" />
+  </testsuite>
+</testsuites>
