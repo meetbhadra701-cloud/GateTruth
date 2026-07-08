@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1783508866" />
-    <testcase name="toy_increment" classname="test_toy_task" file="/work/harness/tests/fixtures/toy_task/tb/test_toy_task.py" lineno="10" time="0.003293275833129883" sim_time_ns="171.001" ratio_time="51924.28714283646" />
-  </testsuite>
-</testsuites>

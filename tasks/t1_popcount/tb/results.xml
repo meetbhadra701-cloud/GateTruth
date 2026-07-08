@@ -1,7 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1783508866" />
-    <testcase name="smoke_reset" classname="test_t1_popcount" file="/work/tasks/t1_popcount/tb/test_t1_popcount.py" lineno="27" time="0.0007486343383789062" sim_time_ns="11.001" ratio_time="14694.75742165605" />
-    <testcase name="smoke_counts" classname="test_t1_popcount" file="/work/tasks/t1_popcount/tb/test_t1_popcount.py" lineno="39" time="0.001962423324584961" sim_time_ns="171.001" ratio_time="87137.67200874742" />
-  </testsuite>
-</testsuites>

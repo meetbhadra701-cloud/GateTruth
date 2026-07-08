@@ -1,7 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1783508864" />
-    <testcase name="smoke_reset_makes_empty" classname="test_t2_sync_fifo" file="/work/tasks/t2_sync_fifo/tb/test_t2_sync_fifo.py" lineno="64" time="0.00147247314453125" sim_time_ns="11.001" ratio_time="7471.103999999999" />
-    <testcase name="smoke_fifo_order_preserved" classname="test_t2_sync_fifo" file="/work/tasks/t2_sync_fifo/tb/test_t2_sync_fifo.py" lineno="72" time="0.002669811248779297" sim_time_ns="101.00099999999999" ratio_time="37830.76427076263" />
-  </testsuite>
-</testsuites>
