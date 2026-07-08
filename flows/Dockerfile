@@ -5,7 +5,8 @@ ARG OSS_CAD_SUITE_TAG=2026-07-08
 ARG OSS_CAD_SUITE_ASSET_DATE=20260708
 ARG OSS_CAD_SUITE_SHA256=5b24af7c0fa639a8105e4b6e128cee24dcfc1316e1bbd7b8a9d06b4dac10313e
 ARG IVERILOG_REF=v12_0
-ARG SKY130_FD_SC_HD_COMMIT=ac7fb61f06e6470b94e8afdf7c25268f62fbd7b1
+ARG OPEN_PDKS_REF=1.0.604
+ARG OPEN_PDKS_COMMIT=d658698bd8bcf4e05fc7b5991a701247ba0d744c
 
 FROM --platform=linux/amd64 debian:bookworm-slim AS base
 ARG DEBIAN_FRONTEND
@@ -19,6 +20,7 @@ RUN apt-get update \
       git \
       make \
       autoconf \
+      automake \
       g++ \
       flex \
       bison \
@@ -27,6 +29,8 @@ RUN apt-get update \
       python3.11-dev \
       python3-pip \
       python3-venv \
+      tcl-dev \
+      tk-dev \
       verilator \
       xz-utils \
     && rm -rf /var/lib/apt/lists/*
@@ -52,14 +56,19 @@ RUN curl -fsSLo oss-cad-suite.tgz \
     && tar -xzf oss-cad-suite.tgz \
     && rm oss-cad-suite.tgz
 
-FROM base AS pdk
-ARG SKY130_FD_SC_HD_COMMIT
-WORKDIR /tmp
-RUN git clone https://github.com/google/skywater-pdk-libs-sky130_fd_sc_hd.git sky130_fd_sc_hd \
-    && cd sky130_fd_sc_hd \
-    && git checkout "${SKY130_FD_SC_HD_COMMIT}" \
+FROM base AS open-pdks-build
+ARG OPEN_PDKS_REF
+ARG OPEN_PDKS_COMMIT
+WORKDIR /build
+RUN git clone --filter=blob:none --branch "${OPEN_PDKS_REF}" https://github.com/fossi-foundation/open-pdks.git \
+    && cd open-pdks \
+    && test "$(git rev-parse HEAD)" = "${OPEN_PDKS_COMMIT}" \
+    && ./configure --prefix=/opt/open_pdks --enable-sky130-pdk \
+    && make -j"$(nproc)" \
+    && make install \
     && mkdir -p /pdk/sky130hd \
-    && find . -path '*/cells/*' -prune -o \( -name '*.lib' -o -name '*.lef' \) -print -exec cp '{}' /pdk/sky130hd/ ';' \
+    && find /opt/open_pdks/share/pdk -path '*sky130_fd_sc_hd*' \( -name '*.lib' -o -name '*.lef' \) -print -exec cp '{}' /pdk/sky130hd/ ';' \
+    && find /pdk/sky130hd -name '*.magic.lef' -delete \
     && test -n "$(find /pdk/sky130hd -name '*.lib' -print -quit)" \
     && test -n "$(find /pdk/sky130hd -name '*.lef' -print -quit)"
 
@@ -71,7 +80,7 @@ ENV SILICONBENCH_PLATFORM=linux/amd64
 
 COPY --from=iverilog-build /opt/iverilog /opt/iverilog
 COPY --from=oss-cad-suite /opt/oss-cad-suite /opt/oss-cad-suite
-COPY --from=pdk /pdk/sky130hd /pdk/sky130hd
+COPY --from=open-pdks-build /pdk/sky130hd /pdk/sky130hd
 
 RUN python3.11 -m pip install --no-cache-dir --break-system-packages \
       cocotb==1.9.2 \
@@ -92,5 +101,3 @@ RUN set -eux; \
 
 WORKDIR /work
 CMD ["/bin/bash"]
-
-
