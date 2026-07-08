@@ -23,6 +23,7 @@ RUN apt-get update \
       automake \
       g++ \
       flex \
+      gperf \
       bison \
       pkg-config \
       python3.11 \
@@ -101,3 +102,6 @@ RUN set -eux; \
 
 WORKDIR /work
 CMD ["/bin/bash"]
+
+
+
