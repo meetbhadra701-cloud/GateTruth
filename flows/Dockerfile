@@ -76,7 +76,7 @@ RUN curl -fsSLo sky130_fd_sc_hd.tar.zst \
     && test -n "$(find /pdk/sky130hd -name '*.lef' -print -quit)"
 
 FROM base AS runtime
-ENV PATH="/opt/iverilog/bin:/opt/oss-cad-suite/bin:${PATH}"
+ENV PATH="/work:/opt/iverilog/bin:/opt/oss-cad-suite/bin:${PATH}"
 ENV PYTHONUNBUFFERED=1
 ENV PDK_ROOT=/pdk
 ENV SILICONBENCH_PLATFORM=linux/amd64

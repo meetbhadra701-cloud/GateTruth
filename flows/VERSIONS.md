@@ -23,4 +23,5 @@ The Docker build must fail rather than silently using an unpinned floating tool 
 ## Image Digests
 
 - SB-001 accepted image digest: sha256:ecf156c0f2197dd6602499255e19cea1bfc04a429f3aa5ae9c786cf5c179c74e.
-- SB-011 image digest: sha256:76d68432cff5c4b43fc0573868df1e0d0ccb0df3903fc86758f7d66d264fd9be. Supersedes SB-001 for subsequent M1 tickets by adding the unversioned python alias only.
+- SB-011 image digest: sha256:76d68432cff5c4b43fc0573868df1e0d0ccb0df3903fc86758f7d66d264fd9be. Supersedes SB-001 by adding the unversioned python alias.
+- SB-003 image digest: sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62. Supersedes SB-011 for subsequent M1 tickets by keeping the python alias and adding `/work` to PATH so the repo-level `siliconbench` wrapper is invokable in mounted acceptance runs.
