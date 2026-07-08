@@ -24,8 +24,8 @@ module uart_tx #(
     localparam int CCW = (CLKS_PER_BIT <= 2) ? 1 : $clog2(CLKS_PER_BIT);
     localparam int BIW = (DATA_BITS   <= 1) ? 1 : $clog2(DATA_BITS);
 
-    localparam logic [CCW-1:0] LAST_TICK = CLKS_PER_BIT - 1;
-    localparam logic [BIW-1:0] LAST_BIT  = DATA_BITS - 1;
+    localparam logic [CCW-1:0] LAST_TICK = CCW'(CLKS_PER_BIT - 1);
+    localparam logic [BIW-1:0] LAST_BIT  = BIW'(DATA_BITS - 1);
 
     logic [CCW-1:0]       clk_cnt;
     logic [BIW-1:0]       bit_idx;

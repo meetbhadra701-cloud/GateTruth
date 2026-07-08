@@ -20,7 +20,7 @@ module fifo_props #(
     input logic             empty
 );
     localparam int CW = $clog2(DEPTH + 1);         // hold 0..DEPTH inclusive
-    localparam logic [CW-1:0] CAP = DEPTH;         // capacity as a same-width constant
+    localparam logic [CW-1:0] CAP = CW'(DEPTH);    // capacity as a same-width constant
 
     logic [CW-1:0] m;
     wire do_wr = wr_en & ~full;

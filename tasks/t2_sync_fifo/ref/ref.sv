@@ -23,7 +23,7 @@ module sync_fifo #(
 );
     localparam int AW    = $clog2(DEPTH);
     localparam int CNTW  = AW + 1;                 // hold 0 .. DEPTH inclusive
-    localparam logic [CNTW-1:0] CAP = DEPTH;       // capacity as a same-width constant
+    localparam logic [CNTW-1:0] CAP = CNTW'(DEPTH); // capacity as a same-width constant
 
     logic [WIDTH-1:0] mem [0:DEPTH-1];
     logic [AW-1:0]    wptr, rptr;   // wrap naturally when DEPTH is a power of two
