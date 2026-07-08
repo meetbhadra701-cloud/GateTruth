@@ -141,7 +141,9 @@ def _parse_cell_count(report: str) -> int:
     matches = re.findall(r"Number of cells:\s+([0-9]+)", report)
     if matches:
         return int(matches[-1])
-    compact = re.search(r"^\s*([0-9]+)\s+[0-9.]+\s+cells\s*$", report, re.MULTILINE)
+    # Compact summary line "<count> <area> cells"; area may be scientific notation (e.g. "2.96E+03")
+    # for larger designs, which the plain [0-9.]+ pattern rejected.
+    compact = re.search(r"^\s*([0-9]+)\s+[0-9.eE+-]+\s+cells\s*$", report, re.MULTILINE)
     if compact:
         return int(compact.group(1))
     raise FlowError("could not parse cell count from yosys stat report")

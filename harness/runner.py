@@ -49,7 +49,12 @@ def resolve_task(task_id: str) -> TaskPackage:
 
 def _find_top_module(path: Path, fallback: str) -> str:
     if path.exists():
-        match = re.search(r"\bmodule\s+([A-Za-z_][A-Za-z0-9_$]*)", path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
+        # Strip comments first so prose like "declare a module named `foo`" cannot be mistaken for the
+        # module declaration (that would capture "named"). Match the real `module <name>` afterwards.
+        text = re.sub(r"//[^\n]*", "", text)
+        text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
+        match = re.search(r"\bmodule\s+([A-Za-z_][A-Za-z0-9_$]*)", text)
         if match:
             return match.group(1)
     return fallback
