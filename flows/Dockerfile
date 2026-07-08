@@ -5,8 +5,8 @@ ARG OSS_CAD_SUITE_TAG=2026-07-08
 ARG OSS_CAD_SUITE_ASSET_DATE=20260708
 ARG OSS_CAD_SUITE_SHA256=5b24af7c0fa639a8105e4b6e128cee24dcfc1316e1bbd7b8a9d06b4dac10313e
 ARG IVERILOG_REF=v12_0
-ARG OPEN_PDKS_REF=1.0.604
-ARG OPEN_PDKS_COMMIT=d658698bd8bcf4e05fc7b5991a701247ba0d744c
+ARG VOLARE_SKY130_TAG=sky130-fa87f8f4bbcc7255b6f0c0fb506960f531ae2392
+ARG VOLARE_SKY130_HD_SHA256=d4081b3c0fbfa2afe31dba789c03157ad137ea08b11910e2c8b3ec81b2a61bf6
 
 FROM --platform=linux/amd64 debian:bookworm-slim AS base
 ARG DEBIAN_FRONTEND
@@ -18,7 +18,6 @@ RUN apt-get update \
       ca-certificates \
       curl \
       git \
-      magic \
       make \
       autoconf \
       automake \
@@ -35,6 +34,7 @@ RUN apt-get update \
       tk-dev \
       verilator \
       xz-utils \
+      zstd \
     && rm -rf /var/lib/apt/lists/*
 
 FROM base AS iverilog-build
@@ -42,6 +42,7 @@ ARG IVERILOG_REF
 WORKDIR /build
 RUN git clone --filter=blob:none --branch "${IVERILOG_REF}" https://github.com/steveicarus/iverilog.git \
     && cd iverilog \
+    && test "$(git rev-parse HEAD)" = "4fd5291632232fbe1ba49b2c26bb6b2bf1c6c9cf" \
     && sh autoconf.sh \
     && ./configure --prefix=/opt/iverilog \
     && make -j"$(nproc)" \
@@ -58,19 +59,18 @@ RUN curl -fsSLo oss-cad-suite.tgz \
     && tar -xzf oss-cad-suite.tgz \
     && rm oss-cad-suite.tgz
 
-FROM base AS open-pdks-build
-ARG OPEN_PDKS_REF
-ARG OPEN_PDKS_COMMIT
-WORKDIR /build
-RUN git clone --filter=blob:none --branch "${OPEN_PDKS_REF}" https://github.com/fossi-foundation/open-pdks.git \
-    && cd open-pdks \
-    && test "$(git rev-parse HEAD)" = "${OPEN_PDKS_COMMIT}" \
-    && ./configure --prefix=/opt/open_pdks --enable-sky130-pdk \
-    && make -j"$(nproc)" \
-    && make install \
+FROM base AS pdk-subset
+ARG VOLARE_SKY130_TAG
+ARG VOLARE_SKY130_HD_SHA256
+WORKDIR /tmp/pdk
+RUN curl -fsSLo sky130_fd_sc_hd.tar.zst \
+      "https://github.com/chipfoundry/volare/releases/download/${VOLARE_SKY130_TAG}/sky130_fd_sc_hd.tar.zst" \
+    && echo "${VOLARE_SKY130_HD_SHA256}  sky130_fd_sc_hd.tar.zst" | sha256sum -c - \
+    && tar --zstd -xf sky130_fd_sc_hd.tar.zst \
     && mkdir -p /pdk/sky130hd \
-    && find /opt/open_pdks/share/pdk -path '*sky130_fd_sc_hd*' \( -name '*.lib' -o -name '*.lef' \) -print -exec cp '{}' /pdk/sky130hd/ ';' \
-    && find /pdk/sky130hd -name '*.magic.lef' -delete \
+    && cp sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib /pdk/sky130hd/ \
+    && cp sky130A/libs.ref/sky130_fd_sc_hd/lef/sky130_fd_sc_hd.lef /pdk/sky130hd/ \
+    && cp sky130A/libs.ref/sky130_fd_sc_hd/lef/sky130_ef_sc_hd.lef /pdk/sky130hd/ \
     && test -n "$(find /pdk/sky130hd -name '*.lib' -print -quit)" \
     && test -n "$(find /pdk/sky130hd -name '*.lef' -print -quit)"
 
@@ -82,7 +82,7 @@ ENV SILICONBENCH_PLATFORM=linux/amd64
 
 COPY --from=iverilog-build /opt/iverilog /opt/iverilog
 COPY --from=oss-cad-suite /opt/oss-cad-suite /opt/oss-cad-suite
-COPY --from=open-pdks-build /pdk/sky130hd /pdk/sky130hd
+COPY --from=pdk-subset /pdk/sky130hd /pdk/sky130hd
 
 RUN python3.11 -m pip install --no-cache-dir --break-system-packages \
       cocotb==1.9.2 \
@@ -103,7 +103,3 @@ RUN set -eux; \
 
 WORKDIR /work
 CMD ["/bin/bash"]
-
-
-
-

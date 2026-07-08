@@ -15,9 +15,10 @@ This file records the toolchain pins consumed by `flows/Dockerfile`.
 | pytest | `8.3.4` |
 | ruff | `0.8.4` |
 | pydantic | `2.10.4` |
-| open_pdks | tag `1.0.604`, commit `d658698bd8bcf4e05fc7b5991a701247ba0d744c` |
-| sky130hd PDK subset | copied from the pinned open_pdks sky130 install: `sky130_fd_sc_hd` `.lib` and `.lef`, excluding `*.magic.lef` |
+| Volare sky130 prebuilt PDK | release `sky130-fa87f8f4bbcc7255b6f0c0fb506960f531ae2392`, asset `sky130_fd_sc_hd.tar.zst`, SHA-256 `d4081b3c0fbfa2afe31dba789c03157ad137ea08b11910e2c8b3ec81b2a61bf6` |
+| sky130hd PDK subset | copied from pinned Volare sky130A `sky130_fd_sc_hd`: TT liberty plus standard and ef LEFs |
 
 The Docker build must fail rather than silently using an unpinned floating tool or a missing SystemVerilog frontend.
+
 
 
