@@ -1,4 +1,4 @@
-# SiliconBench is developed on a Windows host but all tools run inside a linux/amd64 container.
+﻿# SiliconBench is developed on a Windows host but all tools run inside a linux/amd64 container.
 # Force LF everywhere so shell scripts, Tcl, .ys, .sby, and RTL never reach the container as CRLF
 # (CRLF breaks bash: "bash: \r: command not found", and can trip SDC/Tcl parsers).
 * text=auto eol=lf
@@ -20,7 +20,7 @@
 Dockerfile  text eol=lf
 *.mk        text eol=lf
 
-# Binary assets — never normalize.
+# Binary assets - never normalize.
 *.png  binary
 *.jpg  binary
 *.jpeg binary
@@ -29,3 +29,4 @@ Dockerfile  text eol=lf
 *.pdf  binary
 *.gds  binary
 *.gds.gz binary
+

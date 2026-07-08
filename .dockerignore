@@ -1,0 +1,11 @@
+﻿.git
+.github
+.claude
+results
+site
+paper
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/*.pyc
+**/*.log
