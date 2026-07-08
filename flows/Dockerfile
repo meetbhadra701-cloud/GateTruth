@@ -47,10 +47,7 @@ ARG OSS_CAD_SUITE_ASSET_DATE
 ARG OSS_CAD_SUITE_SHA256
 WORKDIR /opt
 RUN curl -fsSLo oss-cad-suite.tgz \
-      "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${OSS_CAD_SUITE_DATE}/oss-cad-suite-linux-x64-${OSS_CAD_SUITE_DATE}.tgz" \
-    && if [[ "${OSS_CAD_SUITE_SHA256}" == REPLACE_* ]]; then \
-         echo "OSS_CAD_SUITE_SHA256 must be pinned before SB-001 review" >&2; exit 64; \
-       fi \
+      "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${OSS_CAD_SUITE_TAG}/oss-cad-suite-linux-x64-${OSS_CAD_SUITE_ASSET_DATE}.tgz" \
     && echo "${OSS_CAD_SUITE_SHA256}  oss-cad-suite.tgz" | sha256sum -c - \
     && tar -xzf oss-cad-suite.tgz \
     && rm oss-cad-suite.tgz
@@ -58,10 +55,7 @@ RUN curl -fsSLo oss-cad-suite.tgz \
 FROM base AS pdk
 ARG SKY130_FD_SC_HD_COMMIT
 WORKDIR /tmp
-RUN if [[ "${SKY130_FD_SC_HD_COMMIT}" == REPLACE_* ]]; then \
-      echo "SKY130_FD_SC_HD_COMMIT must be pinned before SB-001 review" >&2; exit 64; \
-    fi \
-    && git clone https://github.com/google/skywater-pdk-libs-sky130_fd_sc_hd.git sky130_fd_sc_hd \
+RUN git clone https://github.com/google/skywater-pdk-libs-sky130_fd_sc_hd.git sky130_fd_sc_hd \
     && cd sky130_fd_sc_hd \
     && git checkout "${SKY130_FD_SC_HD_COMMIT}" \
     && mkdir -p /pdk/sky130hd \
@@ -98,4 +92,5 @@ RUN set -eux; \
 
 WORKDIR /work
 CMD ["/bin/bash"]
+
 
