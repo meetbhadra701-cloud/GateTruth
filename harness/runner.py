@@ -15,6 +15,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from xml.etree import ElementTree
 
+from harness.flows import FlowError, run_power, run_sta, run_synth
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import ResultManifest
 from harness.schemas.task_yaml import TaskYaml, load_task_yaml
@@ -102,11 +103,19 @@ def _parse_cocotb_results(path: Path) -> tuple[int, int]:
     tree = ElementTree.parse(path)
     root = tree.getroot()
     suites = [root] if root.tag == "testsuite" else list(root.iter("testsuite"))
-    tests = sum(int(suite.attrib.get("tests", "0")) for suite in suites)
-    failures = sum(
-        int(suite.attrib.get("failures", "0")) + int(suite.attrib.get("errors", "0"))
-        for suite in suites
-    )
+    if suites:
+        tests = sum(int(suite.attrib.get("tests", "0")) for suite in suites)
+        failures = sum(
+            int(suite.attrib.get("failures", "0")) + int(suite.attrib.get("errors", "0"))
+            for suite in suites
+        )
+    else:
+        tests = int(root.attrib.get("tests", "0"))
+        failures = int(root.attrib.get("failures", "0")) + int(root.attrib.get("errors", "0"))
+    if tests == 0:
+        testcases = list(root.iter("testcase"))
+        tests = len(testcases)
+        failures = sum(1 for testcase in testcases if testcase.find("failure") is not None or testcase.find("error") is not None)
     return tests, tests - failures
 
 
@@ -127,6 +136,55 @@ def run_formal(task: TaskPackage, submission: Path, work_root: Path) -> tuple[di
     if result.returncode == 0:
         return {"stage": 2, "name": "formal", "status": "pass"}, result.stdout
     return {"stage": 2, "name": "formal", "status": "fail"}, result.stdout
+
+
+def run_ppa_flows(task: TaskPackage, submission: Path, work_root: Path) -> tuple[list[dict[str, object]], str]:
+    constraints = task.root / "constraints.sdc"
+    try:
+        synth = run_synth(
+            submission=submission,
+            top_module=task.top_module,
+            clock_target_ns=task.task_yaml.clock_target_ns,
+            work_root=work_root,
+        )
+        sta = run_sta(
+            netlist=synth.netlist,
+            top_module=task.top_module,
+            constraints=constraints,
+            clock_target_ns=task.task_yaml.clock_target_ns,
+        )
+        power = run_power(netlist=synth.netlist, top_module=task.top_module, constraints=constraints)
+    except FlowError as exc:
+        return [
+            {"stage": 3, "name": "synth", "status": "fail"},
+            {"stage": 4, "name": "sta", "status": "fail"},
+            {"stage": 5, "name": "power", "status": "fail"},
+        ], str(exc)
+
+    stages: list[dict[str, object]] = [
+        {
+            "stage": 3,
+            "name": "synth",
+            "status": "pass",
+            "area_um2": synth.area_um2,
+            "cell_count": synth.cell_count,
+        },
+        {
+            "stage": 4,
+            "name": "sta",
+            "status": "pass",
+            "wns_ns": sta.wns_ns,
+            "tns_ns": sta.tns_ns,
+            "fmax_mhz": sta.fmax_mhz,
+        },
+        {
+            "stage": 5,
+            "name": "power",
+            "status": "pass",
+            "power_mw": power.power_mw,
+        },
+    ]
+    return stages, "\n\n".join([synth.log, sta.log, power.log])
 
 
 def run_task(task_id: str, submission: str | Path, out: str | Path) -> ResultManifest:
@@ -152,16 +210,22 @@ def run_task(task_id: str, submission: str | Path, out: str | Path) -> ResultMan
             logs.append(log)
         else:
             stages.append({"stage": 2, "name": "formal", "status": "fail"})
+        if all(stage["status"] in {"pass", "skip"} for stage in stages if stage["stage"] in {0, 1, 2}):
+            flow_stages, log = run_ppa_flows(task, submission_path, work_root)
+            stages.extend(flow_stages)
+            logs.append(log)
+        else:
+            stages.extend([
+                {"stage": 3, "name": "synth", "status": "fail"},
+                {"stage": 4, "name": "sta", "status": "fail"},
+                {"stage": 5, "name": "power", "status": "fail"},
+            ])
 
-    gates_pass = all(stage["status"] in {"pass", "skip"} for stage in stages if stage["stage"] in {0, 1, 2})
-    ppa = REFERENCE_PPA if gates_pass else 0.0
-    task_score = task_score_from_ppa(ppa) if gates_pass else 0.0
-    stages.extend([
-        {"stage": 3, "name": "synth", "status": "skip"},
-        {"stage": 4, "name": "sta", "status": "skip"},
-        {"stage": 5, "name": "power", "status": "skip"},
-        {"stage": 6, "name": "route", "status": "skip"},
-    ])
+    correctness_pass = all(stage["status"] in {"pass", "skip"} for stage in stages if stage["stage"] in {0, 1, 2})
+    ppa_pass = all(stage["status"] == "pass" for stage in stages if stage["stage"] in {3, 4, 5})
+    ppa = REFERENCE_PPA if correctness_pass and ppa_pass else 0.0
+    task_score = task_score_from_ppa(ppa) if correctness_pass and ppa_pass else 0.0
+    stages.append({"stage": 6, "name": "route", "status": "skip"})
     data = {
         "task_id": task.task_id,
         "suite_version": SUITE_VERSION,

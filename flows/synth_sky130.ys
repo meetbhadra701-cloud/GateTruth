@@ -1,0 +1,9 @@
+# SB-007 sky130hd synthesis template.
+# harness.flows substitutes {{...}} placeholders into a temp script.
+read_slang {{SUBMISSION}} --top {{TOP}}
+synth -top {{TOP}} -flatten
+dfflibmap -liberty {{LIBERTY}}
+abc -liberty {{LIBERTY}} -D {{CLOCK_PS}}
+opt_clean -purge
+tee -o {{REPORT}} stat -liberty {{LIBERTY}}
+write_verilog -noattr {{NETLIST}}
