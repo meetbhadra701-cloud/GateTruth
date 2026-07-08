@@ -14,4 +14,5 @@ Record the local image digest:
 flows/record_digest.sh siliconbench:v1
 ```
 
-The current Dockerfile intentionally fails if the oss-cad-suite archive hash or sky130 standard-cell commit are left as placeholders. Replace those pins from upstream release evidence before moving SB-001 to review.
+The oss-cad-suite archive hash and sky130 standard-cell commit are pinned in lows/VERSIONS.md. SB-001 still needs Docker Desktop/WSL2 installed before acceptance commands can run.
+

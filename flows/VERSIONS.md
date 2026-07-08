@@ -18,3 +18,4 @@ This file records the toolchain pins consumed by `flows/Dockerfile`.
 | sky130_fd_sc_hd | pinned by `SKY130_FD_SC_HD_COMMIT` build arg |
 
 The Docker build must fail rather than silently using an unpinned floating tool or a missing SystemVerilog frontend.
+
