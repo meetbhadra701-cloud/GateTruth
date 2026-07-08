@@ -60,12 +60,33 @@ def _find_top_module(path: Path, fallback: str) -> str:
     return fallback
 
 
-def _run(args: list[str], *, cwd: Path | None = None, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(args, cwd=cwd, env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+def _run(
+    args: list[str],
+    *,
+    cwd: Path | None = None,
+    env: dict[str, str] | None = None,
+    timeout_s: float | None = None,
+) -> subprocess.CompletedProcess[str]:
+    try:
+        return subprocess.run(
+            args,
+            cwd=cwd,
+            env=env,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            check=False,
+            timeout=timeout_s,
+        )
+    except subprocess.TimeoutExpired as exc:
+        stdout = exc.stdout or ""
+        if isinstance(stdout, bytes):
+            stdout = stdout.decode("utf-8", errors="replace")
+        return subprocess.CompletedProcess(args, 124, stdout + f"\nTIMEOUT after {timeout_s} seconds\n")
 
 
 def run_lint(submission: Path) -> tuple[dict[str, object], str]:
-    result = _run(["verilator", "--lint-only", "--sv", str(submission)])
+    result = _run(["verilator", "--lint-only", "--sv", str(submission)], timeout_s=30)
     if result.returncode == 0:
         return {"stage": 0, "name": "lint", "status": "pass", "warnings": 0}, result.stdout
     return {"stage": 0, "name": "lint", "status": "fail"}, result.stdout
@@ -90,10 +111,18 @@ def run_sim(task: TaskPackage, submission: Path, work_root: Path) -> tuple[dict[
     env = os.environ.copy()
     env.pop("PYTEST_CURRENT_TEST", None)
     env["PYTHONPATH"] = os.pathsep.join([str(REPO_ROOT), str(task.root / "tb"), env.get("PYTHONPATH", "")])
-    result = _run([sys.executable, str(script)], cwd=REPO_ROOT, env=env)
+    result = _run([sys.executable, str(script)], cwd=REPO_ROOT, env=env, timeout_s=20)
     if result.returncode != 0:
         return {"stage": 1, "name": "sim", "status": "fail"}, result.stdout
     tests_run, tests_passed = _parse_cocotb_results(results_xml)
+    if tests_passed != tests_run:
+        return {
+            "stage": 1,
+            "name": "sim",
+            "status": "fail",
+            "tests_run": tests_run,
+            "tests_passed": tests_passed,
+        }, result.stdout
     return {"stage": 1, "name": "sim", "status": "pass", "tests_run": tests_run, "tests_passed": tests_passed}, result.stdout
 
 
@@ -137,7 +166,7 @@ def run_formal(task: TaskPackage, submission: Path, work_root: Path) -> tuple[di
     shutil.copytree(formal_dir, local_formal)
     local_ref.mkdir(parents=True)
     shutil.copy2(submission, local_ref / "ref.sv")
-    result = _run(["sby", "-f", "props.sby"], cwd=local_formal)
+    result = _run(["sby", "-f", "props.sby"], cwd=local_formal, timeout_s=60)
     if result.returncode == 0:
         return {"stage": 2, "name": "formal", "status": "pass"}, result.stdout
     return {"stage": 2, "name": "formal", "status": "fail"}, result.stdout
