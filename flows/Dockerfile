@@ -85,6 +85,11 @@ COPY --from=iverilog-build /opt/iverilog /opt/iverilog
 COPY --from=oss-cad-suite /opt/oss-cad-suite /opt/oss-cad-suite
 COPY --from=pdk-subset /pdk/sky130hd /pdk/sky130hd
 
+RUN ln -sf /usr/bin/python3.11 /usr/local/bin/python \
+    && ln -sf /usr/bin/python3.11 /usr/local/bin/python3 \
+    && python --version \
+    && python3 --version
+
 RUN python3.11 -m pip install --no-cache-dir --break-system-packages \
       cocotb==1.9.2 \
       pytest==8.3.4 \
@@ -94,6 +99,10 @@ RUN python3.11 -m pip install --no-cache-dir --break-system-packages \
 RUN set -eux; \
     test "$(uname -m)" = "x86_64"; \
     verilator --version | grep -E 'Verilator 5\.'; \
+    test "$(command -v python)" = "/usr/local/bin/python"; \
+    test "$(command -v python3)" = "/usr/local/bin/python3"; \
+    python --version | grep -E 'Python 3\.11\.'; \
+    python3 --version | grep -E 'Python 3\.11\.'; \
     test "$(command -v iverilog)" = "/opt/iverilog/bin/iverilog"; \
     iverilog -V; \
     yosys -V; \

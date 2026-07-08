@@ -5,7 +5,7 @@ This file records the toolchain pins consumed by `flows/Dockerfile`.
 | Component | Pin |
 |---|---|
 | Base image | `debian:bookworm-slim` |
-| Python | Debian bookworm `python3.11` packages |
+| Python | Debian bookworm `python3.11` packages; runtime aliases `/usr/local/bin/python` and `/usr/local/bin/python3` point to `/usr/bin/python3.11` |
 | Verilator | Debian bookworm `verilator` package, must report 5.x |
 | Icarus Verilog | source tag `v12_0` from `steveicarus/iverilog`; build dependency `gperf` |
 | oss-cad-suite | release `2026-07-08`, asset `oss-cad-suite-linux-x64-20260708.tgz`, SHA-256 `5b24af7c0fa639a8105e4b6e128cee24dcfc1316e1bbd7b8a9d06b4dac10313e` |
@@ -20,5 +20,7 @@ This file records the toolchain pins consumed by `flows/Dockerfile`.
 
 The Docker build must fail rather than silently using an unpinned floating tool or a missing SystemVerilog frontend.
 
+## Image Digests
 
-
+- SB-001 accepted image digest: sha256:ecf156c0f2197dd6602499255e19cea1bfc04a429f3aa5ae9c786cf5c179c74e.
+- SB-011 image digest: sha256:76d68432cff5c4b43fc0573868df1e0d0ccb0df3903fc86758f7d66d264fd9be. Supersedes SB-001 for subsequent M1 tickets by adding the unversioned python alias only.
