@@ -1,4 +1,4 @@
-﻿# SB-001 Pinned Tool Versions
+# SB-001 Pinned Tool Versions
 
 This file records the toolchain pins consumed by `flows/Dockerfile`.
 
@@ -10,7 +10,7 @@ This file records the toolchain pins consumed by `flows/Dockerfile`.
 | Icarus Verilog | source tag `v12_0` from `steveicarus/iverilog`; build dependency `gperf` |
 | oss-cad-suite | release `2026-07-08`, asset `oss-cad-suite-linux-x64-20260708.tgz`, SHA-256 `5b24af7c0fa639a8105e4b6e128cee24dcfc1316e1bbd7b8a9d06b4dac10313e` |
 | Yosys/yosys-slang/SymbiYosys/boolector/eqy | from the pinned oss-cad-suite archive |
-| OpenSTA | from the pinned oss-cad-suite archive as `sta` |
+| OpenSTA | Debian bookworm `opensta` package, must provide `/usr/bin/sta` |
 | cocotb | `1.9.2` |
 | pytest | `8.3.4` |
 | ruff | `0.8.4` |

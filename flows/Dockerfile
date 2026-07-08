@@ -1,4 +1,4 @@
-﻿# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1.7
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG OSS_CAD_SUITE_TAG=2026-07-08
@@ -33,6 +33,7 @@ RUN apt-get update \
       tcl-dev \
       tk-dev \
       verilator \
+      opensta \
       xz-utils \
       zstd \
     && rm -rf /var/lib/apt/lists/*
@@ -75,7 +76,7 @@ RUN curl -fsSLo sky130_fd_sc_hd.tar.zst \
     && test -n "$(find /pdk/sky130hd -name '*.lef' -print -quit)"
 
 FROM base AS runtime
-ENV PATH="/opt/oss-cad-suite/bin:/opt/iverilog/bin:${PATH}"
+ENV PATH="/opt/iverilog/bin:/opt/oss-cad-suite/bin:${PATH}"
 ENV PYTHONUNBUFFERED=1
 ENV PDK_ROOT=/pdk
 ENV SILICONBENCH_PLATFORM=linux/amd64
@@ -93,9 +94,10 @@ RUN python3.11 -m pip install --no-cache-dir --break-system-packages \
 RUN set -eux; \
     test "$(uname -m)" = "x86_64"; \
     verilator --version | grep -E 'Verilator 5\.'; \
+    test "$(command -v iverilog)" = "/opt/iverilog/bin/iverilog"; \
     iverilog -V; \
     yosys -V; \
-    command -v sta; \
+    sta -version; \
     sby --help >/dev/null; \
     eqy --help >/dev/null; \
     python3.11 -c "import cocotb, pydantic"; \
