@@ -18,6 +18,7 @@ RUN apt-get update \
       ca-certificates \
       curl \
       git \
+      magic \
       make \
       autoconf \
       automake \
@@ -102,6 +103,7 @@ RUN set -eux; \
 
 WORKDIR /work
 CMD ["/bin/bash"]
+
 
 
 
