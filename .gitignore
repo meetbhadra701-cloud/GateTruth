@@ -10,6 +10,7 @@ build/
 *.egg-info/
 results/logs/
 results/tmp/
+results/refs/
 *.log
 .DS_Store
 Thumbs.db
