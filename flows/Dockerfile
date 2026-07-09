@@ -8,7 +8,7 @@ ARG IVERILOG_REF=v12_0
 ARG VOLARE_SKY130_TAG=sky130-fa87f8f4bbcc7255b6f0c0fb506960f531ae2392
 ARG VOLARE_SKY130_HD_SHA256=d4081b3c0fbfa2afe31dba789c03157ad137ea08b11910e2c8b3ec81b2a61bf6
 
-FROM --platform=linux/amd64 debian:bookworm-slim AS base
+FROM --platform=linux/amd64 debian:bookworm-slim@sha256:60eac759739651111db372c07be67863818726f754804b8707c90979bda511df AS base
 ARG DEBIAN_FRONTEND
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -26,14 +26,14 @@ RUN apt-get update \
       gperf \
       bison \
       pkg-config \
-      python3.11 \
-      python3.11-dev \
-      python3-pip \
-      python3-venv \
+      python3.11=3.11.2-6+deb12u7 \
+      python3.11-dev=3.11.2-6+deb12u7 \
+      python3-pip=23.0.1+dfsg-1 \
+      python3-venv=3.11.2-1+b1 \
       tcl-dev \
       tk-dev \
-      verilator \
-      opensta \
+      verilator=5.006-3 \
+      opensta=0~20191111gitc018cb2+dfsg-1 \
       xz-utils \
       zstd \
     && rm -rf /var/lib/apt/lists/*
