@@ -19,3 +19,6 @@ results.xml
 **/results.xml
 sim_build/
 **/sim_build/
+
+# SymbiYosys formal working directory (task name matches [options] task name in each props.sby)
+**/formal/props/
