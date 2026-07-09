@@ -37,7 +37,7 @@ module trigger_props #(
             seen_reset <= 1'b1;
         end else begin
             m_pulse <= 1'b0;
-            if (load) m_period <= delay_val;
+            if (load && !m_busy) m_period <= delay_val;   // load accepted only when idle (spec line 29)
 
             if (!m_busy) begin
                 if (trigger) begin

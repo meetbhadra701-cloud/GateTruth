@@ -33,7 +33,7 @@ module delay_trigger #(
             pulse_out <= 1'b0;
         end else begin
             pulse_out <= 1'b0;   // default: one-cycle pulse
-            if (load) period <= delay_val;
+            if (load && !busy) period <= delay_val;   // load accepted only when idle (spec line 29)
 
             if (!busy) begin
                 if (trigger) begin
