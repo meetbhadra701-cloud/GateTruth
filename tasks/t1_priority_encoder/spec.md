@@ -38,7 +38,8 @@ Convention (shared by all SiliconBench pilot tasks): reset is **synchronous and 
 Each rising edge (when not in reset) samples `in` and registers:
 - `valid <= |in` (OR-reduction: high iff any input bit is set).
 - `out <= ` the index of the **most-significant** set bit of `in`. When `in == 0`, `valid` is 0 and
-  `out` is `0` (a don't-care that the design drives to 0 for determinism and no-X).
+  `out` is driven to `0` (required, not a don't-care — for determinism and no-X; see edge case 2 and
+  formal property P5).
 
 Because the output is registered, `out`/`valid` at cycle *t+1* describe `in` sampled at cycle *t*.
 Reset takes priority: a rising edge with `rst == 1` forces `out = 0`, `valid = 0`.
@@ -54,6 +55,7 @@ Over the port interface, referencing the previous input via `$past`:
 - **P2 - selected bit set.** If `valid`, then `$past(in)` has its bit `out` set: `(($past(in) >> out) & 1) == 1`.
 - **P3 - highest priority.** If `valid`, no higher bit is set: `($past(in) >> (out + 1)) == 0`.
 - **P4 - reset / no-X.** After a reset edge, `out == 0` and `valid == 0`; once reset has been observed, `out` and `valid` are never X.
+- **P5 - zero input.** After a non-reset edge with `$past(in) == 0` (so `valid == 0`), `out == 0`.
 
 ## Behavioral edge cases (the public + hidden testbench must cover all of these)
 

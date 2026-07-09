@@ -38,6 +38,11 @@ module pe_props #(
             // `out` leaves exactly 1 (that bit set, nothing above it).
             if (valid)
                 assert (($past(in) >> out) == ONE);
+            // P5 - zero input drives out to 0 (spec edge case 2). Without this the proof leaves `out`
+            // entirely unconstrained whenever the previous input was 0, so a design emitting garbage
+            // there would pass vacuously.
+            else
+                assert (out == '0);
         end
     end
 endmodule
