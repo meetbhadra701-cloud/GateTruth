@@ -150,7 +150,7 @@ def _parse_cell_count(report: str) -> int:
 
 
 def _parse_named_float(text: str, name: str) -> float:
-    match = re.search(rf"^{name}\s+(-?[0-9.eE+]+)$", text, re.MULTILINE)
+    match = re.search(rf"^{name}\s+([-+0-9.eE]+)$", text, re.MULTILINE)
     if not match:
         raise FlowError(f"could not parse {name} from OpenSTA output")
     return float(match.group(1))

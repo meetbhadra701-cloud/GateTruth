@@ -200,7 +200,7 @@ def run_ppa_flows(task: TaskPackage, submission: Path, work_root: Path) -> tuple
         {
             "stage": 4,
             "name": "sta",
-            "status": "pass",
+            "status": "pass" if sta.wns_ns >= 0.0 else "fail",
             "wns_ns": sta.wns_ns,
             "tns_ns": sta.tns_ns,
             "fmax_mhz": sta.fmax_mhz,
