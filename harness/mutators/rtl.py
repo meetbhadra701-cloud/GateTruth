@@ -9,8 +9,6 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-MAX_MUTANTS_PER_TASK = 32
-
 
 @dataclass(frozen=True)
 class Mutant:
@@ -89,7 +87,7 @@ def generate_mutants(task_id: str, source: str) -> list[Mutant]:
                 source=mutated,
             )
         )
-    return mutants[:MAX_MUTANTS_PER_TASK]
+    return mutants
 
 
 def _replace_once(source: str, old: str, new: str) -> str | None:

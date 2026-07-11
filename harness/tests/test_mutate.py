@@ -23,3 +23,12 @@ def test_mutator_never_changes_comment_text():
     assert mutants
     assert all("x != y" not in mutant.source for mutant in mutants)
     assert any("assign y = x != z;" in mutant.source for mutant in mutants)
+
+
+def test_mutator_does_not_truncate_large_structural_set():
+    assignments = "\n".join(f"q{i} <= '0;" for i in range(40))
+    source = f"module m; always_ff @(posedge clk) begin\n{assignments}\nend endmodule\n"
+
+    mutants = generate_mutants("generic", source)
+
+    assert len(mutants) > 32
