@@ -116,13 +116,7 @@ def run_sim(task: TaskPackage, submission: Path, work_root: Path) -> tuple[dict[
         return {"stage": 1, "name": "sim", "status": "fail"}, result.stdout
     tests_run, tests_passed = _parse_cocotb_results(results_xml)
     if tests_passed != tests_run:
-        return {
-            "stage": 1,
-            "name": "sim",
-            "status": "fail",
-            "tests_run": tests_run,
-            "tests_passed": tests_passed,
-        }, result.stdout
+        return {"stage": 1, "name": "sim", "status": "fail"}, result.stdout
     return {"stage": 1, "name": "sim", "status": "pass", "tests_run": tests_run, "tests_passed": tests_passed}, result.stdout
 
 
