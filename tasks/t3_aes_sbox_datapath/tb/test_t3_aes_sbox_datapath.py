@@ -36,6 +36,13 @@ async def start_clock(dut):
     cocotb.start_soon(Clock(dut.clk, 10, units="ns").start())
 
 
+def assert_outputs_resolvable(dut):
+    outv = dut.data_out.value
+    validv = dut.data_valid.value
+    assert outv.is_resolvable, f"data_out has X/Z bits: {outv}"
+    assert validv.is_resolvable, f"data_valid has X/Z bits: {validv}"
+
+
 async def reset(dut):
     dut.data_valid_in.value = 0
     dut.data_in.value = 0
@@ -46,6 +53,7 @@ async def reset(dut):
     await Timer(1, units="ns")
     assert int(dut.data_out.value) == 0
     assert int(dut.data_valid.value) == 0
+    assert_outputs_resolvable(dut)
 
 
 async def substitute(dut, byte_in: int) -> int:
@@ -58,7 +66,17 @@ async def substitute(dut, byte_in: int) -> int:
     got = int(dut.data_out.value)
     expected = AES_SBOX[byte_in]
     assert got == expected, f"data_out {got:#04x} != expected {expected:#04x} for input {byte_in:#04x}"
+    assert_outputs_resolvable(dut)
     return got
+
+
+async def idle_cycle(dut, expected_hold: int):
+    dut.data_valid_in.value = 0
+    await RisingEdge(dut.clk)
+    await Timer(1, units="ns")
+    assert int(dut.data_valid.value) == 0
+    assert int(dut.data_out.value) == expected_hold
+    assert_outputs_resolvable(dut)
 
 
 # ----------------------------- PUBLIC SMOKE -----------------------------
@@ -90,12 +108,52 @@ async def smoke_exhaustive_256(dut):
 
 # --- HIDDEN ---
 # HUMAN REVIEW: PENDING hidden-vector section marker. Do not remove.
-#
-# Implementer: author hidden vectors here that additionally exercise, at minimum:
-#   - hold: data_valid_in=0 leaves data_out unchanged and data_valid=0 (no phantom update)
-#   - back-to-back substitutions on consecutive cycles (data_valid_in held high every cycle) each
-#     produce the correct result with no stale/overlapping state
-#   - no-X on data_out/data_valid after reset settles
-#   - a second full exhaustive 256-value pass interleaved with idle (data_valid_in=0) cycles between
-#     substitutions, to confirm hold behavior doesn't corrupt the next real substitution
-# Author from the Architect spec only, never from model knowledge (DO-NOT-BUILD rule 9). Do not sign off.
+
+
+@cocotb.test()
+async def hidden_hold_cycles_leave_output_stable_and_invalid(dut):
+    await start_clock(dut)
+    await reset(dut)
+
+    held = await substitute(dut, 0x3A)
+    for _ in range(8):
+        await idle_cycle(dut, held)
+
+
+@cocotb.test()
+async def hidden_back_to_back_valid_cycles_have_no_overlap_or_stale_state(dut):
+    await start_clock(dut)
+    await reset(dut)
+
+    sequence = [0x00, 0x52, 0xAE, 0x11, 0xFF, 0x63, 0x7C, 0x80]
+    dut.data_valid_in.value = 1
+    for byte_in in sequence:
+        dut.data_in.value = byte_in
+        await RisingEdge(dut.clk)
+        await Timer(1, units="ns")
+        assert int(dut.data_valid.value) == 1
+        assert int(dut.data_out.value) == AES_SBOX[byte_in]
+        assert_outputs_resolvable(dut)
+    dut.data_valid_in.value = 0
+    await idle_cycle(dut, AES_SBOX[sequence[-1]])
+
+
+@cocotb.test()
+async def hidden_no_x_after_reset_and_activity(dut):
+    await start_clock(dut)
+    await reset(dut)
+
+    for byte_in in [0x00, 0x52, 0x7F, 0x80, 0xFE, 0x10, 0xC7]:
+        await substitute(dut, byte_in)
+        await idle_cycle(dut, AES_SBOX[byte_in])
+
+
+@cocotb.test()
+async def hidden_exhaustive_256_with_idle_cycles_between_substitutions(dut):
+    await start_clock(dut)
+    await reset(dut)
+
+    last = 0
+    for byte_in in range(256):
+        last = await substitute(dut, byte_in)
+        await idle_cycle(dut, last)
