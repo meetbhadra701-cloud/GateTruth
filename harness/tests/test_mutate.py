@@ -14,3 +14,12 @@ def test_mutator_generates_expected_gray_operators():
     assert "reset_polarity_flip" in operators
     assert "dropped_enable" in operators
     assert "operator_inversion" in operators
+
+
+def test_mutator_never_changes_comment_text():
+    source = "module m; // x == y and x + 1'b1\nassign y = x == z;\nendmodule\n"
+    mutants = generate_mutants("generic", source)
+
+    assert mutants
+    assert all("x != y" not in mutant.source for mutant in mutants)
+    assert any("assign y = x != z;" in mutant.source for mutant in mutants)

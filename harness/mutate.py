@@ -7,6 +7,7 @@ import json
 import random
 import sys
 import tempfile
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -48,7 +49,10 @@ def run_mutation(*, task_id: str, min_kill: float, seed: int) -> dict[str, Any]:
     rng = random.Random(seed)
     rng.shuffle(mutants)
 
-    results = [_run_one(task_id, mutant) for mutant in mutants]
+    # Each mutant is isolated in its own temporary directory, so bounded parallelism
+    # shortens the 60-task audit without changing report order or seeded determinism.
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        results = list(pool.map(lambda mutant: _run_one(task_id, mutant), mutants))
     killed = [result for result in results if result["killed"]]
     survivors = [result for result in results if not result["killed"]]
     kill_rate = 100.0 if not results else (100.0 * len(killed) / len(results))
