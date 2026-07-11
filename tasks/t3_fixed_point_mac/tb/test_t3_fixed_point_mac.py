@@ -253,13 +253,23 @@ async def hidden_accumulator_wrap_matches_two_complement_model(dut):
     await start_clock(dut)
     await reset(dut)
 
-    model = 0
-    for _ in range(1 << 17):
-        await step(dut, a=-32768, b=-32768, en=1, clear=0)
-        model = mac_step(model, -32768, -32768)
+    iterations = 1 << 17
+    a = -(1 << (DATA_WIDTH - 1))
+    b = -(1 << (DATA_WIDTH - 1))
 
-    await expect_acc(dut, model, "large repeated accumulation wraps exactly")
-    assert model < 0, "chosen iteration count should cross the signed accumulator boundary"
+    dut.a.value = to_unsigned(a, DATA_WIDTH)
+    dut.b.value = to_unsigned(b, DATA_WIDTH)
+    dut.en.value = 1
+    dut.clear.value = 0
+
+    for _ in range(iterations):
+        await RisingEdge(dut.clk)
+    await Timer(1, units="ns")
+
+    expected_bits = (iterations * (a * b)) & ACC_MASK
+    expected = to_signed(expected_bits, ACC_WIDTH)
+    await expect_acc(dut, expected, "large repeated accumulation wraps exactly")
+    assert expected < 0, "chosen iteration count should cross the signed accumulator boundary"
 
 
 @cocotb.test()
