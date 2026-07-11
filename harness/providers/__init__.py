@@ -8,8 +8,10 @@ from typing import Protocol
 
 @dataclass(frozen=True)
 class GenParams:
+    model: str
     temperature: float = 0.0
     max_tokens: int | None = None
+    seed: int | None = None
 
 
 class ProviderAdapter(Protocol):

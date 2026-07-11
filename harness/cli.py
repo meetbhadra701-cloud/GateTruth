@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
-from harness.runner import run_task
+from harness.runner import resolve_task, run_task
 from harness.scoring import score_manifest
 from harness.spend import reserve_spend
 
@@ -18,6 +19,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--task", required=True)
     run.add_argument("--submission", required=True)
     run.add_argument("--out", default="results/tmp/manifest.json")
+    run.add_argument("--official", action="store_true", help="require Meet sign-off for an official run")
 
     score = sub.add_parser("score", help="print task_score from a manifest")
     score.add_argument("--manifest", required=True)
@@ -33,6 +35,12 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "run":
+        if args.official:
+            try:
+                resolve_task(args.task).task_yaml.require_official_reviews()
+            except ValueError as exc:
+                print(f"official run refused: {exc}", file=sys.stderr)
+                return 2
         manifest = run_task(args.task, args.submission, args.out)
         print(Path(args.out))
         print(f"task_score={manifest.task_score}")

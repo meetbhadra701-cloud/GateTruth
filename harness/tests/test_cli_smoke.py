@@ -1,7 +1,9 @@
 import json
 import subprocess
 import sys
+import inspect
 
+from harness.providers import GenParams
 from harness.schemas.manifest import load_manifest
 
 
@@ -50,6 +52,37 @@ def test_run_toy_fixture_reference(tmp_path):
     assert {stage.stage: stage.status for stage in manifest.stages}[1] == "pass"
     assert {stage.stage: stage.status for stage in manifest.stages}[2] == "skip"
     assert json.loads(out.read_text())["signature"] == manifest.signature
+
+
+def test_gen_params_matches_provider_contract():
+    fields = set(inspect.signature(GenParams).parameters)
+    assert {"model", "temperature", "max_tokens", "seed"} <= fields
+
+
+def test_official_run_refuses_pending_reviews(tmp_path):
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "harness.cli",
+            "run",
+            "--task",
+            "t1_popcount",
+            "--submission",
+            "tasks/t1_popcount/ref/ref.sv",
+            "--out",
+            str(tmp_path / "official.json"),
+            "--official",
+        ],
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+
+    assert result.returncode == 2
+    assert "official run refused" in result.stderr
+    assert "ref_review" in result.stderr
 
 
 def test_run_partial_sim_failure_emits_score_zero_manifest(tmp_path):
