@@ -1,0 +1,6 @@
+id: b5_remove_latches_decoder
+base_task: t1_binary_to_onehot_decoder
+objective:
+  type: add_property
+budget: {tokens: 100000, wall_clock_s: 900, tool_calls: 100}
+behavior_preserving: false

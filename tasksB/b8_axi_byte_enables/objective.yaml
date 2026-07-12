@@ -1,0 +1,6 @@
+id: b8_axi_byte_enables
+base_task: t2_axi_lite_regfile
+objective:
+  type: add_property
+budget: {tokens: 150000, wall_clock_s: 1200, tool_calls: 150}
+behavior_preserving: false
