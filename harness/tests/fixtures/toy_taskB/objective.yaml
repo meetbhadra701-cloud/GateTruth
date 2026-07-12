@@ -1,0 +1,7 @@
+id: toy_taskB
+base_task: toy_task
+objective:
+  type: area_reduction
+  min_pct: 0
+budget: {tokens: 1000, wall_clock_s: 60, tool_calls: 20}
+behavior_preserving: true

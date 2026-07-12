@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from harness.runner import resolve_task, run_task
+from harness.trackb import run_track_b
 from harness.scoring import score_manifest
 from harness.spend import reserve_spend
 
@@ -20,6 +21,11 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--submission", required=True)
     run.add_argument("--out", default="results/tmp/manifest.json")
     run.add_argument("--official", action="store_true", help="require Meet sign-off for an official run")
+
+    run_b = sub.add_parser("run-b", help="run a Track B evaluator package")
+    run_b.add_argument("--task", required=True)
+    run_b.add_argument("--submission-dir", required=True)
+    run_b.add_argument("--out", default="results/tmp/manifest_b.json")
 
     score = sub.add_parser("score", help="print task_score from a manifest")
     score.add_argument("--manifest", required=True)
@@ -44,6 +50,13 @@ def main(argv: list[str] | None = None) -> int:
         manifest = run_task(args.task, args.submission, args.out)
         print(Path(args.out))
         print(f"task_score={manifest.task_score}")
+        return 0
+    if args.command == "run-b":
+        manifest = run_track_b(args.task, args.submission_dir, args.out)
+        print(Path(args.out))
+        print(f"task_score={manifest.task_score}")
+        print(f"objective_pass={manifest.objective_pass}")
+        print(f"disqualified={manifest.disqualified}")
         return 0
     if args.command == "score":
         print(score_manifest(args.manifest))
