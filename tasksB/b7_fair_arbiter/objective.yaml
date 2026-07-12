@@ -1,0 +1,6 @@
+id: b7_fair_arbiter
+base_task: t2_round_robin_arbiter
+objective:
+  type: add_property
+budget: {tokens: 150000, wall_clock_s: 1200, tool_calls: 150}
+behavior_preserving: false
