@@ -23,6 +23,7 @@ from harness.scoring import REFERENCE_PPA, task_score_from_ppa
 
 SUITE_VERSION = "v0.2"
 DEFAULT_DOCKER_DIGEST = "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62"
+DEFAULT_DOCKER_DIGEST_FILE = Path("/etc/siliconbench-image-digest")
 REPO_ROOT = Path(__file__).resolve().parents[1]
 TOY_FIXTURE_ROOT = REPO_ROOT / "harness" / "tests" / "fixtures" / "toy_task"
 
@@ -45,6 +46,16 @@ def resolve_task(task_id: str) -> TaskPackage:
             top = _find_top_module(root / "interface.sv", fallback=task.id.split("_", 1)[-1])
             return TaskPackage(task_id=task.id, root=root, task_yaml=task, top_module=top)
     raise FileNotFoundError(f"unknown task: {task_id}")
+
+
+def runtime_docker_digest() -> str:
+    explicit = os.environ.get("SILICONBENCH_DOCKER_DIGEST")
+    if explicit:
+        return explicit
+    path = Path(os.environ.get("SILICONBENCH_DOCKER_DIGEST_FILE", DEFAULT_DOCKER_DIGEST_FILE))
+    if path.is_file():
+        return path.read_text(encoding="utf-8").strip()
+    return DEFAULT_DOCKER_DIGEST
 
 
 def _find_top_module(path: Path, fallback: str) -> str:
@@ -257,7 +268,7 @@ def run_task(task_id: str, submission: str | Path, out: str | Path) -> ResultMan
     data = {
         "task_id": task.task_id,
         "suite_version": SUITE_VERSION,
-        "docker_digest": os.environ.get("SILICONBENCH_DOCKER_DIGEST", DEFAULT_DOCKER_DIGEST),
+        "docker_digest": runtime_docker_digest(),
         "platform": "linux/amd64",
         "stages": stages,
         "sec": 1.0,

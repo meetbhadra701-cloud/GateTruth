@@ -2,7 +2,7 @@ import subprocess
 import sys
 import shutil
 
-from harness.runner import TaskPackage, run_ppa_flows
+from harness.runner import TaskPackage, run_ppa_flows, runtime_docker_digest
 from harness.schemas.manifest import load_manifest
 from harness.schemas.task_yaml import load_task_yaml
 
@@ -79,3 +79,13 @@ def test_negative_timing_slack_fails_sta_stage(tmp_path):
     assert by_stage[4]["wns_ns"] < 0
     assert by_stage[4]["tns_ns"] < 0
     assert by_stage[5]["status"] == "pass"
+
+
+def test_runtime_docker_digest_tracks_baked_file(tmp_path, monkeypatch):
+    rebuilt_digest = "sha256:" + "ab" * 32
+    digest_file = tmp_path / "image-digest"
+    digest_file.write_text(rebuilt_digest + "\n", encoding="utf-8")
+    monkeypatch.delenv("SILICONBENCH_DOCKER_DIGEST", raising=False)
+    monkeypatch.setenv("SILICONBENCH_DOCKER_DIGEST_FILE", str(digest_file))
+
+    assert runtime_docker_digest() == rebuilt_digest

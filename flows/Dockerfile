@@ -76,6 +76,7 @@ RUN curl -fsSLo sky130_fd_sc_hd.tar.zst \
     && test -n "$(find /pdk/sky130hd -name '*.lef' -print -quit)"
 
 FROM base AS runtime
+ARG SILICONBENCH_IMAGE_DIGEST=sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62
 ENV PATH="/work:/opt/iverilog/bin:/opt/oss-cad-suite/bin:${PATH}"
 ENV PYTHONUNBUFFERED=1
 ENV PDK_ROOT=/pdk
@@ -84,6 +85,8 @@ ENV SILICONBENCH_PLATFORM=linux/amd64
 COPY --from=iverilog-build /opt/iverilog /opt/iverilog
 COPY --from=oss-cad-suite /opt/oss-cad-suite /opt/oss-cad-suite
 COPY --from=pdk-subset /pdk/sky130hd /pdk/sky130hd
+
+RUN printf '%s\n' "$SILICONBENCH_IMAGE_DIGEST" > /etc/siliconbench-image-digest
 
 RUN ln -sf /usr/bin/python3.11 /usr/local/bin/python \
     && ln -sf /usr/bin/python3.11 /usr/local/bin/python3 \
