@@ -1,0 +1,6 @@
+id: b6_cdc_safe_fifo
+base_task: t2_sync_fifo
+objective:
+  type: add_property
+budget: {tokens: 250000, wall_clock_s: 2400, tool_calls: 250}
+behavior_preserving: false
