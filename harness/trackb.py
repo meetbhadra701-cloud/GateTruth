@@ -218,6 +218,12 @@ def _parse_scalar(value: str) -> Any:
 def diff_guard(canonical: Path, submission: Path) -> str | None:
     if not submission.exists():
         return f"missing submission dir: {submission}"
+    design = submission / "design"
+    if not design.is_dir():
+        return "missing submission design directory"
+    design_files = sorted(design.glob("*.sv"))
+    if len(design_files) != 1:
+        return f"expected exactly one .sv file in design, found {len(design_files)}"
     for entry in IMMUTABLE_ENTRIES:
         left = canonical / entry
         right = submission / entry

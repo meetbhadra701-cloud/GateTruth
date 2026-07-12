@@ -26,6 +26,19 @@ def test_trackb_disqualifies_tb_change(tmp_path):
     assert "immutable file differs: tb" in manifest.disqualification_reason
 
 
+def test_trackb_disqualifies_multiple_design_files(tmp_path):
+    submission = copy_fixture(tmp_path)
+    (submission / "design" / "extra.sv").write_text(
+        "module extra(input logic a, output logic y); assign y = a; endmodule\n",
+        encoding="utf-8",
+    )
+    manifest = run_track_b("toy_taskB", submission, tmp_path / "multiple_design_files.json")
+    assert manifest.disqualified is True
+    assert manifest.task_score == 0.0
+    assert manifest.objective_pass is False
+    assert manifest.disqualification_reason == "expected exactly one .sv file in design, found 2"
+
+
 def test_trackb_sec_has_teeth(tmp_path):
     submission = copy_fixture(tmp_path)
     design = submission / "design" / "toy_trackb.sv"
