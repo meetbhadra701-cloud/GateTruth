@@ -39,11 +39,15 @@ async def run_division(dut, dividend, divisor):
     await Timer(1, units="ns")
 
     busy_cycles = 0
-    while int(dut.done.value) == 0:
+    for _ in range(WIDTH + 2):
+        if int(dut.done.value) == 1:
+            break
         if int(dut.busy.value) == 1:
             busy_cycles += 1
         await RisingEdge(dut.clk)
         await Timer(1, units="ns")
+    else:
+        raise AssertionError("divider did not assert done within the bounded cycle budget")
 
     return int(dut.quotient.value), int(dut.remainder.value), int(dut.div_by_zero.value), busy_cycles
 
@@ -152,11 +156,15 @@ async def hidden_start_ignored_while_busy(dut):
     dut.start.value = 0
 
     busy_cycles = 5  # first visible busy cycle + four ignored-start cycles already observed
-    while int(dut.done.value) == 0:
+    for _ in range(WIDTH + 2):
+        if int(dut.done.value) == 1:
+            break
         await RisingEdge(dut.clk)
         await Timer(1, units="ns")
         if int(dut.done.value) == 0 and int(dut.busy.value) == 1:
             busy_cycles += 1
+    else:
+        raise AssertionError("divider did not finish after ignored mid-flight starts")
 
     exp_q, exp_r, exp_dbz, exp_busy = model(12345, 37)
     assert (int(dut.quotient.value), int(dut.remainder.value), int(dut.div_by_zero.value)) == (

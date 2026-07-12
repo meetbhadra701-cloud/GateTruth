@@ -40,10 +40,12 @@ async def send_start(dut, value: int):
 async def capture_frame(dut):
     """Recover a transmitted byte by mid-bit sampling. Returns (byte, stop_bit_level)."""
     # Wait for the falling edge into the start bit.
-    while True:
+    for _ in range(CLKS_PER_BIT * 2 + 2):
         await RisingEdge(dut.clk)
         if dut.tx.value.is_resolvable and int(dut.tx.value) == 0:
             break
+    else:
+        raise AssertionError("start bit did not begin within the bounded wait")
     # Move to roughly the middle of the start bit.
     for _ in range(CLKS_PER_BIT // 2):
         await RisingEdge(dut.clk)
