@@ -49,7 +49,10 @@ def run_track_b(task_id: str, submission_dir: str | Path, out: str | Path) -> Tr
     disqualification_reason = None
     objective_pass = False
 
-    reason = diff_guard(package.root, submission_root)
+    try:
+        reason = diff_guard(package.root, submission_root)
+    except (OSError, ValueError) as exc:
+        reason = f"malformed submission: {exc}"
     if reason:
         disqualified = True
         disqualification_reason = reason
@@ -220,10 +223,10 @@ def diff_guard(canonical: Path, submission: Path) -> str | None:
         return f"missing submission dir: {submission}"
     design = submission / "design"
     if not design.is_dir():
-        return "missing submission design directory"
+        return "malformed submission: missing design directory"
     design_files = sorted(design.glob("*.sv"))
     if len(design_files) != 1:
-        return f"expected exactly one .sv file in design, found {len(design_files)}"
+        return f"malformed submission: expected exactly one .sv file in design, found {len(design_files)}"
     for entry in IMMUTABLE_ENTRIES:
         left = canonical / entry
         right = submission / entry
