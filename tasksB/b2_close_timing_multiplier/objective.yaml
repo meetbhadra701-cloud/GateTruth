@@ -1,0 +1,8 @@
+id: b2_close_timing_multiplier
+base_task: t3_pipelined_multiplier
+objective:
+  type: timing_closure
+  clock_ns: 8.5
+  require_wns_ns_ge: 0.0
+budget: {tokens: 200000, wall_clock_s: 1800, tool_calls: 200}
+behavior_preserving: true

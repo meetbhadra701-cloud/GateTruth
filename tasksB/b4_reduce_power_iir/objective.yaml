@@ -1,0 +1,7 @@
+id: b4_reduce_power_iir
+base_task: t3_iir_filter_1st_order
+objective:
+  type: power_reduction
+  min_pct: 25
+budget: {tokens: 200000, wall_clock_s: 1800, tool_calls: 200}
+behavior_preserving: true
