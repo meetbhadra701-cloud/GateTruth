@@ -85,8 +85,23 @@ def _run_one(task_id: str, mutant: Mutant) -> dict[str, Any]:
         stage, log = run_sim(task, mutated, work_root)
         if stage["status"] != "pass":
             if _is_timeout(log):
-                return _result(mutant, killed=False, killed_by="sim-timeout", log=log, indeterminate=True)
-            return _result(mutant, killed=True, killed_by="sim", log=log)
+                retry_root = work_root / "timeout_retry"
+                retry_root.mkdir()
+                retry_stage, retry_log = run_sim(task, mutated, retry_root, timeout_s=60)
+                if retry_stage["status"] == "pass":
+                    stage, log = retry_stage, retry_log
+                elif _is_timeout(retry_log):
+                    return _result(
+                        mutant,
+                        killed=False,
+                        killed_by="sim-timeout",
+                        log=retry_log,
+                        indeterminate=True,
+                    )
+                else:
+                    return _result(mutant, killed=True, killed_by="sim", log=retry_log)
+            else:
+                return _result(mutant, killed=True, killed_by="sim", log=log)
 
         stage, log = run_formal(task, mutated, work_root)
         if stage["status"] == "fail":

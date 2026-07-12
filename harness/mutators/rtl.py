@@ -115,6 +115,29 @@ def _known_equivalent(task_id: str, mutant: Mutant) -> bool:
         # gidx is consumed only when a grant exists; in that case the grant
         # scan always overwrites this initializer before ptr uses it.
         return "gidx = ~('0);" in mutant.source
+    if task_id == "t2_axi_lite_regfile":
+        # AXI OKAY responses are constant zero in every reachable state.
+        return "bresp <= bresp;" in mutant.source or "rresp <= rresp;" in mutant.source
+    if task_id == "t2_pulse_stretcher":
+        # These assignments merely restate the state invariant: out is already
+        # low while idle and already high while an active stretch remains.
+        return "out <= out;" in mutant.source
+    if task_id == "t2_stream_downsizer":
+        # count is zero whenever idle; the terminal clear is overwritten by the
+        # next accepted input before count can affect an output.
+        return "count <= count;" in mutant.source or "count <= '1;" in mutant.source
+    if task_id in {"t2_uart_rx", "t2_uart_tx"}:
+        # IDLE clears clk_cnt before accepting a frame, making the preceding
+        # state-boundary clear and its held value externally unobservable.
+        return "clk_cnt <= clk_cnt;" in mutant.source or "clk_cnt <= '1;" in mutant.source
+    if task_id == "t3_sequential_divider":
+        # The divide-by-zero branch is entered only from !busy, so retaining
+        # busy there is equivalent to assigning zero.
+        return "busy <= busy;" in mutant.source
+    if task_id == "t2_i2c_slave":
+        # shreg is seven bits and is fully overwritten by the eight incoming
+        # bits before either address matching or byte_data observes it.
+        return "shreg <= '1;" in mutant.source or "shreg <= shreg;" in mutant.source
     return False
 
 

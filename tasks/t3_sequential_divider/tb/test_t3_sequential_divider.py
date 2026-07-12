@@ -81,6 +81,9 @@ async def smoke_reset(dut):
     await reset(dut)
     assert int(dut.busy.value) == 0
     assert int(dut.done.value) == 0
+    assert int(dut.quotient.value) == 0
+    assert int(dut.remainder.value) == 0
+    assert int(dut.div_by_zero.value) == 0
 
 
 @cocotb.test()

@@ -112,6 +112,7 @@ async def smoke_reset(dut):
     await reset(dut)
     assert int(dut.sda_oe.value) == 0
     assert int(dut.byte_valid.value) == 0
+    assert int(dut.byte_data.value) == 0
     assert_outputs_resolvable(dut)
 
 

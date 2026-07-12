@@ -103,7 +103,13 @@ def run_lint(submission: Path) -> tuple[dict[str, object], str]:
     return {"stage": 0, "name": "lint", "status": "fail"}, result.stdout
 
 
-def run_sim(task: TaskPackage, submission: Path, work_root: Path) -> tuple[dict[str, object], str]:
+def run_sim(
+    task: TaskPackage,
+    submission: Path,
+    work_root: Path,
+    *,
+    timeout_s: float = 20,
+) -> tuple[dict[str, object], str]:
     script = work_root / "run_cocotb.py"
     build_dir = work_root / "sim_build"
     results_xml = work_root / "results.xml"
@@ -122,7 +128,7 @@ def run_sim(task: TaskPackage, submission: Path, work_root: Path) -> tuple[dict[
     env = os.environ.copy()
     env.pop("PYTEST_CURRENT_TEST", None)
     env["PYTHONPATH"] = os.pathsep.join([str(REPO_ROOT), str(task.root / "tb"), env.get("PYTHONPATH", "")])
-    result = _run([sys.executable, str(script)], cwd=REPO_ROOT, env=env, timeout_s=20)
+    result = _run([sys.executable, str(script)], cwd=REPO_ROOT, env=env, timeout_s=timeout_s)
     if result.returncode != 0:
         return {"stage": 1, "name": "sim", "status": "fail"}, result.stdout
     tests_run, tests_passed = _parse_cocotb_results(results_xml)

@@ -257,7 +257,10 @@ async def smoke_reset(dut):
     assert int(dut.wready.value) == 1
     assert int(dut.arready.value) == 1
     assert int(dut.bvalid.value) == 0
+    assert int(dut.bresp.value) == 0
     assert int(dut.rvalid.value) == 0
+    assert int(dut.rdata.value) == 0
+    assert int(dut.rresp.value) == 0
     for word_addr in range(4):
         assert (await axi_read(dut, word_addr * 4)) == 0, f"register {word_addr} must reset to 0"
 
