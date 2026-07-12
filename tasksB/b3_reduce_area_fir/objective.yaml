@@ -1,0 +1,7 @@
+id: b3_reduce_area_fir
+base_task: t3_fir_filter_loadable
+objective:
+  type: area_reduction
+  min_pct: 30
+budget: {tokens: 250000, wall_clock_s: 2400, tool_calls: 250}
+behavior_preserving: false
