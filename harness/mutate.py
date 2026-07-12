@@ -54,6 +54,7 @@ def run_mutation(*, task_id: str, min_kill: float, seed: int) -> dict[str, Any]:
     with ThreadPoolExecutor(max_workers=6) as pool:
         results = list(pool.map(lambda mutant: _run_one(task_id, mutant), mutants))
     killed = [result for result in results if result["killed"]]
+    indeterminate = [result for result in results if result["indeterminate"]]
     survivors = [result for result in results if not result["killed"]]
     kill_rate = 100.0 if not results else (100.0 * len(killed) / len(results))
     return {
@@ -63,6 +64,7 @@ def run_mutation(*, task_id: str, min_kill: float, seed: int) -> dict[str, Any]:
         "total": len(results),
         "killed": len(killed),
         "survived": len(survivors),
+        "indeterminate": len(indeterminate),
         "kill_rate": round(kill_rate, 4),
         "survivors": survivors,
         "results": results,
@@ -82,6 +84,8 @@ def _run_one(task_id: str, mutant: Mutant) -> dict[str, Any]:
 
         stage, log = run_sim(task, mutated, work_root)
         if stage["status"] != "pass":
+            if _is_timeout(log):
+                return _result(mutant, killed=False, killed_by="sim-timeout", log=log, indeterminate=True)
             return _result(mutant, killed=True, killed_by="sim", log=log)
 
         stage, log = run_formal(task, mutated, work_root)
@@ -91,13 +95,25 @@ def _run_one(task_id: str, mutant: Mutant) -> dict[str, Any]:
         return _result(mutant, killed=False, killed_by=None, log=log)
 
 
-def _result(mutant: Mutant, *, killed: bool, killed_by: str | None, log: str) -> dict[str, Any]:
+def _is_timeout(log: str) -> bool:
+    return "TIMEOUT after" in log
+
+
+def _result(
+    mutant: Mutant,
+    *,
+    killed: bool,
+    killed_by: str | None,
+    log: str,
+    indeterminate: bool = False,
+) -> dict[str, Any]:
     return {
         "id": mutant.id,
         "operator": mutant.operator,
         "description": mutant.description,
         "killed": killed,
         "killed_by": killed_by,
+        "indeterminate": indeterminate,
     }
 
 

@@ -1,4 +1,4 @@
-from harness.mutate import run_mutation
+from harness.mutate import _is_timeout, run_mutation
 from harness.mutators import generate_mutants
 
 
@@ -70,3 +70,8 @@ endmodule
 
     assert all("rx_shreg <= '1;" not in mutant.source for mutant in mutants)
     assert all("rx_shreg <= rx_shreg;" not in mutant.source for mutant in mutants)
+
+
+def test_sim_timeout_is_detected_as_indeterminate_signal():
+    assert _is_timeout("cocotb output\nTIMEOUT after 20 seconds\n")
+    assert not _is_timeout("assertion failed")
