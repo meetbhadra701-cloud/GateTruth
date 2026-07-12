@@ -107,6 +107,14 @@ def _known_equivalent(task_id: str, mutant: Mutant) -> bool:
         # rx_shreg is seven bits wide and rx_data is emitted only after eight
         # incoming shifts, so its value at chip-select is fully overwritten.
         return "rx_shreg <= '1;" in mutant.source or "rx_shreg <= rx_shreg;" in mutant.source
+    if task_id == "t2_priority_interrupt_controller":
+        # idx is overwritten for every valid interrupt and is unobservable when
+        # irq_valid is false, so its comb initializer cannot affect a port.
+        return "idx = ~('0);" in mutant.source
+    if task_id == "t2_round_robin_arbiter":
+        # gidx is consumed only when a grant exists; in that case the grant
+        # scan always overwrites this initializer before ptr uses it.
+        return "gidx = ~('0);" in mutant.source
     return False
 
 
@@ -161,6 +169,9 @@ def _hold_nonblocking_assignments(source: str) -> list[str]:
             continue
         lhs = source[match.start(1) : match.end(1)].strip()
         base_lhs = lhs.split("[", 1)[0].strip()
+        rhs = source[match.start(2) : match.end(2)].strip()
+        if re.sub(r"\s+", "", rhs) == re.sub(r"\s+", "", lhs):
+            continue
         if _inside_any_span(match.start(), reset_spans) and base_lhs not in output_names:
             continue
         replacement = f"{lhs} <= {lhs};"
@@ -228,6 +239,9 @@ def _invert_blocking_assignments(source: str) -> list[str]:
     results: list[str] = []
     pattern = re.compile(r"\b([A-Za-z_]\w*(?:\s*\[[^\]]+\])?)\s*=\s*([^=;]+);")
     for match in pattern.finditer(mask):
+        line_start = mask.rfind("\n", 0, match.start()) + 1
+        if "for (" in mask[line_start : match.start()] or "for(" in mask[line_start : match.start()]:
+            continue
         lhs = source[match.start(1) : match.end(1)].strip()
         rhs = source[match.start(2) : match.end(2)].strip()
         replacement = f"{lhs} = ~({rhs});"

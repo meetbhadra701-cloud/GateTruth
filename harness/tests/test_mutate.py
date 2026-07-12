@@ -75,3 +75,18 @@ endmodule
 def test_sim_timeout_is_detected_as_indeterminate_signal():
     assert _is_timeout("cocotb output\nTIMEOUT after 20 seconds\n")
     assert not _is_timeout("assertion failed")
+
+
+def test_existing_holds_and_for_loop_initializers_are_not_mutated():
+    source = """module m;
+always_comb begin
+  for (int i = 0; i < 8; i++) out[i] = in[7-i];
+end
+always_ff @(posedge clk) out <= out;
+endmodule
+"""
+
+    mutants = generate_mutants("generic", source)
+
+    assert all("int i = ~(0)" not in mutant.source for mutant in mutants)
+    assert all(mutant.operator != "assignment_hold" for mutant in mutants)
