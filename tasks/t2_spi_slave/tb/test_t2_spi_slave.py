@@ -80,6 +80,7 @@ async def smoke_reset(dut):
     await start_clock(dut)
     await reset(dut)
     assert int(dut.miso_out.value) == 0
+    assert int(dut.rx_data.value) == 0
     assert int(dut.rx_valid.value) == 0
     assert_outputs_resolvable(dut)
 

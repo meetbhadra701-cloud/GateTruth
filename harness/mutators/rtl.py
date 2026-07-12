@@ -51,6 +51,18 @@ def generate_mutants(task_id: str, source: str) -> list[Mutant]:
                     source=mutated,
                 )
             )
+    for operator, description, mutated in _flip_constant_nonblocking_assignments(source):
+        if mutated in seen:
+            continue
+        seen.add(mutated)
+        mutants.append(
+            Mutant(
+                id=f"{task_id}-m{len(mutants):03d}",
+                operator=operator,
+                description=description,
+                source=mutated,
+            )
+        )
     for mutated in _invert_continuous_assignments(source):
         if mutated in seen:
             continue
@@ -87,7 +99,15 @@ def generate_mutants(task_id: str, source: str) -> list[Mutant]:
                 source=mutated,
             )
         )
-    return mutants
+    return [mutant for mutant in mutants if not _known_equivalent(task_id, mutant)]
+
+
+def _known_equivalent(task_id: str, mutant: Mutant) -> bool:
+    if task_id == "t2_spi_slave":
+        # rx_shreg is seven bits wide and rx_data is emitted only after eight
+        # incoming shifts, so its value at chip-select is fully overwritten.
+        return "rx_shreg <= '1;" in mutant.source or "rx_shreg <= rx_shreg;" in mutant.source
+    return False
 
 
 def _replace_once(source: str, old: str, new: str) -> str | None:
@@ -131,6 +151,8 @@ def _invert_continuous_assignments(source: str) -> list[str]:
 
 def _hold_nonblocking_assignments(source: str) -> list[str]:
     mask = _code_mask(source)
+    output_names = _output_names(mask)
+    reset_spans = _reset_spans(mask)
     results: list[str] = []
     pattern = re.compile(r"\b([A-Za-z_]\w*(?:\s*\[[^\]]+\])?)\s*<=\s*([^;]+);")
     for match in pattern.finditer(mask):
@@ -138,9 +160,67 @@ def _hold_nonblocking_assignments(source: str) -> list[str]:
         if "default:" in mask[line_start : match.start()]:
             continue
         lhs = source[match.start(1) : match.end(1)].strip()
+        base_lhs = lhs.split("[", 1)[0].strip()
+        if _inside_any_span(match.start(), reset_spans) and base_lhs not in output_names:
+            continue
         replacement = f"{lhs} <= {lhs};"
         results.append(source[: match.start()] + replacement + source[match.end() :])
     return results
+
+
+def _flip_constant_nonblocking_assignments(source: str) -> list[tuple[str, str, str]]:
+    mask = _code_mask(source)
+    output_names = _output_names(mask)
+    reset_spans = _reset_spans(mask)
+    results: list[tuple[str, str, str]] = []
+    pattern = re.compile(r"\b([A-Za-z_]\w*(?:\s*\[[^\]]+\])?)\s*<=\s*'(0|1);")
+    for match in pattern.finditer(mask):
+        lhs = source[match.start(1) : match.end(1)].strip()
+        base_lhs = lhs.split("[", 1)[0].strip()
+        if _inside_any_span(match.start(), reset_spans) and base_lhs not in output_names:
+            continue
+        old_bit = match.group(2)
+        new_bit = "1" if old_bit == "0" else "0"
+        replacement = f"{lhs} <= '{new_bit};"
+        description = "zero assignment becomes all ones" if old_bit == "0" else "all-ones assignment becomes zero"
+        results.append(
+            (
+                "assignment_deletion",
+                description,
+                source[: match.start()] + replacement + source[match.end() :],
+            )
+        )
+    return results
+
+
+def _output_names(mask: str) -> set[str]:
+    pattern = re.compile(
+        r"\boutput\s+(?:(?:logic|wire|reg)\s+)?(?:signed\s+)?(?:\[[^\]]+\]\s*)?([A-Za-z_]\w*)"
+    )
+    return {match.group(1) for match in pattern.finditer(mask)}
+
+
+def _reset_spans(mask: str) -> list[tuple[int, int]]:
+    spans: list[tuple[int, int]] = []
+    pattern = re.compile(r"\bif\s*\(\s*!?rst\s*\)\s*(begin)?")
+    for match in pattern.finditer(mask):
+        if match.group(1) is None:
+            end = mask.find(";", match.end())
+            spans.append((match.start(), len(mask) if end < 0 else end + 1))
+            continue
+        depth = 1
+        end = match.end()
+        for token in re.finditer(r"\b(begin|end)\b", mask[match.end() :]):
+            depth += 1 if token.group(1) == "begin" else -1
+            if depth == 0:
+                end = match.end() + token.end()
+                break
+        spans.append((match.start(), end))
+    return spans
+
+
+def _inside_any_span(position: int, spans: list[tuple[int, int]]) -> bool:
+    return any(start <= position < end for start, end in spans)
 
 
 def _invert_blocking_assignments(source: str) -> list[str]:
@@ -233,8 +313,6 @@ def _generic_regex_specs() -> list[tuple[str, str, str, str]]:
         ("reset_polarity_flip", "active-low reset condition inverted", r"\bif\s*\(\s*!rst\s*\)", "if (rst)"),
         ("dropped_enable", "enable condition inverted", r"\bif\s*\(\s*en\s*\)", "if (!en)"),
         ("dropped_enable", "active-low enable condition inverted", r"\bif\s*\(\s*!en\s*\)", "if (en)"),
-        ("assignment_deletion", "zero assignment becomes all ones", r"<=\s*'0;", "<= '1;"),
-        ("assignment_deletion", "all-ones assignment becomes zero", r"<=\s*'1;", "<= '0;"),
     ]
 
 
