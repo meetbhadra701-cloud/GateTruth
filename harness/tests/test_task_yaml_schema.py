@@ -7,6 +7,7 @@ from harness.schemas.task_yaml import TaskYaml, load_task_yaml, parse_task_yaml_
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TOY_TASK_YAML = REPO_ROOT / "harness" / "tests" / "fixtures" / "toy_task" / "task.yaml"
+TEST_CANARY = "SILICONBENCH-" + "CANARY-AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"
 
 
 def test_toy_task_yaml_loads():
@@ -33,10 +34,10 @@ def test_weights_must_all_be_one():
         formal: false
         route_t3: false
         weights: {area: 1, delay: 2, power: 1}
-        canary: "SILICONBENCH-CANARY-11111111-2222-3333-4444-555555555555"
+        canary: "{CANARY}"
         ref_review: PENDING
         hidden_review: PENDING
-        """
+        """.replace("{CANARY}", TEST_CANARY)
     )
 
     with pytest.raises(ValidationError, match="weights"):
@@ -60,10 +61,10 @@ def test_signed_reviews_allowed_for_official_runs():
         formal: true
         route_t3: false
         weights: {area: 1, delay: 1, power: 1}
-        canary: "SILICONBENCH-CANARY-AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"
+        canary: "{CANARY}"
         ref_review: SIGNED-OFF-BY-MEET-2026-07-08
         hidden_review: SIGNED-OFF-BY-MEET-2026-07-08
-        """
+        """.replace("{CANARY}", TEST_CANARY)
     )
     task = TaskYaml.model_validate(payload)
 
