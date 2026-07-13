@@ -8,14 +8,15 @@ import sys
 from pathlib import Path
 
 from harness.agentb import run_agent_task
+from harness.evalmodel import eval_model, task_ids_for_tier
 from harness.providers.anthropic import AnthropicProvider
-from harness.providers.mock import MockProvider
+from harness.providers.mock import MockCompletionProvider, MockProvider
 from harness.providers.openai import OpenAIProvider
 from harness.providers.openrouter import OpenRouterProvider
 from harness.runner import resolve_task, run_task
 from harness.trackb import run_track_b
 from harness.scoring import score_manifest
-from harness.spend import reserve_spend
+from harness.spend import SpendCapExceeded
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -47,10 +48,21 @@ def build_parser() -> argparse.ArgumentParser:
     score = sub.add_parser("score", help="print task_score from a manifest")
     score.add_argument("--manifest", required=True)
 
-    eval_model = sub.add_parser("eval-model", help="provider skeleton")
-    eval_model.add_argument("--provider", required=True)
-    eval_model.add_argument("--model", required=True)
-    eval_model.add_argument("--track", choices=["A", "B"], required=True)
+    eval_model_parser = sub.add_parser("eval-model", help="run Track A model generation")
+    selection = eval_model_parser.add_mutually_exclusive_group(required=True)
+    selection.add_argument("--tasks", help="comma-separated Track A task ids")
+    selection.add_argument("--tier", choices=["T1", "T2", "T3", "all"])
+    eval_model_parser.add_argument(
+        "--provider",
+        choices=["mock", "anthropic", "openai", "openrouter"],
+        required=True,
+    )
+    eval_model_parser.add_argument("--model", required=True)
+    eval_model_parser.add_argument("--out", required=True)
+    eval_model_parser.add_argument("--samples", type=int, default=1)
+    eval_model_parser.add_argument("--temperature", type=float, default=0.0)
+    eval_model_parser.add_argument("--official", action="store_true")
+    eval_model_parser.add_argument("--script", help="JSON list of raw completions for mock")
 
     return parser
 
@@ -112,8 +124,56 @@ def main(argv: list[str] | None = None) -> int:
         print(score_manifest(args.manifest))
         return 0
     if args.command == "eval-model":
-        reserve_spend(0.0, provider=args.provider, model=args.model)
-        print("provider skeleton only; generation not implemented in SB-003")
+        if args.samples < 1:
+            print("--samples must be at least 1", file=sys.stderr)
+            return 2
+        if args.temperature < 0:
+            print("--temperature must be nonnegative", file=sys.stderr)
+            return 2
+        if args.tasks:
+            task_ids = [task.strip() for task in args.tasks.split(",") if task.strip()]
+            if not task_ids:
+                print("--tasks must contain at least one task id", file=sys.stderr)
+                return 2
+        else:
+            task_ids = task_ids_for_tier(args.tier)
+        try:
+            if args.provider == "mock":
+                if not args.script:
+                    print("--script is required for provider mock", file=sys.stderr)
+                    return 2
+                responses = json.loads(Path(args.script).read_text(encoding="utf-8"))
+                if not isinstance(responses, list):
+                    print("mock completion script must be a JSON list", file=sys.stderr)
+                    return 2
+                provider = MockCompletionProvider(
+                    responses,
+                    model=args.model,
+                    temperature=args.temperature,
+                )
+            else:
+                providers = {
+                    "anthropic": AnthropicProvider,
+                    "openai": OpenAIProvider,
+                    "openrouter": OpenRouterProvider,
+                }
+                provider = providers[args.provider](
+                    args.model,
+                    temperature=args.temperature,
+                )
+            summary = eval_model(
+                task_ids,
+                provider,
+                out_dir=args.out,
+                samples=args.samples,
+                official=args.official,
+            )
+        except (OSError, ValueError, SpendCapExceeded) as exc:
+            print(f"eval-model refused: {exc}", file=sys.stderr)
+            return 2
+        print(f"summary_signature={summary['signature']}")
+        print(f"aggregate_mean={summary['aggregate_mean']}")
+        print(f"cost_usd={summary['cost_usd']}")
         return 0
     raise AssertionError(f"unhandled command: {args.command}")
 

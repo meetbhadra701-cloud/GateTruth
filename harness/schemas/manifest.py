@@ -126,6 +126,9 @@ class ResultManifest(BaseModel):
     tokens_in: int = Field(ge=0)
     tokens_out: int = Field(ge=0)
     cost_usd: float = Field(ge=0)
+    prompt_version: str | None = Field(default=None, min_length=1)
+    generation_error: str | None = Field(default=None, min_length=1)
+    official_skip_reason: str | None = Field(default=None, min_length=1)
     timestamp: str = Field(min_length=1)
     signature: str = Field(pattern=SHA256_HEX_RE)
 
