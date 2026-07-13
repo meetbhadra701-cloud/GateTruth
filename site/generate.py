@@ -16,12 +16,14 @@ from typing import Any
 
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import ResultManifest, load_manifest
+from harness.schemas.manifest_b import load_agent_manifest_b
 
 CANARY_RE = re.compile(
     r"SILICONBENCH-CANARY-[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-"
     r"[0-9A-F]{4}-[0-9A-F]{12}",
     re.IGNORECASE,
 )
+SIGNED_REVIEW_RE = re.compile(r"SIGNED-OFF-BY-MEET-\d{4}-\d{2}-\d{2}")
 
 
 class SiteGenerationError(ValueError):
@@ -56,28 +58,87 @@ class LeaderboardRow:
     tasks: tuple[TaskRow, ...]
 
 
+@dataclass(frozen=True)
+class AgentRow:
+    run_id: str
+    provider: str
+    model: str
+    task_id: str
+    objective_type: str
+    objective_pass: bool
+    disqualified: bool
+    budget_exceeded: str | None
+    tokens_in: int
+    tokens_out: int
+    cost_usd: float
+    run_date: str
+    official: bool
+    signature: str
+    detail_page: str
+    sec_status: str
+    area_ratio: float | None
+    power_ratio: float | None
+    wns_delta_ns: float | None
+    stages: tuple[tuple[str, str], ...]
+
+
 def generate_site(
     results_root: str | Path = "results/eval",
     build_root: str | Path = "site/build",
+    *,
+    agent_results_root: str | Path | None = None,
+    tasks_b_root: str | Path | None = None,
 ) -> dict[str, Path]:
-    """Validate signed summaries and atomically render static leaderboard files."""
+    """Validate signed Track A/B results and atomically render static files."""
 
     results_path = Path(results_root).resolve()
     output_path = Path(build_root).resolve()
-    if not results_path.is_dir():
-        raise SiteGenerationError(f"results root does not exist: {results_path}")
+    agent_path = (
+        Path(agent_results_root).resolve()
+        if agent_results_root is not None
+        else results_path.parent / "agent"
+    )
+    task_path = (
+        Path(tasks_b_root).resolve()
+        if tasks_b_root is not None
+        else Path(__file__).resolve().parents[1] / "tasksB"
+    )
 
-    summaries = sorted(results_path.glob("**/summary.json"))
-    if not summaries:
-        raise SiteGenerationError(f"no summary.json files found under {results_path}")
+    summaries = sorted(results_path.glob("**/summary.json")) if results_path.is_dir() else []
+    agent_files = (
+        sorted(
+            path
+            for path in agent_path.glob("**/*.json")
+            if not path.name.endswith(".transcript.json")
+        )
+        if agent_path.is_dir()
+        else []
+    )
+    if not summaries and not agent_files:
+        raise SiteGenerationError(
+            f"no signed Track A or Track B results found under {results_path} and {agent_path}"
+        )
 
     rows = [_load_summary(path, results_path) for path in summaries]
     rows.sort(key=lambda row: (-row.aggregate_score, row.model.lower(), row.run_id))
+    agent_rows = [_load_agent(path, agent_path, task_path) for path in agent_files]
+    agent_rows.sort(
+        key=lambda row: (
+            not row.objective_pass,
+            row.model.lower(),
+            row.task_id,
+            row.run_id,
+        )
+    )
 
     artifacts: dict[str, str] = {
-        "index.html": _render_index(rows),
+        "index.html": _render_index(rows, agent_rows),
         "leaderboard.json": json.dumps(
-            {"schema_version": 1, "runs": [_public_row(row) for row in rows]},
+            {
+                "runs": [_public_row(row) for row in rows],
+                "schema_version": 2,
+                "track_b_runs": [_public_agent_row(row) for row in agent_rows],
+            },
             indent=2,
             sort_keys=True,
         )
@@ -85,6 +146,11 @@ def generate_site(
     }
     for row in rows:
         artifacts[row.detail_page] = _render_detail(row)
+    agent_groups: dict[str, list[AgentRow]] = {}
+    for row in agent_rows:
+        agent_groups.setdefault(row.detail_page, []).append(row)
+    for detail_page, group in sorted(agent_groups.items()):
+        artifacts[detail_page] = _render_agent_detail(group)
 
     for name, content in artifacts.items():
         if CANARY_RE.search(content):
@@ -259,6 +325,83 @@ def _load_summary(path: Path, results_root: Path) -> LeaderboardRow:
     )
 
 
+def _load_agent(path: Path, agent_root: Path, tasks_root: Path) -> AgentRow:
+    relative = path.resolve().relative_to(agent_root)
+    if len(relative.parts) != 3:
+        raise SiteGenerationError(
+            f"agent manifest must use <run>/<model>/<task>.json layout: {path}"
+        )
+    run_id, model_component, filename = relative.parts
+    if _safe_component(run_id) != run_id:
+        raise SiteGenerationError(f"unsafe Track B run name: {run_id}")
+    try:
+        manifest = load_agent_manifest_b(path)
+    except Exception as exc:
+        raise SiteGenerationError(f"invalid agent manifest {path}: {exc}") from exc
+    if filename != f"{_safe_component(manifest.task_id)}.json":
+        raise SiteGenerationError(f"agent manifest filename does not match task_id: {path}")
+    if model_component != _safe_component(manifest.model):
+        raise SiteGenerationError(f"agent manifest directory does not match model: {path}")
+    _validate_timestamp(manifest.timestamp, path)
+    official = _track_b_official(manifest.task_id, tasks_root)
+    detail_page = f"agents/{_slug(manifest.model)}--{_slug(run_id)}.html"
+    return AgentRow(
+        run_id=run_id,
+        provider=manifest.provider,
+        model=manifest.model,
+        task_id=manifest.task_id,
+        objective_type=manifest.objective_type,
+        objective_pass=manifest.objective_pass,
+        disqualified=manifest.disqualified,
+        budget_exceeded=manifest.budget_exceeded,
+        tokens_in=manifest.tokens_in,
+        tokens_out=manifest.tokens_out,
+        cost_usd=manifest.cost_usd,
+        run_date=manifest.timestamp,
+        official=official,
+        signature=manifest.signature,
+        detail_page=detail_page,
+        sec_status=manifest.sec.status,
+        area_ratio=manifest.ppa_delta.area_ratio,
+        power_ratio=manifest.ppa_delta.power_ratio,
+        wns_delta_ns=manifest.ppa_delta.wns_delta_ns,
+        stages=tuple((stage.name, stage.status) for stage in manifest.stages),
+    )
+
+
+def _track_b_official(task_id: str, tasks_root: Path) -> bool:
+    task_yaml = tasks_root / task_id / "task.yaml"
+    if not task_yaml.is_file() and task_id == "toy_taskB":
+        task_yaml = (
+            Path(__file__).resolve().parents[1]
+            / "harness"
+            / "tests"
+            / "fixtures"
+            / "toy_taskB"
+            / "task.yaml"
+        )
+    if not task_yaml.is_file():
+        raise SiteGenerationError(f"missing Track B task metadata: {task_yaml}")
+    values: dict[str, str] = {}
+    for raw_line in task_yaml.read_text(encoding="utf-8").splitlines():
+        line = raw_line.split("#", 1)[0].strip()
+        if not line or ":" not in line:
+            continue
+        key, value = (part.strip().strip('"\'') for part in line.split(":", 1))
+        if key in {"baseline_review", "tb_review"}:
+            if key in values:
+                raise SiteGenerationError(f"duplicate {key} in {task_yaml}")
+            values[key] = value
+    if set(values) != {"baseline_review", "tb_review"}:
+        raise SiteGenerationError(f"missing Track B review fields in {task_yaml}")
+    return all(SIGNED_REVIEW_RE.fullmatch(value) is not None for value in values.values())
+
+
+def _safe_component(value: str) -> str:
+    component = re.sub(r"[^A-Za-z0-9._-]+", "_", value).strip("._")
+    return component or "run"
+
+
 def _public_row(row: LeaderboardRow) -> dict[str, Any]:
     return {
         "aggregate_score": row.aggregate_score,
@@ -279,7 +422,27 @@ def _public_row(row: LeaderboardRow) -> dict[str, Any]:
     }
 
 
-def _render_index(rows: list[LeaderboardRow]) -> str:
+def _public_agent_row(row: AgentRow) -> dict[str, Any]:
+    return {
+        "badge": "OFFICIAL" if row.official else "DEV",
+        "budget_exceeded": row.budget_exceeded,
+        "cost_usd": row.cost_usd,
+        "detail_page": row.detail_page,
+        "disqualified": row.disqualified,
+        "model": row.model,
+        "objective_pass": row.objective_pass,
+        "official": row.official,
+        "provider": row.provider,
+        "run_date": row.run_date,
+        "run_id": row.run_id,
+        "signature": row.signature,
+        "task_id": row.task_id,
+        "tokens_in": row.tokens_in,
+        "tokens_out": row.tokens_out,
+    }
+
+
+def _render_index(rows: list[LeaderboardRow], agent_rows: list[AgentRow]) -> str:
     body = []
     for rank, row in enumerate(rows, 1):
         badge = "official" if row.official else "dev"
@@ -296,13 +459,38 @@ def _render_index(rows: list[LeaderboardRow]) -> str:
             f'<td><span class="badge {badge}">{"OFFICIAL" if row.official else "DEV"}</span></td>'
             "</tr>"
         )
-    table = "".join(body)
+    track_a_table = "".join(body) or '<tr><td colspan="8">No Track A results.</td></tr>'
+    agent_body = []
+    for row in agent_rows:
+        badge = "official" if row.official else "dev"
+        result = "PASS" if row.objective_pass else "FAIL"
+        result_class = "pass" if row.objective_pass else "fail"
+        budget = row.budget_exceeded or "none"
+        agent_body.append(
+            "<tr>"
+            f'<td><a href="{html.escape(row.detail_page)}">{html.escape(row.model)}</a>'
+            f'<span class="sub">{html.escape(row.provider)} / {html.escape(row.run_id)}</span></td>'
+            f"<td>{html.escape(row.task_id)}</td>"
+            f'<td><span class="chip {result_class}">{result}</span></td>'
+            f"<td>{'yes' if row.disqualified else 'no'}</td>"
+            f"<td>{html.escape(budget)}</td>"
+            f"<td>${row.cost_usd:.6f}</td>"
+            f"<td>{row.tokens_in + row.tokens_out:,}</td>"
+            f'<td><span class="badge {badge}">{"OFFICIAL" if row.official else "DEV"}</span></td>'
+            "</tr>"
+        )
+    track_b_table = "".join(agent_body) or '<tr><td colspan="8">No Track B results.</td></tr>'
     content = (
         '<header><p class="kicker">SiliconBench</p><h1>RTL model leaderboard</h1>'
         '<p class="lede">Signed PPA-aware evaluation results.</p></header>'
-        '<main><div class="table-wrap"><table><thead><tr><th>#</th><th>Model</th>'
+        '<main><section><h2>Track A (generation)</h2><div class="table-wrap"><table>'
+        '<thead><tr><th>#</th><th>Model</th>'
         '<th>Score</th><th>Passed</th><th>Cost</th><th>Tokens</th><th>Date</th>'
-        f"<th>Run</th></tr></thead><tbody>{table}</tbody></table></div></main>"
+        f"<th>Run</th></tr></thead><tbody>{track_a_table}</tbody></table></div></section>"
+        '<section><h2>Track B (agentic)</h2><div class="table-wrap"><table><thead><tr>'
+        '<th>Model</th><th>Task</th><th>Objective</th><th>Disqualified</th>'
+        '<th>Budget limit</th><th>Cost</th><th>Tokens</th><th>Run</th></tr></thead>'
+        f"<tbody>{track_b_table}</tbody></table></div></section></main>"
     )
     return _page("SiliconBench leaderboard", content)
 
@@ -338,11 +526,53 @@ def _render_detail(row: LeaderboardRow) -> str:
     return _page(f"{row.model} - SiliconBench", content)
 
 
+def _render_agent_detail(rows: list[AgentRow]) -> str:
+    first = rows[0]
+    task_rows = []
+    for row in rows:
+        chips = "".join(
+            f'<span class="chip {html.escape(status)}">{html.escape(name)}: {html.escape(status)}</span>'
+            for name, status in row.stages
+        )
+        task_rows.append(
+            "<tr>"
+            f"<td>{html.escape(row.task_id)}</td>"
+            f"<td>{html.escape(row.objective_type)}</td>"
+            f'<td><span class="chip {html.escape(row.sec_status)}">{html.escape(row.sec_status)}</span></td>'
+            f"<td>{_ratio(row.area_ratio)}</td>"
+            f"<td>{_ratio(row.power_ratio)}</td>"
+            f"<td>{_delta(row.wns_delta_ns)}</td>"
+            f'<td class="chips">{chips}</td>'
+            "</tr>"
+        )
+    badge = "official" if all(row.official for row in rows) else "dev"
+    badge_text = "OFFICIAL" if badge == "official" else "DEV"
+    content = (
+        '<nav><a href="../../index.html">&larr; Leaderboard</a></nav>'
+        f'<header><span class="badge {badge}">{badge_text}</span>'
+        f"<h1>{html.escape(first.model)}</h1>"
+        f'<p class="lede">Track B / {html.escape(first.provider)} / {html.escape(first.run_id)}</p>'
+        '</header><main><div class="table-wrap"><table><thead><tr><th>Task</th>'
+        '<th>Objective type</th><th>SEC</th><th>Area ratio</th><th>Power ratio</th>'
+        f"<th>WNS delta</th><th>Stages</th></tr></thead><tbody>{''.join(task_rows)}"
+        "</tbody></table></div></main>"
+    )
+    return _page(f"{first.model} Track B - SiliconBench", content)
+
+
+def _ratio(value: float | None) -> str:
+    return "--" if value is None else f"{value:.4f}x"
+
+
+def _delta(value: float | None) -> str:
+    return "--" if value is None else f"{value:+.4f} ns"
+
+
 def _page(title: str, content: str) -> str:
     css = """
 :root{color-scheme:light dark;--bg:#f6f7f9;--panel:#fff;--text:#17202a;--muted:#66717e;--line:#d9dee5;--link:#185abd;--good:#08783e;--warn:#9a5b00;--bad:#b42318}
 @media(prefers-color-scheme:dark){:root{--bg:#111419;--panel:#191e25;--text:#edf1f5;--muted:#a4afbb;--line:#343c47;--link:#7eb4ff;--good:#5fd492;--warn:#f2bd68;--bad:#ff8a82}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,sans-serif}header,main,nav{width:min(1180px,calc(100% - 32px));margin:0 auto}header{padding:36px 0 22px}nav{padding-top:24px}h1{font-size:30px;letter-spacing:0;margin:4px 0}.kicker{color:var(--link);font-weight:700;margin:0}.lede,.sub{color:var(--muted)}.sub{display:block;font-size:12px;margin-top:2px}a{color:var(--link);font-weight:600;text-decoration:none}a:hover{text-decoration:underline}.table-wrap{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:auto}table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--line);padding:12px 14px;text-align:left;vertical-align:top;white-space:nowrap}th{color:var(--muted);font-size:12px;text-transform:uppercase}tbody tr:last-child td{border-bottom:0}.score{font-variant-numeric:tabular-nums;font-weight:700}.badge,.chip{border:1px solid var(--line);border-radius:4px;display:inline-block;font-size:11px;font-weight:700;padding:2px 6px}.official,.pass{border-color:var(--good);color:var(--good)}.dev,.skip{border-color:var(--warn);color:var(--warn)}.fail{border-color:var(--bad);color:var(--bad)}.chips{white-space:normal}.chip{margin:0 4px 4px 0}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.metrics div{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px}.metrics span{color:var(--muted);display:block;font-size:12px}.metrics strong{font-size:20px}@media(max-width:700px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}h1{font-size:24px}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,sans-serif}header,main,nav{width:min(1180px,calc(100% - 32px));margin:0 auto}header{padding:36px 0 22px}nav{padding-top:24px}section+section{margin-top:30px}h1{font-size:30px;letter-spacing:0;margin:4px 0}h2{font-size:18px;letter-spacing:0;margin:0 0 10px}.kicker{color:var(--link);font-weight:700;margin:0}.lede,.sub{color:var(--muted)}.sub{display:block;font-size:12px;margin-top:2px}a{color:var(--link);font-weight:600;text-decoration:none}a:hover{text-decoration:underline}.table-wrap{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:auto}table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--line);padding:12px 14px;text-align:left;vertical-align:top;white-space:nowrap}th{color:var(--muted);font-size:12px;text-transform:uppercase}tbody tr:last-child td{border-bottom:0}.score{font-variant-numeric:tabular-nums;font-weight:700}.badge,.chip{border:1px solid var(--line);border-radius:4px;display:inline-block;font-size:11px;font-weight:700;padding:2px 6px}.official,.pass{border-color:var(--good);color:var(--good)}.dev,.skip{border-color:var(--warn);color:var(--warn)}.fail{border-color:var(--bad);color:var(--bad)}.chips{white-space:normal}.chip{margin:0 4px 4px 0}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.metrics div{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px}.metrics span{color:var(--muted);display:block;font-size:12px}.metrics strong{font-size:20px}@media(max-width:700px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}h1{font-size:24px}}
 """.strip()
     return (
         "<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\">"
@@ -401,10 +631,15 @@ def _slug(value: str) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--results", default="results/eval")
+    parser.add_argument("--agent-results", default="results/agent")
     parser.add_argument("--out", default="site/build")
     args = parser.parse_args(argv)
     try:
-        built = generate_site(args.results, args.out)
+        built = generate_site(
+            args.results,
+            args.out,
+            agent_results_root=args.agent_results,
+        )
     except SiteGenerationError as exc:
         parser.exit(2, f"site generation refused: {exc}\n")
     for path in built.values():

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import runpy
 import sys
 from pathlib import Path
@@ -44,7 +45,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     run_agent.add_argument("--script")
     run_agent.add_argument("--model")
-    run_agent.add_argument("--out", default="results/tmp/agent_b.json")
+    run_agent.add_argument(
+        "--run-name",
+        default="dev",
+        help="canonical result group: results/agent/<run-name>/<model>/<task>.json",
+    )
+    run_agent.add_argument("--out", help="override the canonical agent result path")
 
     score = sub.add_parser("score", help="print task_score from a manifest")
     score.add_argument("--manifest", required=True)
@@ -67,6 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     site_parser = sub.add_parser("site", help="build the static leaderboard site")
     site_parser.add_argument("--results", default="results/eval")
+    site_parser.add_argument("--agent-results", default="results/agent")
     site_parser.add_argument("--out", default="site/build")
 
     return parser
@@ -112,12 +119,17 @@ def main(argv: list[str] | None = None) -> int:
                 "openrouter": OpenRouterProvider,
             }
             provider = providers[args.provider](args.model)
+        output = Path(args.out) if args.out else _default_agent_output(
+            args.run_name,
+            str(getattr(provider, "model", "agent")),
+            args.task,
+        )
         manifest = run_agent_task(
             args.task,
             provider,
-            out=args.out,
+            out=output,
         )
-        print(Path(args.out))
+        print(output)
         print(f"task_score={manifest.task_score}")
         print(f"objective_pass={manifest.objective_pass}")
         print(f"budget_exceeded={manifest.budget_exceeded}")
@@ -184,7 +196,11 @@ def main(argv: list[str] | None = None) -> int:
         generator_path = Path(__file__).resolve().parents[1] / "site" / "generate.py"
         namespace = runpy.run_path(str(generator_path))
         try:
-            built = namespace["generate_site"](args.results, args.out)
+            built = namespace["generate_site"](
+                args.results,
+                args.out,
+                agent_results_root=args.agent_results,
+            )
         except namespace["SiteGenerationError"] as exc:
             print(f"site generation refused: {exc}", file=sys.stderr)
             return 2
@@ -192,6 +208,17 @@ def main(argv: list[str] | None = None) -> int:
             print(path)
         return 0
     raise AssertionError(f"unhandled command: {args.command}")
+
+
+def _default_agent_output(run_name: str, model: str, task_id: str) -> Path:
+    return Path("results/agent") / _path_component(run_name) / _path_component(model) / (
+        f"{_path_component(task_id)}.json"
+    )
+
+
+def _path_component(value: str) -> str:
+    component = re.sub(r"[^A-Za-z0-9._-]+", "_", value).strip("._")
+    return component or "run"
 
 
 if __name__ == "__main__":
