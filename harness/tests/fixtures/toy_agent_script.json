@@ -1,0 +1,16 @@
+[
+  {
+    "tool": "read_file",
+    "path": "spec.md"
+  },
+  {
+    "tool": "write_design",
+    "content": "module toy_trackb (\n    input logic clk,\n    input logic rst,\n    input logic a,\n    input logic b,\n    output logic y\n);\n    always_ff @(posedge clk) begin\n        if (rst) y <= 1'b0;\n        else y <= a ^ b;\n    end\nendmodule\n"
+  },
+  {
+    "tool": "sb_sim"
+  },
+  {
+    "tool": "done"
+  }
+]

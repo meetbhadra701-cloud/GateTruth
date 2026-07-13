@@ -13,6 +13,7 @@ from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import DOCKER_DIGEST_RE, SHA256_HEX_RE, Platform
 
 ObjectiveType = Literal["timing_closure", "area_reduction", "power_reduction", "add_property"]
+BudgetLimit = Literal["tokens", "wall_clock_s", "tool_calls"]
 
 
 class TrackBStage(BaseModel):
@@ -114,9 +115,20 @@ class TrackBManifest(BaseModel):
         return self
 
 
+class AgentTrackBManifest(TrackBManifest):
+    """Track B manifest enriched with agent-driver termination metadata."""
+
+    budget_exceeded: BudgetLimit | None = None
+
+
 def load_manifest_b(path: str | Path) -> TrackBManifest:
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     return TrackBManifest.model_validate(data)
+
+
+def load_agent_manifest_b(path: str | Path) -> AgentTrackBManifest:
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    return AgentTrackBManifest.model_validate(data)
 
 
 def validate_manifest_b(path: str | Path) -> None:
