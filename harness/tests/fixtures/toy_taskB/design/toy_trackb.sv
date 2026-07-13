@@ -5,12 +5,12 @@ module toy_trackb (
     input  logic b,
     output logic y
 );
-    logic keep0;
-    logic keep1;
-    logic keep2;
-    logic keep3;
-    logic keep4;
-    logic keep5;
+    (* keep = "true" *) logic keep0;
+    (* keep = "true" *) logic keep1;
+    (* keep = "true" *) logic keep2;
+    (* keep = "true" *) logic keep3;
+    (* keep = "true" *) logic keep4;
+    (* keep = "true" *) logic keep5;
 
     always_ff @(posedge clk) begin
         if (rst) begin

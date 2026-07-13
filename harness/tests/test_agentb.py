@@ -61,6 +61,8 @@ def test_agentb_tool_call_budget_scores_as_is(tmp_path, monkeypatch):
     manifest = run_agent_task("toy_taskB", MockProvider(script), out=out)
 
     assert manifest.budget_exceeded == "tool_calls"
+    assert manifest.objective_pass is False
+    assert manifest.task_score == 0.0
     assert manifest.tool_calls == 2
     assert manifest.tokens_in == 20
     assert manifest.tokens_out == 10
