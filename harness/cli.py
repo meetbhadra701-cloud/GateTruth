@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import runpy
 import sys
 from pathlib import Path
 
@@ -63,6 +64,10 @@ def build_parser() -> argparse.ArgumentParser:
     eval_model_parser.add_argument("--temperature", type=float, default=0.0)
     eval_model_parser.add_argument("--official", action="store_true")
     eval_model_parser.add_argument("--script", help="JSON list of raw completions for mock")
+
+    site_parser = sub.add_parser("site", help="build the static leaderboard site")
+    site_parser.add_argument("--results", default="results/eval")
+    site_parser.add_argument("--out", default="site/build")
 
     return parser
 
@@ -174,6 +179,17 @@ def main(argv: list[str] | None = None) -> int:
         print(f"summary_signature={summary['signature']}")
         print(f"aggregate_mean={summary['aggregate_mean']}")
         print(f"cost_usd={summary['cost_usd']}")
+        return 0
+    if args.command == "site":
+        generator_path = Path(__file__).resolve().parents[1] / "site" / "generate.py"
+        namespace = runpy.run_path(str(generator_path))
+        try:
+            built = namespace["generate_site"](args.results, args.out)
+        except namespace["SiteGenerationError"] as exc:
+            print(f"site generation refused: {exc}", file=sys.stderr)
+            return 2
+        for path in built.values():
+            print(path)
         return 0
     raise AssertionError(f"unhandled command: {args.command}")
 

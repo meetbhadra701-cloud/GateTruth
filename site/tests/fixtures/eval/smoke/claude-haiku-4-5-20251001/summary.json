@@ -1,0 +1,35 @@
+{
+  "suite_version": "v0.2",
+  "prompt_version": "track-a-rtl-v1",
+  "provider": "anthropic",
+  "model": "claude-haiku-4-5-20251001",
+  "temperature": 0.0,
+  "samples_per_task": 1,
+  "task_ids": [
+    "t1_gray_counter"
+  ],
+  "tasks": {
+    "t1_gray_counter": {
+      "scores": [
+        66.66666666666667
+      ],
+      "mean_score": 66.66666666666667,
+      "samples": [
+        {
+          "sample": 1,
+          "score": 66.66666666666667,
+          "manifest": "t1_gray_counter/sample_1.json",
+          "manifest_signature": "6e43ddeaa9f4a6dedf4b8896687e589df307b785fd1ee1ea10b5afa423bc4491"
+        }
+      ],
+      "skipped": false
+    }
+  },
+  "aggregate_mean": 66.66666666666667,
+  "tokens_in": 1948,
+  "tokens_out": 264,
+  "cost_usd": 0.003268,
+  "pre_run_estimate_usd": 0.026934,
+  "timestamp": "2026-07-13T07:25:56.265140Z",
+  "signature": "752850053ff35138f95c2881a4cab943032666636824b476ab975aaff771a6d5"
+}

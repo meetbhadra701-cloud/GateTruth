@@ -229,6 +229,7 @@ def eval_model(
         "provider": provider_name,
         "model": model,
         "temperature": temperature,
+        "official": official,
         "samples_per_task": samples,
         "task_ids": task_ids,
         "tasks": summary_tasks,
