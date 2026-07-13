@@ -105,22 +105,22 @@ def generate_site(
     )
 
     summaries = sorted(results_path.glob("**/summary.json")) if results_path.is_dir() else []
-    agent_files = (
-        sorted(
-            path
-            for path in agent_path.glob("**/*.json")
-            if not path.name.endswith(".transcript.json")
-        )
-        if agent_path.is_dir()
-        else []
-    )
-    if not summaries and not agent_files:
+    agent_json = sorted(agent_path.glob("**/*.json")) if agent_path.is_dir() else []
+    agent_summaries = [path for path in agent_json if path.name == "summary.json"]
+    agent_files = [
+        path
+        for path in agent_json
+        if path.name != "summary.json" and not path.name.endswith(".transcript.json")
+    ]
+    if not summaries and not agent_files and not agent_summaries:
         raise SiteGenerationError(
             f"no signed Track A or Track B results found under {results_path} and {agent_path}"
         )
 
     rows = [_load_summary(path, results_path) for path in summaries]
     rows.sort(key=lambda row: (-row.aggregate_score, row.model.lower(), row.run_id))
+    for path in agent_summaries:
+        _validate_agent_summary(path, agent_path)
     agent_rows = [_load_agent(path, agent_path, task_path) for path in agent_files]
     agent_rows.sort(
         key=lambda row: (
@@ -367,6 +367,55 @@ def _load_agent(path: Path, agent_root: Path, tasks_root: Path) -> AgentRow:
         wns_delta_ns=manifest.ppa_delta.wns_delta_ns,
         stages=tuple((stage.name, stage.status) for stage in manifest.stages),
     )
+
+
+def _validate_agent_summary(path: Path, agent_root: Path) -> None:
+    relative = path.resolve().relative_to(agent_root)
+    if len(relative.parts) != 3 or relative.name != "summary.json":
+        raise SiteGenerationError(
+            f"agent summary must use <run>/<model>/summary.json layout: {path}"
+        )
+    run_id, model_component, _ = relative.parts
+    if _safe_component(run_id) != run_id:
+        raise SiteGenerationError(f"unsafe Track B run name: {run_id}")
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise SiteGenerationError(f"invalid agent summary {path}: {exc}") from exc
+    if not isinstance(raw, dict):
+        raise SiteGenerationError(f"agent summary must be a JSON object: {path}")
+    signature = raw.get("signature")
+    if not isinstance(signature, str) or not re.fullmatch(r"[0-9a-f]{64}", signature):
+        raise SiteGenerationError(f"unsigned agent summary refused: {path}")
+    if signature != compute_manifest_signature(raw):
+        raise SiteGenerationError(f"tampered agent summary refused: {path}")
+    if raw.get("track") != "B":
+        raise SiteGenerationError(f"agent summary track must be B: {path}")
+    model = _text(raw, "model", path)
+    if model_component != _safe_component(model):
+        raise SiteGenerationError(f"agent summary directory does not match model: {path}")
+    task_ids = raw.get("task_ids")
+    tasks = raw.get("tasks")
+    if (
+        not isinstance(task_ids, list)
+        or not task_ids
+        or any(not isinstance(task_id, str) or not task_id for task_id in task_ids)
+        or len(task_ids) != len(set(task_ids))
+    ):
+        raise SiteGenerationError(f"agent summary task_ids must be unique strings: {path}")
+    if not isinstance(tasks, dict) or set(tasks) != set(task_ids):
+        raise SiteGenerationError(f"agent summary tasks must match task_ids: {path}")
+    for task_id in task_ids:
+        entry = tasks[task_id]
+        if not isinstance(entry, dict) or not isinstance(entry.get("skipped"), bool):
+            raise SiteGenerationError(f"invalid agent summary task entry: {task_id}")
+        if entry["skipped"]:
+            if not isinstance(entry.get("skip_reason"), str) or not entry["skip_reason"]:
+                raise SiteGenerationError(f"skipped agent task needs a reason: {task_id}")
+            continue
+        expected = f"{_safe_component(task_id)}.json"
+        if entry.get("manifest") != expected or not (path.parent / expected).is_file():
+            raise SiteGenerationError(f"agent summary manifest missing for {task_id}: {path}")
 
 
 def _track_b_official(task_id: str, tasks_root: Path) -> bool:

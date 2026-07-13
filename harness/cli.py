@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 from harness.agentb import run_agent_task
+from harness.evalagent import eval_agent, track_b_task_ids
 from harness.evalmodel import eval_model, task_ids_for_tier
 from harness.providers.anthropic import AnthropicProvider
 from harness.providers.mock import MockCompletionProvider, MockProvider
@@ -70,6 +71,20 @@ def build_parser() -> argparse.ArgumentParser:
     eval_model_parser.add_argument("--temperature", type=float, default=0.0)
     eval_model_parser.add_argument("--official", action="store_true")
     eval_model_parser.add_argument("--script", help="JSON list of raw completions for mock")
+
+    eval_agent_parser = sub.add_parser("eval-agent", help="run Track B agent evaluation")
+    agent_selection = eval_agent_parser.add_mutually_exclusive_group(required=True)
+    agent_selection.add_argument("--tasks", help="comma-separated Track B task ids")
+    agent_selection.add_argument("--all-b", action="store_true", help="run every Track B task")
+    eval_agent_parser.add_argument(
+        "--provider",
+        choices=["mock", "anthropic", "openai", "openrouter"],
+        required=True,
+    )
+    eval_agent_parser.add_argument("--model")
+    eval_agent_parser.add_argument("--out", required=True)
+    eval_agent_parser.add_argument("--official", action="store_true")
+    eval_agent_parser.add_argument("--script", help="JSON action list for each mock task")
 
     site_parser = sub.add_parser("site", help="build the static leaderboard site")
     site_parser.add_argument("--results", default="results/eval")
@@ -190,6 +205,51 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         print(f"summary_signature={summary['signature']}")
         print(f"aggregate_mean={summary['aggregate_mean']}")
+        print(f"cost_usd={summary['cost_usd']}")
+        return 0
+    if args.command == "eval-agent":
+        if args.tasks:
+            task_ids = [task.strip() for task in args.tasks.split(",") if task.strip()]
+            if not task_ids:
+                print("--tasks must contain at least one task id", file=sys.stderr)
+                return 2
+        else:
+            task_ids = track_b_task_ids()
+        try:
+            if args.provider == "mock":
+                if not args.script:
+                    print("--script is required for provider mock", file=sys.stderr)
+                    return 2
+                actions = json.loads(Path(args.script).read_text(encoding="utf-8"))
+                if not isinstance(actions, list) or not all(
+                    isinstance(action, dict) for action in actions
+                ):
+                    print("mock agent script must be a JSON object list", file=sys.stderr)
+                    return 2
+                provider = MockProvider(actions * len(task_ids))
+                if args.model:
+                    provider.model = args.model
+            else:
+                if not args.model:
+                    print("--model is required for real providers", file=sys.stderr)
+                    return 2
+                providers = {
+                    "anthropic": AnthropicProvider,
+                    "openai": OpenAIProvider,
+                    "openrouter": OpenRouterProvider,
+                }
+                provider = providers[args.provider](args.model)
+            summary = eval_agent(
+                task_ids,
+                provider,
+                out_dir=args.out,
+                official=args.official,
+            )
+        except (OSError, ValueError, SpendCapExceeded) as exc:
+            print(f"eval-agent refused: {exc}", file=sys.stderr)
+            return 2
+        print(f"summary_signature={summary['signature']}")
+        print(f"objective_met_rate={summary['objective_met_rate']}")
         print(f"cost_usd={summary['cost_usd']}")
         return 0
     if args.command == "site":
