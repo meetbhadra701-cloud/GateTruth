@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import subprocess
+import sys
 from datetime import date
 from pathlib import Path
 
@@ -133,3 +135,52 @@ def test_tampered_eval_summary_is_refused(tmp_path: Path) -> None:
             generated_date=date(2026, 1, 2),
             git_sha="abc123def456",
         )
+
+
+def test_script_entrypoint_bootstraps_repo_imports(tmp_path: Path) -> None:
+    tasks, refs, mutations, evaluations = _build_fixture(tmp_path)
+    output = tmp_path / "cli-output"
+    script = REPO_ROOT / "paper" / "data" / "generate_tables.py"
+    preserved = {"PATH", "PATHEXT", "SYSTEMROOT", "WINDIR", "COMSPEC", "HOME", "TMP", "TEMP"}
+    clean_env = {
+        key: value for key, value in os.environ.items() if key.upper() in preserved
+    }
+    clean_env["PYTHONNOUSERSITE"] = "1"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--out",
+            str(output),
+            "--tasks-root",
+            str(tasks),
+            "--refs-dir",
+            str(refs),
+            "--from-dir",
+            str(mutations),
+            "--eval-dir",
+            str(evaluations),
+            "--date",
+            "2026-01-02",
+        ],
+        cwd=tmp_path,
+        env=clean_env,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=30,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert sorted(path.name for path in output.iterdir()) == [
+        "eval_table.md",
+        "eval_table.tex",
+        "mutation_table.md",
+        "mutation_table.tex",
+        "tasks_table.md",
+        "tasks_table.tex",
+    ]
+    assert "| mock | model-one | 1 | 12.50 | 125 | 0.001250 |" in (
+        output / "eval_table.md"
+    ).read_text(encoding="utf-8")

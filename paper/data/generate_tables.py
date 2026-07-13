@@ -6,16 +6,19 @@ import argparse
 import json
 import math
 import subprocess
+import sys
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
-from harness.schemas.canonical_json import compute_manifest_signature
-from harness.schemas.manifest import load_manifest
-from harness.schemas.task_yaml import load_task_yaml
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from harness.schemas.canonical_json import compute_manifest_signature  # noqa: E402
+from harness.schemas.manifest import load_manifest  # noqa: E402
+from harness.schemas.task_yaml import load_task_yaml  # noqa: E402
 
 
 class TableDataError(ValueError):
