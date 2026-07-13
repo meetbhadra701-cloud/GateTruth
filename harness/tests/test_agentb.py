@@ -5,6 +5,8 @@ from pathlib import Path
 
 from harness import agentb
 from harness.agentb import Budget, run_agent_task
+from harness.providers import anthropic as anthropic_module
+from harness.providers.anthropic import AnthropicProvider
 from harness.providers.mock import MockProvider
 from harness.schemas.manifest_b import load_agent_manifest_b
 
@@ -91,3 +93,29 @@ def test_agentb_rejects_immutable_and_escape_actions_but_continues(tmp_path):
     assert transcript[1]["observation"]["status"] == "rejected"
     assert "escapes the sandbox" in transcript[1]["observation"]["error"]
     assert transcript[2]["observation"]["status"] == "ok"
+
+def test_agentb_spend_cap_abort_is_scored_as_is(tmp_path, monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "unit-test-key")
+    monkeypatch.setenv("SILICONBENCH_SPEND_CAP_USD", "0.01")
+
+    def huge_usage_response(*args, **kwargs):
+        return {
+            "content": [{"type": "text", "text": '{"tool":"done"}'}],
+            "usage": {"input_tokens": 1_000_000, "output_tokens": 1},
+        }
+
+    monkeypatch.setattr(anthropic_module, "post_json", huge_usage_response)
+    provider = AnthropicProvider(
+        "claude-haiku-4-5-20251001",
+        spend_path=tmp_path / "spend.json",
+    )
+    out = tmp_path / "spend_cap.json"
+    manifest = run_agent_task("toy_taskB", provider, out=out)
+
+    assert manifest.budget_exceeded == "spend_cap"
+    assert manifest.objective_pass is False
+    assert manifest.task_score == 0.0
+    assert manifest.tool_calls == 0
+    assert manifest.tokens_in == 1_000_000
+    assert manifest.cost_usd > 1.0
+    assert out.exists()

@@ -1,0 +1,42 @@
+"""Small JSON-over-HTTP helper that never includes request headers in errors."""
+
+from __future__ import annotations
+
+import json
+from typing import Any
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
+
+
+class ProviderHTTPError(RuntimeError):
+    """Sanitized provider transport or response error."""
+
+
+def post_json(
+    url: str,
+    *,
+    headers: dict[str, str],
+    payload: dict[str, Any],
+    timeout_s: float = 60.0,
+) -> dict[str, Any]:
+    request = Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers=headers,
+        method="POST",
+    )
+    try:
+        with urlopen(request, timeout=timeout_s) as response:
+            raw = response.read()
+    except HTTPError as exc:
+        exc.read()
+        raise ProviderHTTPError(f"provider HTTP {exc.code}") from exc
+    except URLError as exc:
+        raise ProviderHTTPError(f"provider transport error: {exc.reason}") from exc
+    try:
+        data = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ProviderHTTPError("provider returned invalid JSON") from exc
+    if not isinstance(data, dict):
+        raise ProviderHTTPError("provider response must be a JSON object")
+    return data

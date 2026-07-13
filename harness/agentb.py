@@ -17,9 +17,10 @@ from harness.providers import GenParams, ProviderAdapter
 from harness.runner import TaskPackage, run_lint, run_sim
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest_b import AgentTrackBManifest
+from harness.spend import SpendCapExceeded
 from harness.trackb import resolve_track_b_task, run_track_b, single_sv_file
 
-BudgetLimit = Literal["tokens", "wall_clock_s", "tool_calls"]
+BudgetLimit = Literal["tokens", "wall_clock_s", "tool_calls", "spend_cap"]
 ACTION_TO_KEYS = {
     "read_file": {"tool", "path"},
     "write_design": {"tool", "content"},
@@ -82,11 +83,23 @@ def run_agent_task(
             params = GenParams(
                 model=str(getattr(provider, "model", "agent")),
                 temperature=float(getattr(provider, "temperature", 0.0)),
-                max_tokens=max(budget.tokens - _token_total(provider), 0),
+                max_tokens=max(budget.tokens - _token_total(provider), 1),
                 seed=0,
             )
             try:
                 raw_action = provider.generate(prompt, ACTION_PROTOCOL, params)
+            except SpendCapExceeded as exc:
+                budget_exceeded = "spend_cap"
+                transcript.append(
+                    {
+                        "action": None,
+                        "observation": {
+                            "status": "budget_exceeded",
+                            "error": str(exc),
+                        },
+                    }
+                )
+                break
             except Exception as exc:
                 transcript.append(
                     {

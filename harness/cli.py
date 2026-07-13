@@ -8,7 +8,10 @@ import sys
 from pathlib import Path
 
 from harness.agentb import run_agent_task
+from harness.providers.anthropic import AnthropicProvider
 from harness.providers.mock import MockProvider
+from harness.providers.openai import OpenAIProvider
+from harness.providers.openrouter import OpenRouterProvider
 from harness.runner import resolve_task, run_task
 from harness.trackb import run_track_b
 from harness.scoring import score_manifest
@@ -32,8 +35,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     run_agent = sub.add_parser("run-agent", help="run a Track B agent")
     run_agent.add_argument("--task", required=True)
-    run_agent.add_argument("--provider", choices=["mock"], required=True)
-    run_agent.add_argument("--script", required=True)
+    run_agent.add_argument(
+        "--provider",
+        choices=["mock", "anthropic", "openai", "openrouter"],
+        required=True,
+    )
+    run_agent.add_argument("--script")
+    run_agent.add_argument("--model")
     run_agent.add_argument("--out", default="results/tmp/agent_b.json")
 
     score = sub.add_parser("score", help="print task_score from a manifest")
@@ -68,19 +76,37 @@ def main(argv: list[str] | None = None) -> int:
         print(f"disqualified={manifest.disqualified}")
         return 0
     if args.command == "run-agent":
-        script = json.loads(Path(args.script).read_text(encoding="utf-8"))
-        if not isinstance(script, list):
-            print("mock script must be a JSON list", file=sys.stderr)
-            return 2
+        if args.provider == "mock":
+            if not args.script:
+                print("--script is required for provider mock", file=sys.stderr)
+                return 2
+            script = json.loads(Path(args.script).read_text(encoding="utf-8"))
+            if not isinstance(script, list):
+                print("mock script must be a JSON list", file=sys.stderr)
+                return 2
+            provider = MockProvider(script)
+        else:
+            if not args.model:
+                print("--model is required for real providers", file=sys.stderr)
+                return 2
+            providers = {
+                "anthropic": AnthropicProvider,
+                "openai": OpenAIProvider,
+                "openrouter": OpenRouterProvider,
+            }
+            provider = providers[args.provider](args.model)
         manifest = run_agent_task(
             args.task,
-            MockProvider(script),
+            provider,
             out=args.out,
         )
         print(Path(args.out))
         print(f"task_score={manifest.task_score}")
         print(f"objective_pass={manifest.objective_pass}")
         print(f"budget_exceeded={manifest.budget_exceeded}")
+        print(f"tokens_in={manifest.tokens_in}")
+        print(f"tokens_out={manifest.tokens_out}")
+        print(f"cost_usd={manifest.cost_usd}")
         return 0
     if args.command == "score":
         print(score_manifest(args.manifest))

@@ -1,4 +1,4 @@
-﻿__pycache__/
+__pycache__/
 *.py[cod]
 .pytest_cache/
 .ruff_cache/
@@ -11,6 +11,7 @@ build/
 results/logs/
 results/tmp/
 results/refs/
+results/spend.json
 *.log
 .DS_Store
 Thumbs.db

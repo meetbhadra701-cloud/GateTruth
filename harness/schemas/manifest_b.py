@@ -13,7 +13,7 @@ from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import DOCKER_DIGEST_RE, SHA256_HEX_RE, Platform
 
 ObjectiveType = Literal["timing_closure", "area_reduction", "power_reduction", "add_property"]
-BudgetLimit = Literal["tokens", "wall_clock_s", "tool_calls"]
+BudgetLimit = Literal["tokens", "wall_clock_s", "tool_calls", "spend_cap"]
 
 
 class TrackBStage(BaseModel):
