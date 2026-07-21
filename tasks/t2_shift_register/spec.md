@@ -9,8 +9,11 @@
 
 ## Overview
 
-A `WIDTH`-bit register supporting synchronous parallel load, left shift, and right shift, with a
-serial input/output pair for each direction. Tier-2 (T2) task, single clock.
+A `WIDTH`-bit register supporting synchronous parallel load, left shift, and right shift. A single
+shared serial input/output pair (`serial_in`, `serial_out`) serves both directions, with `dir`
+selecting which: on a left shift `serial_in` enters the LSB and `serial_out` is the shifted-out MSB;
+on a right shift `serial_in` enters the MSB and `serial_out` is the shifted-out LSB (see the port
+table and shift-behavior rules below). Tier-2 (T2) task, single clock.
 
 ## Parameters
 
