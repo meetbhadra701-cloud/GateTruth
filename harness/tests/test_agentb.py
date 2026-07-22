@@ -4,7 +4,8 @@ import json
 from pathlib import Path
 
 from harness import agentb
-from harness.agentb import Budget, run_agent_task
+from harness.agentb import PER_CALL_MAX_OUTPUT_TOKENS, Budget, run_agent_task
+from harness.providers import GenParams
 from harness.providers import anthropic as anthropic_module
 from harness.providers.anthropic import AnthropicProvider
 from harness.providers.mock import MockProvider
@@ -16,6 +17,17 @@ SOLUTION = Path("harness/tests/fixtures/toy_taskB_solution/toy_trackb.sv")
 
 def load_script() -> list[dict]:
     return json.loads(SCRIPT.read_text(encoding="utf-8"))
+
+
+class RecordingMockProvider(MockProvider):
+    def __init__(self, *, initial_tokens: int = 0) -> None:
+        super().__init__([{"tool": "done"}], tokens_in_per_call=0, tokens_out_per_call=0)
+        self._tokens_in = initial_tokens
+        self.params: list[GenParams] = []
+
+    def generate(self, spec: str, interface: str, params: GenParams) -> str:
+        self.params.append(params)
+        return super().generate(spec, interface, params)
 
 
 def test_agentb_mock_solution_passes_objective(tmp_path):
@@ -70,6 +82,39 @@ def test_agentb_tool_call_budget_scores_as_is(tmp_path, monkeypatch):
     assert manifest.tokens_out == 10
     assert out.exists()
     assert manifest.stages
+
+
+def test_agentb_clamps_per_call_output_without_changing_episode_budget(
+    tmp_path,
+    monkeypatch,
+):
+    episode_tokens = 250_000
+    monkeypatch.setattr(
+        agentb,
+        "load_budget",
+        lambda _path: Budget(
+            tokens=episode_tokens,
+            wall_clock_s=60,
+            tool_calls=2,
+        ),
+    )
+
+    fresh = RecordingMockProvider()
+    run_agent_task("toy_taskB", fresh, out=tmp_path / "fresh.json")
+
+    remaining_tokens = 100
+    near_exhausted = RecordingMockProvider(
+        initial_tokens=episode_tokens - remaining_tokens
+    )
+    run_agent_task(
+        "toy_taskB",
+        near_exhausted,
+        out=tmp_path / "near-exhausted.json",
+    )
+
+    assert fresh.params[0].max_tokens == PER_CALL_MAX_OUTPUT_TOKENS
+    assert fresh.params[0].max_tokens != episode_tokens
+    assert near_exhausted.params[0].max_tokens == remaining_tokens
 
 
 def test_agentb_rejects_immutable_and_escape_actions_but_continues(tmp_path):

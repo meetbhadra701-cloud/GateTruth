@@ -36,6 +36,7 @@ ACTION_PROTOCOL = (
     '{"tool":"write_design","content":"complete SystemVerilog"}, '
     '{"tool":"sb_lint"}, {"tool":"sb_sim"}, {"tool":"sb_synth_sta"}, {"tool":"done"}.'
 )
+PER_CALL_MAX_OUTPUT_TOKENS = 16_384
 
 
 @dataclass(frozen=True)
@@ -81,10 +82,11 @@ def run_agent_task(
                 {"task_id": task_id, "transcript": transcript},
                 separators=(",", ":"),
             )
+            remaining = max(budget.tokens - _token_total(provider), 1)
             params = GenParams(
                 model=str(getattr(provider, "model", "agent")),
                 temperature=float(getattr(provider, "temperature", 0.0)),
-                max_tokens=max(budget.tokens - _token_total(provider), 1),
+                max_tokens=min(remaining, PER_CALL_MAX_OUTPUT_TOKENS),
                 seed=0,
             )
             try:
