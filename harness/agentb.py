@@ -14,6 +14,7 @@ from typing import Any, Literal
 
 from harness.flows import FlowError, run_sta, run_synth
 from harness.providers import GenParams, ProviderAdapter
+from harness.providers._http import ProviderTransportError
 from harness.runner import TaskPackage, run_lint, run_sim
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import TemperatureSetting
@@ -37,6 +38,7 @@ ACTION_PROTOCOL = (
     '{"tool":"sb_lint"}, {"tool":"sb_sim"}, {"tool":"sb_synth_sta"}, {"tool":"done"}.'
 )
 PER_CALL_MAX_OUTPUT_TOKENS = 16_384
+TRANSPORT_RETRY_DELAYS_S = (0.25, 0.5)
 
 
 @dataclass(frozen=True)
@@ -90,7 +92,11 @@ def run_agent_task(
                 seed=0,
             )
             try:
-                raw_action = provider.generate(prompt, ACTION_PROTOCOL, params)
+                raw_action = _generate_with_transport_retry(
+                    provider,
+                    prompt,
+                    params,
+                )
             except SpendCapExceeded as exc:
                 budget_exceeded = "spend_cap"
                 transcript.append(
@@ -175,6 +181,21 @@ def run_agent_task(
             encoding="utf-8",
         )
         return manifest
+
+
+def _generate_with_transport_retry(
+    provider: ProviderAdapter,
+    prompt: str,
+    params: GenParams,
+) -> str:
+    for attempt in range(len(TRANSPORT_RETRY_DELAYS_S) + 1):
+        try:
+            return provider.generate(prompt, ACTION_PROTOCOL, params)
+        except ProviderTransportError:
+            if attempt == len(TRANSPORT_RETRY_DELAYS_S):
+                raise
+            time.sleep(TRANSPORT_RETRY_DELAYS_S[attempt])
+    raise AssertionError("transport retry loop did not return or raise")
 
 
 def _recorded_temperature(provider: ProviderAdapter) -> TemperatureSetting:

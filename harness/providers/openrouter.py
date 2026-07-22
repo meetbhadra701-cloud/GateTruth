@@ -7,7 +7,7 @@ from typing import Any
 
 from harness.providers import GenParams
 from harness.providers._base import PricedProvider, require_int, require_mapping
-from harness.providers._http import post_json
+from harness.providers._http import ProviderHTTPError, post_json
 from harness.spend import DEFAULT_SPEND_PATH
 
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -39,14 +39,18 @@ class OpenRouterProvider(PricedProvider):
         }
         if params.seed is not None:
             payload["seed"] = params.seed
-        response = post_json(
-            API_URL,
-            headers={
-                "content-type": "application/json",
-                "authorization": f"Bearer {key}",
-            },
-            payload=payload,
-        )
+        try:
+            response = post_json(
+                API_URL,
+                headers={
+                    "content-type": "application/json",
+                    "authorization": f"Bearer {key}",
+                },
+                payload=payload,
+            )
+        except ProviderHTTPError:
+            self.release_call(reserved_usd=reserved)
+            raise
         choices = response.get("choices")
         if not isinstance(choices, list) or not choices:
             raise ValueError("OpenRouter response choices must be a nonempty list")

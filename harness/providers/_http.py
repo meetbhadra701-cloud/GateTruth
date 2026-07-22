@@ -12,6 +12,10 @@ class ProviderHTTPError(RuntimeError):
     """Sanitized provider transport or response error."""
 
 
+class ProviderTransportError(ProviderHTTPError):
+    """Retryable provider connection or read-timeout failure."""
+
+
 def post_json(
     url: str,
     *,
@@ -32,7 +36,11 @@ def post_json(
         exc.read()
         raise ProviderHTTPError(f"provider HTTP {exc.code}") from exc
     except URLError as exc:
-        raise ProviderHTTPError(f"provider transport error: {exc.reason}") from exc
+        raise ProviderTransportError(
+            f"provider transport error: {exc.reason}"
+        ) from exc
+    except TimeoutError as exc:
+        raise ProviderTransportError("provider transport error: timed out") from exc
     try:
         data = json.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:

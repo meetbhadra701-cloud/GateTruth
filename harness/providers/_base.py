@@ -102,6 +102,17 @@ class PricedProvider:
         )
         return actual
 
+    def release_call(self, *, reserved_usd: float) -> None:
+        """Release a failed request's reservation without recording API usage."""
+
+        settle_spend_reservation(
+            reserved_usd,
+            0.0,
+            provider=self.name,
+            model=self.model,
+            path=self.spend_path,
+        )
+
 
 def require_mapping(value: Any, name: str) -> dict[str, Any]:
     if not isinstance(value, dict):

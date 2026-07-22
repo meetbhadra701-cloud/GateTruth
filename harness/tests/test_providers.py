@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from io import BytesIO
 from typing import Any
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 
 import pytest
 
@@ -228,3 +228,17 @@ def test_http_error_does_not_echo_response_body(monkeypatch):
         )
     assert str(caught.value) == "provider HTTP 401"
     assert secret not in str(caught.value)
+
+
+@pytest.mark.parametrize("failure", [URLError("offline"), TimeoutError()])
+def test_transport_failures_are_classified_retryable(monkeypatch, failure):
+    def fake_urlopen(*args, **kwargs):
+        raise failure
+
+    monkeypatch.setattr(http_module, "urlopen", fake_urlopen)
+    with pytest.raises(http_module.ProviderTransportError):
+        http_module.post_json(
+            "https://provider.invalid",
+            headers={},
+            payload={"prompt": "hello"},
+        )

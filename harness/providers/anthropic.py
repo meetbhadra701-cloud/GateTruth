@@ -7,7 +7,7 @@ from typing import Any
 
 from harness.providers import GenParams
 from harness.providers._base import PricedProvider, require_int, require_mapping
-from harness.providers._http import post_json
+from harness.providers._http import ProviderHTTPError, post_json
 from harness.providers.pricing import supports_temperature
 from harness.spend import DEFAULT_SPEND_PATH
 
@@ -37,15 +37,19 @@ class AnthropicProvider(PricedProvider):
         }
         if supports_temperature(self.name, self.model):
             payload["temperature"] = params.temperature
-        response = post_json(
-            API_URL,
-            headers={
-                "content-type": "application/json",
-                "x-api-key": key,
-                "anthropic-version": "2023-06-01",
-            },
-            payload=payload,
-        )
+        try:
+            response = post_json(
+                API_URL,
+                headers={
+                    "content-type": "application/json",
+                    "x-api-key": key,
+                    "anthropic-version": "2023-06-01",
+                },
+                payload=payload,
+            )
+        except ProviderHTTPError:
+            self.release_call(reserved_usd=reserved)
+            raise
         content = response.get("content")
         if not isinstance(content, list):
             raise ValueError("Anthropic response content must be a list")

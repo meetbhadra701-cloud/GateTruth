@@ -7,9 +7,11 @@ from harness import agentb
 from harness.agentb import PER_CALL_MAX_OUTPUT_TOKENS, Budget, run_agent_task
 from harness.providers import GenParams
 from harness.providers import anthropic as anthropic_module
+from harness.providers._http import ProviderHTTPError, ProviderTransportError
 from harness.providers.anthropic import AnthropicProvider
 from harness.providers.mock import MockProvider
 from harness.schemas.manifest_b import load_agent_manifest_b
+from harness.spend import load_spend
 
 SCRIPT = Path("harness/tests/fixtures/toy_agent_script.json")
 SOLUTION = Path("harness/tests/fixtures/toy_taskB_solution/toy_trackb.sv")
@@ -117,6 +119,112 @@ def test_agentb_clamps_per_call_output_without_changing_episode_budget(
     assert near_exhausted.params[0].max_tokens == remaining_tokens
 
 
+def test_agentb_retries_transport_then_completes_without_leaking_spend(
+    tmp_path,
+    monkeypatch,
+):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "unit-test-key")
+    attempts = 0
+    delays: list[float] = []
+
+    def flaky_post(*args, **kwargs):
+        nonlocal attempts
+        attempts += 1
+        if attempts < 3:
+            raise ProviderTransportError("provider transport error: timed out")
+        return {
+            "content": [{"type": "text", "text": '{"tool":"done"}'}],
+            "usage": {"input_tokens": 10, "output_tokens": 5},
+        }
+
+    monkeypatch.setattr(anthropic_module, "post_json", flaky_post)
+    monkeypatch.setattr(agentb.time, "sleep", delays.append)
+    spend_path = tmp_path / "spend.json"
+    provider = AnthropicProvider(
+        "claude-haiku-4-5-20251001",
+        spend_path=spend_path,
+    )
+
+    manifest = run_agent_task("toy_taskB", provider, out=tmp_path / "retry.json")
+    spend = load_spend(spend_path)
+
+    assert attempts == 3
+    assert delays == list(agentb.TRANSPORT_RETRY_DELAYS_S)
+    assert manifest.tool_calls == 1
+    assert manifest.tokens_in == 10
+    assert manifest.tokens_out == 5
+    assert manifest.cost_usd == provider.price.cost(10, 5)
+    assert spend["total_usd"] == manifest.cost_usd
+    assert all("reservation" not in run for run in spend["runs"])
+
+
+def test_agentb_exhausted_transport_retries_terminate_once(
+    tmp_path,
+    monkeypatch,
+):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "unit-test-key")
+    attempts = 0
+
+    def failed_post(*args, **kwargs):
+        nonlocal attempts
+        attempts += 1
+        raise ProviderTransportError("provider transport error: offline")
+
+    monkeypatch.setattr(anthropic_module, "post_json", failed_post)
+    monkeypatch.setattr(agentb.time, "sleep", lambda _seconds: None)
+    spend_path = tmp_path / "spend.json"
+    provider = AnthropicProvider(
+        "claude-haiku-4-5-20251001",
+        spend_path=spend_path,
+    )
+    out = tmp_path / "exhausted.json"
+
+    manifest = run_agent_task("toy_taskB", provider, out=out)
+    transcript = json.loads(
+        out.with_suffix(".transcript.json").read_text(encoding="utf-8")
+    )
+    spend = load_spend(spend_path)
+
+    assert attempts == 3
+    assert manifest.tool_calls == 0
+    assert len(transcript) == 1
+    assert transcript[0]["observation"]["status"] == "provider_error"
+    assert spend["total_usd"] == 0.0
+    assert all("reservation" not in run for run in spend["runs"])
+
+
+def test_agentb_does_not_retry_http_status_errors(tmp_path, monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "unit-test-key")
+    attempts = 0
+    delays: list[float] = []
+
+    def bad_request(*args, **kwargs):
+        nonlocal attempts
+        attempts += 1
+        raise ProviderHTTPError("provider HTTP 400")
+
+    monkeypatch.setattr(anthropic_module, "post_json", bad_request)
+    monkeypatch.setattr(agentb.time, "sleep", delays.append)
+    spend_path = tmp_path / "spend.json"
+    provider = AnthropicProvider(
+        "claude-haiku-4-5-20251001",
+        spend_path=spend_path,
+    )
+
+    manifest = run_agent_task(
+        "toy_taskB",
+        provider,
+        out=tmp_path / "http-error.json",
+    )
+    spend = load_spend(spend_path)
+
+    assert attempts == 1
+    assert delays == []
+    assert manifest.tool_calls == 0
+    assert spend["total_usd"] == 0.0
+    assert all("reservation" not in run for run in spend["runs"])
+
+
 def test_agentb_rejects_immutable_and_escape_actions_but_continues(tmp_path):
     script = [
         {
@@ -138,6 +246,7 @@ def test_agentb_rejects_immutable_and_escape_actions_but_continues(tmp_path):
     assert transcript[1]["observation"]["status"] == "rejected"
     assert "escapes the sandbox" in transcript[1]["observation"]["error"]
     assert transcript[2]["observation"]["status"] == "ok"
+
 
 def test_agentb_spend_cap_abort_is_scored_as_is(tmp_path, monkeypatch):
     monkeypatch.setenv("ANTHROPIC_API_KEY", "unit-test-key")
