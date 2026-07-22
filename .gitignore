@@ -11,6 +11,9 @@ build/
 results/logs/
 results/tmp/
 results/refs/
+results/eval/
+results/evalB/
+results/eval*/
 results/spend.json
 results/spend.json.lock
 results/nightly/
