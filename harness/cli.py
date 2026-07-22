@@ -10,8 +10,8 @@ import sys
 from pathlib import Path
 
 from harness.agentb import run_agent_task
-from harness.evalagent import eval_agent, track_b_task_ids
-from harness.evalmodel import eval_model, task_ids_for_tier
+from harness.evalagent import estimate_agent_cost, eval_agent, track_b_task_ids
+from harness.evalmodel import estimate_model_cost, eval_model, task_ids_for_tier
 from harness.providers.anthropic import AnthropicProvider
 from harness.providers.mock import MockCompletionProvider, MockProvider
 from harness.providers.openai import OpenAIProvider
@@ -66,10 +66,15 @@ def build_parser() -> argparse.ArgumentParser:
         required=True,
     )
     eval_model_parser.add_argument("--model", required=True)
-    eval_model_parser.add_argument("--out", required=True)
+    eval_model_parser.add_argument("--out")
     eval_model_parser.add_argument("--samples", type=int, default=1)
     eval_model_parser.add_argument("--temperature", type=float, default=0.0)
     eval_model_parser.add_argument("--official", action="store_true")
+    eval_model_parser.add_argument(
+        "--estimate-only",
+        action="store_true",
+        help="print worst-case cost without provider calls or output files",
+    )
     eval_model_parser.add_argument("--script", help="JSON list of raw completions for mock")
 
     eval_agent_parser = sub.add_parser("eval-agent", help="run Track B agent evaluation")
@@ -82,8 +87,13 @@ def build_parser() -> argparse.ArgumentParser:
         required=True,
     )
     eval_agent_parser.add_argument("--model")
-    eval_agent_parser.add_argument("--out", required=True)
+    eval_agent_parser.add_argument("--out")
     eval_agent_parser.add_argument("--official", action="store_true")
+    eval_agent_parser.add_argument(
+        "--estimate-only",
+        action="store_true",
+        help="print worst-case cost without provider calls or output files",
+    )
     eval_agent_parser.add_argument("--script", help="JSON action list for each mock task")
 
     site_parser = sub.add_parser("site", help="build the static leaderboard site")
@@ -170,6 +180,21 @@ def main(argv: list[str] | None = None) -> int:
         else:
             task_ids = task_ids_for_tier(args.tier)
         try:
+            if args.estimate_only:
+                estimate = estimate_model_cost(
+                    task_ids,
+                    args.provider,
+                    args.model,
+                    samples=args.samples,
+                    official=args.official,
+                )
+                print("estimate_only=true")
+                print(f"tasks_requested={len(task_ids)}")
+                print(f"projected_total_usd={estimate:.6f}")
+                return 0
+            if not args.out:
+                print("--out is required unless --estimate-only is used", file=sys.stderr)
+                return 2
             if args.provider == "mock":
                 if not args.script:
                     print("--script is required for provider mock", file=sys.stderr)
@@ -216,6 +241,23 @@ def main(argv: list[str] | None = None) -> int:
         else:
             task_ids = track_b_task_ids()
         try:
+            if args.estimate_only:
+                if not args.model:
+                    print("--model is required for --estimate-only", file=sys.stderr)
+                    return 2
+                estimate = estimate_agent_cost(
+                    task_ids,
+                    args.provider,
+                    args.model,
+                    official=args.official,
+                )
+                print("estimate_only=true")
+                print(f"tasks_requested={len(task_ids)}")
+                print(f"projected_total_usd={estimate:.6f}")
+                return 0
+            if not args.out:
+                print("--out is required unless --estimate-only is used", file=sys.stderr)
+                return 2
             if args.provider == "mock":
                 if not args.script:
                     print("--script is required for provider mock", file=sys.stderr)

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-PRICING_DATE = "2026-07-13"
+PRICING_DATE = "2026-07-21"
 
 
 class UnknownModelPricing(ValueError):
@@ -25,13 +25,39 @@ class ModelPrice:
         ) / 1_000_000.0
 
 
+# Anthropic model IDs and standard API prices, verified 2026-07-21:
+# https://platform.claude.com/docs/en/about-claude/models/overview
+# https://platform.claude.com/docs/en/about-claude/pricing
+# OpenAI standard API prices, verified 2026-07-21:
+# https://developers.openai.com/api/docs/models/gpt-5
+# https://openai.com/index/introducing-gpt-5-for-developers/
+# OpenRouter list prices, verified 2026-07-21:
+# https://openrouter.ai/google/gemini-2.5-pro/api
+# https://openrouter.ai/meta-llama/llama-4-maverick/api
 PRICES: dict[tuple[str, str], ModelPrice] = {
+    ("anthropic", "claude-opus-4-8"): ModelPrice(5.0, 25.0),
+    ("anthropic", "claude-sonnet-4-6"): ModelPrice(3.0, 15.0),
+    ("anthropic", "claude-haiku-4-5"): ModelPrice(1.0, 5.0),
     ("anthropic", "claude-haiku-4-5-20251001"): ModelPrice(1.0, 5.0),
+    ("openai", "gpt-5"): ModelPrice(1.25, 10.0),
+    ("openai", "gpt-5-2025-08-07"): ModelPrice(1.25, 10.0),
     ("openai", "gpt-5-mini"): ModelPrice(0.25, 2.0),
     ("openai", "gpt-5-mini-2025-08-07"): ModelPrice(0.25, 2.0),
     ("openrouter", "anthropic/claude-haiku-4.5"): ModelPrice(1.0, 5.0),
+    ("openrouter", "google/gemini-2.5-pro"): ModelPrice(1.25, 10.0),
+    ("openrouter", "meta-llama/llama-4-maverick"): ModelPrice(0.15, 0.60),
     ("openrouter", "openai/gpt-5-mini"): ModelPrice(0.25, 2.0),
 }
+
+OFFICIAL_LEADERBOARD_MODELS: tuple[tuple[str, str], ...] = (
+    ("anthropic", "claude-opus-4-8"),
+    ("anthropic", "claude-sonnet-4-6"),
+    ("anthropic", "claude-haiku-4-5-20251001"),
+    ("openai", "gpt-5"),
+    ("openai", "gpt-5-mini"),
+    ("openrouter", "google/gemini-2.5-pro"),
+    ("openrouter", "meta-llama/llama-4-maverick"),
+)
 
 
 def price_for(provider: str, model: str) -> ModelPrice:

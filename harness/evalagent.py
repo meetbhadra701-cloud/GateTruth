@@ -63,6 +63,25 @@ def track_b_task_ids() -> list[str]:
     return sorted(path.parent.name for path in TRACKB_ROOT.glob("*/objective.yaml"))
 
 
+def estimate_agent_cost(
+    task_ids: list[str],
+    provider_name: str,
+    model: str,
+    *,
+    official: bool = False,
+) -> float:
+    """Estimate a Track B matrix from each package's frozen token budget."""
+
+    if not task_ids:
+        raise ValueError("at least one Track B task is required")
+    if len(task_ids) != len(set(task_ids)):
+        raise ValueError("Track B task ids must be unique")
+    if not provider_name or not model:
+        raise ValueError("provider and model names must be nonempty")
+    plans = [_plan_task(task_id, official=official) for task_id in task_ids]
+    return _estimate_plans_cost(plans, provider_name, model)
+
+
 def eval_agent(
     task_ids: list[str],
     provider: ProviderAdapter,
@@ -201,18 +220,28 @@ def _preflight_cost(
 ) -> tuple[float, float]:
     provider_name = str(getattr(provider, "name", provider.__class__.__name__.lower()))
     model = str(getattr(provider, "model", "agent"))
-    estimate = 0.0
-    if provider_name != "mock":
-        price = price_for(provider_name, model)
-        for plan in plans:
-            if plan.skip_reason is not None:
-                continue
-            budget = load_budget(plan.package.root / "objective.yaml")
-            # Charge the entire combined token budget at the higher output rate.
-            estimate += price.cost(0, budget.tokens)
+    estimate = _estimate_plans_cost(plans, provider_name, model)
     spend_path = Path(getattr(provider, "spend_path", DEFAULT_SPEND_PATH))
     spent = float(load_spend(spend_path).get("total_usd", 0.0))
     return estimate, max(0.0, spend_cap_from_env() - spent)
+
+
+def _estimate_plans_cost(
+    plans: list[EvalAgentPlan],
+    provider_name: str,
+    model: str,
+) -> float:
+    if provider_name == "mock":
+        return 0.0
+    price = price_for(provider_name, model)
+    estimate = 0.0
+    for plan in plans:
+        if plan.skip_reason is not None:
+            continue
+        budget = load_budget(plan.package.root / "objective.yaml")
+        # The budget is combined input/output, so reserve it at the higher rate.
+        estimate += price.cost(0, budget.tokens)
+    return estimate
 
 
 def _median_metric(manifests: list[AgentTrackBManifest], field: str) -> float | None:

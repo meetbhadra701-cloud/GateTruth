@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from harness import evalmodel
+from harness import cli, evalmodel
 from harness.evalmodel import PROMPT_VERSION, build_generation_prompt, eval_model, task_ids_for_tier
 from harness.providers.mock import MockCompletionProvider
 from harness.schemas.canonical_json import compute_manifest_signature
@@ -154,3 +154,37 @@ def test_pipeline_exception_emits_score_zero_manifest(tmp_path, monkeypatch):
     assert manifest.signature == json.loads(
         manifest_path(tmp_path, "mock-crash").read_text(encoding="utf-8")
     )["signature"]
+
+
+def test_estimate_only_prints_cost_without_provider_or_output(
+    tmp_path, monkeypatch, capsys
+):
+    constructed = 0
+
+    def forbidden_provider(*args, **kwargs):
+        nonlocal constructed
+        constructed += 1
+        raise AssertionError("estimate-only must not construct a provider")
+
+    monkeypatch.setattr(cli, "AnthropicProvider", forbidden_provider)
+    monkeypatch.chdir(tmp_path)
+
+    result = cli.main(
+        [
+            "eval-model",
+            "--tasks",
+            "toy_task",
+            "--provider",
+            "anthropic",
+            "--model",
+            "claude-haiku-4-5-20251001",
+            "--estimate-only",
+        ]
+    )
+
+    output = capsys.readouterr().out
+    projected = float(output.split("projected_total_usd=", 1)[1].splitlines()[0])
+    assert result == 0
+    assert projected > 0
+    assert constructed == 0
+    assert list(tmp_path.iterdir()) == []

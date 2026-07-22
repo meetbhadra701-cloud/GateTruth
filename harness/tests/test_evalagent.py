@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from harness import agentb, evalagent
+from harness import agentb, cli, evalagent
 from harness.agentb import provider_usage
 from harness.evalagent import eval_agent
 from harness.providers import GenParams
@@ -140,19 +140,19 @@ def test_official_skips_unsigned_task_without_provider_call(
     provider = MockProvider([{"tool": "done"}])
 
     summary = eval_agent(
-        ["b1_close_timing_mac"],
+        ["toy_taskB"],
         provider,
         out_dir=tmp_path / "official",
         official=True,
     )
 
-    row = summary["tasks"]["b1_close_timing_mac"]
+    row = summary["tasks"]["toy_taskB"]
     assert row["skipped"] is True
     assert "baseline_review=PENDING" in row["skip_reason"]
     assert "tb_review=PENDING" in row["skip_reason"]
     assert summary["tasks_attempted"] == 0
     assert provider.usage == {"tokens_in": 0, "tokens_out": 0, "cost_usd": 0.0}
-    assert not (tmp_path / "official/mock-scripted/b1_close_timing_mac.json").exists()
+    assert not (tmp_path / "official/mock-scripted/toy_taskB.json").exists()
 
 
 def test_preflight_cap_refuses_before_any_provider_call(
@@ -224,3 +224,39 @@ def test_rejected_immutable_edit_still_lands_disqualified_summary_row(
     )
     assert transcript[0]["observation"]["status"] == "rejected"
     assert "keys must be" in transcript[0]["observation"]["error"]
+
+
+def test_estimate_only_prints_budget_cost_without_provider_or_output(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    constructed = 0
+
+    def forbidden_provider(*args, **kwargs):
+        nonlocal constructed
+        constructed += 1
+        raise AssertionError("estimate-only must not construct a provider")
+
+    monkeypatch.setattr(cli, "AnthropicProvider", forbidden_provider)
+    monkeypatch.chdir(tmp_path)
+
+    result = cli.main(
+        [
+            "eval-agent",
+            "--tasks",
+            "toy_taskB",
+            "--provider",
+            "anthropic",
+            "--model",
+            "claude-haiku-4-5-20251001",
+            "--estimate-only",
+        ]
+    )
+
+    output = capsys.readouterr().out
+    projected = float(output.split("projected_total_usd=", 1)[1].splitlines()[0])
+    assert result == 0
+    assert projected > 0
+    assert constructed == 0
+    assert list(tmp_path.iterdir()) == []

@@ -90,6 +90,31 @@ def task_ids_for_tier(tier: str) -> list[str]:
     return selected
 
 
+def estimate_model_cost(
+    task_ids: list[str],
+    provider_name: str,
+    model: str,
+    *,
+    samples: int = 1,
+    official: bool = False,
+    max_tokens: int = DEFAULT_MAX_TOKENS,
+) -> float:
+    """Estimate a Track A matrix without constructing or calling a provider."""
+
+    if not task_ids:
+        raise ValueError("at least one task is required")
+    if len(task_ids) != len(set(task_ids)):
+        raise ValueError("task ids must be unique")
+    if samples < 1:
+        raise ValueError("samples must be at least 1")
+    if max_tokens < 1:
+        raise ValueError("max_tokens must be at least 1")
+    if not provider_name or not model:
+        raise ValueError("provider and model names must be nonempty")
+    plans = [_plan_task(task_id, official=official) for task_id in task_ids]
+    return _estimate_plans_cost(plans, provider_name, model, samples, max_tokens)
+
+
 def eval_model(
     task_ids: list[str],
     provider: ProviderAdapter,
@@ -268,21 +293,33 @@ def _preflight_cost(
 ) -> tuple[float, float]:
     provider_name = str(getattr(provider, "name", provider.__class__.__name__.lower()))
     model = str(getattr(provider, "model", "unknown-model"))
-    estimate = 0.0
-    if provider_name != "mock":
-        for plan in plans:
-            if plan.skip_reason is None:
-                prompt, system = build_generation_prompt(plan.task)
-                estimate += samples * worst_case_cost(
-                    provider_name,
-                    model,
-                    prompt=prompt,
-                    system=system,
-                    max_tokens=max_tokens,
-                )
+    estimate = _estimate_plans_cost(plans, provider_name, model, samples, max_tokens)
     spend_path = Path(getattr(provider, "spend_path", DEFAULT_SPEND_PATH))
     spent = float(load_spend(spend_path).get("total_usd", 0.0))
     return estimate, max(0.0, spend_cap_from_env() - spent)
+
+
+def _estimate_plans_cost(
+    plans: list[EvalPlan],
+    provider_name: str,
+    model: str,
+    samples: int,
+    max_tokens: int,
+) -> float:
+    if provider_name == "mock":
+        return 0.0
+    estimate = 0.0
+    for plan in plans:
+        if plan.skip_reason is None:
+            prompt, system = build_generation_prompt(plan.task)
+            estimate += samples * worst_case_cost(
+                provider_name,
+                model,
+                prompt=prompt,
+                system=system,
+                max_tokens=max_tokens,
+            )
+    return estimate
 
 
 def _call_once(

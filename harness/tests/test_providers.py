@@ -14,7 +14,12 @@ from harness.providers import openrouter as openrouter_module
 from harness.providers.anthropic import AnthropicProvider
 from harness.providers.openai import OpenAIProvider
 from harness.providers.openrouter import OpenRouterProvider
-from harness.providers.pricing import PRICING_DATE, UnknownModelPricing, price_for
+from harness.providers.pricing import (
+    OFFICIAL_LEADERBOARD_MODELS,
+    PRICING_DATE,
+    UnknownModelPricing,
+    price_for,
+)
 from harness.spend import SpendCapExceeded, load_spend
 
 PARAMS_ANTHROPIC = GenParams(model="claude-haiku-4-5-20251001", temperature=0.0, max_tokens=100, seed=7)
@@ -126,6 +131,14 @@ def test_pricing_table_has_expected_pinned_models():
     assert price_for("anthropic", PARAMS_ANTHROPIC.model).input_per_mtok == 1.0
     assert price_for("openai", PARAMS_OPENAI.model).output_per_mtok == 2.0
     assert price_for("openrouter", PARAMS_OPENROUTER.model).output_per_mtok == 5.0
+
+
+def test_every_official_leaderboard_model_has_pinned_positive_pricing():
+    assert len(OFFICIAL_LEADERBOARD_MODELS) == 7
+    for provider, model in OFFICIAL_LEADERBOARD_MODELS:
+        price = price_for(provider, model)
+        assert price.input_per_mtok > 0
+        assert price.output_per_mtok > 0
 
 
 def test_http_error_does_not_echo_response_body(monkeypatch):
