@@ -10,7 +10,12 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from harness.schemas.canonical_json import compute_manifest_signature
-from harness.schemas.manifest import DOCKER_DIGEST_RE, SHA256_HEX_RE, Platform
+from harness.schemas.manifest import (
+    DOCKER_DIGEST_RE,
+    SHA256_HEX_RE,
+    Platform,
+    TemperatureSetting,
+)
 
 ObjectiveType = Literal["timing_closure", "area_reduction", "power_reduction", "add_property"]
 BudgetLimit = Literal["tokens", "wall_clock_s", "tool_calls", "spend_cap"]
@@ -96,7 +101,7 @@ class TrackBManifest(BaseModel):
     wall_clock_s: float = Field(ge=0)
     provider: str = Field(min_length=1)
     model: str = Field(min_length=1)
-    temperature: float = Field(ge=0)
+    temperature: TemperatureSetting
     tokens_in: int = Field(ge=0)
     tokens_out: int = Field(ge=0)
     cost_usd: float = Field(ge=0)

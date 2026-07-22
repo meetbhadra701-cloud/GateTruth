@@ -8,6 +8,7 @@ from typing import Any
 from harness.providers import GenParams
 from harness.providers._base import PricedProvider, require_int, require_mapping
 from harness.providers._http import post_json
+from harness.providers.pricing import supports_temperature
 from harness.spend import DEFAULT_SPEND_PATH
 
 API_URL = "https://api.anthropic.com/v1/messages"
@@ -28,6 +29,14 @@ class AnthropicProvider(PricedProvider):
 
     def generate(self, spec: str, interface: str, params: GenParams) -> str:
         key, max_tokens, reserved = self.begin_call(spec, interface, params)
+        payload: dict[str, Any] = {
+            "model": self.model,
+            "max_tokens": max_tokens,
+            "system": interface,
+            "messages": [{"role": "user", "content": spec}],
+        }
+        if supports_temperature(self.name, self.model):
+            payload["temperature"] = params.temperature
         response = post_json(
             API_URL,
             headers={
@@ -35,13 +44,7 @@ class AnthropicProvider(PricedProvider):
                 "x-api-key": key,
                 "anthropic-version": "2023-06-01",
             },
-            payload={
-                "model": self.model,
-                "max_tokens": max_tokens,
-                "temperature": params.temperature,
-                "system": interface,
-                "messages": [{"role": "user", "content": spec}],
-            },
+            payload=payload,
         )
         content = response.get("content")
         if not isinstance(content, list):

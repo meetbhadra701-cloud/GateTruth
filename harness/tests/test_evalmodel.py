@@ -89,6 +89,28 @@ def test_non_code_generation_emits_valid_score_zero_manifest(tmp_path):
     assert summary["tasks"]["toy_task"]["scores"] == [0.0]
 
 
+def test_provider_default_temperature_is_recorded_in_signed_outputs(tmp_path):
+    provider = RecordingProvider(["not code"], model="claude-opus-4-8")
+    provider.name = "anthropic"
+    provider.manifest_temperature = "provider_default"
+    provider.spend_path = tmp_path / "spend.json"
+
+    summary = eval_model(["toy_task"], provider, out_dir=tmp_path / "out")
+    manifest = load_manifest(
+        manifest_path(tmp_path / "out", "claude-opus-4-8")
+    )
+
+    assert manifest.temperature == "provider_default"
+    assert summary["temperature"] == "provider_default"
+    raw_manifest = json.loads(
+        manifest_path(tmp_path / "out", "claude-opus-4-8").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert manifest.signature == compute_manifest_signature(raw_manifest)
+    assert summary["signature"] == compute_manifest_signature(summary)
+
+
 def test_official_gate_skips_unsigned_task_without_provider_call(tmp_path):
     provider = RecordingProvider([TOY_REF.read_text(encoding="utf-8")], model="mock-official")
 

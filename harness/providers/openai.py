@@ -8,6 +8,7 @@ from typing import Any
 from harness.providers import GenParams
 from harness.providers._base import PricedProvider, require_int, require_mapping
 from harness.providers._http import post_json
+from harness.providers.pricing import supports_temperature
 from harness.spend import DEFAULT_SPEND_PATH
 
 API_URL = "https://api.openai.com/v1/chat/completions"
@@ -31,12 +32,13 @@ class OpenAIProvider(PricedProvider):
         payload: dict[str, Any] = {
             "model": self.model,
             "max_completion_tokens": max_tokens,
-            "temperature": params.temperature,
             "messages": [
                 {"role": "system", "content": interface},
                 {"role": "user", "content": spec},
             ],
         }
+        if supports_temperature(self.name, self.model):
+            payload["temperature"] = params.temperature
         if params.seed is not None:
             payload["seed"] = params.seed
         response = post_json(

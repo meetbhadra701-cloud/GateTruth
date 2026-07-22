@@ -59,6 +59,23 @@ OFFICIAL_LEADERBOARD_MODELS: tuple[tuple[str, str], ...] = (
     ("openrouter", "meta-llama/llama-4-maverick"),
 )
 
+PROVIDER_DEFAULT_TEMPERATURE = "provider_default"
+OMIT_TEMPERATURE_MODELS = frozenset(
+    {
+        ("anthropic", "claude-opus-4-8"),
+        ("openai", "gpt-5"),
+        ("openai", "gpt-5-2025-08-07"),
+        ("openai", "gpt-5-mini"),
+        ("openai", "gpt-5-mini-2025-08-07"),
+    }
+)
+
+
+def supports_temperature(provider: str, model: str) -> bool:
+    """Return whether the provider/model accepts an explicit temperature field."""
+
+    return (provider, model) not in OMIT_TEMPERATURE_MODELS
+
 
 def price_for(provider: str, model: str) -> ModelPrice:
     try:

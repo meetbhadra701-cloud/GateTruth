@@ -38,6 +38,11 @@ class _TaskUsageProvider:
         self.name = str(getattr(provider, "name", provider.__class__.__name__.lower()))
         self.model = str(getattr(provider, "model", "agent"))
         self.temperature = float(getattr(provider, "temperature", 0.0))
+        self.manifest_temperature = getattr(
+            provider,
+            "manifest_temperature",
+            self.temperature,
+        )
 
     def generate(self, spec: str, interface: str, params: GenParams) -> str:
         return self._provider.generate(spec, interface, params)

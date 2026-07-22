@@ -7,7 +7,7 @@ import json
 import sys
 from pathlib import Path
 from collections.abc import Mapping
-from typing import Any, ClassVar, Literal
+from typing import Annotated, Any, ClassVar, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
@@ -15,6 +15,7 @@ from harness.schemas.canonical_json import compute_manifest_signature
 
 Platform = Literal["linux/amd64"]
 StageStatus = Literal["pass", "fail", "skip"]
+TemperatureSetting = Annotated[float, Field(ge=0)] | Literal["provider_default"]
 
 SHA256_HEX_RE = r"^[0-9a-f]{64}$"
 DOCKER_DIGEST_RE = r"^sha256:[0-9a-f]{64}$"
@@ -122,7 +123,7 @@ class ResultManifest(BaseModel):
     wall_clock_s: float = Field(ge=0)
     provider: str = Field(min_length=1)
     model: str = Field(min_length=1)
-    temperature: float = Field(ge=0)
+    temperature: TemperatureSetting
     tokens_in: int = Field(ge=0)
     tokens_out: int = Field(ge=0)
     cost_usd: float = Field(ge=0)

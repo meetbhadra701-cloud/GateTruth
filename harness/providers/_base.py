@@ -7,7 +7,13 @@ from pathlib import Path
 from typing import Any
 
 from harness.providers import GenParams
-from harness.providers.pricing import ModelPrice, price_for, worst_case_cost
+from harness.providers.pricing import (
+    PROVIDER_DEFAULT_TEMPERATURE,
+    ModelPrice,
+    price_for,
+    supports_temperature,
+    worst_case_cost,
+)
 from harness.spend import DEFAULT_SPEND_PATH, reserve_spend, settle_spend_reservation
 
 
@@ -24,6 +30,11 @@ class PricedProvider:
     ) -> None:
         self.model = model
         self.temperature = temperature
+        self.manifest_temperature: float | str = (
+            temperature
+            if supports_temperature(self.name, model)
+            else PROVIDER_DEFAULT_TEMPERATURE
+        )
         self.spend_path = Path(spend_path)
         self.price: ModelPrice = price_for(self.name, model)
         self._tokens_in = 0

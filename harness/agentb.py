@@ -16,6 +16,7 @@ from harness.flows import FlowError, run_sta, run_synth
 from harness.providers import GenParams, ProviderAdapter
 from harness.runner import TaskPackage, run_lint, run_sim
 from harness.schemas.canonical_json import compute_manifest_signature
+from harness.schemas.manifest import TemperatureSetting
 from harness.schemas.manifest_b import AgentTrackBManifest
 from harness.spend import SpendCapExceeded
 from harness.trackb import resolve_track_b_task, run_track_b, single_sv_file
@@ -151,7 +152,7 @@ def run_agent_task(
             {
                 "provider": str(getattr(provider, "name", provider.__class__.__name__.lower())),
                 "model": str(getattr(provider, "model", "agent")),
-                "temperature": float(getattr(provider, "temperature", 0.0)),
+                "temperature": _recorded_temperature(provider),
                 "tokens_in": int(usage["tokens_in"]),
                 "tokens_out": int(usage["tokens_out"]),
                 "cost_usd": float(usage["cost_usd"]),
@@ -172,6 +173,19 @@ def run_agent_task(
             encoding="utf-8",
         )
         return manifest
+
+
+def _recorded_temperature(provider: ProviderAdapter) -> TemperatureSetting:
+    requested = float(getattr(provider, "temperature", 0.0))
+    if requested < 0:
+        raise ValueError("provider temperature must be nonnegative")
+    recorded = getattr(provider, "manifest_temperature", requested)
+    if recorded == "provider_default":
+        return "provider_default"
+    value = float(recorded)
+    if value < 0:
+        raise ValueError("manifest temperature must be nonnegative")
+    return value
 
 
 def load_budget(path: Path) -> Budget:

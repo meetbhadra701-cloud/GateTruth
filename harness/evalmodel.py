@@ -15,7 +15,7 @@ from harness.providers import GenParams, ProviderAdapter
 from harness.providers.pricing import worst_case_cost
 from harness.runner import SUITE_VERSION, TaskPackage, resolve_task, run_task, runtime_docker_digest
 from harness.schemas.canonical_json import compute_manifest_signature
-from harness.schemas.manifest import ResultManifest
+from harness.schemas.manifest import ResultManifest, TemperatureSetting
 from harness.schemas.task_yaml import load_task_yaml
 from harness.spend import DEFAULT_SPEND_PATH, SpendCapExceeded, load_spend, spend_cap_from_env
 
@@ -136,11 +136,9 @@ def eval_model(
         raise ValueError("max_tokens must be at least 1")
     model = str(getattr(provider, "model", "unknown-model"))
     provider_name = str(getattr(provider, "name", provider.__class__.__name__.lower()))
-    temperature = float(getattr(provider, "temperature", 0.0))
+    temperature = _recorded_temperature(provider)
     if not model or not provider_name:
         raise ValueError("provider and model names must be nonempty")
-    if temperature < 0:
-        raise ValueError("provider temperature must be nonnegative")
 
     plans = [_plan_task(task_id, official=official) for task_id in task_ids]
     estimate, remaining = _preflight_cost(plans, provider, samples, max_tokens)
@@ -358,6 +356,19 @@ def _call_once(
     return response, None, usage
 
 
+def _recorded_temperature(provider: ProviderAdapter) -> TemperatureSetting:
+    requested = float(getattr(provider, "temperature", 0.0))
+    if requested < 0:
+        raise ValueError("provider temperature must be nonnegative")
+    recorded = getattr(provider, "manifest_temperature", requested)
+    if recorded == "provider_default":
+        return "provider_default"
+    value = float(recorded)
+    if value < 0:
+        raise ValueError("manifest temperature must be nonnegative")
+    return value
+
+
 def _provider_usage(provider: ProviderAdapter) -> dict[str, int | float]:
     raw = getattr(provider, "usage", None)
     if not isinstance(raw, dict):
@@ -406,7 +417,7 @@ def _merge_generation_fields(
     *,
     provider_name: str,
     model: str,
-    temperature: float,
+    temperature: TemperatureSetting,
     usage: dict[str, int | float],
 ) -> ResultManifest:
     data = scored.model_dump(mode="json", exclude_none=True)
@@ -431,7 +442,7 @@ def _zero_manifest(
     *,
     provider_name: str,
     model: str,
-    temperature: float,
+    temperature: TemperatureSetting,
     usage: dict[str, int | float],
     wall_clock_s: float,
     generation_error: str | None = None,

@@ -17,6 +17,7 @@ from harness.providers.openrouter import OpenRouterProvider
 from harness.providers.pricing import (
     OFFICIAL_LEADERBOARD_MODELS,
     PRICING_DATE,
+    PROVIDER_DEFAULT_TEMPERATURE,
     UnknownModelPricing,
     price_for,
 )
@@ -46,6 +47,7 @@ def test_anthropic_adapter_records_usage_and_settles_reservation(tmp_path, monke
     assert provider.generate("prompt", "system", PARAMS_ANTHROPIC) == '{"tool":"done"}'
     assert captured["url"] == anthropic_module.API_URL
     assert captured["payload"]["max_tokens"] == 100
+    assert captured["payload"]["temperature"] == 0.0
     assert provider.usage == {"tokens_in": 100, "tokens_out": 20, "cost_usd": 0.0002}
     recorded = load_spend(spend)
     assert recorded["total_usd"] == pytest.approx(0.0002)
@@ -60,6 +62,7 @@ def test_openai_adapter_parses_recorded_chat_response(tmp_path, monkeypatch):
         assert headers["authorization"].startswith("Bearer ")
         assert payload["max_completion_tokens"] == 100
         assert payload["seed"] == 7
+        assert "temperature" not in payload
         return {
             "choices": [{"message": {"content": '{"tool":"sb_lint"}'}}],
             "usage": {"prompt_tokens": 80, "completion_tokens": 10},
@@ -81,6 +84,7 @@ def test_openrouter_adapter_parses_recorded_chat_response(tmp_path, monkeypatch)
         assert url == openrouter_module.API_URL
         assert headers["authorization"].startswith("Bearer ")
         assert payload["max_tokens"] == 100
+        assert payload["temperature"] == 0.0
         return {
             "choices": [{"message": {"content": '{"tool":"read_file","path":"spec.md"}'}}],
             "usage": {"prompt_tokens": 90, "completion_tokens": 12},
@@ -139,6 +143,68 @@ def test_every_official_leaderboard_model_has_pinned_positive_pricing():
         price = price_for(provider, model)
         assert price.input_per_mtok > 0
         assert price.output_per_mtok > 0
+
+
+@pytest.mark.parametrize(
+    ("model", "expected_temperature"),
+    [
+        ("claude-opus-4-8", None),
+        ("claude-haiku-4-5-20251001", 0.0),
+        ("claude-sonnet-4-6", 0.0),
+    ],
+)
+def test_anthropic_temperature_capability_controls_payload(
+    model,
+    expected_temperature,
+    tmp_path,
+    monkeypatch,
+):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "unit-test-key")
+    captured: dict[str, Any] = {}
+
+    def fake_post(url, *, headers, payload, timeout_s=60.0):
+        captured.update(payload)
+        return {
+            "content": [{"type": "text", "text": "module x; endmodule"}],
+            "usage": {"input_tokens": 1, "output_tokens": 1},
+        }
+
+    monkeypatch.setattr(anthropic_module, "post_json", fake_post)
+    provider = AnthropicProvider(model, spend_path=tmp_path / "spend.json")
+    params = GenParams(model=model, temperature=0.0, max_tokens=8, seed=0)
+
+    assert provider.generate("prompt", "system", params) == "module x; endmodule"
+    if expected_temperature is None:
+        assert "temperature" not in captured
+        assert provider.manifest_temperature == PROVIDER_DEFAULT_TEMPERATURE
+    else:
+        assert captured["temperature"] == expected_temperature
+        assert provider.manifest_temperature == expected_temperature
+
+
+@pytest.mark.parametrize("model", ["gpt-5", "gpt-5-mini"])
+def test_openai_reasoning_models_omit_temperature(
+    model,
+    tmp_path,
+    monkeypatch,
+):
+    monkeypatch.setenv("OPENAI_API_KEY", "unit-test-key")
+    captured: dict[str, Any] = {}
+
+    def fake_post(url, *, headers, payload, timeout_s=60.0):
+        captured.update(payload)
+        return {
+            "choices": [{"message": {"content": "module x; endmodule"}}],
+            "usage": {"prompt_tokens": 1, "completion_tokens": 1},
+        }
+
+    monkeypatch.setattr(openai_module, "post_json", fake_post)
+    provider = OpenAIProvider(model, spend_path=tmp_path / "spend.json")
+    params = GenParams(model=model, temperature=0.0, max_tokens=8, seed=0)
+
+    assert provider.generate("prompt", "system", params) == "module x; endmodule"
+    assert "temperature" not in captured
+    assert provider.manifest_temperature == PROVIDER_DEFAULT_TEMPERATURE
 
 
 def test_http_error_does_not_echo_response_body(monkeypatch):
