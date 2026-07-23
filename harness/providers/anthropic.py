@@ -7,7 +7,11 @@ from typing import Any
 
 from harness.providers import GenParams
 from harness.providers._base import PricedProvider, require_int, require_mapping
-from harness.providers._http import ProviderHTTPError, post_json
+from harness.providers._http import (
+    PROVIDER_READ_TIMEOUT_S,
+    ProviderHTTPError,
+    post_json,
+)
 from harness.providers.pricing import supports_temperature
 from harness.spend import DEFAULT_SPEND_PATH
 
@@ -46,6 +50,7 @@ class AnthropicProvider(PricedProvider):
                     "anthropic-version": "2023-06-01",
                 },
                 payload=payload,
+                timeout_s=PROVIDER_READ_TIMEOUT_S,
             )
         except ProviderHTTPError:
             self.release_call(reserved_usd=reserved)
