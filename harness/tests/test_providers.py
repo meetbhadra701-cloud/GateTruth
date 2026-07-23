@@ -11,6 +11,7 @@ from harness.providers import _http as http_module
 from harness.providers import anthropic as anthropic_module
 from harness.providers import openai as openai_module
 from harness.providers import openrouter as openrouter_module
+from harness.providers._http import PROVIDER_READ_TIMEOUT_S
 from harness.providers.anthropic import AnthropicProvider
 from harness.providers.openai import OpenAIProvider
 from harness.providers.openrouter import OpenRouterProvider
@@ -48,6 +49,7 @@ def test_anthropic_adapter_records_usage_and_settles_reservation(tmp_path, monke
     assert captured["url"] == anthropic_module.API_URL
     assert captured["payload"]["max_tokens"] == 100
     assert captured["payload"]["temperature"] == 0.0
+    assert captured["timeout_s"] == PROVIDER_READ_TIMEOUT_S
     assert provider.usage == {"tokens_in": 100, "tokens_out": 20, "cost_usd": 0.0002}
     recorded = load_spend(spend)
     assert recorded["total_usd"] == pytest.approx(0.0002)
@@ -63,6 +65,7 @@ def test_openai_adapter_parses_recorded_chat_response(tmp_path, monkeypatch):
         assert payload["max_completion_tokens"] == 100
         assert payload["seed"] == 7
         assert "temperature" not in payload
+        assert timeout_s == PROVIDER_READ_TIMEOUT_S
         return {
             "choices": [{"message": {"content": '{"tool":"sb_lint"}'}}],
             "usage": {"prompt_tokens": 80, "completion_tokens": 10},
@@ -85,6 +88,7 @@ def test_openrouter_adapter_parses_recorded_chat_response(tmp_path, monkeypatch)
         assert headers["authorization"].startswith("Bearer ")
         assert payload["max_tokens"] == 100
         assert payload["temperature"] == 0.0
+        assert timeout_s == PROVIDER_READ_TIMEOUT_S
         return {
             "choices": [{"message": {"content": '{"tool":"read_file","path":"spec.md"}'}}],
             "usage": {"prompt_tokens": 90, "completion_tokens": 12},

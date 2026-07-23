@@ -7,6 +7,8 @@ from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+PROVIDER_READ_TIMEOUT_S = 300
+
 
 class ProviderHTTPError(RuntimeError):
     """Sanitized provider transport or response error."""
