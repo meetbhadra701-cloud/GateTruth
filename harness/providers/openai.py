@@ -55,23 +55,26 @@ class OpenAIProvider(PricedProvider):
                 payload=payload,
                 timeout_s=PROVIDER_READ_TIMEOUT_S,
             )
-        except ProviderHTTPError:
+            choices = response.get("choices")
+            if not isinstance(choices, list) or not choices:
+                raise ValueError("OpenAI response choices must be a nonempty list")
+            choice = require_mapping(choices[0], "choices[0]")
+            message = require_mapping(choice.get("message"), "choices[0].message")
+            text = message.get("content")
+            if not isinstance(text, str) or not text:
+                raise ValueError("OpenAI response contained no text")
+            usage = require_mapping(response.get("usage"), "usage")
+            tokens_in = require_int(
+                usage.get("prompt_tokens"),
+                "usage.prompt_tokens",
+            )
+            tokens_out = require_int(
+                usage.get("completion_tokens"),
+                "usage.completion_tokens",
+            )
+        except (ProviderHTTPError, ValueError):
             self.release_call(reserved_usd=reserved)
             raise
-        choices = response.get("choices")
-        if not isinstance(choices, list) or not choices:
-            raise ValueError("OpenAI response choices must be a nonempty list")
-        choice = require_mapping(choices[0], "choices[0]")
-        message = require_mapping(choice.get("message"), "choices[0].message")
-        text = message.get("content")
-        if not isinstance(text, str) or not text:
-            raise ValueError("OpenAI response contained no text")
-        usage = require_mapping(response.get("usage"), "usage")
-        tokens_in = require_int(usage.get("prompt_tokens"), "usage.prompt_tokens")
-        tokens_out = require_int(
-            usage.get("completion_tokens"),
-            "usage.completion_tokens",
-        )
         self.finish_call(
             reserved_usd=reserved,
             tokens_in=tokens_in,
