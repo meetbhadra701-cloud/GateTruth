@@ -1,0 +1,65 @@
+{
+  "task_id": "t1_binary_to_onehot_decoder",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "pass",
+      "warnings": 0
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "pass",
+      "tests_run": 9,
+      "tests_passed": 9
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "pass"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "pass",
+      "area_um2": 232.7232,
+      "cell_count": 16
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "pass",
+      "wns_ns": 7.650967187468601,
+      "tns_ns": 0.0,
+      "fmax_mhz": 425.70712280615845
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "pass",
+      "power_mw": 0.000151847786
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 1.0,
+  "task_score": 66.66666666666667,
+  "wall_clock_s": 2.014639,
+  "provider": "anthropic",
+  "model": "claude-opus-4-8",
+  "temperature": "provider_default",
+  "tokens_in": 2111,
+  "tokens_out": 161,
+  "cost_usd": 0.01458,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-07-22T03:54:31.478059Z",
+  "signature": "2f5af5d65c83b86571bf7402fc855e22b3b58befa2482f89240721cfc5f9c8be"
+}

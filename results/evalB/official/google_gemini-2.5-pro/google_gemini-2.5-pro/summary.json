@@ -1,0 +1,154 @@
+{
+  "summary_version": "track-b-agent-eval-v1",
+  "suite_version": "v0.2",
+  "track": "B",
+  "provider": "openrouter",
+  "model": "google/gemini-2.5-pro",
+  "official": true,
+  "task_ids": [
+    "b1_close_timing_mac",
+    "b2_close_timing_multiplier",
+    "b3_reduce_area_fir",
+    "b4_reduce_power_iir",
+    "b5_remove_latches_decoder",
+    "b6_cdc_safe_fifo",
+    "b7_fair_arbiter",
+    "b8_axi_byte_enables"
+  ],
+  "tasks": {
+    "b1_close_timing_mac": {
+      "skipped": false,
+      "manifest": "b1_close_timing_mac.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": "tokens",
+      "tokens_in": 155748,
+      "tokens_out": 45055,
+      "cost_usd": 0.6452349999999999,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b2_close_timing_multiplier": {
+      "skipped": false,
+      "manifest": "b2_close_timing_multiplier.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": "tokens",
+      "tokens_in": 123907,
+      "tokens_out": 92225,
+      "cost_usd": 1.0771337499999998,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b3_reduce_area_fir": {
+      "skipped": false,
+      "manifest": "b3_reduce_area_fir.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": "tokens",
+      "tokens_in": 179448,
+      "tokens_out": 79896,
+      "cost_usd": 1.0232700000000001,
+      "ppa_delta": {
+        "area_ratio": 1.0,
+        "power_ratio": 1.0,
+        "wns_delta_ns": 0.0
+      }
+    },
+    "b4_reduce_power_iir": {
+      "skipped": false,
+      "manifest": "b4_reduce_power_iir.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": "tokens",
+      "tokens_in": 149352,
+      "tokens_out": 51627,
+      "cost_usd": 0.7029599999999996,
+      "ppa_delta": {
+        "area_ratio": 1.0,
+        "power_ratio": 1.0,
+        "wns_delta_ns": 0.0
+      }
+    },
+    "b5_remove_latches_decoder": {
+      "skipped": false,
+      "manifest": "b5_remove_latches_decoder.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": "tokens",
+      "tokens_in": 75411,
+      "tokens_out": 26797,
+      "cost_usd": 0.3622337499999997,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b6_cdc_safe_fifo": {
+      "skipped": false,
+      "manifest": "b6_cdc_safe_fifo.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": "tokens",
+      "tokens_in": 174699,
+      "tokens_out": 90055,
+      "cost_usd": 1.1189237500000004,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b7_fair_arbiter": {
+      "skipped": false,
+      "manifest": "b7_fair_arbiter.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": "tokens",
+      "tokens_in": 88108,
+      "tokens_out": 65011,
+      "cost_usd": 0.7602450000000021,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b8_axi_byte_enables": {
+      "skipped": false,
+      "manifest": "b8_axi_byte_enables.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": "tokens",
+      "tokens_in": 69463,
+      "tokens_out": 81672,
+      "cost_usd": 0.9035487499999997,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    }
+  },
+  "tasks_attempted": 8,
+  "tasks_objective_met": 0,
+  "objective_met_rate": 0.0,
+  "median_ppa_delta": {
+    "area_ratio": 1.0,
+    "power_ratio": 1.0,
+    "wns_delta_ns": 0.0
+  },
+  "tokens_in": 1016136,
+  "tokens_out": 532338,
+  "cost_usd": 6.59355,
+  "pre_run_estimate_usd": 15.0,
+  "timestamp": "2026-07-24T06:17:49.786148Z",
+  "signature": "6c8efc2d604194b6a1d51389cc01de6cc1cd88052711ab6c63f7f44e04460a06"
+}

@@ -1,0 +1,56 @@
+{
+  "task_id": "t2_majority_filter",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "fail"
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "fail"
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "fail"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "fail"
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "fail"
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "fail"
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 0.0,
+  "task_score": 0.0,
+  "wall_clock_s": 0.096551,
+  "provider": "anthropic",
+  "model": "claude-sonnet-4-6",
+  "temperature": 0.0,
+  "tokens_in": 1986,
+  "tokens_out": 1366,
+  "cost_usd": 0.026448000000000027,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-07-22T01:40:29.011237Z",
+  "signature": "562ae818b19dcd7947bce5bd8f480745cd5d882d3258698ab8734a3366ac13d4"
+}

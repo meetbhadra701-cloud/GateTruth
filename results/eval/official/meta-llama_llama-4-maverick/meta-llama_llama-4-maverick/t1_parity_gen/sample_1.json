@@ -1,0 +1,57 @@
+{
+  "task_id": "t1_parity_gen",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "pass",
+      "warnings": 0
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "fail"
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "fail"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "fail"
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "fail"
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "fail"
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 0.0,
+  "task_score": 0.0,
+  "wall_clock_s": 0.802899,
+  "provider": "openrouter",
+  "model": "meta-llama/llama-4-maverick",
+  "temperature": 0.0,
+  "tokens_in": 1471,
+  "tokens_out": 194,
+  "cost_usd": 0.0003370500000000002,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-07-22T03:33:41.229650Z",
+  "signature": "8e7e2e1716e0229e2337ac8b307cde11a5c7721785b76c4c33db7236a71452e2"
+}

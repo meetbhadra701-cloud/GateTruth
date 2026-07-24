@@ -1,0 +1,56 @@
+{
+  "task_id": "t2_spi_master",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "fail"
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "fail"
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "fail"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "fail"
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "fail"
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "fail"
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 0.0,
+  "task_score": 0.0,
+  "wall_clock_s": 0.104694,
+  "provider": "anthropic",
+  "model": "claude-opus-4-8",
+  "temperature": "provider_default",
+  "tokens_in": 3104,
+  "tokens_out": 1460,
+  "cost_usd": 0.052019999999999955,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-07-22T03:58:48.559495Z",
+  "signature": "84d74d58ed3e25fe38eff04e16c3c9e92d6f72bfe30926c2dfa25132539d504a"
+}

@@ -1,0 +1,65 @@
+{
+  "task_id": "t1_range_checker",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "pass",
+      "warnings": 0
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "pass",
+      "tests_run": 7,
+      "tests_passed": 7
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "pass"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "pass",
+      "area_um2": 58.8064,
+      "cell_count": 6
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "pass",
+      "wns_ns": 7.212073808961033,
+      "tns_ns": 0.0,
+      "fmax_mhz": 358.6895532651577
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "pass",
+      "power_mw": 0.000359116456
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 1.0,
+  "task_score": 66.66666666666667,
+  "wall_clock_s": 1.616667,
+  "provider": "openrouter",
+  "model": "meta-llama/llama-4-maverick",
+  "temperature": 0.0,
+  "tokens_in": 1347,
+  "tokens_out": 163,
+  "cost_usd": 0.00029984999999999994,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-07-22T03:34:05.595119Z",
+  "signature": "c9ac0957c80e733c4e7b11a5763fe6361942914a49ed043560e8eab72e6fd372"
+}

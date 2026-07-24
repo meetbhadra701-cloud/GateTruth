@@ -1,0 +1,68 @@
+name: Deploy leaderboard to GitHub Pages
+
+# Builds the static leaderboard site from the committed official result manifests
+# and deploys it to GitHub Pages. A canary gate fails the build if any task canary
+# string appears in the generated site, so the answer-key GUIDs can never ship.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "results/eval/official/**"
+      - "results/evalB/official/**"
+      - "site/**"
+      - "harness/**"
+      - "tasks/**"
+      - "tasksB/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build dependency
+        run: pip install pydantic
+
+      - name: Build leaderboard site
+        run: |
+          python -m harness.cli site \
+            --results results/eval/official \
+            --agent-results results/evalB/official \
+            --out site/build
+
+      - name: Canary gate (fail if any canary string reaches the site)
+        run: |
+          if grep -rl "SILICONBENCH-CANARY" site/build; then
+            echo "::error::canary string found in built site — refusing to publish"
+            exit 1
+          fi
+          echo "canary gate clean"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

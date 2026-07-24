@@ -1,0 +1,57 @@
+{
+  "task_id": "t3_aes_sbox_datapath",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "fail"
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "fail"
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "fail"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "fail"
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "fail"
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "fail"
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 0.0,
+  "ppa": 0.0,
+  "task_score": 0.0,
+  "wall_clock_s": 53.211971,
+  "provider": "openai",
+  "model": "gpt-5",
+  "temperature": "provider_default",
+  "tokens_in": 0,
+  "tokens_out": 0,
+  "cost_usd": 0.0,
+  "prompt_version": "track-a-rtl-v1",
+  "generation_error": "provider error: ValueError: OpenAI response contained no text",
+  "timestamp": "2026-07-22T04:21:51.150825Z",
+  "signature": "be7a97e6814da498dd9f7bb9e969a68b5be84f3430097ce96864c2ff3467126f"
+}

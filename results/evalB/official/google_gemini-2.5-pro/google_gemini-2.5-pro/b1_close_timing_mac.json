@@ -1,0 +1,100 @@
+{
+  "task_id": "b1_close_timing_mac",
+  "suite_version": "v0.2",
+  "track": "B",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "submission_dir": "/tmp/siliconbench-agentb-xc56ti2y/submission",
+  "disqualified": false,
+  "disqualification_reason": null,
+  "objective_type": "timing_closure",
+  "objective_pass": false,
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "pass",
+      "warnings": 0,
+      "tests_run": null,
+      "tests_passed": null,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "pass",
+      "warnings": null,
+      "tests_run": 12,
+      "tests_passed": 12,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    },
+    {
+      "stage": 2,
+      "name": "sec",
+      "status": "pass",
+      "warnings": null,
+      "tests_run": null,
+      "tests_passed": null,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    },
+    {
+      "stage": 3,
+      "name": "objective",
+      "status": "fail",
+      "warnings": null,
+      "tests_run": null,
+      "tests_passed": null,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    }
+  ],
+  "sec": {
+    "status": "pass",
+    "backend": "yosys-equiv",
+    "seconds": null
+  },
+  "ppa_delta": {
+    "design": {
+      "area_um2": 13103.8176,
+      "wns_ns": -0.5849827454683748,
+      "tns_ns": -2.4602613975776486,
+      "fmax_mhz": 60.29551042332177,
+      "power_mw": 0.976469426
+    },
+    "baseline": null,
+    "area_ratio": null,
+    "power_ratio": null,
+    "wns_delta_ns": null
+  },
+  "task_score": 0.0,
+  "wall_clock_s": 535.505176,
+  "provider": "openrouter",
+  "model": "google/gemini-2.5-pro",
+  "temperature": 0.0,
+  "tokens_in": 155748,
+  "tokens_out": 45055,
+  "cost_usd": 0.6452349999999999,
+  "tool_calls": 71,
+  "timestamp": "2026-07-24T05:02:50.768436Z",
+  "signature": "04262c24b72cd0d84b624f9e9d4e272e3c3dfe4e7dcd1dce04a173e0c77f9a76",
+  "budget_exceeded": "tokens"
+}

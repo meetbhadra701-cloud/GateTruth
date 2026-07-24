@@ -1,0 +1,100 @@
+{
+  "task_id": "b7_fair_arbiter",
+  "suite_version": "v0.2",
+  "track": "B",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "submission_dir": "/tmp/siliconbench-agentb-x0k4c269/submission",
+  "disqualified": false,
+  "disqualification_reason": null,
+  "objective_type": "add_property",
+  "objective_pass": true,
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "pass",
+      "warnings": 0,
+      "tests_run": null,
+      "tests_passed": null,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "pass",
+      "warnings": null,
+      "tests_run": 6,
+      "tests_passed": 6,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    },
+    {
+      "stage": 2,
+      "name": "correctness",
+      "status": "skip",
+      "warnings": null,
+      "tests_run": null,
+      "tests_passed": null,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    },
+    {
+      "stage": 3,
+      "name": "objective",
+      "status": "pass",
+      "warnings": null,
+      "tests_run": null,
+      "tests_passed": null,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    }
+  ],
+  "sec": {
+    "status": "skip",
+    "backend": null,
+    "seconds": null
+  },
+  "ppa_delta": {
+    "design": {
+      "area_um2": 349.0848,
+      "wns_ns": 7.153025485503318,
+      "tns_ns": 0.0,
+      "fmax_mhz": 351.25007087630723,
+      "power_mw": 0.0058198093
+    },
+    "baseline": null,
+    "area_ratio": null,
+    "power_ratio": null,
+    "wns_delta_ns": null
+  },
+  "task_score": 100.0,
+  "wall_clock_s": 128.287955,
+  "provider": "anthropic",
+  "model": "claude-sonnet-4-6",
+  "temperature": 0.0,
+  "tokens_in": 116073,
+  "tokens_out": 7561,
+  "cost_usd": 0.4616340000000001,
+  "tool_calls": 21,
+  "timestamp": "2026-07-23T23:56:14.018673Z",
+  "signature": "c938c6a93c9f764207f57a1bd03d13e3a90ba6c3ad888ff3f5724d8cf187c329",
+  "budget_exceeded": null
+}

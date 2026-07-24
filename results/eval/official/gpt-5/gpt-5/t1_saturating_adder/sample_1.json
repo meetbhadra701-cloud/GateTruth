@@ -1,0 +1,56 @@
+{
+  "task_id": "t1_saturating_adder",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "fail"
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "fail"
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "fail"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "fail"
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "fail"
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "fail"
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 0.0,
+  "task_score": 0.0,
+  "wall_clock_s": 0.159955,
+  "provider": "openai",
+  "model": "gpt-5",
+  "temperature": "provider_default",
+  "tokens_in": 1447,
+  "tokens_out": 1826,
+  "cost_usd": 0.020068750000000024,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-07-22T04:01:48.445849Z",
+  "signature": "2003cf91effb4f9338dc8450bae44782e02f0f936c42fe09f0de9d6ec0e2904a"
+}

@@ -1,0 +1,100 @@
+{
+  "task_id": "b1_close_timing_mac",
+  "suite_version": "v0.2",
+  "track": "B",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "submission_dir": "/tmp/siliconbench-agentb-vtyqt46c/submission",
+  "disqualified": false,
+  "disqualification_reason": null,
+  "objective_type": "timing_closure",
+  "objective_pass": false,
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "pass",
+      "warnings": 0,
+      "tests_run": null,
+      "tests_passed": null,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "pass",
+      "warnings": null,
+      "tests_run": 12,
+      "tests_passed": 12,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    },
+    {
+      "stage": 2,
+      "name": "sec",
+      "status": "pass",
+      "warnings": null,
+      "tests_run": null,
+      "tests_passed": null,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    },
+    {
+      "stage": 3,
+      "name": "objective",
+      "status": "fail",
+      "warnings": null,
+      "tests_run": null,
+      "tests_passed": null,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    }
+  ],
+  "sec": {
+    "status": "pass",
+    "backend": "yosys-equiv",
+    "seconds": null
+  },
+  "ppa_delta": {
+    "design": {
+      "area_um2": 13103.8176,
+      "wns_ns": -0.5849827454683748,
+      "tns_ns": -2.4602613975776486,
+      "fmax_mhz": 60.29551042332177,
+      "power_mw": 0.976469426
+    },
+    "baseline": null,
+    "area_ratio": null,
+    "power_ratio": null,
+    "wns_delta_ns": null
+  },
+  "task_score": 0.0,
+  "wall_clock_s": 89.762163,
+  "provider": "anthropic",
+  "model": "claude-haiku-4-5-20251001",
+  "temperature": 0.0,
+  "tokens_in": 200152,
+  "tokens_out": 8101,
+  "cost_usd": 0.24065700000000004,
+  "tool_calls": 24,
+  "timestamp": "2026-07-22T06:20:31.428173Z",
+  "signature": "f04e843aa492a780d7a585fff8ab541bca1d60bb858dbcfcb7e71b871649d2a5",
+  "budget_exceeded": "tokens"
+}

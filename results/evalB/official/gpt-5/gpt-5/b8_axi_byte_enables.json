@@ -1,0 +1,100 @@
+{
+  "task_id": "b8_axi_byte_enables",
+  "suite_version": "v0.2",
+  "track": "B",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "submission_dir": "/tmp/siliconbench-agentb-r79ylx19/submission",
+  "disqualified": false,
+  "disqualification_reason": null,
+  "objective_type": "add_property",
+  "objective_pass": true,
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "pass",
+      "warnings": 0,
+      "tests_run": null,
+      "tests_passed": null,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "pass",
+      "warnings": null,
+      "tests_run": 9,
+      "tests_passed": 9,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    },
+    {
+      "stage": 2,
+      "name": "correctness",
+      "status": "skip",
+      "warnings": null,
+      "tests_run": null,
+      "tests_passed": null,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    },
+    {
+      "stage": 3,
+      "name": "objective",
+      "status": "pass",
+      "warnings": null,
+      "tests_run": null,
+      "tests_passed": null,
+      "area_um2": null,
+      "cell_count": null,
+      "wns_ns": null,
+      "tns_ns": null,
+      "fmax_mhz": null,
+      "power_mw": null
+    }
+  ],
+  "sec": {
+    "status": "skip",
+    "backend": null,
+    "seconds": null
+  },
+  "ppa_delta": {
+    "design": {
+      "area_um2": 9375.2416,
+      "wns_ns": 9.680767572693798,
+      "tns_ns": 0.0,
+      "fmax_mhz": 96.90643243521227,
+      "power_mw": 0.07585945420000001
+    },
+    "baseline": null,
+    "area_ratio": null,
+    "power_ratio": null,
+    "wns_delta_ns": null
+  },
+  "task_score": 100.0,
+  "wall_clock_s": 456.044726,
+  "provider": "openai",
+  "model": "gpt-5",
+  "temperature": "provider_default",
+  "tokens_in": 124139,
+  "tokens_out": 31518,
+  "cost_usd": 0.4703537499999997,
+  "tool_calls": 23,
+  "timestamp": "2026-07-24T05:58:02.300237Z",
+  "signature": "85aa068c240ee6ee5f7310382c504ff7bf4530b7274fba305065d950f47f842d",
+  "budget_exceeded": null
+}

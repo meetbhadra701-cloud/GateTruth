@@ -1,0 +1,56 @@
+{
+  "task_id": "t1_signed_abs",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "fail"
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "fail"
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "fail"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "fail"
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "fail"
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "fail"
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 0.0,
+  "task_score": 0.0,
+  "wall_clock_s": 0.097209,
+  "provider": "openrouter",
+  "model": "google/gemini-2.5-pro",
+  "temperature": 0.0,
+  "tokens_in": 1697,
+  "tokens_out": 4092,
+  "cost_usd": 0.04304125000000003,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-07-22T04:06:35.715637Z",
+  "signature": "6c0f56fa78f10ddaee20dd25ce8b65e1afa6fe04828280ce7e5ba61299560cbe"
+}

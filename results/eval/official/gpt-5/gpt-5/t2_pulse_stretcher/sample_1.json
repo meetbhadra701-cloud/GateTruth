@@ -1,0 +1,57 @@
+{
+  "task_id": "t2_pulse_stretcher",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "fail"
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "fail"
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "fail"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "fail"
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "fail"
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "fail"
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 0.0,
+  "ppa": 0.0,
+  "task_score": 0.0,
+  "wall_clock_s": 55.255686,
+  "provider": "openai",
+  "model": "gpt-5",
+  "temperature": "provider_default",
+  "tokens_in": 0,
+  "tokens_out": 0,
+  "cost_usd": 0.0,
+  "prompt_version": "track-a-rtl-v1",
+  "generation_error": "provider error: ValueError: OpenAI response contained no text",
+  "timestamp": "2026-07-22T04:09:17.632828Z",
+  "signature": "0a9be18b5c61d7e1ed2f32845b99b9f6f4a2dd53024e5b0d8e4229ee5ae301eb"
+}

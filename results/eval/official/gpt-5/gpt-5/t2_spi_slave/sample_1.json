@@ -1,0 +1,57 @@
+{
+  "task_id": "t2_spi_slave",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "fail"
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "fail"
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "fail"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "fail"
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "fail"
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "fail"
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 0.0,
+  "ppa": 0.0,
+  "task_score": 0.0,
+  "wall_clock_s": 60.250122,
+  "provider": "openai",
+  "model": "gpt-5",
+  "temperature": "provider_default",
+  "tokens_in": 0,
+  "tokens_out": 0,
+  "cost_usd": 0.0,
+  "prompt_version": "track-a-rtl-v1",
+  "generation_error": "provider error: TimeoutError: The read operation timed out",
+  "timestamp": "2026-07-22T04:14:59.627336Z",
+  "signature": "4d5d3a455a11c50cd32c6f1880d30f536355676b05b4343d87a2df40d3d68932"
+}

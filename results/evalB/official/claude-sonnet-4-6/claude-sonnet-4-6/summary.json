@@ -1,0 +1,154 @@
+{
+  "summary_version": "track-b-agent-eval-v1",
+  "suite_version": "v0.2",
+  "track": "B",
+  "provider": "anthropic",
+  "model": "claude-sonnet-4-6",
+  "official": true,
+  "task_ids": [
+    "b1_close_timing_mac",
+    "b2_close_timing_multiplier",
+    "b3_reduce_area_fir",
+    "b4_reduce_power_iir",
+    "b5_remove_latches_decoder",
+    "b6_cdc_safe_fifo",
+    "b7_fair_arbiter",
+    "b8_axi_byte_enables"
+  ],
+  "tasks": {
+    "b1_close_timing_mac": {
+      "skipped": false,
+      "manifest": "b1_close_timing_mac.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": "tokens",
+      "tokens_in": 194630,
+      "tokens_out": 9798,
+      "cost_usd": 0.7308600000000001,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b2_close_timing_multiplier": {
+      "skipped": false,
+      "manifest": "b2_close_timing_multiplier.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 32211,
+      "tokens_out": 2215,
+      "cost_usd": 0.1298579999999998,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b3_reduce_area_fir": {
+      "skipped": false,
+      "manifest": "b3_reduce_area_fir.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": "tokens",
+      "tokens_in": 251270,
+      "tokens_out": 6712,
+      "cost_usd": 0.85449,
+      "ppa_delta": {
+        "area_ratio": 1.0,
+        "power_ratio": 1.0,
+        "wns_delta_ns": 0.0
+      }
+    },
+    "b4_reduce_power_iir": {
+      "skipped": false,
+      "manifest": "b4_reduce_power_iir.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": "tokens",
+      "tokens_in": 204008,
+      "tokens_out": 10668,
+      "cost_usd": 0.7720439999999995,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b5_remove_latches_decoder": {
+      "skipped": false,
+      "manifest": "b5_remove_latches_decoder.json",
+      "objective_pass": true,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 10807,
+      "tokens_out": 609,
+      "cost_usd": 0.041556000000000815,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b6_cdc_safe_fifo": {
+      "skipped": false,
+      "manifest": "b6_cdc_safe_fifo.json",
+      "objective_pass": true,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 110282,
+      "tokens_out": 8877,
+      "cost_usd": 0.4640010000000001,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b7_fair_arbiter": {
+      "skipped": false,
+      "manifest": "b7_fair_arbiter.json",
+      "objective_pass": true,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 116073,
+      "tokens_out": 7561,
+      "cost_usd": 0.4616340000000001,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b8_axi_byte_enables": {
+      "skipped": false,
+      "manifest": "b8_axi_byte_enables.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": "tokens",
+      "tokens_in": 151797,
+      "tokens_out": 16525,
+      "cost_usd": 0.7032660000000002,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    }
+  },
+  "tasks_attempted": 8,
+  "tasks_objective_met": 3,
+  "objective_met_rate": 0.375,
+  "median_ppa_delta": {
+    "area_ratio": 1.0,
+    "power_ratio": 1.0,
+    "wns_delta_ns": 0.0
+  },
+  "tokens_in": 1071078,
+  "tokens_out": 62965,
+  "cost_usd": 4.157709,
+  "pre_run_estimate_usd": 22.5,
+  "timestamp": "2026-07-24T00:00:00.633300Z",
+  "signature": "adcf77d454462be7ccdb41efd8cfaca78c99189b0fadedabe03c177f8830b526"
+}

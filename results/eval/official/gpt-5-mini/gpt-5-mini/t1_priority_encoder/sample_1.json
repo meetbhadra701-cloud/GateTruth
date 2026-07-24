@@ -1,0 +1,56 @@
+{
+  "task_id": "t1_priority_encoder",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "fail"
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "fail"
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "fail"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "fail"
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "fail"
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "fail"
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 0.0,
+  "task_score": 0.0,
+  "wall_clock_s": 0.131253,
+  "provider": "openai",
+  "model": "gpt-5-mini",
+  "temperature": "provider_default",
+  "tokens_in": 1557,
+  "tokens_out": 1628,
+  "cost_usd": 0.0036452500000000027,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-07-22T03:57:51.140781Z",
+  "signature": "047c95ea8d84920ec7f2b46705dd586b46ee6cb31bf9ce9b7e6f1ef4e33545d1"
+}

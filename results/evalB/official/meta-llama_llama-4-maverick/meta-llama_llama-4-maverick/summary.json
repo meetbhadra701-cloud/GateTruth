@@ -1,0 +1,154 @@
+{
+  "summary_version": "track-b-agent-eval-v1",
+  "suite_version": "v0.2",
+  "track": "B",
+  "provider": "openrouter",
+  "model": "meta-llama/llama-4-maverick",
+  "official": true,
+  "task_ids": [
+    "b1_close_timing_mac",
+    "b2_close_timing_multiplier",
+    "b3_reduce_area_fir",
+    "b4_reduce_power_iir",
+    "b5_remove_latches_decoder",
+    "b6_cdc_safe_fifo",
+    "b7_fair_arbiter",
+    "b8_axi_byte_enables"
+  ],
+  "tasks": {
+    "b1_close_timing_mac": {
+      "skipped": false,
+      "manifest": "b1_close_timing_mac.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 825,
+      "tokens_out": 62,
+      "cost_usd": 0.00016094999999999998,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b2_close_timing_multiplier": {
+      "skipped": false,
+      "manifest": "b2_close_timing_multiplier.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 90,
+      "tokens_out": 6,
+      "cost_usd": 1.710000000000001e-05,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b3_reduce_area_fir": {
+      "skipped": false,
+      "manifest": "b3_reduce_area_fir.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 1124,
+      "tokens_out": 206,
+      "cost_usd": 0.00029219999999999995,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b4_reduce_power_iir": {
+      "skipped": false,
+      "manifest": "b4_reduce_power_iir.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 3098,
+      "tokens_out": 1087,
+      "cost_usd": 0.0011168999999999999,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b5_remove_latches_decoder": {
+      "skipped": false,
+      "manifest": "b5_remove_latches_decoder.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 4175,
+      "tokens_out": 1340,
+      "cost_usd": 0.00143025,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b6_cdc_safe_fifo": {
+      "skipped": false,
+      "manifest": "b6_cdc_safe_fifo.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": "tokens",
+      "tokens_in": 252548,
+      "tokens_out": 1324,
+      "cost_usd": 0.03867659999999999,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b7_fair_arbiter": {
+      "skipped": false,
+      "manifest": "b7_fair_arbiter.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 596,
+      "tokens_out": 43,
+      "cost_usd": 0.00011519999999999586,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b8_axi_byte_enables": {
+      "skipped": false,
+      "manifest": "b8_axi_byte_enables.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 791,
+      "tokens_out": 56,
+      "cost_usd": 0.00015224999999999267,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    }
+  },
+  "tasks_attempted": 8,
+  "tasks_objective_met": 0,
+  "objective_met_rate": 0.0,
+  "median_ppa_delta": {
+    "area_ratio": null,
+    "power_ratio": null,
+    "wns_delta_ns": null
+  },
+  "tokens_in": 263247,
+  "tokens_out": 4124,
+  "cost_usd": 0.04196145,
+  "pre_run_estimate_usd": 0.9,
+  "timestamp": "2026-07-22T06:21:38.074877Z",
+  "signature": "89949e6b7ba8c2dc40bc0cc4d0de1396d07ee0a5ed43b6edaf94c51c503287fe"
+}

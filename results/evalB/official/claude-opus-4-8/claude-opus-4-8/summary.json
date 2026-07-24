@@ -1,0 +1,154 @@
+{
+  "summary_version": "track-b-agent-eval-v1",
+  "suite_version": "v0.2",
+  "track": "B",
+  "provider": "anthropic",
+  "model": "claude-opus-4-8",
+  "official": true,
+  "task_ids": [
+    "b1_close_timing_mac",
+    "b2_close_timing_multiplier",
+    "b3_reduce_area_fir",
+    "b4_reduce_power_iir",
+    "b5_remove_latches_decoder",
+    "b6_cdc_safe_fifo",
+    "b7_fair_arbiter",
+    "b8_axi_byte_enables"
+  ],
+  "tasks": {
+    "b1_close_timing_mac": {
+      "skipped": false,
+      "manifest": "b1_close_timing_mac.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 16321,
+      "tokens_out": 532,
+      "cost_usd": 0.094905,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b2_close_timing_multiplier": {
+      "skipped": false,
+      "manifest": "b2_close_timing_multiplier.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 22789,
+      "tokens_out": 1570,
+      "cost_usd": 0.15319500000000003,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b3_reduce_area_fir": {
+      "skipped": false,
+      "manifest": "b3_reduce_area_fir.json",
+      "objective_pass": true,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 62483,
+      "tokens_out": 4985,
+      "cost_usd": 0.43703999999999993,
+      "ppa_delta": {
+        "area_ratio": 0.552732742771185,
+        "power_ratio": 0.3687386028322825,
+        "wns_delta_ns": -1.5546524507785382
+      }
+    },
+    "b4_reduce_power_iir": {
+      "skipped": false,
+      "manifest": "b4_reduce_power_iir.json",
+      "objective_pass": false,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 18597,
+      "tokens_out": 1036,
+      "cost_usd": 0.11888500000000013,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b5_remove_latches_decoder": {
+      "skipped": false,
+      "manifest": "b5_remove_latches_decoder.json",
+      "objective_pass": true,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 15752,
+      "tokens_out": 458,
+      "cost_usd": 0.0902099999999999,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b6_cdc_safe_fifo": {
+      "skipped": false,
+      "manifest": "b6_cdc_safe_fifo.json",
+      "objective_pass": true,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 56914,
+      "tokens_out": 5129,
+      "cost_usd": 0.4127949999999997,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b7_fair_arbiter": {
+      "skipped": false,
+      "manifest": "b7_fair_arbiter.json",
+      "objective_pass": true,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 24563,
+      "tokens_out": 1220,
+      "cost_usd": 0.1533150000000003,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    },
+    "b8_axi_byte_enables": {
+      "skipped": false,
+      "manifest": "b8_axi_byte_enables.json",
+      "objective_pass": true,
+      "disqualified": false,
+      "budget_exceeded": null,
+      "tokens_in": 27512,
+      "tokens_out": 1996,
+      "cost_usd": 0.18745999999999996,
+      "ppa_delta": {
+        "area_ratio": null,
+        "power_ratio": null,
+        "wns_delta_ns": null
+      }
+    }
+  },
+  "tasks_attempted": 8,
+  "tasks_objective_met": 5,
+  "objective_met_rate": 0.625,
+  "median_ppa_delta": {
+    "area_ratio": 0.552732742771185,
+    "power_ratio": 0.3687386028322825,
+    "wns_delta_ns": -1.5546524507785382
+  },
+  "tokens_in": 244931,
+  "tokens_out": 16926,
+  "cost_usd": 1.647805,
+  "pre_run_estimate_usd": 37.5,
+  "timestamp": "2026-07-23T23:16:07.993935Z",
+  "signature": "1afeb7b79d6fae83f980c1d7dde6e6188420763052bc96d9fe8b989474b77d43"
+}
