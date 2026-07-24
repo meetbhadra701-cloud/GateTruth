@@ -54,6 +54,25 @@ class EvalRecord:
     cost_usd: float
 
 
+@dataclass(frozen=True)
+class PPADeltaRecord:
+    area_ratio: float | None
+    power_ratio: float | None
+    wns_delta_ns: float | None
+
+
+@dataclass(frozen=True)
+class AgentEvalRecord:
+    provider: str
+    model: str
+    tasks_attempted: int
+    tasks_objective_met: int
+    objective_met_rate: float
+    median_ppa_delta: PPADeltaRecord
+    cost_usd: float
+    tokens: int
+
+
 def generate_tables(
     *,
     out_dir: str | Path,
@@ -61,16 +80,18 @@ def generate_tables(
     refs_dir: str | Path = REPO_ROOT / "results" / "refs",
     mutation_dir: str | Path = REPO_ROOT / "results" / "mutation",
     eval_dir: str | Path = REPO_ROOT / "results" / "eval",
+    agent_eval_dir: str | Path = REPO_ROOT / "results" / "evalB",
     generated_date: date | None = None,
     git_sha: str | None = None,
 ) -> dict[str, Path]:
-    """Load live data and write all six Markdown/LaTeX table artifacts."""
+    """Load live data and write all eight Markdown/LaTeX table artifacts."""
 
     run_date = generated_date or datetime.now(UTC).date()
     sha = git_sha or _git_sha(REPO_ROOT)
     tasks = load_tasks(Path(tasks_root), Path(refs_dir))
     mutations = load_mutations(Path(mutation_dir))
     evaluations = load_evaluations(Path(eval_dir))
+    agent_evaluations = load_agent_evaluations(Path(agent_eval_dir))
     metadata = f"generated-on: {run_date.isoformat()} git-sha: {sha}"
     artifacts = {
         "eval_table.md": _eval_markdown(evaluations, metadata),
@@ -79,6 +100,8 @@ def generate_tables(
         "mutation_table.tex": _mutation_latex(mutations, metadata),
         "tasks_table.md": _tasks_markdown(tasks, metadata),
         "tasks_table.tex": _tasks_latex(tasks, metadata),
+        "trackb_table.md": _trackb_markdown(agent_evaluations, metadata),
+        "trackb_table.tex": _trackb_latex(agent_evaluations, metadata),
     }
     output = Path(out_dir)
     output.mkdir(parents=True, exist_ok=True)
@@ -176,6 +199,76 @@ def load_evaluations(directory: Path) -> list[EvalRecord]:
             )
         )
     return sorted(records, key=lambda row: (-row.aggregate_score, row.model, row.provider))
+
+
+def load_agent_evaluations(directory: Path) -> list[AgentEvalRecord]:
+    """Load canonical-signature-validated Track B summaries."""
+
+    if not directory.is_dir():
+        return []
+    records: list[AgentEvalRecord] = []
+    for path in sorted(directory.glob("**/summary.json")):
+        try:
+            raw = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise TableDataError(f"invalid agent eval summary {path}: {exc}") from exc
+        if not isinstance(raw, dict):
+            raise TableDataError(f"agent eval summary must be an object: {path}")
+        signature = raw.get("signature")
+        if not isinstance(signature, str) or signature != compute_manifest_signature(raw):
+            raise TableDataError(f"unsigned or tampered agent eval summary: {path}")
+        if raw.get("track") != "B":
+            raise TableDataError(f"agent eval summary track must be B: {path}")
+
+        attempted = _integer(raw, "tasks_attempted", path)
+        objective_met = _integer(raw, "tasks_objective_met", path)
+        rate = _number(raw, "objective_met_rate", path)
+        if objective_met > attempted or rate > 1:
+            raise TableDataError(f"invalid agent objective counts in {path}")
+        expected_rate = objective_met / attempted if attempted else 0.0
+        if not math.isclose(rate, expected_rate, abs_tol=1e-12):
+            raise TableDataError(f"agent objective-met rate mismatch in {path}")
+
+        median = raw.get("median_ppa_delta")
+        if not isinstance(median, dict):
+            raise TableDataError(f"median_ppa_delta must be an object in {path}")
+        area_ratio = _optional_number(
+            median,
+            "area_ratio",
+            path,
+            nonnegative=True,
+        )
+        power_ratio = _optional_number(
+            median,
+            "power_ratio",
+            path,
+            nonnegative=True,
+        )
+        records.append(
+            AgentEvalRecord(
+                provider=_text(raw, "provider", path),
+                model=_text(raw, "model", path),
+                tasks_attempted=attempted,
+                tasks_objective_met=objective_met,
+                objective_met_rate=rate,
+                median_ppa_delta=PPADeltaRecord(
+                    area_ratio=area_ratio,
+                    power_ratio=power_ratio,
+                    wns_delta_ns=_optional_number(
+                        median,
+                        "wns_delta_ns",
+                        path,
+                    ),
+                ),
+                cost_usd=_number(raw, "cost_usd", path),
+                tokens=_integer(raw, "tokens_in", path)
+                + _integer(raw, "tokens_out", path),
+            )
+        )
+    return sorted(
+        records,
+        key=lambda row: (-row.objective_met_rate, row.model, row.provider),
+    )
 
 
 def _reference_manifest(task_id: str, refs_dir: Path):
@@ -306,6 +399,50 @@ def _eval_latex(rows: list[EvalRecord], metadata: str) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _trackb_markdown(rows: list[AgentEvalRecord], metadata: str) -> str:
+    lines = [
+        f"<!-- {metadata} -->",
+        "| Provider | Model | Objectives met (n/N) | Objective-met rate | "
+        "Median PPA delta | Cost (USD) |",
+        "|---|---|---:|---:|---|---:|",
+    ]
+    lines.extend(
+        f"| {_md(row.provider)} | {_md(row.model)} | "
+        f"{row.tasks_objective_met}/{row.tasks_attempted} | "
+        f"{100.0 * row.objective_met_rate:.2f}% | "
+        f"{_md(_ppa_delta(row.median_ppa_delta))} | {row.cost_usd:.6f} |"
+        for row in rows
+    )
+    return "\n".join(lines) + "\n"
+
+
+def _trackb_latex(rows: list[AgentEvalRecord], metadata: str) -> str:
+    lines = [
+        f"% {metadata}",
+        r"\begin{tabular}{llrrlr}",
+        r"\toprule",
+        r"Provider & Model & Objectives met & Objective-met rate & "
+        r"Median PPA delta & Cost (USD) \\",
+        r"\midrule",
+    ]
+    lines.extend(
+        f"{_tex(row.provider)} & {_tex(row.model)} & "
+        f"{row.tasks_objective_met}/{row.tasks_attempted} & "
+        f"{100.0 * row.objective_met_rate:.2f}\\% & "
+        f"{_tex(_ppa_delta(row.median_ppa_delta))} & {row.cost_usd:.6f} \\\\"
+        for row in rows
+    )
+    lines.extend([r"\bottomrule", r"\end{tabular}"])
+    return "\n".join(lines) + "\n"
+
+
+def _ppa_delta(delta: PPADeltaRecord) -> str:
+    area = "N/A" if delta.area_ratio is None else f"{delta.area_ratio:.4f}x"
+    power = "N/A" if delta.power_ratio is None else f"{delta.power_ratio:.4f}x"
+    wns = "N/A" if delta.wns_delta_ns is None else f"{delta.wns_delta_ns:+.3f} ns"
+    return f"area={area}; power={power}; WNS={wns}"
+
+
 def _value(value: float | None, digits: int) -> str:
     return "N/A" if value is None else f"{value:.{digits}f}"
 
@@ -343,6 +480,25 @@ def _number(raw: dict[str, Any], key: str, path: Path) -> float:
     return result
 
 
+def _optional_number(
+    raw: dict[str, Any],
+    key: str,
+    path: Path,
+    *,
+    nonnegative: bool = False,
+) -> float | None:
+    value = raw.get(key)
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        raise TableDataError(f"{key} must be numeric or null in {path}")
+    result = float(value)
+    if not math.isfinite(result) or (nonnegative and result < 0):
+        qualifier = "nonnegative " if nonnegative else ""
+        raise TableDataError(f"{key} must be finite {qualifier}numeric or null in {path}")
+    return result
+
+
 def _git_sha(root: Path) -> str:
     result = subprocess.run(
         ["git", "rev-parse", "--short=12", "HEAD"],
@@ -361,6 +517,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--tasks-root", default="tasks")
     parser.add_argument("--refs-dir", default="results/refs")
     parser.add_argument("--eval-dir", default="results/eval")
+    parser.add_argument("--agent-eval-dir", default="results/evalB")
     parser.add_argument("--date", help="generated-on date override (YYYY-MM-DD)")
     args = parser.parse_args(argv)
     try:
@@ -371,6 +528,7 @@ def main(argv: list[str] | None = None) -> int:
             refs_dir=args.refs_dir,
             mutation_dir=args.mutation_dir,
             eval_dir=args.eval_dir,
+            agent_eval_dir=args.agent_eval_dir,
             generated_date=run_date,
         )
     except (OSError, TableDataError, ValueError) as exc:

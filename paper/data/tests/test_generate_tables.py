@@ -13,7 +13,11 @@ from pathlib import Path
 import pytest
 
 from harness.schemas.canonical_json import compute_manifest_signature
-from paper.data.generate_tables import TableDataError, generate_tables
+from paper.data.generate_tables import (
+    TableDataError,
+    generate_tables,
+    load_agent_evaluations,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 GOLDEN = Path(__file__).parent / "golden"
@@ -48,11 +52,59 @@ hidden_review: PENDING
     )
 
 
-def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path]:
+def _write_agent_summary(
+    root: Path,
+    *,
+    provider: str,
+    model: str,
+    attempted: int,
+    objective_met: int,
+    area_ratio: float | None,
+    power_ratio: float | None,
+    wns_delta_ns: float | None,
+    tokens_in: int,
+    tokens_out: int,
+    cost_usd: float,
+) -> None:
+    destination = root / provider / model
+    destination.mkdir(parents=True)
+    summary = {
+        "summary_version": "v1",
+        "suite_version": "v0.2",
+        "track": "B",
+        "provider": provider,
+        "model": model,
+        "official": True,
+        "task_ids": [f"b{index}" for index in range(attempted)],
+        "tasks": {},
+        "tasks_attempted": attempted,
+        "tasks_objective_met": objective_met,
+        "objective_met_rate": objective_met / attempted if attempted else 0.0,
+        "median_ppa_delta": {
+            "area_ratio": area_ratio,
+            "power_ratio": power_ratio,
+            "wns_delta_ns": wns_delta_ns,
+        },
+        "tokens_in": tokens_in,
+        "tokens_out": tokens_out,
+        "cost_usd": cost_usd,
+        "pre_run_estimate_usd": cost_usd,
+        "timestamp": "2026-01-02T00:00:00Z",
+        "signature": "0" * 64,
+    }
+    summary["signature"] = compute_manifest_signature(summary)
+    (destination / "summary.json").write_text(
+        json.dumps(summary, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path]:
     tasks = tmp_path / "tasks"
     refs = tmp_path / "refs"
     mutations = tmp_path / "mutation"
     evaluations = tmp_path / "eval" / "smoke" / "model-one"
+    agent_evaluations = tmp_path / "evalB" / "official"
     _write_task(tasks, "t1_alpha", "T1", True, "AAAAAAAA-BBBB-CCCC-DDDD-000000000001")
     _write_task(tasks, "t2_beta", "T2", False, "AAAAAAAA-BBBB-CCCC-DDDD-000000000002")
 
@@ -93,11 +145,50 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path]:
         json.dumps(summary, indent=2) + "\n",
         encoding="utf-8",
     )
-    return tasks, refs, mutations, tmp_path / "eval"
+    _write_agent_summary(
+        agent_evaluations,
+        provider="provider-z",
+        model="model-zeta",
+        attempted=4,
+        objective_met=3,
+        area_ratio=0.8,
+        power_ratio=None,
+        wns_delta_ns=-0.125,
+        tokens_in=300,
+        tokens_out=75,
+        cost_usd=0.02,
+    )
+    _write_agent_summary(
+        agent_evaluations,
+        provider="provider-b",
+        model="model-beta",
+        attempted=4,
+        objective_met=3,
+        area_ratio=0.75,
+        power_ratio=0.7,
+        wns_delta_ns=0.5,
+        tokens_in=250,
+        tokens_out=50,
+        cost_usd=0.015,
+    )
+    _write_agent_summary(
+        agent_evaluations,
+        provider="provider-a",
+        model="model-alpha",
+        attempted=2,
+        objective_met=1,
+        area_ratio=None,
+        power_ratio=0.9,
+        wns_delta_ns=0.25,
+        tokens_in=100,
+        tokens_out=25,
+        cost_usd=0.01,
+    )
+    return tasks, refs, mutations, tmp_path / "eval", tmp_path / "evalB"
 
 
 def test_all_tables_match_golden_files(tmp_path: Path) -> None:
-    tasks, refs, mutations, evaluations = _build_fixture(tmp_path)
+    tasks, refs, mutations, evaluations, agent_evaluations = _build_fixture(tmp_path)
     output = tmp_path / "output"
     generated = generate_tables(
         out_dir=output,
@@ -105,6 +196,7 @@ def test_all_tables_match_golden_files(tmp_path: Path) -> None:
         refs_dir=refs,
         mutation_dir=mutations,
         eval_dir=evaluations,
+        agent_eval_dir=agent_evaluations,
         generated_date=date(2026, 1, 2),
         git_sha="abc123def456",
     )
@@ -119,7 +211,7 @@ def test_all_tables_match_golden_files(tmp_path: Path) -> None:
 
 
 def test_tampered_eval_summary_is_refused(tmp_path: Path) -> None:
-    tasks, refs, mutations, evaluations = _build_fixture(tmp_path)
+    tasks, refs, mutations, evaluations, agent_evaluations = _build_fixture(tmp_path)
     summary_path = next(evaluations.glob("**/summary.json"))
     raw = json.loads(summary_path.read_text(encoding="utf-8"))
     raw["aggregate_mean"] = 99.0
@@ -132,13 +224,47 @@ def test_tampered_eval_summary_is_refused(tmp_path: Path) -> None:
             refs_dir=refs,
             mutation_dir=mutations,
             eval_dir=evaluations,
+            agent_eval_dir=agent_evaluations,
+            generated_date=date(2026, 1, 2),
+            git_sha="abc123def456",
+        )
+
+
+def test_agent_evaluations_are_sorted_and_extract_tokens(tmp_path: Path) -> None:
+    *_, agent_evaluations = _build_fixture(tmp_path)
+
+    rows = load_agent_evaluations(agent_evaluations)
+
+    assert [row.model for row in rows] == [
+        "model-beta",
+        "model-zeta",
+        "model-alpha",
+    ]
+    assert [row.tokens for row in rows] == [300, 375, 125]
+
+
+def test_tampered_agent_eval_summary_is_refused(tmp_path: Path) -> None:
+    tasks, refs, mutations, evaluations, agent_evaluations = _build_fixture(tmp_path)
+    summary_path = next(agent_evaluations.glob("**/summary.json"))
+    raw = json.loads(summary_path.read_text(encoding="utf-8"))
+    raw["tasks_objective_met"] = 0
+    summary_path.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+
+    with pytest.raises(TableDataError, match="tampered agent eval"):
+        generate_tables(
+            out_dir=tmp_path / "output",
+            tasks_root=tasks,
+            refs_dir=refs,
+            mutation_dir=mutations,
+            eval_dir=evaluations,
+            agent_eval_dir=agent_evaluations,
             generated_date=date(2026, 1, 2),
             git_sha="abc123def456",
         )
 
 
 def test_script_entrypoint_bootstraps_repo_imports(tmp_path: Path) -> None:
-    tasks, refs, mutations, evaluations = _build_fixture(tmp_path)
+    tasks, refs, mutations, evaluations, agent_evaluations = _build_fixture(tmp_path)
     output = tmp_path / "cli-output"
     script = REPO_ROOT / "paper" / "data" / "generate_tables.py"
     preserved = {"PATH", "PATHEXT", "SYSTEMROOT", "WINDIR", "COMSPEC", "HOME", "TMP", "TEMP"}
@@ -161,6 +287,8 @@ def test_script_entrypoint_bootstraps_repo_imports(tmp_path: Path) -> None:
             str(mutations),
             "--eval-dir",
             str(evaluations),
+            "--agent-eval-dir",
+            str(agent_evaluations),
             "--date",
             "2026-01-02",
         ],
@@ -180,7 +308,12 @@ def test_script_entrypoint_bootstraps_repo_imports(tmp_path: Path) -> None:
         "mutation_table.tex",
         "tasks_table.md",
         "tasks_table.tex",
+        "trackb_table.md",
+        "trackb_table.tex",
     ]
     assert "| mock | model-one | 1 | 12.50 | 125 | 0.001250 |" in (
         output / "eval_table.md"
+    ).read_text(encoding="utf-8")
+    assert "| provider-b | model-beta | 3/4 | 75.00% |" in (
+        output / "trackb_table.md"
     ).read_text(encoding="utf-8")
