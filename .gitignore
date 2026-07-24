@@ -30,3 +30,12 @@ sim_build/
 
 # SymbiYosys formal working directory (task name matches [options] task name in each props.sby)
 **/formal/props/
+
+# Published paper table artifacts: track only the .tex fragments the paper \inputs
+# (generated, but must ship so the paper compiles from a clean checkout without results/)
+!paper/data/build/
+paper/data/build/*
+!paper/data/build/*.tex
+
+# stray flock test locks
+results/*.lock
