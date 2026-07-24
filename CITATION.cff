@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use SiliconBench, please cite it as below."
+title: "SiliconBench: A PPA-Aware Benchmark for LLM and Agent RTL Design"
+abstract: >-
+  SiliconBench is a power-, performance-, and area-aware benchmark for evaluating
+  large language models and agents on register-transfer-level hardware design. It
+  scores generated and agent-repaired RTL through a pinned open-source synthesis
+  and static-timing flow, treating functional correctness as a severability gate
+  and PPA as the primary score relative to a human-reviewed reference.
+type: software
+authors:
+  - family-names: Bhadra
+    given-names: Meet
+version: "1.0.0"
+date-released: "2026-07-24"
+license: Apache-2.0
+keywords:
+  - benchmark
+  - large language models
+  - RTL
+  - hardware design
+  - electronic design automation
+  - power performance area
+  - agentic evaluation
