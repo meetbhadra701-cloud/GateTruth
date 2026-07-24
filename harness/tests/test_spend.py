@@ -8,6 +8,7 @@ import pytest
 
 from harness.providers import GenParams
 from harness.providers import anthropic as anthropic_module
+from harness.providers._http import ProviderRetryableError
 from harness.providers.anthropic import AnthropicProvider
 from harness.spend import (
     SpendCapExceeded,
@@ -82,7 +83,7 @@ def test_parse_error_releases_reservation_before_retry(
         seed=0,
     )
 
-    with pytest.raises(ValueError, match="contained no text"):
+    with pytest.raises(ProviderRetryableError, match="contained no text"):
         provider.generate("prompt", "system", params)
     after_error = load_spend(path)
     assert after_error["total_usd"] == 0.0

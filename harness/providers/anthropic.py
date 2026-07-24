@@ -10,6 +10,7 @@ from harness.providers._base import PricedProvider, require_int, require_mapping
 from harness.providers._http import (
     PROVIDER_READ_TIMEOUT_S,
     ProviderHTTPError,
+    ProviderRetryableError,
     post_json,
 )
 from harness.providers.pricing import supports_temperature
@@ -62,8 +63,10 @@ class AnthropicProvider(PricedProvider):
                 and block.get("type") == "text"
                 and isinstance(block.get("text"), str)
             )
-            if not text:
-                raise ValueError("Anthropic response contained no text")
+            if not text.strip():
+                raise ProviderRetryableError(
+                    "Anthropic response contained no text"
+                )
             usage: dict[str, Any] = require_mapping(response.get("usage"), "usage")
             tokens_in = require_int(
                 usage.get("input_tokens"),

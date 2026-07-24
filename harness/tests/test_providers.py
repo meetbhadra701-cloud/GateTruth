@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from http.client import IncompleteRead
 from io import BytesIO
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -232,6 +233,83 @@ def test_http_error_does_not_echo_response_body(monkeypatch):
         )
     assert str(caught.value) == "provider HTTP 401"
     assert secret not in str(caught.value)
+
+
+@pytest.mark.parametrize(
+    "status",
+    sorted(http_module.RETRYABLE_HTTP_STATUS_CODES),
+)
+def test_transient_http_statuses_are_classified_retryable(monkeypatch, status):
+    def fake_urlopen(*args, **kwargs):
+        raise HTTPError(
+            "https://provider.invalid",
+            status,
+            "transient",
+            {},
+            BytesIO(b"temporary failure"),
+        )
+
+    monkeypatch.setattr(http_module, "urlopen", fake_urlopen)
+    with pytest.raises(http_module.ProviderRetryableError, match=f"HTTP {status}"):
+        http_module.post_json(
+            "https://provider.invalid",
+            headers={},
+            payload={"prompt": "hello"},
+        )
+
+
+@pytest.mark.parametrize("status", [400, 401, 403, 404, 422])
+def test_deterministic_http_statuses_remain_terminal(monkeypatch, status):
+    def fake_urlopen(*args, **kwargs):
+        raise HTTPError(
+            "https://provider.invalid",
+            status,
+            "terminal",
+            {},
+            BytesIO(b"bad request"),
+        )
+
+    monkeypatch.setattr(http_module, "urlopen", fake_urlopen)
+    with pytest.raises(http_module.ProviderHTTPError, match=f"HTTP {status}") as caught:
+        http_module.post_json(
+            "https://provider.invalid",
+            headers={},
+            payload={"prompt": "hello"},
+        )
+    assert not isinstance(caught.value, http_module.ProviderRetryableError)
+
+
+def test_incomplete_response_body_is_classified_retryable(monkeypatch):
+    def fake_urlopen(*args, **kwargs):
+        raise IncompleteRead(b'{"partial":', 20)
+
+    monkeypatch.setattr(http_module, "urlopen", fake_urlopen)
+    with pytest.raises(
+        http_module.ProviderRetryableError,
+        match="incomplete",
+    ):
+        http_module.post_json(
+            "https://provider.invalid",
+            headers={},
+            payload={"prompt": "hello"},
+        )
+
+
+def test_invalid_json_response_is_classified_retryable(monkeypatch):
+    monkeypatch.setattr(
+        http_module,
+        "urlopen",
+        lambda *args, **kwargs: BytesIO(b"{not-json"),
+    )
+    with pytest.raises(
+        http_module.ProviderRetryableError,
+        match="invalid JSON",
+    ):
+        http_module.post_json(
+            "https://provider.invalid",
+            headers={},
+            payload={"prompt": "hello"},
+        )
 
 
 @pytest.mark.parametrize("failure", [URLError("offline"), TimeoutError()])
