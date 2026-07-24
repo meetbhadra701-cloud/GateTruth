@@ -17,6 +17,7 @@ from paper.data.generate_tables import (
     TableDataError,
     generate_tables,
     load_agent_evaluations,
+    load_evaluations,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -29,6 +30,16 @@ TRACK_A_FIXTURE = (
     / "eval"
     / "smoke"
     / "claude-haiku-4-5-20251001"
+)
+TRACK_B_FIXTURE = (
+    REPO_ROOT
+    / "site"
+    / "tests"
+    / "fixtures"
+    / "agent"
+    / "smoke"
+    / "claude-haiku-4-5-20251001"
+    / "toy_taskB.json"
 )
 CANARY_PREFIX = "SILICONBENCH-" + "CANARY-"
 
@@ -52,12 +63,101 @@ hidden_review: PENDING
     )
 
 
+def _write_agent_task(root: Path, task_id: str) -> None:
+    task_root = root / task_id
+    task_root.mkdir(parents=True)
+    (task_root / "objective.yaml").write_text(
+        f"id: {task_id}\nobjective: fixture\n",
+        encoding="utf-8",
+    )
+
+
+def _write_track_a_manifest(
+    path: Path,
+    *,
+    task_id: str,
+    provider: str,
+    model: str,
+) -> dict:
+    raw = json.loads(
+        (TRACK_A_FIXTURE / "t1_gray_counter" / "sample_1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    raw.update(task_id=task_id, provider=provider, model=model)
+    raw["signature"] = compute_manifest_signature(raw)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+    return raw
+
+
+def _write_track_a_summary(
+    root: Path,
+    *,
+    run_name: str,
+    provider: str,
+    model: str,
+    task_ids: list[str],
+    aggregate_score: float,
+    tokens_in: int,
+    tokens_out: int,
+    cost_usd: float,
+) -> None:
+    destination = root / run_name / model
+    tasks: dict[str, dict] = {}
+    for task_id in task_ids:
+        relative = f"{task_id}/sample_1.json"
+        manifest = _write_track_a_manifest(
+            destination / relative,
+            task_id=task_id,
+            provider=provider,
+            model=model,
+        )
+        tasks[task_id] = {
+            "scores": [manifest["task_score"]],
+            "mean_score": manifest["task_score"],
+            "samples": [
+                {
+                    "sample": 1,
+                    "score": manifest["task_score"],
+                    "manifest": relative,
+                    "manifest_signature": manifest["signature"],
+                }
+            ],
+            "skipped": False,
+        }
+    summary = {
+        "suite_version": "v0.2",
+        "prompt_version": "track-a-v1",
+        "provider": provider,
+        "model": model,
+        "temperature": 0.0,
+        "official": True,
+        "samples_per_task": 1,
+        "task_ids": task_ids,
+        "tasks": tasks,
+        "aggregate_mean": aggregate_score,
+        "tokens_in": tokens_in,
+        "tokens_out": tokens_out,
+        "cost_usd": cost_usd,
+        "pre_run_estimate_usd": cost_usd,
+        "timestamp": "2026-01-02T00:00:00Z",
+        "signature": "0" * 64,
+    }
+    summary["signature"] = compute_manifest_signature(summary)
+    (destination / "summary.json").write_text(
+        json.dumps(summary, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
 def _write_agent_summary(
     root: Path,
     *,
+    run_name: str,
     provider: str,
     model: str,
-    attempted: int,
+    task_ids: list[str],
     objective_met: int,
     area_ratio: float | None,
     power_ratio: float | None,
@@ -66,8 +166,30 @@ def _write_agent_summary(
     tokens_out: int,
     cost_usd: float,
 ) -> None:
-    destination = root / provider / model
+    destination = root / run_name / provider / model
     destination.mkdir(parents=True)
+    tasks: dict[str, dict] = {}
+    for task_id in task_ids:
+        manifest = json.loads(TRACK_B_FIXTURE.read_text(encoding="utf-8"))
+        manifest.update(task_id=task_id, provider=provider, model=model)
+        manifest["signature"] = compute_manifest_signature(manifest)
+        manifest_name = f"{task_id}.json"
+        (destination / manifest_name).write_text(
+            json.dumps(manifest, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        tasks[task_id] = {
+            "skipped": False,
+            "manifest": manifest_name,
+            "objective_pass": False,
+            "disqualified": False,
+            "budget_exceeded": None,
+            "tokens_in": manifest["tokens_in"],
+            "tokens_out": manifest["tokens_out"],
+            "cost_usd": manifest["cost_usd"],
+            "ppa_delta": manifest["ppa_delta"],
+        }
+    attempted = len(task_ids)
     summary = {
         "summary_version": "v1",
         "suite_version": "v0.2",
@@ -75,8 +197,8 @@ def _write_agent_summary(
         "provider": provider,
         "model": model,
         "official": True,
-        "task_ids": [f"b{index}" for index in range(attempted)],
-        "tasks": {},
+        "task_ids": task_ids,
+        "tasks": tasks,
         "tasks_attempted": attempted,
         "tasks_objective_met": objective_met,
         "objective_met_rate": objective_met / attempted if attempted else 0.0,
@@ -99,14 +221,17 @@ def _write_agent_summary(
     )
 
 
-def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path]:
+def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path, Path]:
     tasks = tmp_path / "tasks"
+    agent_tasks = tmp_path / "tasksB"
     refs = tmp_path / "refs"
     mutations = tmp_path / "mutation"
-    evaluations = tmp_path / "eval" / "smoke" / "model-one"
-    agent_evaluations = tmp_path / "evalB" / "official"
+    evaluations = tmp_path / "eval"
+    agent_evaluations = tmp_path / "evalB"
     _write_task(tasks, "t1_alpha", "T1", True, "AAAAAAAA-BBBB-CCCC-DDDD-000000000001")
     _write_task(tasks, "t2_beta", "T2", False, "AAAAAAAA-BBBB-CCCC-DDDD-000000000002")
+    _write_agent_task(agent_tasks, "b1_alpha")
+    _write_agent_task(agent_tasks, "b2_beta")
 
     refs.mkdir()
     manifest = json.loads(
@@ -129,28 +254,35 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path]:
         encoding="utf-8",
     )
 
-    evaluations.mkdir(parents=True)
-    summary = {
-        "aggregate_mean": 12.5,
-        "cost_usd": 0.00125,
-        "model": "model-one",
-        "provider": "mock",
-        "tasks": {"t1_alpha": {"skipped": False}},
-        "tokens_in": 100,
-        "tokens_out": 25,
-        "signature": "0" * 64,
-    }
-    summary["signature"] = compute_manifest_signature(summary)
-    (evaluations / "summary.json").write_text(
-        json.dumps(summary, indent=2) + "\n",
-        encoding="utf-8",
+    _write_track_a_summary(
+        evaluations,
+        run_name="official",
+        provider="mock",
+        model="model-one",
+        task_ids=["t1_alpha", "t2_beta"],
+        aggregate_score=12.5,
+        tokens_in=100,
+        tokens_out=25,
+        cost_usd=0.00125,
+    )
+    _write_track_a_summary(
+        evaluations,
+        run_name="diagnostic",
+        provider="mock",
+        model="model-one",
+        task_ids=["t1_alpha"],
+        aggregate_score=99.0,
+        tokens_in=10,
+        tokens_out=5,
+        cost_usd=0.0001,
     )
     _write_agent_summary(
         agent_evaluations,
+        run_name="official",
         provider="provider-z",
         model="model-zeta",
-        attempted=4,
-        objective_met=3,
+        task_ids=["b1_alpha", "b2_beta"],
+        objective_met=1,
         area_ratio=0.8,
         power_ratio=None,
         wns_delta_ns=-0.125,
@@ -160,10 +292,11 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path]:
     )
     _write_agent_summary(
         agent_evaluations,
+        run_name="official",
         provider="provider-b",
         model="model-beta",
-        attempted=4,
-        objective_met=3,
+        task_ids=["b1_alpha", "b2_beta"],
+        objective_met=2,
         area_ratio=0.75,
         power_ratio=0.7,
         wns_delta_ns=0.5,
@@ -173,9 +306,10 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path]:
     )
     _write_agent_summary(
         agent_evaluations,
+        run_name="official",
         provider="provider-a",
         model="model-alpha",
-        attempted=2,
+        task_ids=["b1_alpha", "b2_beta"],
         objective_met=1,
         area_ratio=None,
         power_ratio=0.9,
@@ -184,11 +318,27 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path]:
         tokens_out=25,
         cost_usd=0.01,
     )
-    return tasks, refs, mutations, tmp_path / "eval", tmp_path / "evalB"
+    _write_agent_summary(
+        agent_evaluations,
+        run_name="diagnostic",
+        provider="provider-b",
+        model="model-beta",
+        task_ids=["b1_alpha"],
+        objective_met=1,
+        area_ratio=0.1,
+        power_ratio=0.1,
+        wns_delta_ns=9.0,
+        tokens_in=1,
+        tokens_out=1,
+        cost_usd=0.000001,
+    )
+    return tasks, refs, mutations, evaluations, agent_evaluations, agent_tasks
 
 
 def test_all_tables_match_golden_files(tmp_path: Path) -> None:
-    tasks, refs, mutations, evaluations, agent_evaluations = _build_fixture(tmp_path)
+    tasks, refs, mutations, evaluations, agent_evaluations, agent_tasks = (
+        _build_fixture(tmp_path)
+    )
     output = tmp_path / "output"
     generated = generate_tables(
         out_dir=output,
@@ -197,6 +347,7 @@ def test_all_tables_match_golden_files(tmp_path: Path) -> None:
         mutation_dir=mutations,
         eval_dir=evaluations,
         agent_eval_dir=agent_evaluations,
+        agent_tasks_root=agent_tasks,
         generated_date=date(2026, 1, 2),
         git_sha="abc123def456",
     )
@@ -211,7 +362,9 @@ def test_all_tables_match_golden_files(tmp_path: Path) -> None:
 
 
 def test_tampered_eval_summary_is_refused(tmp_path: Path) -> None:
-    tasks, refs, mutations, evaluations, agent_evaluations = _build_fixture(tmp_path)
+    tasks, refs, mutations, evaluations, agent_evaluations, agent_tasks = (
+        _build_fixture(tmp_path)
+    )
     summary_path = next(evaluations.glob("**/summary.json"))
     raw = json.loads(summary_path.read_text(encoding="utf-8"))
     raw["aggregate_mean"] = 99.0
@@ -225,26 +378,111 @@ def test_tampered_eval_summary_is_refused(tmp_path: Path) -> None:
             mutation_dir=mutations,
             eval_dir=evaluations,
             agent_eval_dir=agent_evaluations,
+            agent_tasks_root=agent_tasks,
             generated_date=date(2026, 1, 2),
             git_sha="abc123def456",
         )
 
 
 def test_agent_evaluations_are_sorted_and_extract_tokens(tmp_path: Path) -> None:
-    *_, agent_evaluations = _build_fixture(tmp_path)
+    *_, agent_evaluations, agent_tasks = _build_fixture(tmp_path)
 
-    rows = load_agent_evaluations(agent_evaluations)
+    expected = frozenset(path.parent.name for path in agent_tasks.glob("*/objective.yaml"))
+    rows = load_agent_evaluations(agent_evaluations, expected)
 
     assert [row.model for row in rows] == [
         "model-beta",
-        "model-zeta",
         "model-alpha",
+        "model-zeta",
     ]
-    assert [row.tokens for row in rows] == [300, 375, 125]
+    assert [row.tokens for row in rows] == [300, 125, 375]
+
+
+def test_complete_runs_win_over_partial_diagnostics(tmp_path: Path) -> None:
+    tasks, _, _, evaluations, agent_evaluations, agent_tasks = _build_fixture(tmp_path)
+    track_a_ids = frozenset(path.parent.name for path in tasks.glob("*/task.yaml"))
+    track_b_ids = frozenset(
+        path.parent.name for path in agent_tasks.glob("*/objective.yaml")
+    )
+
+    track_a_rows = load_evaluations(evaluations, track_a_ids)
+    track_b_rows = load_agent_evaluations(agent_evaluations, track_b_ids)
+
+    assert [(row.model, row.tasks, row.aggregate_score) for row in track_a_rows] == [
+        ("model-one", 2, 12.5)
+    ]
+    assert [row.model for row in track_b_rows].count("model-beta") == 1
+    beta = next(row for row in track_b_rows if row.model == "model-beta")
+    assert (beta.tasks_attempted, beta.tasks_objective_met) == (2, 2)
+
+
+def test_partial_only_run_warns_and_is_omitted(tmp_path: Path, capsys) -> None:
+    evaluations = tmp_path / "eval"
+    _write_track_a_summary(
+        evaluations,
+        run_name="diagnostic",
+        provider="mock",
+        model="partial-only",
+        task_ids=["t1_alpha"],
+        aggregate_score=99.0,
+        tokens_in=10,
+        tokens_out=5,
+        cost_usd=0.0001,
+    )
+
+    assert load_evaluations(
+        evaluations,
+        frozenset({"t1_alpha", "t2_beta"}),
+    ) == []
+    warning = capsys.readouterr().err
+    assert "warning: omitted Track A mock/partial-only" in warning
+    assert "no complete official run" in warning
+
+
+def test_track_a_tampered_task_manifest_omits_run(tmp_path: Path, capsys) -> None:
+    tasks, _, _, evaluations, _, _ = _build_fixture(tmp_path)
+    manifest_path = (
+        evaluations
+        / "official"
+        / "model-one"
+        / "t1_alpha"
+        / "sample_1.json"
+    )
+    raw = json.loads(manifest_path.read_text(encoding="utf-8"))
+    raw["task_score"] = 99.0
+    manifest_path.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+    expected = frozenset(path.parent.name for path in tasks.glob("*/task.yaml"))
+
+    assert load_evaluations(evaluations, expected) == []
+    assert "manifest is missing or invalid" in capsys.readouterr().err
+
+
+def test_track_b_tampered_task_manifest_omits_run(tmp_path: Path, capsys) -> None:
+    *_, agent_evaluations, agent_tasks = _build_fixture(tmp_path)
+    manifest_path = (
+        agent_evaluations
+        / "official"
+        / "provider-b"
+        / "model-beta"
+        / "b1_alpha.json"
+    )
+    raw = json.loads(manifest_path.read_text(encoding="utf-8"))
+    raw["task_score"] = 99.0
+    manifest_path.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+    expected = frozenset(
+        path.parent.name for path in agent_tasks.glob("*/objective.yaml")
+    )
+
+    rows = load_agent_evaluations(agent_evaluations, expected)
+
+    assert "model-beta" not in {row.model for row in rows}
+    assert "manifest is missing or invalid" in capsys.readouterr().err
 
 
 def test_tampered_agent_eval_summary_is_refused(tmp_path: Path) -> None:
-    tasks, refs, mutations, evaluations, agent_evaluations = _build_fixture(tmp_path)
+    tasks, refs, mutations, evaluations, agent_evaluations, agent_tasks = (
+        _build_fixture(tmp_path)
+    )
     summary_path = next(agent_evaluations.glob("**/summary.json"))
     raw = json.loads(summary_path.read_text(encoding="utf-8"))
     raw["tasks_objective_met"] = 0
@@ -258,13 +496,16 @@ def test_tampered_agent_eval_summary_is_refused(tmp_path: Path) -> None:
             mutation_dir=mutations,
             eval_dir=evaluations,
             agent_eval_dir=agent_evaluations,
+            agent_tasks_root=agent_tasks,
             generated_date=date(2026, 1, 2),
             git_sha="abc123def456",
         )
 
 
 def test_script_entrypoint_bootstraps_repo_imports(tmp_path: Path) -> None:
-    tasks, refs, mutations, evaluations, agent_evaluations = _build_fixture(tmp_path)
+    tasks, refs, mutations, evaluations, agent_evaluations, agent_tasks = (
+        _build_fixture(tmp_path)
+    )
     output = tmp_path / "cli-output"
     script = REPO_ROOT / "paper" / "data" / "generate_tables.py"
     preserved = {"PATH", "PATHEXT", "SYSTEMROOT", "WINDIR", "COMSPEC", "HOME", "TMP", "TEMP"}
@@ -289,6 +530,8 @@ def test_script_entrypoint_bootstraps_repo_imports(tmp_path: Path) -> None:
             str(evaluations),
             "--agent-eval-dir",
             str(agent_evaluations),
+            "--agent-tasks-root",
+            str(agent_tasks),
             "--date",
             "2026-01-02",
         ],
@@ -311,9 +554,9 @@ def test_script_entrypoint_bootstraps_repo_imports(tmp_path: Path) -> None:
         "trackb_table.md",
         "trackb_table.tex",
     ]
-    assert "| mock | model-one | 1 | 12.50 | 125 | 0.001250 |" in (
+    assert "| mock | model-one | 2 | 12.50 | 125 | 0.001250 |" in (
         output / "eval_table.md"
     ).read_text(encoding="utf-8")
-    assert "| provider-b | model-beta | 3/4 | 75.00% |" in (
+    assert "| provider-b | model-beta | 2/2 | 100.00% |" in (
         output / "trackb_table.md"
     ).read_text(encoding="utf-8")
