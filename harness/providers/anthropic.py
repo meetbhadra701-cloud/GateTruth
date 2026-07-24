@@ -52,24 +52,30 @@ class AnthropicProvider(PricedProvider):
                 payload=payload,
                 timeout_s=PROVIDER_READ_TIMEOUT_S,
             )
-        except ProviderHTTPError:
+            content = response.get("content")
+            if not isinstance(content, list):
+                raise ValueError("Anthropic response content must be a list")
+            text = "".join(
+                block["text"]
+                for block in content
+                if isinstance(block, dict)
+                and block.get("type") == "text"
+                and isinstance(block.get("text"), str)
+            )
+            if not text:
+                raise ValueError("Anthropic response contained no text")
+            usage: dict[str, Any] = require_mapping(response.get("usage"), "usage")
+            tokens_in = require_int(
+                usage.get("input_tokens"),
+                "usage.input_tokens",
+            )
+            tokens_out = require_int(
+                usage.get("output_tokens"),
+                "usage.output_tokens",
+            )
+        except (ProviderHTTPError, ValueError):
             self.release_call(reserved_usd=reserved)
             raise
-        content = response.get("content")
-        if not isinstance(content, list):
-            raise ValueError("Anthropic response content must be a list")
-        text = "".join(
-            block["text"]
-            for block in content
-            if isinstance(block, dict)
-            and block.get("type") == "text"
-            and isinstance(block.get("text"), str)
-        )
-        if not text:
-            raise ValueError("Anthropic response contained no text")
-        usage: dict[str, Any] = require_mapping(response.get("usage"), "usage")
-        tokens_in = require_int(usage.get("input_tokens"), "usage.input_tokens")
-        tokens_out = require_int(usage.get("output_tokens"), "usage.output_tokens")
         self.finish_call(
             reserved_usd=reserved,
             tokens_in=tokens_in,
