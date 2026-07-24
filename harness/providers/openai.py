@@ -10,6 +10,7 @@ from harness.providers._base import PricedProvider, require_int, require_mapping
 from harness.providers._http import (
     PROVIDER_READ_TIMEOUT_S,
     ProviderHTTPError,
+    ProviderRetryableError,
     post_json,
 )
 from harness.providers.pricing import supports_temperature
@@ -56,13 +57,25 @@ class OpenAIProvider(PricedProvider):
                 timeout_s=PROVIDER_READ_TIMEOUT_S,
             )
             choices = response.get("choices")
-            if not isinstance(choices, list) or not choices:
-                raise ValueError("OpenAI response choices must be a nonempty list")
+            if not isinstance(choices, list):
+                raise ValueError("OpenAI response choices must be a list")
+            if not choices:
+                raise ProviderRetryableError(
+                    "OpenAI response choices were empty"
+                )
             choice = require_mapping(choices[0], "choices[0]")
             message = require_mapping(choice.get("message"), "choices[0].message")
             text = message.get("content")
-            if not isinstance(text, str) or not text:
-                raise ValueError("OpenAI response contained no text")
+            if text is None:
+                raise ProviderRetryableError(
+                    "OpenAI response contained no text"
+                )
+            if not isinstance(text, str):
+                raise ValueError("OpenAI response text must be a string")
+            if not text.strip():
+                raise ProviderRetryableError(
+                    "OpenAI response contained no text"
+                )
             usage = require_mapping(response.get("usage"), "usage")
             tokens_in = require_int(
                 usage.get("prompt_tokens"),
