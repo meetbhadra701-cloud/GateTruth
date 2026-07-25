@@ -46,6 +46,8 @@ class LeaderboardRow:
     model: str
     prompt_version: str
     aggregate_score: float
+    pass_at_1: float
+    mean_ppa: float | None
     tasks_attempted: int
     tasks_passed: int
     tokens_in: int
@@ -215,6 +217,9 @@ def _load_summary(path: Path, results_root: Path) -> LeaderboardRow:
     model_root = path.parent.resolve()
     task_rows: list[TaskRow] = []
     included_scores: list[float] = []
+    passed_ppa: list[float] = []
+    attempted_samples = 0
+    passed_samples = 0
     total_tokens_in = 0
     total_tokens_out = 0
     total_cost = 0.0
@@ -282,6 +287,11 @@ def _load_summary(path: Path, results_root: Path) -> LeaderboardRow:
             all_official = False
         else:
             included_scores.extend(validated_scores)
+            attempted_samples += len(manifests)
+            for manifest in manifests:
+                if manifest.task_score > 0:
+                    passed_samples += 1
+                    passed_ppa.append(manifest.ppa)
         representative = manifests[0]
         task_rows.append(
             TaskRow(
@@ -312,6 +322,8 @@ def _load_summary(path: Path, results_root: Path) -> LeaderboardRow:
         model=model,
         prompt_version=prompt_version,
         aggregate_score=aggregate,
+        pass_at_1=(100.0 * passed_samples / attempted_samples) if attempted_samples else 0.0,
+        mean_ppa=fmean(passed_ppa) if passed_ppa else None,
         tasks_attempted=attempted,
         tasks_passed=passed,
         tokens_in=tokens_in,
@@ -458,7 +470,9 @@ def _public_row(row: LeaderboardRow) -> dict[str, Any]:
         "cost_usd": row.cost_usd,
         "detail_page": row.detail_page,
         "model": row.model,
+        "mean_ppa": row.mean_ppa,
         "official": row.official,
+        "pass_at_1": row.pass_at_1,
         "prompt_version": row.prompt_version,
         "provider": row.provider,
         "run_date": row.run_date,
@@ -501,6 +515,8 @@ def _render_index(rows: list[LeaderboardRow], agent_rows: list[AgentRow]) -> str
             f'<td><a href="{html.escape(row.detail_page)}">{html.escape(row.model)}</a>'
             f'<span class="sub">{html.escape(row.provider)} / {html.escape(row.run_id)}</span></td>'
             f'<td class="score">{row.aggregate_score:.2f}</td>'
+            f"<td>{row.pass_at_1:.1f}%</td>"
+            f"<td>{'--' if row.mean_ppa is None else f'{row.mean_ppa:.4f}x'}</td>"
             f"<td>{row.tasks_passed}/{row.tasks_attempted}</td>"
             f"<td>${row.cost_usd:.6f}</td>"
             f"<td>{row.tokens_in + row.tokens_out:,}</td>"
@@ -508,7 +524,7 @@ def _render_index(rows: list[LeaderboardRow], agent_rows: list[AgentRow]) -> str
             f'<td><span class="badge {badge}">{"OFFICIAL" if row.official else "DEV"}</span></td>'
             "</tr>"
         )
-    track_a_table = "".join(body) or '<tr><td colspan="8">No Track A results.</td></tr>'
+    track_a_table = "".join(body) or '<tr><td colspan="10">No Track A results.</td></tr>'
     agent_body = []
     for row in agent_rows:
         badge = "official" if row.official else "dev"
@@ -531,12 +547,34 @@ def _render_index(rows: list[LeaderboardRow], agent_rows: list[AgentRow]) -> str
     track_b_table = "".join(agent_body) or '<tr><td colspan="8">No Track B results.</td></tr>'
     content = (
         '<header><p class="kicker">SiliconBench</p><h1>RTL model leaderboard</h1>'
-        '<p class="lede">Signed PPA-aware evaluation results.</p></header>'
-        '<main><section><h2>Track A (generation)</h2><div class="table-wrap"><table>'
+        '<p class="lede">Signed PPA-aware evaluation results.</p>'
+        '<nav class="resource-nav" aria-label="Leaderboard resources">'
+        '<a data-tour="submit-model" href="https://github.com/meetbhadra701-cloud/SiliconBench/compare">'
+        'Submit your model</a>'
+        '<a data-tour="methodology" href="https://github.com/meetbhadra701-cloud/SiliconBench/blob/main/60-Paper/SiliconBench-v1.0.md">'
+        'Methodology</a></nav></header>'
+        '<main><aside class="score-guide" aria-label="Score guide">'
+        '<div data-tour="silicon-score"><strong>SiliconScore</strong>'
+        '<span>Pass@1 multiplied by normalized mean PPA.</span></div>'
+        '<div data-tour="score-columns"><strong>Pass@1 vs Mean PPA</strong>'
+        '<span>Correctness rate and physical quality over passing designs.</span></div>'
+        '<button class="tier-toggle" data-tour="tier-toggle" type="button" '
+        'aria-expanded="false" aria-controls="tier-breakdown">Tier breakdown</button>'
+        '<div id="tier-breakdown" class="tier-breakdown" hidden>'
+        '<span><strong>T1</strong> primitives</span><span><strong>T2</strong> IP blocks</span>'
+        '<span><strong>T3</strong> systems and datapaths</span></div></aside>'
+        '<div class="track-tabs" data-tour="track-tabs" role="tablist" '
+        'aria-label="Leaderboard tracks">'
+        '<button type="button" role="tab" aria-selected="true" aria-controls="track-a">Track A</button>'
+        '<button type="button" role="tab" aria-selected="false" aria-controls="track-b">Track B</button>'
+        '</div><section id="track-a" role="tabpanel"><h2>Track A (generation)</h2>'
+        '<div class="table-wrap"><table>'
         '<thead><tr><th>#</th><th>Model</th>'
-        '<th>Score</th><th>Passed</th><th>Cost</th><th>Tokens</th><th>Date</th>'
+        '<th>SiliconScore</th><th>Pass@1</th><th>Mean PPA</th><th>Passed</th>'
+        '<th>Cost</th><th>Tokens</th><th>Date</th>'
         f"<th>Run</th></tr></thead><tbody>{track_a_table}</tbody></table></div></section>"
-        '<section><h2>Track B (agentic)</h2><div class="table-wrap"><table><thead><tr>'
+        '<section id="track-b" role="tabpanel" hidden><h2>Track B (agentic)</h2>'
+        '<div class="table-wrap"><table><thead><tr>'
         '<th>Model</th><th>Task</th><th>Objective</th><th>Disqualified</th>'
         '<th>Budget limit</th><th>Cost</th><th>Tokens</th><th>Run</th></tr></thead>'
         f"<tbody>{track_b_table}</tbody></table></div></section></main>"
@@ -621,13 +659,114 @@ def _page(title: str, content: str) -> str:
     css = """
 :root{color-scheme:light dark;--bg:#f6f7f9;--panel:#fff;--text:#17202a;--muted:#66717e;--line:#d9dee5;--link:#185abd;--good:#08783e;--warn:#9a5b00;--bad:#b42318}
 @media(prefers-color-scheme:dark){:root{--bg:#111419;--panel:#191e25;--text:#edf1f5;--muted:#a4afbb;--line:#343c47;--link:#7eb4ff;--good:#5fd492;--warn:#f2bd68;--bad:#ff8a82}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,sans-serif}header,main,nav{width:min(1180px,calc(100% - 32px));margin:0 auto}header{padding:36px 0 22px}nav{padding-top:24px}section+section{margin-top:30px}h1{font-size:30px;letter-spacing:0;margin:4px 0}h2{font-size:18px;letter-spacing:0;margin:0 0 10px}.kicker{color:var(--link);font-weight:700;margin:0}.lede,.sub{color:var(--muted)}.sub{display:block;font-size:12px;margin-top:2px}a{color:var(--link);font-weight:600;text-decoration:none}a:hover{text-decoration:underline}.table-wrap{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:auto}table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--line);padding:12px 14px;text-align:left;vertical-align:top;white-space:nowrap}th{color:var(--muted);font-size:12px;text-transform:uppercase}tbody tr:last-child td{border-bottom:0}.score{font-variant-numeric:tabular-nums;font-weight:700}.badge,.chip{border:1px solid var(--line);border-radius:4px;display:inline-block;font-size:11px;font-weight:700;padding:2px 6px}.official,.pass{border-color:var(--good);color:var(--good)}.dev,.skip{border-color:var(--warn);color:var(--warn)}.fail{border-color:var(--bad);color:var(--bad)}.chips{white-space:normal}.chip{margin:0 4px 4px 0}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.metrics div{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px}.metrics span{color:var(--muted);display:block;font-size:12px}.metrics strong{font-size:20px}@media(max-width:700px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}h1{font-size:24px}}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,sans-serif}header,main,nav{width:min(1180px,calc(100% - 32px));margin:0 auto}header{padding:36px 0 22px}nav{padding-top:24px}section+section{margin-top:30px}h1{font-size:30px;letter-spacing:0;margin:4px 0}h2{font-size:18px;letter-spacing:0;margin:0 0 10px}.kicker{color:var(--link);font-weight:700;margin:0}.lede,.sub{color:var(--muted)}.sub{display:block;font-size:12px;margin-top:2px}a{color:var(--link);font-weight:600;text-decoration:none}a:hover{text-decoration:underline}.resource-nav{display:flex;gap:18px;margin:14px 0 0;padding:0;width:auto}.score-guide{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:18px}.score-guide>div,.tier-toggle{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;text-align:left}.score-guide strong,.score-guide span{display:block}.score-guide span{color:var(--muted);font-size:12px;margin-top:2px}.tier-toggle{color:var(--link);cursor:pointer;font:inherit;font-weight:700}.tier-breakdown{grid-column:1/-1;display:flex!important;gap:18px}.tier-breakdown[hidden]{display:none!important}.tier-breakdown span{margin:0}.track-tabs{display:flex;gap:4px;margin-bottom:12px}.track-tabs button{background:transparent;border:1px solid var(--line);border-radius:4px;color:var(--muted);cursor:pointer;font:inherit;font-weight:700;padding:7px 12px}.track-tabs button[aria-selected=true]{background:var(--panel);border-color:var(--link);color:var(--link)}.table-wrap{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:auto}table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--line);padding:12px 14px;text-align:left;vertical-align:top;white-space:nowrap}th{color:var(--muted);font-size:12px;text-transform:uppercase}tbody tr:last-child td{border-bottom:0}.score{font-variant-numeric:tabular-nums;font-weight:700}.badge,.chip{border:1px solid var(--line);border-radius:4px;display:inline-block;font-size:11px;font-weight:700;padding:2px 6px}.official,.pass{border-color:var(--good);color:var(--good)}.dev,.skip{border-color:var(--warn);color:var(--warn)}.fail{border-color:var(--bad);color:var(--bad)}.chips{white-space:normal}.chip{margin:0 4px 4px 0}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.metrics div{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px}.metrics span{color:var(--muted);display:block;font-size:12px}.metrics strong{font-size:20px}.sb-tour-shade{background:rgba(5,10,18,.72);position:fixed;z-index:9990}.sb-tour-highlight{border:2px solid #61d095;box-shadow:0 0 0 2px rgba(5,10,18,.45);pointer-events:none;position:fixed;z-index:9991}.sb-tour-tooltip{background:var(--panel);border:1px solid var(--line);border-radius:6px;box-shadow:0 12px 36px rgba(0,0,0,.35);color:var(--text);max-height:calc(100vh - 24px);overflow:auto;padding:16px;position:fixed;width:min(320px,calc(100vw - 24px));z-index:9992}.sb-tour-close{background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:22px;height:30px;line-height:1;padding:0;position:absolute;right:8px;top:8px;width:30px}.sb-tour-step{color:var(--muted);font-size:12px;margin:0 34px 4px 0}.sb-tour-title{font-size:17px;margin:0 34px 6px 0}.sb-tour-copy{color:var(--muted);margin:0 0 14px}.sb-tour-footer{align-items:center;display:flex;gap:8px;justify-content:space-between}.sb-tour-actions{display:flex;gap:6px}.sb-tour-actions button{background:var(--panel);border:1px solid var(--line);border-radius:4px;color:var(--text);cursor:pointer;font:inherit;padding:6px 10px}.sb-tour-actions .sb-tour-next{background:var(--link);border-color:var(--link);color:#fff}.sb-tour-actions button:disabled{cursor:default;opacity:.45}.sb-tour-dots{display:flex;gap:5px}.sb-tour-dot{background:var(--line);border-radius:50%;height:6px;width:6px}.sb-tour-dot.active{background:var(--link)}@media(max-width:700px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.score-guide{grid-template-columns:1fr}.tier-breakdown{grid-column:1;flex-direction:column;gap:4px}h1{font-size:24px}.sb-tour-tooltip{padding:14px}.sb-tour-footer{align-items:flex-start;flex-direction:column}.sb-tour-actions{width:100%}.sb-tour-actions button{flex:1}}
+""".strip()
+    tour = """
+<div class="sb-tour" hidden>
+<div class="sb-tour-shade" data-shade="top"></div><div class="sb-tour-shade" data-shade="right"></div>
+<div class="sb-tour-shade" data-shade="bottom"></div><div class="sb-tour-shade" data-shade="left"></div>
+<div class="sb-tour-highlight"></div>
+<section class="sb-tour-tooltip" role="dialog" aria-modal="true" aria-labelledby="sb-tour-title">
+<button class="sb-tour-close" type="button" aria-label="Close tour">&times;</button>
+<p class="sb-tour-step"></p><h2 class="sb-tour-title" id="sb-tour-title"></h2>
+<p class="sb-tour-copy"></p><div class="sb-tour-footer"><div class="sb-tour-dots" aria-hidden="true"></div>
+<div class="sb-tour-actions"><button class="sb-tour-skip" type="button">Skip</button>
+<button class="sb-tour-back" type="button">Back</button>
+<button class="sb-tour-next" type="button">Next</button></div></div></section></div>
+""".strip()
+    js = """
+(()=>{"use strict";
+const seenKey="has_seen_tour";
+const steps=[
+{selector:'[data-tour="silicon-score"]',title:"SiliconScore",copy:"The headline score combines functional success with normalized physical quality."},
+{selector:'[data-tour="score-columns"]',title:"Pass@1 and Mean PPA",copy:"Pass@1 measures correctness. Mean PPA compares area, timing, and power only for passing designs."},
+{selector:'[data-tour="tier-toggle"]',title:"Tier breakdown",copy:"Open the tier guide to distinguish primitives, IP blocks, and system-level datapaths."},
+{selector:'[data-tour="track-tabs"]',title:"Two benchmark tracks",copy:"Track A measures generation. Track B measures agentic optimization and repair."},
+{selector:'[data-tour="submit-model"]',title:"Submit your model",copy:"Open a pull request to add a reproducible model run to the benchmark."},
+{selector:'[data-tour="methodology"]',title:"Read the methodology",copy:"Review the scoring, gates, task tiers, and reproducibility protocol behind every result."}
+];
+const storeSeen=()=>{try{localStorage.setItem(seenKey,"true")}catch(_error){}};
+const hasSeen=()=>{try{return localStorage.getItem(seenKey)==="true"}catch(_error){return false}};
+function initControls(){
+ const tier=document.querySelector(".tier-toggle");
+ if(tier)tier.addEventListener("click",()=>{const panel=document.getElementById(tier.getAttribute("aria-controls"));const open=tier.getAttribute("aria-expanded")==="true";tier.setAttribute("aria-expanded",String(!open));if(panel)panel.hidden=open});
+ const tabs=[...document.querySelectorAll('[role="tab"]')];
+ tabs.forEach(tab=>tab.addEventListener("click",()=>{tabs.forEach(item=>{const selected=item===tab;item.setAttribute("aria-selected",String(selected));const panel=document.getElementById(item.getAttribute("aria-controls"));if(panel)panel.hidden=!selected})}));
+}
+function initTour(){
+ if(hasSeen())return;
+ const root=document.querySelector(".sb-tour");
+ if(!root)return;
+ const available=steps.map(step=>({...step,target:document.querySelector(step.selector)})).filter(step=>step.target);
+ if(!available.length){storeSeen();return}
+ const tooltip=root.querySelector(".sb-tour-tooltip");
+ const highlight=root.querySelector(".sb-tour-highlight");
+ const title=root.querySelector(".sb-tour-title");
+ const copy=root.querySelector(".sb-tour-copy");
+ const label=root.querySelector(".sb-tour-step");
+ const dots=root.querySelector(".sb-tour-dots");
+ const back=root.querySelector(".sb-tour-back");
+ const next=root.querySelector(".sb-tour-next");
+ const skip=root.querySelector(".sb-tour-skip");
+ const close=root.querySelector(".sb-tour-close");
+ const shades=Object.fromEntries([...root.querySelectorAll("[data-shade]")].map(node=>[node.dataset.shade,node]));
+ let index=0;
+ let frame=0;
+ const previousFocus=document.activeElement;
+ const finish=()=>{storeSeen();root.hidden=true;document.removeEventListener("keydown",onKey);window.removeEventListener("resize",queuePosition);window.removeEventListener("scroll",queuePosition,true);if(previousFocus&&previousFocus.focus)previousFocus.focus()};
+ const setBox=(node,left,top,width,height)=>{Object.assign(node.style,{left:`${left}px`,top:`${top}px`,width:`${Math.max(0,width)}px`,height:`${Math.max(0,height)}px`})};
+ const position=()=>{
+  if(root.hidden)return;
+  const margin=12,gap=12,pad=6,vw=document.documentElement.clientWidth,vh=document.documentElement.clientHeight;
+  const rect=available[index].target.getBoundingClientRect();
+  const left=Math.max(0,rect.left-pad),top=Math.max(0,rect.top-pad),right=Math.min(vw,rect.right+pad),bottom=Math.min(vh,rect.bottom+pad);
+  setBox(shades.top,0,0,vw,top);setBox(shades.bottom,0,bottom,vw,vh-bottom);setBox(shades.left,0,top,left,bottom-top);setBox(shades.right,right,top,vw-right,bottom-top);
+  setBox(highlight,left,top,right-left,bottom-top);
+  tooltip.style.left="0px";tooltip.style.top="0px";
+  const tw=tooltip.offsetWidth,th=tooltip.offsetHeight,cx=(left+right)/2,cy=(top+bottom)/2;
+  const candidates=[
+   {name:"bottom",x:cx-tw/2,y:bottom+gap},{name:"top",x:cx-tw/2,y:top-th-gap},
+   {name:"right",x:right+gap,y:cy-th/2},{name:"left",x:left-tw-gap,y:cy-th/2}
+  ];
+  const chosen=candidates.find(item=>item.x>=margin&&item.y>=margin&&item.x+tw<=vw-margin&&item.y+th<=vh-margin)||candidates[0];
+  const x=Math.min(Math.max(margin,chosen.x),Math.max(margin,vw-tw-margin));
+  const y=Math.min(Math.max(margin,chosen.y),Math.max(margin,vh-th-margin));
+  tooltip.style.left=`${x}px`;tooltip.style.top=`${y}px`;tooltip.dataset.placement=chosen.name;
+ };
+ const queuePosition=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(position)};
+ const show=nextIndex=>{
+  index=nextIndex;const step=available[index];
+  label.textContent=`Step ${index+1} of ${available.length}`;title.textContent=step.title;copy.textContent=step.copy;
+  back.disabled=index===0;next.textContent=index===available.length-1?"Done":"Next";
+  dots.replaceChildren(...available.map((_item,dotIndex)=>{const dot=document.createElement("span");dot.className=`sb-tour-dot${dotIndex===index?" active":""}`;return dot}));
+  root.hidden=false;
+  const rect=step.target.getBoundingClientRect();
+  if(rect.top<16||rect.bottom>window.innerHeight-16)step.target.scrollIntoView({block:"center",behavior:"instant"});
+  requestAnimationFrame(()=>{position();next.focus()});
+ };
+ const onKey=event=>{
+  if(event.key==="Escape"){event.preventDefault();finish();return}
+  if(event.key!=="Tab"||root.hidden)return;
+  const focusable=[...tooltip.querySelectorAll("button:not([disabled])")];
+  if(!focusable.length)return;
+  const first=focusable[0],last=focusable[focusable.length-1];
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
+ };
+ next.addEventListener("click",()=>index===available.length-1?finish():show(index+1));
+ back.addEventListener("click",()=>{if(index>0)show(index-1)});
+ skip.addEventListener("click",finish);close.addEventListener("click",finish);
+ document.addEventListener("keydown",onKey);window.addEventListener("resize",queuePosition);window.addEventListener("scroll",queuePosition,true);
+ show(0);
+}
+document.addEventListener("DOMContentLoaded",()=>{initControls();initTour()});
+})();
 """.strip()
     return (
         "<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\">"
         '<meta name="viewport" content="width=device-width,initial-scale=1">'
         f"<title>{html.escape(title)}</title><style>{css}</style></head>"
-        f"<body>{content}</body></html>\n"
+        f"<body>{content}{tour}<script>{js}</script></body></html>\n"
     )
 
 

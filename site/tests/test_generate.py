@@ -102,8 +102,39 @@ def test_build_has_no_canary_or_external_assets(tmp_path: Path) -> None:
         assert CANARY_RE.search(content) is None
         if path.suffix == ".html":
             lowered = content.lower()
-            for forbidden in ("http://", "https://", "<script", "<link", "@import", "url("):
+            for forbidden in (
+                "<script src",
+                "<link",
+                "@import",
+                "url(",
+            ):
                 assert forbidden not in lowered
+
+
+def test_index_bundles_onboarding_tour_and_all_six_targets(tmp_path: Path) -> None:
+    eval_root, agent_root, tasks_root = _all_fixture_copy(tmp_path)
+    output = tmp_path / "build"
+    generate_site(
+        eval_root,
+        output,
+        agent_results_root=agent_root,
+        tasks_b_root=tasks_root,
+    )
+
+    index = (output / "index.html").read_text(encoding="utf-8")
+    for target in (
+        "silicon-score",
+        "score-columns",
+        "tier-toggle",
+        "track-tabs",
+        "submit-model",
+        "methodology",
+    ):
+        assert f'data-tour="{target}"' in index
+    assert 'const seenKey="has_seen_tour"' in index
+    assert "localStorage.setItem(seenKey,\"true\")" in index
+    assert "getBoundingClientRect()" in index
+    assert "<script src" not in index.lower()
 
 
 @pytest.mark.parametrize("mode", ["tampered", "unsigned"])
