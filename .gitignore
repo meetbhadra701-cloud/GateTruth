@@ -47,3 +47,6 @@ paper/*.aux
 paper/*.log
 paper/*.out
 paper/*.blg
+
+# compiled paper output
+paper/out/

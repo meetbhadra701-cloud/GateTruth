@@ -134,6 +134,43 @@ Two additional methodological advancements separate SiliconBench from prior eval
 
 In summary, while prior literature has independently investigated PPA prediction and RTL optimization, SiliconBench is, to the best of our knowledge, the first open evaluation framework to integrate these dimensions into a cohesive, rigorous standard. Specifically, it uniquely combines: (a) functional correctness enforced as a strict severability gate; (b) physical PPA metrics serving as the primary evaluation criteria exclusively for functionally valid designs; (c) a fully deterministic, reproducible RTL-to-signoff flow that neutralizes synthesis-environment variance; (d) testbenches strictly validated by a formalized mutation-kill floor; and (e) a dual-track architecture encompassing both static generation and iterative agentic optimization.
 
+\appendix
+
+\section{Run-to-Run Variance}
+\label{app:variance}
+
+The v1.0 leaderboard reports a single run per model. Because model generation is not
+deterministic (and the reasoning models do not accept a fixed temperature), we quantify
+run-to-run spread by re-running the three Anthropic models over all 60 Track A tasks three
+times each in a single fixed environment (pinned image, identical scoring). The v1.0 headline
+numbers in Section~\ref{sec:results} are unchanged; Table~\ref{tab:variance} is an added
+robustness measurement.
+
+\begin{table}[h]
+\centering
+\caption{Track A run-to-run variance over three runs per model (SiliconScore, 0--100).}
+\label{tab:variance}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Model & mean (n=3) & std & range & v1.0 (1 run) \\
+\midrule
+claude-opus-4-8   & 45.19 & 2.10 & 4.44 & 46.67 \\
+claude-sonnet-4-6 & 44.81 & 1.39 & 3.33 & 45.56 \\
+claude-haiku-4-5  & 33.33 & 0.91 & 2.22 & 34.44 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two observations follow. First, run-to-run standard deviation is roughly 0.9--2.1 points and is
+larger for the more capable models; each of the three v1.0 headline numbers sits at or above its
+three-run mean, so a single-run leaderboard modestly favors whichever model drew a more
+favorable run. Second, Opus and Sonnet overlap within this variance on Track A ($45.19 \pm 2.10$
+vs $44.81 \pm 1.39$): their single-run gap is inside the noise, and their genuine separation
+appears in Track B (Section~\ref{sec:results}), not in static generation. We recommend that a
+future version report mean $\pm$ standard deviation over at least three runs as the default
+leaderboard cell.
+
 \bibliographystyle{plain}
 \bibliography{references}
 
