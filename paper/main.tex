@@ -114,7 +114,7 @@ Track B (Table~\ref{tab:trackb}) serves as a substantially more discriminating e
 \label{tab:trackb}
 \small
 \setlength{\tabcolsep}{4pt}
-\input{data/build/trackb_table.tex}
+\resizebox{\textwidth}{!}{\input{data/build/trackb_table.tex}}
 \end{table}
 
 Synthesizing the data across both tracks reveals a consistent ordinal ranking, though Track B significantly amplifies the performance delta between models. Systems capable of generating physically superior silicon are concomitantly more proficient at processing synthesis-and-timing feedback to execute targeted repairs. The performance gap between the top-tier models and the remainder of the field is notably wider in agentic repair than in initial generation. This divergence validates the fundamental objective of the benchmark: to differentiate between models that merely emit syntactically simulatable RTL---a baseline capability shared by most evaluated models---and those capable of producing, or iteratively refining, silicon to a standard acceptable to a competent hardware engineer. The camera-ready manuscript will supplement these aggregate findings with auto-generated, per-tier tables detailing Pass@1, mean-PPA-over-passed, and SiliconScore for Track A, alongside objective-met-rate, median-PPA-delta, and median-cost tables for Track B.
