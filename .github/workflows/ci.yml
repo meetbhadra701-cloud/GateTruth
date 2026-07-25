@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Pinned-image validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out public sources only
+        uses: actions/checkout@v4
+
+      - name: Build pinned siliconbench:v1
+        # The native docker driver writes straight to the runner's image store.
+        # A container-driver Buildx load needlessly re-imports the 700+ MB CAD
+        # layer and consumed roughly three minutes in the cold-run acceptance.
+        run: |
+          docker build --platform linux/amd64 \
+            --tag siliconbench:v1 \
+            --file flows/Dockerfile \
+            flows
+
+      - name: Verify pinned image identity
+        run: |
+          docker run --rm siliconbench:v1 sh -c '
+            test "$(uname -m)" = "x86_64"
+            test "$(cat /etc/siliconbench-image-digest)" = \
+              "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62"
+          '
+
+      - name: Ruff
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work siliconbench:v1 \
+            ruff check harness/ scripts/ paper/
+
+      - name: Pytest
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work siliconbench:v1 \
+            python -m pytest -q harness/ scripts/
+
+      - name: T1 reference smoke (non-official)
+        # Fork PRs receive no hidden-test mount or provider secret. Official scoring
+        # remains fail-closed in the nightly/manual path with SILICONBENCH_HIDDEN_ROOT.
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work siliconbench:v1 \
+            python scripts/ci_t1_smoke.py --jobs 4 --out build/ci-t1
