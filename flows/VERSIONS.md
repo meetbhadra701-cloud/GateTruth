@@ -5,6 +5,7 @@ This file records the toolchain pins consumed by `flows/Dockerfile`.
 | Component | Pin |
 |---|---|
 | Base image | `debian:bookworm-slim@sha256:60eac759739651111db372c07be67863818726f754804b8707c90979bda511df` |
+| Debian package snapshot | `snapshot.debian.org` at `20260708T000000Z` for `debian` and `debian-security`; apt release signatures remain enforced while expired snapshot metadata is explicitly allowed |
 | Python | Debian bookworm packages pinned in `flows/Dockerfile`: `python3.11=3.11.2-6+deb12u7`, `python3.11-dev=3.11.2-6+deb12u7`, `python3-pip=23.0.1+dfsg-1`, `python3-venv=3.11.2-1+b1`; runtime aliases `/usr/local/bin/python` and `/usr/local/bin/python3` point to `/usr/bin/python3.11` |
 | Verilator | Debian bookworm `verilator=5.006-3`, must report 5.x |
 | Icarus Verilog | source tag `v12_0` from `steveicarus/iverilog`; build dependency `gperf` |
@@ -20,7 +21,11 @@ This file records the toolchain pins consumed by `flows/Dockerfile`.
 
 The Docker build must fail rather than silently using an unpinned floating tool or a missing SystemVerilog frontend.
 
-The remaining apt packages in `flows/Dockerfile` (`ca-certificates`, `curl`, `git`, build tools, Tcl/Tk headers, compression utilities) are build/support dependencies rather than benchmark-result tools. SB-010 pins the base image digest plus the apt-installed runtime/result-affecting packages that can change scoring behavior. If a future rebuild needs byte-for-byte apt closure, switch the apt source to a timestamped `snapshot.debian.org` suite and pin the support packages at the same time.
+The remaining apt packages in `flows/Dockerfile` (`ca-certificates`, `curl`, `git`,
+build tools, Tcl/Tk headers, compression utilities) are build/support dependencies
+rather than benchmark-result tools. The dated Debian snapshot keeps both those
+dependencies and the explicitly versioned result-affecting packages available to clean
+CI rebuilds instead of relying on the moving bookworm mirrors.
 
 ## Image Digests
 
