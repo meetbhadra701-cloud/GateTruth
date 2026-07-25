@@ -39,3 +39,11 @@ paper/data/build/*
 
 # stray flock test locks
 results/*.lock
+
+# LaTeX build artifacts
+paper/*.pdf
+paper/*.bbl
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.blg
