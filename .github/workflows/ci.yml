@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Pinned-image validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out public sources only
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build pinned siliconbench:v1
+        uses: docker/build-push-action@v6
+        with:
+          context: flows
+          file: flows/Dockerfile
+          load: true
+          platforms: linux/amd64
+          tags: siliconbench:v1
+          cache-from: type=gha,scope=siliconbench-v1
+          cache-to: type=gha,mode=max,scope=siliconbench-v1
+
+      - name: Verify pinned image identity
+        run: |
+          docker run --rm siliconbench:v1 sh -c '
+            test "$(uname -m)" = "x86_64"
+            test "$(cat /etc/siliconbench-image-digest)" = \
+              "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62"
+          '
+
+      - name: Ruff
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work siliconbench:v1 \
+            ruff check harness/ scripts/ paper/
+
+      - name: Pytest
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work siliconbench:v1 \
+            python -m pytest -q harness/ scripts/
+
+      - name: T1 reference smoke (non-official)
+        # Fork PRs receive no hidden-test mount or provider secret. Official scoring
+        # remains fail-closed in the nightly/manual path with SILICONBENCH_HIDDEN_ROOT.
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work siliconbench:v1 \
+            python scripts/ci_t1_smoke.py --jobs 4 --out build/ci-t1
