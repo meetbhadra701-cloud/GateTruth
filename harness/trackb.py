@@ -11,7 +11,18 @@ from types import SimpleNamespace
 from typing import Any
 
 from harness.flows import FlowError, run_power, run_sta, run_synth
-from harness.runner import REPO_ROOT, SUITE_VERSION, TaskPackage, _find_top_module, _run, run_lint, run_sim, runtime_docker_digest
+from harness.runner import (
+    HIDDEN_FAILURE_PREFIX,
+    REPO_ROOT,
+    SUITE_VERSION,
+    TaskPackage,
+    _find_top_module,
+    _run,
+    official_hidden_preflight,
+    run_lint,
+    run_sim,
+    runtime_docker_digest,
+)
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest_b import TrackBManifest
 
@@ -37,7 +48,13 @@ class TrackBPackage:
     clock_target_ns: float
 
 
-def run_track_b(task_id: str, submission_dir: str | Path, out: str | Path) -> TrackBManifest:
+def run_track_b(
+    task_id: str,
+    submission_dir: str | Path,
+    out: str | Path,
+    *,
+    official: bool = False,
+) -> TrackBManifest:
     package = resolve_track_b_task(task_id)
     submission_root = Path(submission_dir).resolve()
     start = time.perf_counter()
@@ -48,11 +65,21 @@ def run_track_b(task_id: str, submission_dir: str | Path, out: str | Path) -> Tr
     disqualified = False
     disqualification_reason = None
     objective_pass = False
+    sim_task = TaskPackage(
+        task_id=package.task_id,
+        root=package.root,
+        task_yaml=SimpleNamespace(formal=False),
+        top_module=package.top_module,
+    )
 
-    try:
-        reason = diff_guard(package.root, submission_root)
-    except (OSError, ValueError) as exc:
-        reason = f"malformed submission: {exc}"
+    reason = official_hidden_preflight(sim_task, official=official)
+    if reason is None:
+        try:
+            reason = diff_guard(package.root, submission_root)
+        except (OSError, ValueError) as exc:
+            reason = f"malformed submission: {exc}"
+    else:
+        reason = reason.strip()
     if reason:
         disqualified = True
         disqualification_reason = reason
@@ -72,15 +99,17 @@ def run_track_b(task_id: str, submission_dir: str | Path, out: str | Path) -> Tr
             stages.append(stage)
             logs.append(log)
             if stage["status"] == "pass":
-                sim_task = TaskPackage(
-                    task_id=package.task_id,
-                    root=package.root,
-                    task_yaml=SimpleNamespace(formal=False),
-                    top_module=package.top_module,
+                stage, log = run_sim(
+                    sim_task,
+                    design,
+                    work_root,
+                    official=official,
                 )
-                stage, log = run_sim(sim_task, design, work_root)
                 stages.append(stage)
                 logs.append(log)
+                if official and stage["status"] == "fail" and HIDDEN_FAILURE_PREFIX in log:
+                    disqualified = True
+                    disqualification_reason = _hidden_disqualification_reason(log)
             else:
                 stages.append({"stage": 1, "name": "sim", "status": "fail"})
 
@@ -138,6 +167,13 @@ def run_track_b(task_id: str, submission_dir: str | Path, out: str | Path) -> Tr
     out_path.write_text(json.dumps(manifest.model_dump(mode="json"), indent=2) + "\n", encoding="utf-8")
     out_path.with_suffix(".log").write_text("\n\n".join(logs), encoding="utf-8")
     return manifest
+
+
+def _hidden_disqualification_reason(log: str) -> str:
+    for line in reversed(log.splitlines()):
+        if line.startswith(HIDDEN_FAILURE_PREFIX):
+            return line
+    return f"{HIDDEN_FAILURE_PREFIX}hidden tests did not load"
 
 
 def _full_stage(stage: dict[str, object]) -> dict[str, object]:

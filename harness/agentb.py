@@ -57,6 +57,7 @@ def run_agent_task(
     provider: ProviderAdapter,
     *,
     out: str | Path,
+    official: bool = False,
 ) -> AgentTrackBManifest:
     """Run a provider in a temporary Track B package and score the final design."""
 
@@ -153,7 +154,15 @@ def run_agent_task(
             if budget_exceeded is not None:
                 break
 
-        evaluator_manifest = run_track_b(task_id, sandbox, out_path)
+        if official:
+            evaluator_manifest = run_track_b(
+                task_id,
+                sandbox,
+                out_path,
+                official=True,
+            )
+        else:
+            evaluator_manifest = run_track_b(task_id, sandbox, out_path)
         usage = provider_usage(provider)
         data = evaluator_manifest.model_dump(mode="json")
         data.update(

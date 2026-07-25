@@ -5,6 +5,7 @@
 # covering every edge case in the ticket, and authors the hidden vectors below the `# --- HIDDEN ---`
 # marker. SB-008's >=95% mutation-kill gate validates the finished suite. Do not remove the HIDDEN marker.
 
+from harness.hidden import load_hidden
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, Timer
@@ -101,23 +102,4 @@ async def public_half_and_alternating_patterns(dut):
         await drive_and_check(dut, v)
 
 
-# --- HIDDEN ---
-# HUMAN REVIEW: PENDING hidden-vector section marker. Do not remove.
-
-
-@cocotb.test()
-async def hidden_single_bit_sweep(dut):
-    await start_clock(dut)
-    await reset(dut)
-
-    for k in range(WIDTH):
-        await drive_and_check(dut, 1 << k)
-
-
-@cocotb.test()
-async def hidden_exhaustive_byte_sweep(dut):
-    await start_clock(dut)
-    await reset(dut)
-
-    for v in range(1 << WIDTH):
-        await drive_and_check(dut, v)
+load_hidden(globals(), "t1_popcount")

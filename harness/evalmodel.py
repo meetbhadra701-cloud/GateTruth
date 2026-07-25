@@ -200,7 +200,19 @@ def eval_model(
                         source = extract_module_source(response or "")
                         source_path = task_dir / f"sample_{sample_number}.sv"
                         source_path.write_text(source, encoding="utf-8")
-                        scored = run_task(plan.task.task_id, source_path, manifest_path)
+                        if official:
+                            scored = run_task(
+                                plan.task.task_id,
+                                source_path,
+                                manifest_path,
+                                official=True,
+                            )
+                        else:
+                            scored = run_task(
+                                plan.task.task_id,
+                                source_path,
+                                manifest_path,
+                            )
                         manifest = _merge_generation_fields(
                             scored,
                             provider_name=provider_name,

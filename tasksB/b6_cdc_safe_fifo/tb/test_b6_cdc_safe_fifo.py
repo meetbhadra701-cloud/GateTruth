@@ -9,6 +9,7 @@
 # deterministically. This tb IS the objective check (add_property). Any diff disqualifies
 # (trackB-agent-cli v0.2). HUMAN REVIEW: PENDING (tb_review in task.yaml - Meet only).
 
+from harness.hidden import load_hidden
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, ReadOnly, Timer
@@ -130,21 +131,4 @@ async def smoke_equal_clocks_stream(dut):
     await run_regime(dut, wper=10, rper=10, count=24)
 
 
-# --- HIDDEN ---
-
-@cocotb.test()
-async def hidden_fast_writer_slow_reader(dut):
-    """Writer at 7 ns, reader at 13 ns: back-pressure engages; nothing lost or reordered."""
-    await run_regime(dut, wper=7, rper=13, count=32)
-
-
-@cocotb.test()
-async def hidden_slow_writer_fast_reader(dut):
-    """Writer at 13 ns, reader at 7 ns: FIFO runs near-empty; nothing duplicated."""
-    await run_regime(dut, wper=13, rper=7, count=32)
-
-
-@cocotb.test()
-async def hidden_near_equal_prime_ratio(dut):
-    """11 ns vs 10 ns: pointers cross domains constantly at shifting phase."""
-    await run_regime(dut, wper=11, rper=10, count=48)
+load_hidden(globals(), "b6_cdc_safe_fifo")

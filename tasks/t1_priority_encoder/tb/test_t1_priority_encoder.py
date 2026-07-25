@@ -5,6 +5,7 @@
 # covering every edge case in the ticket, and authors the hidden vectors below the `# --- HIDDEN ---`
 # marker. SB-008's >=95% mutation-kill gate validates the finished suite. Do not remove the HIDDEN marker.
 
+from harness.hidden import load_hidden
 import cocotb
 import random
 from cocotb.clock import Clock
@@ -112,49 +113,4 @@ async def public_adjacent_priority_sweep(dut):
         await drive_and_check(dut, (1 << k) | (1 << (k - 1)))
 
 
-# --- HIDDEN ---
-# HUMAN REVIEW: PENDING hidden-vector section marker. Do not remove.
-
-
-@cocotb.test()
-async def hidden_single_bit_exhaustive_and_boundaries(dut):
-    await start_clock(dut)
-    await reset(dut)
-
-    await drive_and_check(dut, 0x00)
-    await drive_and_check(dut, 0x01)
-    await drive_and_check(dut, 0x80)
-    await drive_and_check(dut, 0xFF)
-
-    for k in range(WIDTH):
-        await drive_and_check(dut, 1 << k)
-
-
-@cocotb.test()
-async def hidden_priority_patterns(dut):
-    await start_clock(dut)
-    await reset(dut)
-
-    patterns = [
-        0b0000_0011,
-        0b0000_0111,
-        0b0001_1000,
-        0b0010_1010,
-        0b0101_0101,
-        0b1000_0001,
-        0b1010_1010,
-        0b1111_0000,
-        0b1111_1110,
-    ]
-    for v in patterns:
-        await drive_and_check(dut, v)
-
-
-@cocotb.test()
-async def hidden_seeded_random_back_to_back(dut):
-    await start_clock(dut)
-    await reset(dut)
-
-    rng = random.Random(0x51B012)
-    for _ in range(128):
-        await drive_and_check(dut, rng.randrange(1 << WIDTH))
+load_hidden(globals(), "t1_priority_encoder")

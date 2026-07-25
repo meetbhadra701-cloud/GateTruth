@@ -13,7 +13,7 @@ CANARY_RE = re.compile(
     r"[0-9A-F]{4}-[0-9A-F]{12}",
     re.IGNORECASE,
 )
-HIDDEN_MARKER = "# --- HIDDEN ---"
+HIDDEN_MARKER_RE = re.compile(r"(?m)^# --- HIDDEN ---[ \t]*$")
 TEXT_SUFFIXES = {
     ".css",
     ".html",
@@ -57,6 +57,7 @@ class CheckReport:
     package_canaries: int
     scanned_files: int
     hidden_markers: int
+    hidden_loaders: int
 
 
 def run_checks(root: str | Path = REPO_ROOT) -> CheckReport:
@@ -97,7 +98,9 @@ def run_checks(root: str | Path = REPO_ROOT) -> CheckReport:
     if len(track_a) != 60:
         errors.append(f"expected 60 Track A tasks, found {len(track_a)}")
     hidden_count = 0
-    for task_yaml in track_a:
+    loader_count = 0
+    frozen_tasks = track_a + sorted((repo / "tasksB").glob("*/task.yaml"))
+    for task_yaml in frozen_tasks:
         task_root = task_yaml.parent
         testbenches = sorted((task_root / "tb").glob("test_*.py"))
         if len(testbenches) != 1:
@@ -105,11 +108,23 @@ def run_checks(root: str | Path = REPO_ROOT) -> CheckReport:
                 f"expected one testbench for {task_root.name}, found {len(testbenches)}"
             )
             continue
-        marker_count = testbenches[0].read_text(encoding="utf-8").count(HIDDEN_MARKER)
-        if marker_count < 1:
-            errors.append(f"hidden marker missing: {testbenches[0].relative_to(repo)}")
+        marker_count = len(
+            HIDDEN_MARKER_RE.findall(
+                testbenches[0].read_text(encoding="utf-8")
+            )
+        )
+        hidden_count += marker_count
+        if marker_count:
+            errors.append(f"public hidden marker present: {testbenches[0].relative_to(repo)}")
+        loader_call = f'load_hidden(globals(), "{task_root.name}")'
+        loader_matches = testbenches[0].read_text(encoding="utf-8").count(loader_call)
+        if loader_matches != 1:
+            errors.append(
+                f"expected one hidden loader for {task_root.name}, found "
+                f"{loader_matches}: {testbenches[0].relative_to(repo)}"
+            )
         else:
-            hidden_count += 1
+            loader_count += 1
 
     if errors:
         raise ContaminationError("\n".join(sorted(errors)))
@@ -118,6 +133,7 @@ def run_checks(root: str | Path = REPO_ROOT) -> CheckReport:
         package_canaries=len(owners),
         scanned_files=len(text_files),
         hidden_markers=hidden_count,
+        hidden_loaders=loader_count,
     )
 
 
@@ -172,6 +188,7 @@ def main() -> int:
         f"package_canaries={report.package_canaries} "
         f"scanned_files={report.scanned_files} "
         f"hidden_markers={report.hidden_markers} "
+        f"hidden_loaders={report.hidden_loaders} "
         "forbidden_hits=0 canary_leaks=0"
     )
     return 0

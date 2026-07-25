@@ -6,6 +6,7 @@
 
 import random
 
+from harness.hidden import load_hidden
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, Timer
@@ -132,42 +133,4 @@ async def public_monotone_gray_sequence(dut):
         await drive_and_check_binary_roundtrip(dut, value)
 
 
-# --- HIDDEN ---
-# HUMAN REVIEW: PENDING hidden-vector section marker. Do not remove.
-
-
-@cocotb.test()
-async def hidden_exhaustive_roundtrip(dut):
-    await start_clock(dut)
-    await reset(dut)
-
-    for value in range(1 << WIDTH):
-        await drive_and_check_binary_roundtrip(dut, value)
-
-
-@cocotb.test()
-async def hidden_all_gray_inputs_and_msb_passthrough(dut):
-    await start_clock(dut)
-    await reset(dut)
-
-    for gray in range(1 << WIDTH):
-        await drive_and_check_gray(dut, gray)
-
-
-@cocotb.test()
-async def hidden_seeded_random_back_to_back(dut):
-    await start_clock(dut)
-    await reset(dut)
-
-    rng = random.Random(0x517017)
-    for _ in range(160):
-        await drive_and_check_gray(dut, rng.randrange(1 << WIDTH))
-
-
-@cocotb.test()
-async def hidden_boundary_patterns(dut):
-    await start_clock(dut)
-    await reset(dut)
-
-    for gray in [0x00, 0x01, 0x03, 0x02, 0x7F, 0x80, 0x81, 0xC0, 0xFE, 0xFF]:
-        await drive_and_check_gray(dut, gray)
+load_hidden(globals(), "t1_gray_to_binary")

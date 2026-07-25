@@ -138,7 +138,15 @@ def eval_agent(
 
         output = model_root / f"{_safe_component(task_id)}.json"
         task_provider = _TaskUsageProvider(provider)
-        manifest = run_agent_task(task_id, task_provider, out=output)
+        if official:
+            manifest = run_agent_task(
+                task_id,
+                task_provider,
+                out=output,
+                official=True,
+            )
+        else:
+            manifest = run_agent_task(task_id, task_provider, out=output)
         manifests.append(manifest)
         task_rows[task_id] = {
             "skipped": False,

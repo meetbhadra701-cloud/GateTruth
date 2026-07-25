@@ -16,6 +16,12 @@ from pathlib import Path
 from xml.etree import ElementTree
 
 from harness.flows import FlowError, run_power, run_sta, run_synth
+from harness.hidden import (
+    HIDDEN_REPORT_ENV,
+    HIDDEN_ROOT_ENV,
+    HiddenTestError,
+    resolve_hidden_module,
+)
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import ResultManifest
 from harness.schemas.task_yaml import TaskYaml, load_task_yaml
@@ -26,6 +32,7 @@ DEFAULT_DOCKER_DIGEST = "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d
 DEFAULT_DOCKER_DIGEST_FILE = Path("/etc/siliconbench-image-digest")
 REPO_ROOT = Path(__file__).resolve().parents[1]
 TOY_FIXTURE_ROOT = REPO_ROOT / "harness" / "tests" / "fixtures" / "toy_task"
+HIDDEN_FAILURE_PREFIX = "official hidden-test error: "
 
 
 @dataclass(frozen=True)
@@ -109,7 +116,19 @@ def run_sim(
     work_root: Path,
     *,
     timeout_s: float = 20,
+    official: bool = False,
 ) -> tuple[dict[str, object], str]:
+    env = os.environ.copy()
+    hidden_report = work_root / "hidden-load.json"
+    hidden_error = _configure_hidden_run(
+        task,
+        official=official,
+        env=env,
+        report_path=hidden_report,
+    )
+    if hidden_error is not None:
+        return {"stage": 1, "name": "sim", "status": "fail"}, hidden_error
+
     script = work_root / "run_cocotb.py"
     build_dir = work_root / "sim_build"
     results_xml = work_root / "results.xml"
@@ -125,16 +144,103 @@ def run_sim(
         f"results_xml=r'{results_xml.as_posix()}', timescale=('1ns','1ps'))\n",
         encoding="utf-8",
     )
-    env = os.environ.copy()
     env.pop("PYTEST_CURRENT_TEST", None)
     env["PYTHONPATH"] = os.pathsep.join([str(REPO_ROOT), str(task.root / "tb"), env.get("PYTHONPATH", "")])
     result = _run([sys.executable, str(script)], cwd=REPO_ROOT, env=env, timeout_s=timeout_s)
+    hidden_error = _validate_hidden_report(
+        task,
+        official=official,
+        report_path=hidden_report,
+    )
+    output = result.stdout
+    if hidden_error is not None:
+        output = output.rstrip() + "\n" + hidden_error
     if result.returncode != 0:
-        return {"stage": 1, "name": "sim", "status": "fail"}, result.stdout
+        return {"stage": 1, "name": "sim", "status": "fail"}, output
+    if hidden_error is not None:
+        return {"stage": 1, "name": "sim", "status": "fail"}, output
     tests_run, tests_passed = _parse_cocotb_results(results_xml)
     if tests_passed != tests_run:
-        return {"stage": 1, "name": "sim", "status": "fail"}, result.stdout
-    return {"stage": 1, "name": "sim", "status": "pass", "tests_run": tests_run, "tests_passed": tests_passed}, result.stdout
+        return {"stage": 1, "name": "sim", "status": "fail"}, output
+    return {"stage": 1, "name": "sim", "status": "pass", "tests_run": tests_run, "tests_passed": tests_passed}, output
+
+
+def _hidden_kind(task: TaskPackage) -> str | None:
+    kind = task.root.parent.name
+    return kind if kind in {"tasks", "tasksB"} else None
+
+
+def official_hidden_preflight(
+    task: TaskPackage,
+    *,
+    official: bool,
+    env: dict[str, str] | None = None,
+) -> str | None:
+    """Return a fail-closed setup error before an official task starts."""
+
+    kind = _hidden_kind(task)
+    if not official or kind is None:
+        return None
+    environment = os.environ if env is None else env
+    root = environment.get(HIDDEN_ROOT_ENV)
+    if not root:
+        return (
+            f"{HIDDEN_FAILURE_PREFIX}{HIDDEN_ROOT_ENV} is required for "
+            f"registered task {task.task_id}\n"
+        )
+    try:
+        resolve_hidden_module(root, task.task_id, kind=kind)
+    except HiddenTestError as exc:
+        return f"{HIDDEN_FAILURE_PREFIX}{exc}\n"
+    return None
+
+
+def _configure_hidden_run(
+    task: TaskPackage,
+    *,
+    official: bool,
+    env: dict[str, str],
+    report_path: Path,
+) -> str | None:
+    kind = _hidden_kind(task)
+    error = official_hidden_preflight(task, official=official, env=env)
+    if error is not None or kind is None:
+        return error
+    env[HIDDEN_REPORT_ENV] = str(report_path)
+    return None
+
+
+def _validate_hidden_report(
+    task: TaskPackage,
+    *,
+    official: bool,
+    report_path: Path,
+) -> str | None:
+    kind = _hidden_kind(task)
+    if not official or kind is None:
+        return None
+    if not report_path.is_file():
+        return (
+            f"{HIDDEN_FAILURE_PREFIX}loader did not report hidden tests for "
+            f"{task.task_id}\n"
+        )
+    try:
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return f"{HIDDEN_FAILURE_PREFIX}invalid loader report: {exc}\n"
+    count = report.get("count")
+    if (
+        report.get("task_id") != task.task_id
+        or report.get("kind") != kind
+        or isinstance(count, bool)
+        or not isinstance(count, int)
+        or count <= 0
+    ):
+        return (
+            f"{HIDDEN_FAILURE_PREFIX}invalid loader report for {task.task_id}: "
+            f"{report!r}\n"
+        )
+    return None
 
 
 def _test_module_name(task: TaskPackage) -> str:
@@ -232,7 +338,13 @@ def run_ppa_flows(task: TaskPackage, submission: Path, work_root: Path) -> tuple
     return stages, "\n\n".join([synth.log, sta.log, power.log])
 
 
-def run_task(task_id: str, submission: str | Path, out: str | Path) -> ResultManifest:
+def run_task(
+    task_id: str,
+    submission: str | Path,
+    out: str | Path,
+    *,
+    official: bool = False,
+) -> ResultManifest:
     task = resolve_task(task_id)
     submission_path = Path(submission).resolve()
     start = time.perf_counter()
@@ -244,7 +356,12 @@ def run_task(task_id: str, submission: str | Path, out: str | Path) -> ResultMan
         stages.append(stage)
         logs.append(log)
         if stage["status"] == "pass":
-            stage, log = run_sim(task, submission_path, work_root)
+            stage, log = run_sim(
+                task,
+                submission_path,
+                work_root,
+                official=official,
+            )
             stages.append(stage)
             logs.append(log)
         else:

@@ -36,6 +36,7 @@ def build_parser() -> argparse.ArgumentParser:
     run_b.add_argument("--task", required=True)
     run_b.add_argument("--submission-dir", required=True)
     run_b.add_argument("--out", default="results/tmp/manifest_b.json")
+    run_b.add_argument("--official", action="store_true")
 
     run_agent = sub.add_parser("run-agent", help="run a Track B agent")
     run_agent.add_argument("--task", required=True)
@@ -52,6 +53,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="canonical result group: results/agent/<run-name>/<model>/<task>.json",
     )
     run_agent.add_argument("--out", help="override the canonical agent result path")
+    run_agent.add_argument("--official", action="store_true")
 
     score = sub.add_parser("score", help="print task_score from a manifest")
     score.add_argument("--manifest", required=True)
@@ -113,12 +115,22 @@ def main(argv: list[str] | None = None) -> int:
             except ValueError as exc:
                 print(f"official run refused: {exc}", file=sys.stderr)
                 return 2
-        manifest = run_task(args.task, args.submission, args.out)
+        manifest = run_task(
+            args.task,
+            args.submission,
+            args.out,
+            official=args.official,
+        )
         print(Path(args.out))
         print(f"task_score={manifest.task_score}")
         return 0
     if args.command == "run-b":
-        manifest = run_track_b(args.task, args.submission_dir, args.out)
+        manifest = run_track_b(
+            args.task,
+            args.submission_dir,
+            args.out,
+            official=args.official,
+        )
         print(Path(args.out))
         print(f"task_score={manifest.task_score}")
         print(f"objective_pass={manifest.objective_pass}")
@@ -153,6 +165,7 @@ def main(argv: list[str] | None = None) -> int:
             args.task,
             provider,
             out=output,
+            official=args.official,
         )
         print(output)
         print(f"task_score={manifest.task_score}")

@@ -11,6 +11,7 @@
 
 from random import Random
 
+from harness.hidden import load_hidden
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, Timer
@@ -126,42 +127,4 @@ async def smoke_load_then_convolve(dut):
         await sample_and_expect(dut, model, s)
 
 
-# --- HIDDEN ---
-
-@cocotb.test()
-async def hidden_reload_between_transactions(dut):
-    await start_clock(dut)
-    await reset(dut)
-    model = Model()
-    for i, c in enumerate([1, 2, 4, 8]):
-        await load_coef(dut, model, i, c)
-    for s in [3, 5]:
-        await sample_and_expect(dut, model, s)
-    await load_coef(dut, model, 1, 7)      # reload strictly between transactions
-    for s in [-2, 3, 1]:
-        await sample_and_expect(dut, model, s)
-
-
-@cocotb.test()
-async def hidden_extreme_signed_products(dut):
-    await start_clock(dut)
-    await reset(dut)
-    model = Model()
-    for i, c in enumerate([-128, 127, -128, 127]):
-        await load_coef(dut, model, i, c)
-    for s in [-128, 127, -128, 127, -1, 1]:
-        await sample_and_expect(dut, model, s)
-
-
-@cocotb.test()
-async def hidden_seeded_random_transactions(dut):
-    await start_clock(dut)
-    await reset(dut)
-    model = Model()
-    rng = Random(0x43FB690C)
-    for i in range(NTAPS):
-        await load_coef(dut, model, i, rng.randrange(-16, 17))
-    for t in range(30):
-        if t % 7 == 6:
-            await load_coef(dut, model, rng.randrange(NTAPS), rng.randrange(-16, 17))
-        await sample_and_expect(dut, model, rng.randrange(-128, 128))
+load_hidden(globals(), "b3_reduce_area_fir")
