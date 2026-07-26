@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import shutil
@@ -25,7 +26,13 @@ from harness.hidden import (
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import ResultManifest
 from harness.schemas.task_yaml import TaskYaml, load_task_yaml
-from harness.scoring import REFERENCE_PPA, task_score_from_ppa
+from harness.scoring import (
+    PpaMetrics,
+    delay_from_wns,
+    load_reference_metrics,
+    ppa_from_metrics,
+    task_score_from_ppa,
+)
 
 SUITE_VERSION = "v0.2"
 DEFAULT_DOCKER_DIGEST = "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62"
@@ -312,30 +319,73 @@ def run_ppa_flows(task: TaskPackage, submission: Path, work_root: Path) -> tuple
             {"stage": 5, "name": "power", "status": "fail"},
         ], str(exc)
 
+    synth_pass = (
+        math.isfinite(synth.area_um2)
+        and synth.area_um2 > 0
+        and synth.cell_count >= 0
+    )
+    try:
+        delay_from_wns(task.task_yaml.clock_target_ns, sta.wns_ns)
+        sta_metrics_valid = (
+            math.isfinite(sta.tns_ns)
+            and math.isfinite(sta.fmax_mhz)
+            and sta.fmax_mhz > 0
+        )
+    except ValueError:
+        sta_metrics_valid = False
+    sta_pass = sta_metrics_valid and sta.wns_ns >= 0.0
+    power_pass = math.isfinite(power.power_mw) and power.power_mw > 0
+
+    synth_stage: dict[str, object] = {
+        "stage": 3,
+        "name": "synth",
+        "status": "pass" if synth_pass else "fail",
+    }
+    if synth_pass:
+        synth_stage.update(
+            {
+                "area_um2": synth.area_um2,
+                "cell_count": synth.cell_count,
+            }
+        )
+    sta_stage: dict[str, object] = {
+        "stage": 4,
+        "name": "sta",
+        "status": "pass" if sta_pass else "fail",
+    }
+    if sta_pass:
+        sta_stage.update(
+            {
+                "wns_ns": sta.wns_ns,
+                "tns_ns": sta.tns_ns,
+                "fmax_mhz": sta.fmax_mhz,
+            }
+        )
+    power_stage: dict[str, object] = {
+        "stage": 5,
+        "name": "power",
+        "status": "pass" if power_pass else "fail",
+    }
+    if power_pass:
+        power_stage["power_mw"] = power.power_mw
+
+    invalid: list[str] = []
+    if not synth_pass:
+        invalid.append("synth area/cell count")
+    if not sta_metrics_valid:
+        invalid.append("STA delay/frequency")
+    if not power_pass:
+        invalid.append("power")
+    logs = [synth.log, sta.log, power.log]
+    if invalid:
+        logs.append(f"invalid scoring metric: {', '.join(invalid)}\n")
+
     stages: list[dict[str, object]] = [
-        {
-            "stage": 3,
-            "name": "synth",
-            "status": "pass",
-            "area_um2": synth.area_um2,
-            "cell_count": synth.cell_count,
-        },
-        {
-            "stage": 4,
-            "name": "sta",
-            "status": "pass" if sta.wns_ns >= 0.0 else "fail",
-            "wns_ns": sta.wns_ns,
-            "tns_ns": sta.tns_ns,
-            "fmax_mhz": sta.fmax_mhz,
-        },
-        {
-            "stage": 5,
-            "name": "power",
-            "status": "pass",
-            "power_mw": power.power_mw,
-        },
+        synth_stage,
+        sta_stage,
+        power_stage,
     ]
-    return stages, "\n\n".join([synth.log, sta.log, power.log])
+    return stages, "\n\n".join(logs)
 
 
 def run_task(
@@ -385,8 +435,23 @@ def run_task(
 
     correctness_pass = all(stage["status"] in {"pass", "skip"} for stage in stages if stage["stage"] in {0, 1, 2})
     ppa_pass = all(stage["status"] == "pass" for stage in stages if stage["stage"] in {3, 4, 5})
-    ppa = REFERENCE_PPA if correctness_pass and ppa_pass else 0.0
-    task_score = task_score_from_ppa(ppa) if correctness_pass and ppa_pass else 0.0
+    if correctness_pass and ppa_pass:
+        by_stage = {stage["stage"]: stage for stage in stages}
+        measured = PpaMetrics(
+            area_um2=float(by_stage[3]["area_um2"]),
+            delay_ns=delay_from_wns(
+                task.task_yaml.clock_target_ns,
+                float(by_stage[4]["wns_ns"]),
+            ),
+            power_mw=float(by_stage[5]["power_mw"]),
+            clock_target_ns=task.task_yaml.clock_target_ns,
+        )
+        reference = load_reference_metrics(task.task_id)
+        ppa = ppa_from_metrics(reference, measured)
+        task_score = task_score_from_ppa(ppa)
+    else:
+        ppa = 0.0
+        task_score = 0.0
     stages.append({"stage": 6, "name": "route", "status": "skip"})
     data = {
         "task_id": task.task_id,

@@ -50,8 +50,8 @@
     }
   ],
   "sec": 1.0,
-  "ppa": 1.0,
-  "task_score": 66.66666666666667,
+  "ppa": 1.000000055900205,
+  "task_score": 66.66667039334699,
   "wall_clock_s": 2.39422,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
@@ -61,5 +61,5 @@
   "cost_usd": 0.04245999999999994,
   "prompt_version": "track-a-rtl-v1",
   "timestamp": "2026-07-22T04:10:43.439463Z",
-  "signature": "f091fa5aa872148bb8d64ca5f70322df7834958340edb280a26641e63ddf1e07"
+  "signature": "36724952bb0bf1dd877c2bcc1e46cf8621bf254a878221fa1efadfce3bd9c8e8"
 }

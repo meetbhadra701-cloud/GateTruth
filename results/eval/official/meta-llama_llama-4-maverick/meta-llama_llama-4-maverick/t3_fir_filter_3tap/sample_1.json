@@ -50,8 +50,8 @@
     }
   ],
   "sec": 1.0,
-  "ppa": 1.0,
-  "task_score": 66.66666666666667,
+  "ppa": 0.9822675008096352,
+  "task_score": 65.48450005397568,
   "wall_clock_s": 4.727767,
   "provider": "openrouter",
   "model": "meta-llama/llama-4-maverick",
@@ -61,5 +61,5 @@
   "cost_usd": 0.000504000000000001,
   "prompt_version": "track-a-rtl-v1",
   "timestamp": "2026-07-22T03:41:56.725379Z",
-  "signature": "e2dff811a7dc31608aa49f73013f1ebeba1df6f8067c46d553cbb3c81880ef4c"
+  "signature": "1d6de2e279692eb1e31feca648ab727bd59df14e3a75b8fc95efd8c17df30291"
 }

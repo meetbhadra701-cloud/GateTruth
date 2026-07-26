@@ -1,0 +1,17 @@
+{
+  "delay_definition": "clock_target_ns - wns_ns",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "generated_from": "signed toy_task reference manifest",
+  "schema_version": "1",
+  "suite_version": "v0.2",
+  "tasks": {
+    "toy_task": {
+      "area_um2": 128.8736,
+      "clock_target_ns": 10.0,
+      "delay_ns": 2.448578964448326,
+      "power_mw": 0.0004911468070000001,
+      "source_manifest_signature": "76511ee219f4ca5f8f0e053d78bdabf410b5eafd9cad48c33a6ca027bd5653be",
+      "wns_ns": 7.551421035551674
+    }
+  }
+}

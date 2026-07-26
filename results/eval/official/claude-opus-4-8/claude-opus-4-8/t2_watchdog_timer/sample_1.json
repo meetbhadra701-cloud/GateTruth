@@ -50,8 +50,8 @@
     }
   ],
   "sec": 1.0,
-  "ppa": 1.0,
-  "task_score": 66.66666666666667,
+  "ppa": 0.9685752034266788,
+  "task_score": 64.57168022844526,
   "wall_clock_s": 1.917128,
   "provider": "anthropic",
   "model": "claude-opus-4-8",
@@ -61,5 +61,5 @@
   "cost_usd": 0.023255000000000026,
   "prompt_version": "track-a-rtl-v1",
   "timestamp": "2026-07-22T04:00:02.972498Z",
-  "signature": "edcba730d437725258cac9e6f4e1b1d24e70f6f6a01deed113e023b51ba5d397"
+  "signature": "c2b215e1bfe5d7f3a5a1876fc74c4675643bf6ac9cf6cfd30a8d0b1da8fed7a8"
 }

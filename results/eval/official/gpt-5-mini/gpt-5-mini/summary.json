@@ -266,30 +266,30 @@
     },
     "t1_parity_gen": {
       "scores": [
-        66.66666666666667
+        67.22726904426302
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 67.22726904426302,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 67.22726904426302,
           "manifest": "t1_parity_gen/sample_1.json",
-          "manifest_signature": "5ec054edfdb298034f6b14762a6d708a204a4e7b139632c54d4616091bd91c29"
+          "manifest_signature": "07adc9fcfcd1ed2c8621f74e2e03a91acc8e49e4640575c89c73855a4e109b94"
         }
       ],
       "skipped": false
     },
     "t1_popcount": {
       "scores": [
-        66.66666666666667
+        64.16576041146187
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 64.16576041146187,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 64.16576041146187,
           "manifest": "t1_popcount/sample_1.json",
-          "manifest_signature": "430b88b391356ff596bf82755b22024bf1066ff084df5a382fe5a3c837fd8702"
+          "manifest_signature": "16e28011f9d9430709e788bf85182053fdcebd300b203dc619f103b991b32114"
         }
       ],
       "skipped": false
@@ -461,15 +461,15 @@
     },
     "t2_mm_timer": {
       "scores": [
-        66.66666666666667
+        65.06099983271884
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 65.06099983271884,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 65.06099983271884,
           "manifest": "t2_mm_timer/sample_1.json",
-          "manifest_signature": "1e8efb6a96acfad3ed10bfcf657679c6c1acd971b81ece3016e853232836af20"
+          "manifest_signature": "802908b900806dcde86b4f2c9acaa070f8cc86ce92386a3df5228e360b517de0"
         }
       ],
       "skipped": false
@@ -521,15 +521,15 @@
     },
     "t2_pulse_width_meter": {
       "scores": [
-        66.66666666666667
+        72.94107572783834
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 72.94107572783834,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 72.94107572783834,
           "manifest": "t2_pulse_width_meter/sample_1.json",
-          "manifest_signature": "ad8dd3d1405b331b8c14e1b37cb047d7bb90b7197ad2540dbcd9d1ccc80e4905"
+          "manifest_signature": "12b224b6a8d547a28499f0e1c867847c92d6308e5fbdbe0707071f46b46181c3"
         }
       ],
       "skipped": false
@@ -551,15 +551,15 @@
     },
     "t2_running_min_max_tracker": {
       "scores": [
-        66.66666666666667
+        66.65099238611262
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 66.65099238611262,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 66.65099238611262,
           "manifest": "t2_running_min_max_tracker/sample_1.json",
-          "manifest_signature": "73557f1a4dbd4d4b312ebeb33d7379f6ebd2a8a9e36eaac58d49f2e375096fe1"
+          "manifest_signature": "42777afda1421de0af552b4307a3ddfe4648327b62bf314241606017a4a4f163"
         }
       ],
       "skipped": false
@@ -581,15 +581,15 @@
     },
     "t2_skid_buffer": {
       "scores": [
-        66.66666666666667
+        77.69899122778774
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 77.69899122778774,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 77.69899122778774,
           "manifest": "t2_skid_buffer/sample_1.json",
-          "manifest_signature": "1927152f2f01b712efa37e50832126e1a769b6f74d76abb0eda8708c4de441bd"
+          "manifest_signature": "122943ead1a944a2d48503f3853abf57efd8b667e61d489ec8817ed8ddde1494"
         }
       ],
       "skipped": false
@@ -716,15 +716,15 @@
     },
     "t2_updown_saturating_counter": {
       "scores": [
-        66.66666666666667
+        69.59623306640937
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 69.59623306640937,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 69.59623306640937,
           "manifest": "t2_updown_saturating_counter/sample_1.json",
-          "manifest_signature": "dec2e8d99af3d7482cf5c0c8af963bbe1286b35d78bc662e20f90cc3d8a86849"
+          "manifest_signature": "61860be0d4b9b7eb377e0f166dd0faf18b30d535ddc4fcb541edc455204170fe"
         }
       ],
       "skipped": false
@@ -776,15 +776,15 @@
     },
     "t3_cache_tag_comparator": {
       "scores": [
-        66.66666666666667
+        55.20224356905538
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 55.20224356905538,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 55.20224356905538,
           "manifest": "t3_cache_tag_comparator/sample_1.json",
-          "manifest_signature": "943f581d92663acc6de7718cdbdaa4714fda012a5e26c06e65763c82b53b65d7"
+          "manifest_signature": "d23bbf25126d4dc64df3b330fde0ec3b8be994d62cedd6b5a37bbbf039477f22"
         }
       ],
       "skipped": false
@@ -851,15 +851,15 @@
     },
     "t3_hamming74_codec": {
       "scores": [
-        66.66666666666667
+        66.78522840198544
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 66.78522840198544,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 66.78522840198544,
           "manifest": "t3_hamming74_codec/sample_1.json",
-          "manifest_signature": "809eafc0abfdb1523ea60b271844288e40faca8f401d2c7d4232a20e279e18ad"
+          "manifest_signature": "65154565d6cdd59eec7db25ef45cb76e68e097e18cb9a34fd948a31b8c80c16a"
         }
       ],
       "skipped": false
@@ -926,15 +926,15 @@
     },
     "t3_saturating_accumulator": {
       "scores": [
-        66.66666666666667
+        67.53484246701204
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 67.53484246701204,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 67.53484246701204,
           "manifest": "t3_saturating_accumulator/sample_1.json",
-          "manifest_signature": "1501124ff4880b33710a5de489135bf0ad4335070e31a1ad8769de2fc3ad8550"
+          "manifest_signature": "9acbf1ae2e70ffa8b39b27b393fe3e233afe794a8e755ad910fe935c80ceef52"
         }
       ],
       "skipped": false
@@ -970,11 +970,11 @@
       "skipped": false
     }
   },
-  "aggregate_mean": 33.333333333333336,
+  "aggregate_mean": 33.436616157799634,
   "tokens_in": 79986,
   "tokens_out": 91478,
   "cost_usd": 0.2029525,
   "pre_run_estimate_usd": 0.58493375,
   "timestamp": "2026-07-22T04:16:23.332875Z",
-  "signature": "932797edf93bf9fb79a929edeca269df6eb1520d075e2c7a9a8ee999d3deda5e"
+  "signature": "6a058fa3c9ec60f656f53d3654ad46abd1c2623fc7b86387760e4f126490f25e"
 }

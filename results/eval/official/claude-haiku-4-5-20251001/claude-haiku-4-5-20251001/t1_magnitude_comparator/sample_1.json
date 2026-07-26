@@ -50,8 +50,8 @@
     }
   ],
   "sec": 1.0,
-  "ppa": 1.0,
-  "task_score": 66.66666666666667,
+  "ppa": 1.0769973187662312,
+  "task_score": 71.79982125108208,
   "wall_clock_s": 1.795441,
   "provider": "anthropic",
   "model": "claude-haiku-4-5-20251001",
@@ -61,5 +61,5 @@
   "cost_usd": 0.003657999999999998,
   "prompt_version": "track-a-rtl-v1",
   "timestamp": "2026-07-22T01:48:41.022644Z",
-  "signature": "7c41ea3894217ee456a80280aee419c2a5b105e0ebfb720faea1b156d5621e0d"
+  "signature": "0890a67121b1684f26fabd0e2e5c1853a22903798de515240061322caf75a35a"
 }

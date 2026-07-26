@@ -206,15 +206,15 @@
     },
     "t1_lfsr": {
       "scores": [
-        66.66666666666667
+        66.23801039128607
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 66.23801039128607,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 66.23801039128607,
           "manifest": "t1_lfsr/sample_1.json",
-          "manifest_signature": "28500e0c27dd70955736805f2c4ca2277a187a686e1a96400b3c2e3c388b0c0a"
+          "manifest_signature": "220f5696588e394f25d3931080e73ace7704c05fa24d0ceaf4c41d5db06bffee"
         }
       ],
       "skipped": false
@@ -461,15 +461,15 @@
     },
     "t2_mm_timer": {
       "scores": [
-        66.66666666666667
+        66.66667039334699
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 66.66667039334699,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 66.66667039334699,
           "manifest": "t2_mm_timer/sample_1.json",
-          "manifest_signature": "f091fa5aa872148bb8d64ca5f70322df7834958340edb280a26641e63ddf1e07"
+          "manifest_signature": "36724952bb0bf1dd877c2bcc1e46cf8621bf254a878221fa1efadfce3bd9c8e8"
         }
       ],
       "skipped": false
@@ -716,15 +716,15 @@
     },
     "t2_updown_saturating_counter": {
       "scores": [
-        66.66666666666667
+        70.46813065713685
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 70.46813065713685,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 70.46813065713685,
           "manifest": "t2_updown_saturating_counter/sample_1.json",
-          "manifest_signature": "8d91dec6d51f6308888d826b3728c5871df34b6dbbb15947cd025927d59f9378"
+          "manifest_signature": "7b9cc13f38c423c6087ba3fc23b327c8ee858c34c42b83195b1fdb42be48c6e2"
         }
       ],
       "skipped": false
@@ -970,11 +970,11 @@
       "skipped": false
     }
   },
-  "aggregate_mean": 17.77777777777778,
+  "aggregate_mean": 17.833991301807277,
   "tokens_in": 99074,
   "tokens_out": 204021,
   "cost_usd": 2.1640525,
   "pre_run_estimate_usd": 2.92466875,
   "timestamp": "2026-07-22T04:35:32.553454Z",
-  "signature": "f3ae7c24c9ffe22ffc191c8d56b7bfe43831f3cc0b78e9eabfee41aecf298a3c"
+  "signature": "f6e56e1b7816f81bdb46ed3f8436965abe554079cd5f00736236ac0fb4955fb2"
 }

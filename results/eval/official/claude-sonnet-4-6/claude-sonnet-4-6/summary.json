@@ -131,15 +131,15 @@
     },
     "t1_debouncer": {
       "scores": [
-        66.66666666666667
+        45.396697025639554
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 45.396697025639554,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 45.396697025639554,
           "manifest": "t1_debouncer/sample_1.json",
-          "manifest_signature": "1eed7748d6fbb7e1e368dab25989584e4fe97dffc6e1ff69d14511670e48e795"
+          "manifest_signature": "73cb71ffc81190b70963940721f2bf6acd57b22fbe9c28744e112b9205b9115e"
         }
       ],
       "skipped": false
@@ -251,30 +251,30 @@
     },
     "t1_onehot_fsm": {
       "scores": [
-        66.66666666666667
+        91.97647161427075
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 91.97647161427075,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 91.97647161427075,
           "manifest": "t1_onehot_fsm/sample_1.json",
-          "manifest_signature": "dfd51d29b4bada2d8f46f19419056b6710f82ca0e1f984979f777f770c63f537"
+          "manifest_signature": "aafe2f635dc03d66b78927747b303926d24e33fc91165172a053010d6e975fab"
         }
       ],
       "skipped": false
     },
     "t1_parity_gen": {
       "scores": [
-        66.66666666666667
+        67.22726904426302
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 67.22726904426302,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 67.22726904426302,
           "manifest": "t1_parity_gen/sample_1.json",
-          "manifest_signature": "9f32e33834fd119b0849a2052e46c289b8aa6b85626d69e6e378c734dc20274f"
+          "manifest_signature": "54f9223d13a0f6461ee69737d18d4c30df9783a30a97bffa5ea7cf9901364f8c"
         }
       ],
       "skipped": false
@@ -296,15 +296,15 @@
     },
     "t1_priority_encoder": {
       "scores": [
-        66.66666666666667
+        66.6666632564466
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 66.6666632564466,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 66.6666632564466,
           "manifest": "t1_priority_encoder/sample_1.json",
-          "manifest_signature": "4fd128f69c2afcccc566d088f7591876d6ffc4c0d6a21a3da3ade7fac71d9ab3"
+          "manifest_signature": "f77d09309bfc8643c01f6d44c50b4df273b0ca3f4f8adb6d57a268d2336bb9c7"
         }
       ],
       "skipped": false
@@ -491,15 +491,15 @@
     },
     "t2_pulse_stretcher": {
       "scores": [
-        66.66666666666667
+        48.96552595453152
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 48.96552595453152,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 48.96552595453152,
           "manifest": "t2_pulse_stretcher/sample_1.json",
-          "manifest_signature": "306846fd3ca977330bc6cf46ab03d7ecd7c28fcddee99ae3f2ed2fed99b128c8"
+          "manifest_signature": "c0fb2a1f263038e326abb952da4b53cff5088376da41774a8ba0e1f26bf2bebb"
         }
       ],
       "skipped": false
@@ -551,15 +551,15 @@
     },
     "t2_running_min_max_tracker": {
       "scores": [
-        66.66666666666667
+        63.7969769888783
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 63.7969769888783,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 63.7969769888783,
           "manifest": "t2_running_min_max_tracker/sample_1.json",
-          "manifest_signature": "5ebcf100a158c46679282b29dc0d0938b39a86443e914a3a6bd9b348971dea4f"
+          "manifest_signature": "6123a86e368078c4832564b0fbd212883b07a856b7726597b9dcc7fae28752df"
         }
       ],
       "skipped": false
@@ -581,15 +581,15 @@
     },
     "t2_skid_buffer": {
       "scores": [
-        66.66666666666667
+        76.1039456174204
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 76.1039456174204,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 76.1039456174204,
           "manifest": "t2_skid_buffer/sample_1.json",
-          "manifest_signature": "55db184bc7cb5ea48dbbbb3f7a37652b1b3f130c0855a6f093587b912e1ca005"
+          "manifest_signature": "65e518a4e42e4ab64a7afb553409e1e18f4013167f36bc4f3a17bed8dacd8204"
         }
       ],
       "skipped": false
@@ -611,30 +611,30 @@
     },
     "t2_spi_slave": {
       "scores": [
-        66.66666666666667
+        62.95636679317379
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 62.95636679317379,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 62.95636679317379,
           "manifest": "t2_spi_slave/sample_1.json",
-          "manifest_signature": "73a0e33c45e80c800ca2939acfdf0b8e64f06b7ded3fde83d45555d9c515dbfc"
+          "manifest_signature": "59f13b029c040e6003fa2dfacef93501355b28d2baa7ac87a7551783f8421765"
         }
       ],
       "skipped": false
     },
     "t2_stream_downsizer": {
       "scores": [
-        66.66666666666667
+        64.48603829149407
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 64.48603829149407,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 64.48603829149407,
           "manifest": "t2_stream_downsizer/sample_1.json",
-          "manifest_signature": "0b8254c3b4cc38868992021b298e5b764c45a08dc35fb1a19888849ac6fc6af7"
+          "manifest_signature": "a4ad816eb8b34004a1c852a876d894ec432964df10bb2ef2f01742fa7c9ee689"
         }
       ],
       "skipped": false
@@ -716,30 +716,30 @@
     },
     "t2_updown_saturating_counter": {
       "scores": [
-        66.66666666666667
+        71.26167032934457
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 71.26167032934457,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 71.26167032934457,
           "manifest": "t2_updown_saturating_counter/sample_1.json",
-          "manifest_signature": "fe9b9b4a3882642dd90a8a74052c316b0441f17e7c95104dca63a3362c838f2e"
+          "manifest_signature": "83e4059491da70bf1036b38509529044e46fdebf47bf477f47473f95dccc2a63"
         }
       ],
       "skipped": false
     },
     "t2_watchdog_timer": {
       "scores": [
-        66.66666666666667
+        58.9894191494784
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 58.9894191494784,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 58.9894191494784,
           "manifest": "t2_watchdog_timer/sample_1.json",
-          "manifest_signature": "985db1e9e9b8d0f631232df2f2397cc0c62b78c048ade9dbf3ae501afd27773d"
+          "manifest_signature": "4c690c2ce676bbbd94e24fbb64c3fa3a63ef44603b6a2517649c1e24c5ca13d9"
         }
       ],
       "skipped": false
@@ -776,105 +776,105 @@
     },
     "t3_cache_tag_comparator": {
       "scores": [
-        66.66666666666667
+        59.02807200526994
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 59.02807200526994,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 59.02807200526994,
           "manifest": "t3_cache_tag_comparator/sample_1.json",
-          "manifest_signature": "5cbd8b9a39717e77727bce6cdfee8128950fa591bb37fb2fe1eeaea4a450c09c"
+          "manifest_signature": "a0931659f9cd6382951bb73055056d0c7da923e56d4642f07250497e59fd5821"
         }
       ],
       "skipped": false
     },
     "t3_crc32": {
       "scores": [
-        66.66666666666667
+        67.01134480464002
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 67.01134480464002,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 67.01134480464002,
           "manifest": "t3_crc32/sample_1.json",
-          "manifest_signature": "2a21b058fecfb8fed271aa3e478c97aca13b2d35fa537928f5b042604bdf06bf"
+          "manifest_signature": "927694ad2979df6a3698a485c934827584242fe78f24792122fe52d7571f7a2d"
         }
       ],
       "skipped": false
     },
     "t3_fir_filter_3tap": {
       "scores": [
-        66.66666666666667
+        65.48450354916278
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 65.48450354916278,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 65.48450354916278,
           "manifest": "t3_fir_filter_3tap/sample_1.json",
-          "manifest_signature": "ea0aefa219fd3997ee4dd4cce9939ec554c485c94adff835de529eac94548979"
+          "manifest_signature": "45463852ff883131b15ff0db3f0ac9acb6c4cf5a22aa9fcc432847317fc3017e"
         }
       ],
       "skipped": false
     },
     "t3_fir_filter_loadable": {
       "scores": [
-        66.66666666666667
+        66.51983253774954
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 66.51983253774954,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 66.51983253774954,
           "manifest": "t3_fir_filter_loadable/sample_1.json",
-          "manifest_signature": "e2a7f610f2a646cae69d1561d042b486acde2d6fea7c0371de4eb60962878b69"
+          "manifest_signature": "d5f97f80678b0d8f241f14e00b4f29c58d4cc8378f209ca407768e381c931c4a"
         }
       ],
       "skipped": false
     },
     "t3_fixed_point_mac": {
       "scores": [
-        66.66666666666667
+        66.666627557017
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 66.666627557017,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 66.666627557017,
           "manifest": "t3_fixed_point_mac/sample_1.json",
-          "manifest_signature": "a5dc3bb8f438a97fbf0f4d9642e795f63f984618ab0e633dc6a61149468e90a4"
+          "manifest_signature": "8b43aabdc70de725fda17cfddf457130baf5bb3f5e682cb88c7ee5508d9803b6"
         }
       ],
       "skipped": false
     },
     "t3_hamming74_codec": {
       "scores": [
-        66.66666666666667
+        65.66290162874682
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 65.66290162874682,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 65.66290162874682,
           "manifest": "t3_hamming74_codec/sample_1.json",
-          "manifest_signature": "064a4d9c53c107a38e50eb39e302dd0b1dadb63254f9040cf83de8faadc9a4c3"
+          "manifest_signature": "6803809b64adfcc9f5a66d10ca7b4b95f253d531ebb9a3b0c596426d074936dc"
         }
       ],
       "skipped": false
     },
     "t3_iir_filter_1st_order": {
       "scores": [
-        66.66666666666667
+        67.50550078573914
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 67.50550078573914,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 67.50550078573914,
           "manifest": "t3_iir_filter_1st_order/sample_1.json",
-          "manifest_signature": "918454d0ebaa0e412e92ad487e5d010bfdb8186496d2eaf3bfedf4494ee37ecc"
+          "manifest_signature": "3507ee7ee3e3e760a0c148a7d149a9e7aa68f92f57be6b39888ca8c5e5668d44"
         }
       ],
       "skipped": false
@@ -941,15 +941,15 @@
     },
     "t3_sequential_divider": {
       "scores": [
-        66.66666666666667
+        59.394866221424905
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 59.394866221424905,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 59.394866221424905,
           "manifest": "t3_sequential_divider/sample_1.json",
-          "manifest_signature": "f95a9805240ff3f77c9513f8d7daa6670d9273364e3157c8ebfca0966cb6c3c0"
+          "manifest_signature": "6ce4fbc867d4e8892ad1cf3735044fd5d885b5c20934b92cf2e6e363336dec74"
         }
       ],
       "skipped": false
@@ -970,11 +970,11 @@
       "skipped": false
     }
   },
-  "aggregate_mean": 45.55555555555556,
+  "aggregate_mean": 45.02945599702263,
   "tokens_in": 115291,
   "tokens_out": 34007,
   "cost_usd": 0.855978,
   "pre_run_estimate_usd": 4.807365,
   "timestamp": "2026-07-22T01:48:01.822829Z",
-  "signature": "a06b1c9dfc9b2060609e7861aaa03808b1b93a1182e79e62337ce5754f8ecd94"
+  "signature": "d04fb0b7b44122109780bddfa0c68a28de3d1a3d3861333dca02ac5de17370ab"
 }

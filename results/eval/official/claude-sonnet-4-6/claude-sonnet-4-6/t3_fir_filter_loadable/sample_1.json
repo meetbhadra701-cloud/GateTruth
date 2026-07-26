@@ -50,8 +50,8 @@
     }
   ],
   "sec": 1.0,
-  "ppa": 1.0,
-  "task_score": 66.66666666666667,
+  "ppa": 0.9977974880662431,
+  "task_score": 66.51983253774954,
   "wall_clock_s": 20.395801,
   "provider": "anthropic",
   "model": "claude-sonnet-4-6",
@@ -61,5 +61,5 @@
   "cost_usd": 0.019325999999999954,
   "prompt_version": "track-a-rtl-v1",
   "timestamp": "2026-07-22T01:45:30.934109Z",
-  "signature": "e2a7f610f2a646cae69d1561d042b486acde2d6fea7c0371de4eb60962878b69"
+  "signature": "d5f97f80678b0d8f241f14e00b4f29c58d4cc8378f209ca407768e381c931c4a"
 }

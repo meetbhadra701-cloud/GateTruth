@@ -2,6 +2,8 @@ import subprocess
 import sys
 import shutil
 
+from harness.flows import PowerResult, StaResult, SynthResult
+from harness import runner
 from harness.runner import TaskPackage, run_ppa_flows, runtime_docker_digest
 from harness.schemas.manifest import load_manifest
 from harness.schemas.task_yaml import load_task_yaml
@@ -76,9 +78,50 @@ def test_negative_timing_slack_fails_sta_stage(tmp_path):
 
     assert by_stage[3]["status"] == "pass"
     assert by_stage[4]["status"] == "fail"
-    assert by_stage[4]["wns_ns"] < 0
-    assert by_stage[4]["tns_ns"] < 0
+    assert "wns_ns" not in by_stage[4]
+    assert "tns_ns" not in by_stage[4]
     assert by_stage[5]["status"] == "pass"
+
+
+def test_zero_ppa_metrics_fail_stages_without_crashing(tmp_path, monkeypatch):
+    task_root = tmp_path / "toy_zero_metrics"
+    shutil.copytree("harness/tests/fixtures/toy_task", task_root)
+    task = TaskPackage(
+        task_id="toy_task",
+        root=task_root,
+        task_yaml=load_task_yaml(task_root / "task.yaml"),
+        top_module="toy",
+    )
+    netlist = tmp_path / "netlist.v"
+    netlist.write_text("module toy; endmodule\n", encoding="utf-8")
+    monkeypatch.setattr(
+        runner,
+        "run_synth",
+        lambda **_kwargs: SynthResult(netlist, 0.0, 1, "synth"),
+    )
+    monkeypatch.setattr(
+        runner,
+        "run_sta",
+        lambda **_kwargs: StaResult(10.0, 0.0, 0.0, "sta"),
+    )
+    monkeypatch.setattr(
+        runner,
+        "run_power",
+        lambda **_kwargs: PowerResult(0.0, "power"),
+    )
+
+    stages, log = run_ppa_flows(
+        task,
+        task_root / "ref" / "ref.sv",
+        tmp_path,
+    )
+
+    assert [stage["status"] for stage in stages] == ["fail", "fail", "fail"]
+    assert all(
+        not ({"area_um2", "wns_ns", "power_mw"} & set(stage))
+        for stage in stages
+    )
+    assert "invalid scoring metric" in log
 
 
 def test_runtime_docker_digest_tracks_baked_file(tmp_path, monkeypatch):

@@ -50,8 +50,8 @@
     }
   ],
   "sec": 1.0,
-  "ppa": 1.0,
-  "task_score": 66.66666666666667,
+  "ppa": 1.3796470742140612,
+  "task_score": 91.97647161427075,
   "wall_clock_s": 1.713512,
   "provider": "openai",
   "model": "gpt-5",
@@ -61,5 +61,5 @@
   "cost_usd": 0.01608124999999999,
   "prompt_version": "track-a-rtl-v1",
   "timestamp": "2026-07-22T03:59:41.012810Z",
-  "signature": "b9a48136a72f419d674ce405b8cd0f226651aa84c3d082019f111cd7fde8368d"
+  "signature": "0df8f9abb68faa8af79294b87bd6b06eeda6762d79fdc38f52fac856aa6e8273"
 }

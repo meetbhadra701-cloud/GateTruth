@@ -33,13 +33,13 @@ Seven models, evaluated under the official pinned flow. The human reference scor
 
 | Rank | Model | Score / 100 |
 |:---:|---|---:|
-| 🥇 | Claude Opus 4.8 | **46.67** |
-| 🥈 | Claude Sonnet 4.6 | 45.56 |
-| 🥉 | Claude Haiku 4.5 | 34.44 |
-| 4 | GPT-5-mini | 33.33 |
-| 5 | GPT-5 | 31.11 |
-| 6 | Llama 4 Maverick | 25.56 |
-| 7 | Gemini 2.5 Pro | 17.78 |
+| 🥇 | Claude Opus 4.8 | **46.91** |
+| 🥈 | Claude Sonnet 4.6 | 45.03 |
+| 🥉 | Claude Haiku 4.5 | 33.58 |
+| 4 | GPT-5-mini | 33.44 |
+| 5 | GPT-5 | 31.64 |
+| 6 | Llama 4 Maverick | 25.52 |
+| 7 | Gemini 2.5 Pro | 17.83 |
 | — | *human reference* | *66.67* |
 
 ### Track B — agentic PPA repair (8 tasks)

@@ -251,15 +251,15 @@
     },
     "t1_onehot_fsm": {
       "scores": [
-        66.66666666666667
+        91.97647161427075
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 91.97647161427075,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 91.97647161427075,
           "manifest": "t1_onehot_fsm/sample_1.json",
-          "manifest_signature": "b9a48136a72f419d674ce405b8cd0f226651aa84c3d082019f111cd7fde8368d"
+          "manifest_signature": "0df8f9abb68faa8af79294b87bd6b06eeda6762d79fdc38f52fac856aa6e8273"
         }
       ],
       "skipped": false
@@ -281,15 +281,15 @@
     },
     "t1_popcount": {
       "scores": [
-        66.66666666666667
+        65.74269474053061
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 65.74269474053061,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 65.74269474053061,
           "manifest": "t1_popcount/sample_1.json",
-          "manifest_signature": "85ebce3c17e1ddd81ba75e3b9c371cb21ecda4a461c97b3687146fa5fc1dbb42"
+          "manifest_signature": "ee1729e39a4654bc63b136eb55b6e65f6a1cea7d0aa7636beca859c6903c0f0b"
         }
       ],
       "skipped": false
@@ -581,15 +581,15 @@
     },
     "t2_skid_buffer": {
       "scores": [
-        66.66666666666667
+        75.32089619429728
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 75.32089619429728,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 75.32089619429728,
           "manifest": "t2_skid_buffer/sample_1.json",
-          "manifest_signature": "c23d73d601ffed01f9935b44f903a537c248e635a80002f4d0001bdc17564848"
+          "manifest_signature": "d94965f2139203c6a03e3fc9f4044a699b9cea46ebcb7aeb7987ebb435a611d2"
         }
       ],
       "skipped": false
@@ -776,15 +776,15 @@
     },
     "t3_cache_tag_comparator": {
       "scores": [
-        66.66666666666667
+        66.90566193838873
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 66.90566193838873,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 66.90566193838873,
           "manifest": "t3_cache_tag_comparator/sample_1.json",
-          "manifest_signature": "1de892b8bef4d06283df63faa18b9fcd0ede3cba54863b0b43ecb41ba9972fca"
+          "manifest_signature": "2122bf0ebc80705492ad953814b67f7903cd854588938764b5745f698eb3e246"
         }
       ],
       "skipped": false
@@ -836,45 +836,45 @@
     },
     "t3_fixed_point_mac": {
       "scores": [
-        66.66666666666667
+        66.666627557017
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 66.666627557017,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 66.666627557017,
           "manifest": "t3_fixed_point_mac/sample_1.json",
-          "manifest_signature": "ea17f5684e747784b5d6f7f4c5a7f6274825135867bd8b558c4595914b228e13"
+          "manifest_signature": "25d5a0147de79eeb7f8e5d33c1355ecc2f6e8fceb1ba305771adcd7af71ae423"
         }
       ],
       "skipped": false
     },
     "t3_hamming74_codec": {
       "scores": [
-        66.66666666666667
+        66.37952788398566
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 66.37952788398566,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 66.37952788398566,
           "manifest": "t3_hamming74_codec/sample_1.json",
-          "manifest_signature": "641b3bb0f49ebed207a1dd5c2e287b6e0cbf0c6cd89d82d14b0b068979cec4e2"
+          "manifest_signature": "94e040aa29af06f6f52cf742bd1d76cad5c682f8a6bd1463c04fa6203a7f24a2"
         }
       ],
       "skipped": false
     },
     "t3_iir_filter_1st_order": {
       "scores": [
-        66.66666666666667
+        65.68383555858175
       ],
-      "mean_score": 66.66666666666667,
+      "mean_score": 65.68383555858175,
       "samples": [
         {
           "sample": 1,
-          "score": 66.66666666666667,
+          "score": 65.68383555858175,
           "manifest": "t3_iir_filter_1st_order/sample_1.json",
-          "manifest_signature": "8765b2412d96e1d68d2f08af4502a13018600d26c5504fc0c1cd8a717a52ad74"
+          "manifest_signature": "0b08244742d0bc73e7d7bea3615df9c1bf3a6c60c1787814827676dfe5aae041"
         }
       ],
       "skipped": false
@@ -970,11 +970,11 @@
       "skipped": false
     }
   },
-  "aggregate_mean": 31.11111111111111,
+  "aggregate_mean": 31.644595258117864,
   "tokens_in": 60642,
   "tokens_out": 84993,
   "cost_usd": 0.9257325,
   "pre_run_estimate_usd": 2.92466875,
   "timestamp": "2026-07-22T04:32:22.849363Z",
-  "signature": "debe01960934ddcac7a308419b6b6f19ec4e0035b515f1400661e72adba64887"
+  "signature": "0542a1f21074578f8096ab6a404681912bc1f0ab0fb9dbe0e28e030eb4f77605"
 }

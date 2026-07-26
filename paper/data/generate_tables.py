@@ -20,6 +20,7 @@ from harness.schemas.canonical_json import compute_manifest_signature  # noqa: E
 from harness.schemas.manifest import load_manifest  # noqa: E402
 from harness.schemas.manifest_b import load_agent_manifest_b  # noqa: E402
 from harness.schemas.task_yaml import load_task_yaml  # noqa: E402
+from harness.scoring import load_reference_metrics  # noqa: E402
 
 TRACK_A_SUITE_SIZE = 60
 TRACK_B_SUITE_SIZE = 8
@@ -131,9 +132,19 @@ def load_tasks(tasks_root: Path, refs_dir: Path) -> list[TaskRecord]:
     for task_path in sorted(tasks_root.glob("*/task.yaml")):
         task = load_task_yaml(task_path)
         manifest = _reference_manifest(task.id, refs_dir)
-        area = _stage_metric(manifest, 3, "area_um2") if manifest else None
-        wns = _stage_metric(manifest, 4, "wns_ns") if manifest else None
-        power = _stage_metric(manifest, 5, "power_mw") if manifest else None
+        if manifest:
+            area = _stage_metric(manifest, 3, "area_um2")
+            wns = _stage_metric(manifest, 4, "wns_ns")
+            power = _stage_metric(manifest, 5, "power_mw")
+        elif tasks_root.resolve() == (REPO_ROOT / "tasks").resolve():
+            metrics = load_reference_metrics(task.id)
+            area = metrics.area_um2
+            wns = metrics.clock_target_ns - metrics.delay_ns
+            power = metrics.power_mw
+        else:
+            area = None
+            wns = None
+            power = None
         records.append(
             TaskRecord(
                 task_id=task.id,
