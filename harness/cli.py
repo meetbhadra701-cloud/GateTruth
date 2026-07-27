@@ -30,7 +30,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--task", required=True)
     run.add_argument("--submission", required=True)
     run.add_argument("--out", default="results/tmp/manifest.json")
-    run.add_argument("--official", action="store_true", help="require Meet sign-off for an official run")
+    run.add_argument("--official", action="store_true", help="require maintainer sign-off for an official run")
 
     run_b = sub.add_parser("run-b", help="run a Track B evaluator package")
     run_b.add_argument("--task", required=True)

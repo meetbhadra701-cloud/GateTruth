@@ -1,4 +1,4 @@
-﻿# SiliconBench Flows
+# SiliconBench Flows
 
 `flows/Dockerfile` defines the primary linux/amd64 image for SB-001.
 
@@ -14,5 +14,5 @@ Record the local image digest:
 flows/record_digest.sh siliconbench:v1
 ```
 
-The oss-cad-suite archive hash and sky130 standard-cell commit are pinned in lows/VERSIONS.md. SB-001 still needs Docker Desktop/WSL2 installed before acceptance commands can run.
+The oss-cad-suite archive hash and sky130 standard-cell commit are pinned in flows/VERSIONS.md. Docker Desktop/WSL2 must be installed before the acceptance commands can run.
 

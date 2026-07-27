@@ -11,6 +11,7 @@
   <img alt="Platform linux/amd64" src="https://img.shields.io/badge/platform-linux%2Famd64-lightgrey.svg">
   <img alt="EDA: open-source" src="https://img.shields.io/badge/EDA-Yosys%20%7C%20OpenSTA%20%7C%20sky130-green.svg">
   <img alt="Reproducible" src="https://img.shields.io/badge/results-byte--reproducible-success.svg">
+  <a href="https://github.com/meetbhadra701-cloud/SiliconBench/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/meetbhadra701-cloud/SiliconBench/actions/workflows/ci.yml/badge.svg"></a>
 </p>
 
 ---
@@ -54,6 +55,10 @@ Seven models, evaluated under the official pinned flow. The human reference scor
 Even the strongest model reaches ~70% of the human reference on generation, and
 four of seven make no progress at all on agentic optimization. Cost does not track
 quality. See the [paper](#citation) for full per-tier results and analysis.
+
+**Want your model on the board?** Open a [model request](.github/ISSUE_TEMPLATE/model_request.md) —
+the maintainer runs it through the official pinned flow and adds the result. Once public,
+the live leaderboard is published at `https://meetbhadra701-cloud.github.io/SiliconBench/`.
 
 ## Two tracks
 
@@ -122,7 +127,7 @@ flows/       pinned Docker image + synthesis/timing/power flow scripts
 scripts/     reproduction and contamination-scan utilities
 site/        static leaderboard generator
 paper/       auto-generated result/task tables
-docs/        design and methodology documentation
+docs/        methodology notes
 ```
 
 Each task is a self-contained package: an original-prose spec (with a unique
@@ -132,14 +137,20 @@ designs and hidden vectors require human sign-off; models never see them.
 
 ## Reproducibility &amp; integrity
 
-- **Pinned flow.** Every score is computed inside one content-addressed image, so
-  a result is a function of the design, not the tool versions.
-- **Signed manifests.** Each run emits a manifest signed with a SHA-256 over its
-  canonical JSON; re-running a design reproduces the signature byte-for-byte.
+- **Pinned flow.** Every score is computed inside one image with fully version-locked
+  tools and standard-cell library, so a result is a function of the design, not the
+  tool versions.
+- **Canonical manifests.** Each run emits a manifest with a SHA-256 content hash over
+  its canonical JSON; re-running a design reproduces it byte-for-byte (tamper-evidence
+  against accidental corruption, not a keyed authenticity signature).
 - **Mutation-gated tests.** Every task's test suite must kill ≥95% of injected RTL
   mutants before the task is admitted.
 - **Contamination controls.** Per-task canaries, a sign-off-gated hidden-vector
   set, and a pre-publication canary scan.
+- **Reproducibility scope.** A clean public checkout runs the public smoke tests, and
+  the reference reproduces its 66.67 by construction. Reproducing official *model*
+  scores additionally requires the maintainer-held hidden vectors (kept private for
+  contamination control), mounted via `SILICONBENCH_HIDDEN_ROOT`.
 
 ## Contributing
 

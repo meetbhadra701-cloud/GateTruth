@@ -551,7 +551,7 @@ def _render_index(rows: list[LeaderboardRow], agent_rows: list[AgentRow]) -> str
         '<nav class="resource-nav" aria-label="Leaderboard resources">'
         '<a data-tour="submit-model" href="https://github.com/meetbhadra701-cloud/SiliconBench/compare">'
         'Submit your model</a>'
-        '<a data-tour="methodology" href="https://github.com/meetbhadra701-cloud/SiliconBench/blob/main/60-Paper/SiliconBench-v1.0.md">'
+        '<a data-tour="methodology" href="https://github.com/meetbhadra701-cloud/SiliconBench/blob/main/paper/main.tex">'
         'Methodology</a></nav></header>'
         '<main><aside class="score-guide" aria-label="Score guide">'
         '<div data-tour="silicon-score"><strong>SiliconScore</strong>'

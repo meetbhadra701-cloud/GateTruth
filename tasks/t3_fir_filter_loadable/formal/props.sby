@@ -15,7 +15,7 @@
 # wide-multiply issue. Depth 4 completes instantly with every engine tried and still exercises reset,
 # a real coefficient load, and at least one genuine convolution check (past_valid/seen_reset both
 # become true well within 4 steps). Deeper BMC coverage for this task's coefficient-write path is
-# deferred, not silently dropped - see the vault ticket for this task.
+# deferred, not silently dropped - see this task's design notes for the depth-4 rationale.
 
 [options]
 mode bmc
