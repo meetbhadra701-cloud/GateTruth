@@ -50,3 +50,9 @@ paper/*.blg
 
 # compiled paper output
 paper/out/
+
+# arXiv build bundle (never commit into the public tree)
+paper/*.tar.gz
+
+# local agent tooling
+.claude/skills/

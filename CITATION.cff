@@ -14,6 +14,8 @@ authors:
 version: "1.0.0"
 date-released: "2026-07-24"
 license: Apache-2.0
+repository-code: "https://github.com/meetbhadra701-cloud/SiliconBench"
+url: "https://github.com/meetbhadra701-cloud/SiliconBench"
 keywords:
   - benchmark
   - large language models
