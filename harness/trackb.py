@@ -10,7 +10,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
-from harness.flows import FlowError, run_power, run_sta, run_synth
+from harness.flows import FlowError, YOSYS_BIN, run_power, run_sta, run_synth
 from harness.runner import (
     HIDDEN_FAILURE_PREFIX,
     REPO_ROOT,
@@ -310,7 +310,7 @@ def run_sec(package: TrackBPackage, baseline: Path, design: Path, work_root: Pat
         "equiv_status -assert\n",
         encoding="utf-8",
     )
-    result = _run(["yosys", "-s", str(script)], timeout_s=60)
+    result = _run([YOSYS_BIN, "-s", str(script)], timeout_s=60)
     if result.returncode == 124:
         return {"stage": 2, "name": "sec", "status": "fail"}, {"status": "timeout", "backend": "yosys-equiv", "seconds": None}, result.stdout
     status = "pass" if result.returncode == 0 else "fail"

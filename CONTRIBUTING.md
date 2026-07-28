@@ -27,8 +27,20 @@ docker build --platform linux/amd64 -t siliconbench:v1 -f flows/Dockerfile .
 Run the tests and linter inside the image before opening a PR:
 
 ```bash
-docker run --rm -v "$PWD:/work" -w /work siliconbench:v1 bash -c "pytest -q && ruff check harness/"
+mkdir -p build/secure-src build/secure-output/results
+git archive --format=tar HEAD | tar -xf - -C build/secure-src
+chmod -R 0777 build/secure-output
+docker run --rm --network none --cap-drop=ALL \
+  --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
+  --mount "type=bind,src=$PWD/build/secure-src,dst=/work,readonly" \
+  --mount "type=bind,src=$PWD/build/secure-output,dst=/output" \
+  --mount "type=bind,src=$PWD/build/secure-output/results,dst=/work/results" \
+  --workdir /work siliconbench:v1 \
+  bash -c "pytest -q -p no:cacheprovider --basetemp=/tmp/siliconbench-pytest && ruff check --no-cache harness/"
 ```
+
+The full isolation contract, including why execution uses a `.git`-free source
+snapshot, is documented in [docs/SECURE_EXECUTION.md](docs/SECURE_EXECUTION.md).
 
 ## Anatomy of a task
 

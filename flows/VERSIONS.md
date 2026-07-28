@@ -31,5 +31,6 @@ CI rebuilds instead of relying on the moving bookworm mirrors.
 
 - SB-001 accepted image digest: sha256:ecf156c0f2197dd6602499255e19cea1bfc04a429f3aa5ae9c786cf5c179c74e.
 - SB-011 image digest: sha256:76d68432cff5c4b43fc0573868df1e0d0ccb0df3903fc86758f7d66d264fd9be. Supersedes SB-001 by adding the unversioned python alias.
-- SB-003 image digest: sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62. Supersedes SB-011 for subsequent M1 tickets by keeping the python alias and adding `/work` to PATH so the repo-level `siliconbench` wrapper is invokable in mounted acceptance runs.
+- SB-003 image digest: sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62. Superseded for runtime policy by SB-104: `/work` is no longer on `PATH`, tools use fixed absolute paths, and the repo-level wrapper must be invoked explicitly as `./siliconbench`.
 - SB-010 reproducibility-hardening rebuild digest: sha256:c59845d212386b901d315fbbffee29da6c04700ed948dfb180b0ef1c45c04a2e. Built from the digest-pinned base image and apt-pinned runtime/result-affecting packages above.
+- SB-104 keeps the frozen result-affecting toolchain and marker while changing only runtime security policy: UID/GID 10001, trusted-tool-only `PATH`, read-only `.git`-free source mounts, a separate writable output mount, no network, no capabilities, no privilege escalation, and fixed memory/process/CPU limits.

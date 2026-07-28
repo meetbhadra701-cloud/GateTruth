@@ -203,8 +203,12 @@ def _generate_with_transport_retry(
         except ProviderRetryableError:
             if attempt == len(TRANSPORT_RETRY_DELAYS_S):
                 raise
-            time.sleep(TRANSPORT_RETRY_DELAYS_S[attempt])
+            _retry_sleep(TRANSPORT_RETRY_DELAYS_S[attempt])
     raise AssertionError("transport retry loop did not return or raise")
+
+
+def _retry_sleep(delay_s: float) -> None:
+    time.sleep(delay_s)
 
 
 def _recorded_temperature(provider: ProviderAdapter) -> TemperatureSetting:
