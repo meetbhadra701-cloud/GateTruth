@@ -42,28 +42,36 @@ def load_hidden(module_globals: dict[str, Any], task_id: str) -> int:
     if not root_value:
         return 0
 
+    public_values = {
+        name: value
+        for name, value in module_globals.items()
+        if name != HIDDEN_LOADED_KEY
+    }
     hidden_path, kind = resolve_hidden_module(root_value, task_id)
     module = _load_module(hidden_path, task_id, module_globals)
-    seeded_names = set(module_globals) - {HIDDEN_LOADED_KEY}
-    hidden_tests = [
+    declared_tests = [
         (name, value)
         for name, value in module.__dict__.items()
-        if name not in seeded_names and isinstance(value, cocotb.test)
+        if isinstance(value, cocotb.test)
+        and (
+            name not in public_values
+            or value is not public_values[name]
+        )
     ]
-    hidden_tests.sort(key=lambda item: item[0])
-    if not hidden_tests:
+    declared_tests.sort(key=lambda item: item[0])
+    if not declared_tests:
         raise HiddenTestError(f"hidden module defines no cocotb tests: {hidden_path}")
 
-    duplicates = [name for name, _ in hidden_tests if name in module_globals]
+    duplicates = [name for name, _ in declared_tests if name in public_values]
     if duplicates:
         raise HiddenTestError(
             f"hidden test names collide with public names for {task_id}: "
             + ", ".join(duplicates)
         )
-    for name, test in hidden_tests:
+    for name, test in declared_tests:
         module_globals[name] = test
 
-    count = len(hidden_tests)
+    count = len(declared_tests)
     module_globals[HIDDEN_LOADED_KEY] = count
     _write_report(task_id=task_id, kind=kind, path=hidden_path, count=count)
     return count

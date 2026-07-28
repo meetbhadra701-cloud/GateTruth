@@ -33,6 +33,7 @@ from harness.scoring import (
     ppa_from_metrics,
     task_score_from_ppa,
 )
+from harness.validation import SubmissionValidationError, validate_source_file
 
 SUITE_VERSION = "v0.2"
 DEFAULT_DOCKER_DIGEST = "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62"
@@ -172,7 +173,7 @@ def run_sim(
     if result.returncode != 0:
         return {"stage": 1, "name": "sim", "status": "fail"}, output
     tests_run, tests_passed = _parse_cocotb_results(results_xml)
-    if tests_passed != tests_run:
+    if tests_run <= 0 or tests_passed != tests_run:
         return {"stage": 1, "name": "sim", "status": "fail"}, output
     return {"stage": 1, "name": "sim", "status": "pass", "tests_run": tests_run, "tests_passed": tests_passed}, output
 
@@ -234,10 +235,23 @@ def _prepare_sim_tests(
         public_path = public_dir / f"{public_module}.py"
         public_source = public_path.read_text(encoding="utf-8")
         hidden_source = hidden_path.read_text(encoding="utf-8")
+        public_tree = ast.parse(public_source, filename=str(public_path))
         hidden_tree = ast.parse(hidden_source, filename=str(hidden_path))
-        if not _cocotb_test_names(hidden_tree):
+        hidden_names = _cocotb_test_names(hidden_tree)
+        if not hidden_names:
             raise HiddenTestError(
                 f"hidden module defines no cocotb tests: {hidden_path}"
+            )
+        public_names = {
+            node.name
+            for node in public_tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        }
+        collisions = sorted(public_names.intersection(hidden_names))
+        if collisions:
+            raise HiddenTestError(
+                f"hidden test names collide with public names for {task.task_id}: "
+                + ", ".join(collisions)
             )
     except (HiddenTestError, OSError, UnicodeError, SyntaxError) as exc:
         return (
@@ -310,14 +324,17 @@ def _parse_cocotb_results(path: Path) -> tuple[int, int]:
             int(suite.attrib.get("failures", "0")) + int(suite.attrib.get("errors", "0"))
             for suite in suites
         )
+        skipped = sum(int(suite.attrib.get("skipped", "0")) for suite in suites)
     else:
         tests = int(root.attrib.get("tests", "0"))
         failures = int(root.attrib.get("failures", "0")) + int(root.attrib.get("errors", "0"))
+        skipped = int(root.attrib.get("skipped", "0"))
     if tests == 0:
         testcases = list(root.iter("testcase"))
         tests = len(testcases)
         failures = sum(1 for testcase in testcases if testcase.find("failure") is not None or testcase.find("error") is not None)
-    return tests, tests - failures
+        skipped = sum(1 for testcase in testcases if testcase.find("skipped") is not None)
+    return tests, tests - failures - skipped
 
 
 def run_formal(task: TaskPackage, submission: Path, work_root: Path) -> tuple[dict[str, object], str]:
@@ -442,39 +459,63 @@ def run_task(
     submission_path = Path(submission).resolve()
     start = time.perf_counter()
     logs: list[str] = []
-    with tempfile.TemporaryDirectory(prefix="siliconbench-") as temp:
-        work_root = Path(temp)
-        stages = []
-        stage, log = run_lint(submission_path)
-        stages.append(stage)
-        logs.append(log)
-        if stage["status"] == "pass":
-            stage, log = run_sim(
-                task,
-                submission_path,
-                work_root,
-                official=official,
+    try:
+        validate_source_file(submission_path)
+    except (OSError, SubmissionValidationError) as exc:
+        stages = [
+            {"stage": stage_number, "name": name, "status": "fail"}
+            for stage_number, name in (
+                (0, "lint"),
+                (1, "sim"),
+                (2, "formal"),
+                (3, "synth"),
+                (4, "sta"),
+                (5, "power"),
             )
+        ]
+        logs.append(f"submission rejected before tool execution: {exc}\n")
+    else:
+        with tempfile.TemporaryDirectory(prefix="siliconbench-") as temp:
+            work_root = Path(temp)
+            stages = []
+            stage, log = run_lint(submission_path)
             stages.append(stage)
             logs.append(log)
-        else:
-            stages.append({"stage": 1, "name": "sim", "status": "fail"})
-        if stages[-1]["status"] == "pass":
-            stage, log = run_formal(task, submission_path, work_root)
-            stages.append(stage)
-            logs.append(log)
-        else:
-            stages.append({"stage": 2, "name": "formal", "status": "fail"})
-        if all(stage["status"] in {"pass", "skip"} for stage in stages if stage["stage"] in {0, 1, 2}):
-            flow_stages, log = run_ppa_flows(task, submission_path, work_root)
-            stages.extend(flow_stages)
-            logs.append(log)
-        else:
-            stages.extend([
-                {"stage": 3, "name": "synth", "status": "fail"},
-                {"stage": 4, "name": "sta", "status": "fail"},
-                {"stage": 5, "name": "power", "status": "fail"},
-            ])
+            if stage["status"] == "pass":
+                stage, log = run_sim(
+                    task,
+                    submission_path,
+                    work_root,
+                    official=official,
+                )
+                stages.append(stage)
+                logs.append(log)
+            else:
+                stages.append({"stage": 1, "name": "sim", "status": "fail"})
+            if stages[-1]["status"] == "pass":
+                stage, log = run_formal(task, submission_path, work_root)
+                stages.append(stage)
+                logs.append(log)
+            else:
+                stages.append({"stage": 2, "name": "formal", "status": "fail"})
+            if all(
+                stage["status"] in {"pass", "skip"}
+                for stage in stages
+                if stage["stage"] in {0, 1, 2}
+            ):
+                flow_stages, log = run_ppa_flows(
+                    task,
+                    submission_path,
+                    work_root,
+                )
+                stages.extend(flow_stages)
+                logs.append(log)
+            else:
+                stages.extend([
+                    {"stage": 3, "name": "synth", "status": "fail"},
+                    {"stage": 4, "name": "sta", "status": "fail"},
+                    {"stage": 5, "name": "power", "status": "fail"},
+                ])
 
     correctness_pass = all(stage["status"] in {"pass", "skip"} for stage in stages if stage["stage"] in {0, 1, 2})
     ppa_pass = all(stage["status"] == "pass" for stage in stages if stage["stage"] in {3, 4, 5})

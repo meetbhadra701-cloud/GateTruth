@@ -21,6 +21,7 @@ from harness.schemas.manifest import TemperatureSetting
 from harness.schemas.manifest_b import AgentTrackBManifest
 from harness.spend import SpendCapExceeded
 from harness.trackb import resolve_track_b_task, run_track_b, single_sv_file
+from harness.validation import SubmissionValidationError, validate_source_text
 
 BudgetLimit = Literal["tokens", "wall_clock_s", "tool_calls", "spend_cap"]
 ACTION_TO_KEYS = {
@@ -291,6 +292,10 @@ def execute_action(
         return {"status": "ok", "content": target.read_text(encoding="utf-8")}, False
 
     if tool == "write_design":
+        try:
+            validate_source_text(action["content"])
+        except SubmissionValidationError as exc:
+            raise ActionRejected(str(exc)) from exc
         design = single_sv_file(sandbox / "design")
         design.write_text(action["content"], encoding="utf-8")
         return {"status": "ok", "path": design.relative_to(sandbox).as_posix()}, False
