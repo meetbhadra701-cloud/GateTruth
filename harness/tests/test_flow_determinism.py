@@ -1,7 +1,9 @@
 import subprocess
 import sys
 import shutil
+import time
 
+from harness import flows
 from harness.flows import PowerResult, StaResult, SynthResult
 from harness import runner
 from harness.runner import TaskPackage, run_ppa_flows, runtime_docker_digest
@@ -132,3 +134,16 @@ def test_runtime_docker_digest_tracks_baked_file(tmp_path, monkeypatch):
     monkeypatch.setenv("SILICONBENCH_DOCKER_DIGEST_FILE", str(digest_file))
 
     assert runtime_docker_digest() == rebuilt_digest
+
+
+def test_flow_subprocess_timeout_is_bounded_and_reported():
+    started = time.monotonic()
+
+    result = flows._run(
+        [sys.executable, "-c", "import time; time.sleep(10)"],
+        timeout_s=0.05,
+    )
+
+    assert time.monotonic() - started < 1.0
+    assert result.returncode == 124
+    assert "TIMEOUT after 0.05 seconds" in result.stdout

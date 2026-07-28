@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import json
 import math
 import os
@@ -18,7 +19,6 @@ from xml.etree import ElementTree
 
 from harness.flows import FlowError, run_power, run_sta, run_synth
 from harness.hidden import (
-    HIDDEN_REPORT_ENV,
     HIDDEN_ROOT_ENV,
     HiddenTestError,
     resolve_hidden_module,
@@ -33,6 +33,7 @@ from harness.scoring import (
     ppa_from_metrics,
     task_score_from_ppa,
 )
+from harness.validation import SubmissionValidationError, validate_source_file
 
 SUITE_VERSION = "v0.2"
 DEFAULT_DOCKER_DIGEST = "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62"
@@ -40,6 +41,22 @@ DEFAULT_DOCKER_DIGEST_FILE = Path("/etc/siliconbench-image-digest")
 REPO_ROOT = Path(__file__).resolve().parents[1]
 TOY_FIXTURE_ROOT = REPO_ROOT / "harness" / "tests" / "fixtures" / "toy_task"
 HIDDEN_FAILURE_PREFIX = "official hidden-test error: "
+VERILATOR_BIN = "/opt/oss-cad-suite/bin/verilator"
+SBY_BIN = "/opt/oss-cad-suite/bin/sby"
+TRUSTED_TOOL_PATH = (
+    "/opt/iverilog/bin:/opt/oss-cad-suite/bin:/usr/local/sbin:"
+    "/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+)
+_SIM_ENV_ALLOWLIST = (
+    "HOME",
+    "LANG",
+    "LC_ALL",
+    "LC_CTYPE",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "TMPDIR",
+)
 
 
 @dataclass(frozen=True)
@@ -111,7 +128,10 @@ def _run(
 
 
 def run_lint(submission: Path) -> tuple[dict[str, object], str]:
-    result = _run(["verilator", "--lint-only", "--sv", str(submission)], timeout_s=30)
+    result = _run(
+        [VERILATOR_BIN, "--lint-only", "--sv", str(submission)],
+        timeout_s=30,
+    )
     if result.returncode == 0:
         return {"stage": 0, "name": "lint", "status": "pass", "warnings": 0}, result.stdout
     return {"stage": 0, "name": "lint", "status": "fail"}, result.stdout
@@ -125,13 +145,10 @@ def run_sim(
     timeout_s: float = 20,
     official: bool = False,
 ) -> tuple[dict[str, object], str]:
-    env = os.environ.copy()
-    hidden_report = work_root / "hidden-load.json"
-    hidden_error = _configure_hidden_run(
+    test_dir, test_module, hidden_error = _prepare_sim_tests(
         task,
+        work_root,
         official=official,
-        env=env,
-        report_path=hidden_report,
     )
     if hidden_error is not None:
         return {"stage": 1, "name": "sim", "status": "fail"}, hidden_error
@@ -139,7 +156,6 @@ def run_sim(
     script = work_root / "run_cocotb.py"
     build_dir = work_root / "sim_build"
     results_xml = work_root / "results.xml"
-    test_module = _test_module_name(task)
     script.write_text(
         "from cocotb.runner import get_runner\n"
         "runner = get_runner('icarus')\n"
@@ -147,27 +163,17 @@ def run_sim(
         f"build_args=['-g2012'], build_dir=r'{build_dir.as_posix()}', always=True, "
         "timescale=('1ns','1ps'))\n"
         f"runner.test(hdl_toplevel='{task.top_module}', test_module='{test_module}', "
-        f"build_dir=r'{build_dir.as_posix()}', test_dir=r'{(task.root / 'tb').as_posix()}', "
+        f"build_dir=r'{build_dir.as_posix()}', test_dir=r'{test_dir.as_posix()}', "
         f"results_xml=r'{results_xml.as_posix()}', timescale=('1ns','1ps'))\n",
         encoding="utf-8",
     )
-    env.pop("PYTEST_CURRENT_TEST", None)
-    env["PYTHONPATH"] = os.pathsep.join([str(REPO_ROOT), str(task.root / "tb"), env.get("PYTHONPATH", "")])
+    env = _sim_child_env(test_dir)
     result = _run([sys.executable, str(script)], cwd=REPO_ROOT, env=env, timeout_s=timeout_s)
-    hidden_error = _validate_hidden_report(
-        task,
-        official=official,
-        report_path=hidden_report,
-    )
     output = result.stdout
-    if hidden_error is not None:
-        output = output.rstrip() + "\n" + hidden_error
     if result.returncode != 0:
         return {"stage": 1, "name": "sim", "status": "fail"}, output
-    if hidden_error is not None:
-        return {"stage": 1, "name": "sim", "status": "fail"}, output
     tests_run, tests_passed = _parse_cocotb_results(results_xml)
-    if tests_passed != tests_run:
+    if tests_run <= 0 or tests_passed != tests_run:
         return {"stage": 1, "name": "sim", "status": "fail"}, output
     return {"stage": 1, "name": "sim", "status": "pass", "tests_run": tests_run, "tests_passed": tests_passed}, output
 
@@ -202,52 +208,103 @@ def official_hidden_preflight(
     return None
 
 
-def _configure_hidden_run(
+def _prepare_sim_tests(
     task: TaskPackage,
+    work_root: Path,
     *,
     official: bool,
-    env: dict[str, str],
-    report_path: Path,
-) -> str | None:
+) -> tuple[Path, str, str | None]:
+    public_dir = task.root / "tb"
     kind = _hidden_kind(task)
-    error = official_hidden_preflight(task, official=official, env=env)
-    if error is not None or kind is None:
-        return error
-    env[HIDDEN_REPORT_ENV] = str(report_path)
-    return None
+    error = official_hidden_preflight(task, official=official)
+    if error is not None:
+        return public_dir, "", error
+    public_module = _test_module_name(task)
+    if kind is None:
+        return public_dir, public_module, error
+    if not official:
+        return public_dir, public_module, None
 
-
-def _validate_hidden_report(
-    task: TaskPackage,
-    *,
-    official: bool,
-    report_path: Path,
-) -> str | None:
-    kind = _hidden_kind(task)
-    if not official or kind is None:
-        return None
-    if not report_path.is_file():
-        return (
-            f"{HIDDEN_FAILURE_PREFIX}loader did not report hidden tests for "
-            f"{task.task_id}\n"
-        )
     try:
-        report = json.loads(report_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        return f"{HIDDEN_FAILURE_PREFIX}invalid loader report: {exc}\n"
-    count = report.get("count")
-    if (
-        report.get("task_id") != task.task_id
-        or report.get("kind") != kind
-        or isinstance(count, bool)
-        or not isinstance(count, int)
-        or count <= 0
-    ):
-        return (
-            f"{HIDDEN_FAILURE_PREFIX}invalid loader report for {task.task_id}: "
-            f"{report!r}\n"
+        hidden_root = os.environ[HIDDEN_ROOT_ENV]
+        hidden_path, _ = resolve_hidden_module(
+            hidden_root,
+            task.task_id,
+            kind=kind,
         )
-    return None
+        public_path = public_dir / f"{public_module}.py"
+        public_source = public_path.read_text(encoding="utf-8")
+        hidden_source = hidden_path.read_text(encoding="utf-8")
+        public_tree = ast.parse(public_source, filename=str(public_path))
+        hidden_tree = ast.parse(hidden_source, filename=str(hidden_path))
+        hidden_names = _cocotb_test_names(hidden_tree)
+        if not hidden_names:
+            raise HiddenTestError(
+                f"hidden module defines no cocotb tests: {hidden_path}"
+            )
+        public_names = {
+            node.name
+            for node in public_tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        }
+        collisions = sorted(public_names.intersection(hidden_names))
+        if collisions:
+            raise HiddenTestError(
+                f"hidden test names collide with public names for {task.task_id}: "
+                + ", ".join(collisions)
+            )
+    except (HiddenTestError, OSError, UnicodeError, SyntaxError) as exc:
+        return (
+            public_dir,
+            public_module,
+            f"{HIDDEN_FAILURE_PREFIX}{exc}\n",
+        )
+
+    merged_dir = work_root / "official_tb"
+    merged_dir.mkdir(parents=True, exist_ok=True)
+    merged_module = f"{public_module}_official"
+    merged_path = merged_dir / f"{merged_module}.py"
+    merged_path.write_text(
+        public_source.rstrip()
+        + "\n\n# Private tests staged by the trusted harness.\n"
+        + hidden_source.lstrip(),
+        encoding="utf-8",
+    )
+    return merged_dir, merged_module, None
+
+
+def _cocotb_test_names(tree: ast.Module) -> list[str]:
+    names: list[str] = []
+    for node in tree.body:
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        for decorator in node.decorator_list:
+            target = decorator.func if isinstance(decorator, ast.Call) else decorator
+            if (
+                isinstance(target, ast.Attribute)
+                and isinstance(target.value, ast.Name)
+                and target.value.id == "cocotb"
+                and target.attr == "test"
+            ):
+                names.append(node.name)
+                break
+    return names
+
+
+def _sim_child_env(test_dir: Path) -> dict[str, str]:
+    env = {
+        name: os.environ[name]
+        for name in _SIM_ENV_ALLOWLIST
+        if name in os.environ
+    }
+    env.update(
+        {
+            "PATH": TRUSTED_TOOL_PATH,
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONPATH": os.pathsep.join([str(REPO_ROOT), str(test_dir)]),
+        }
+    )
+    return env
 
 
 def _test_module_name(task: TaskPackage) -> str:
@@ -267,14 +324,17 @@ def _parse_cocotb_results(path: Path) -> tuple[int, int]:
             int(suite.attrib.get("failures", "0")) + int(suite.attrib.get("errors", "0"))
             for suite in suites
         )
+        skipped = sum(int(suite.attrib.get("skipped", "0")) for suite in suites)
     else:
         tests = int(root.attrib.get("tests", "0"))
         failures = int(root.attrib.get("failures", "0")) + int(root.attrib.get("errors", "0"))
+        skipped = int(root.attrib.get("skipped", "0"))
     if tests == 0:
         testcases = list(root.iter("testcase"))
         tests = len(testcases)
         failures = sum(1 for testcase in testcases if testcase.find("failure") is not None or testcase.find("error") is not None)
-    return tests, tests - failures
+        skipped = sum(1 for testcase in testcases if testcase.find("skipped") is not None)
+    return tests, tests - failures - skipped
 
 
 def run_formal(task: TaskPackage, submission: Path, work_root: Path) -> tuple[dict[str, object], str]:
@@ -290,7 +350,7 @@ def run_formal(task: TaskPackage, submission: Path, work_root: Path) -> tuple[di
     shutil.copytree(formal_dir, local_formal)
     local_ref.mkdir(parents=True)
     shutil.copy2(submission, local_ref / "ref.sv")
-    result = _run(["sby", "-f", "props.sby"], cwd=local_formal, timeout_s=60)
+    result = _run([SBY_BIN, "-f", "props.sby"], cwd=local_formal, timeout_s=60)
     if result.returncode == 0:
         return {"stage": 2, "name": "formal", "status": "pass"}, result.stdout
     return {"stage": 2, "name": "formal", "status": "fail"}, result.stdout
@@ -399,39 +459,63 @@ def run_task(
     submission_path = Path(submission).resolve()
     start = time.perf_counter()
     logs: list[str] = []
-    with tempfile.TemporaryDirectory(prefix="siliconbench-") as temp:
-        work_root = Path(temp)
-        stages = []
-        stage, log = run_lint(submission_path)
-        stages.append(stage)
-        logs.append(log)
-        if stage["status"] == "pass":
-            stage, log = run_sim(
-                task,
-                submission_path,
-                work_root,
-                official=official,
+    try:
+        validate_source_file(submission_path)
+    except (OSError, SubmissionValidationError) as exc:
+        stages = [
+            {"stage": stage_number, "name": name, "status": "fail"}
+            for stage_number, name in (
+                (0, "lint"),
+                (1, "sim"),
+                (2, "formal"),
+                (3, "synth"),
+                (4, "sta"),
+                (5, "power"),
             )
+        ]
+        logs.append(f"submission rejected before tool execution: {exc}\n")
+    else:
+        with tempfile.TemporaryDirectory(prefix="siliconbench-") as temp:
+            work_root = Path(temp)
+            stages = []
+            stage, log = run_lint(submission_path)
             stages.append(stage)
             logs.append(log)
-        else:
-            stages.append({"stage": 1, "name": "sim", "status": "fail"})
-        if stages[-1]["status"] == "pass":
-            stage, log = run_formal(task, submission_path, work_root)
-            stages.append(stage)
-            logs.append(log)
-        else:
-            stages.append({"stage": 2, "name": "formal", "status": "fail"})
-        if all(stage["status"] in {"pass", "skip"} for stage in stages if stage["stage"] in {0, 1, 2}):
-            flow_stages, log = run_ppa_flows(task, submission_path, work_root)
-            stages.extend(flow_stages)
-            logs.append(log)
-        else:
-            stages.extend([
-                {"stage": 3, "name": "synth", "status": "fail"},
-                {"stage": 4, "name": "sta", "status": "fail"},
-                {"stage": 5, "name": "power", "status": "fail"},
-            ])
+            if stage["status"] == "pass":
+                stage, log = run_sim(
+                    task,
+                    submission_path,
+                    work_root,
+                    official=official,
+                )
+                stages.append(stage)
+                logs.append(log)
+            else:
+                stages.append({"stage": 1, "name": "sim", "status": "fail"})
+            if stages[-1]["status"] == "pass":
+                stage, log = run_formal(task, submission_path, work_root)
+                stages.append(stage)
+                logs.append(log)
+            else:
+                stages.append({"stage": 2, "name": "formal", "status": "fail"})
+            if all(
+                stage["status"] in {"pass", "skip"}
+                for stage in stages
+                if stage["stage"] in {0, 1, 2}
+            ):
+                flow_stages, log = run_ppa_flows(
+                    task,
+                    submission_path,
+                    work_root,
+                )
+                stages.extend(flow_stages)
+                logs.append(log)
+            else:
+                stages.extend([
+                    {"stage": 3, "name": "synth", "status": "fail"},
+                    {"stage": 4, "name": "sta", "status": "fail"},
+                    {"stage": 5, "name": "power", "status": "fail"},
+                ])
 
     correctness_pass = all(stage["status"] in {"pass", "skip"} for stage in stages if stage["stage"] in {0, 1, 2})
     ppa_pass = all(stage["status"] == "pass" for stage in stages if stage["stage"] in {3, 4, 5})

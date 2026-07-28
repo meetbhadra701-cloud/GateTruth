@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -10,7 +11,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
-from harness.flows import FlowError, run_power, run_sta, run_synth
+from harness.flows import FlowError, YOSYS_BIN, run_power, run_sta, run_synth
 from harness.runner import (
     HIDDEN_FAILURE_PREFIX,
     REPO_ROOT,
@@ -25,6 +26,13 @@ from harness.runner import (
 )
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest_b import TrackBManifest
+from harness.validation import (
+    SubmissionValidationError,
+    validate_identifier,
+    validate_module_declarations,
+    validate_source_file,
+    validate_sv_filename,
+)
 
 TRACKB_ROOT = REPO_ROOT / "tasksB"
 TOY_TRACKB_ROOT = REPO_ROOT / "harness" / "tests" / "fixtures" / "toy_taskB"
@@ -95,6 +103,12 @@ def run_track_b(
         import tempfile
         with tempfile.TemporaryDirectory(prefix="siliconbench-trackb-") as temp:
             work_root = Path(temp)
+            safe_design = work_root / "submission.sv"
+            safe_baseline = work_root / "baseline.sv"
+            shutil.copyfile(design, safe_design)
+            shutil.copyfile(baseline, safe_baseline)
+            design = safe_design
+            baseline = safe_baseline
             stage, log = run_lint(design)
             stages.append(stage)
             logs.append(log)
@@ -200,6 +214,7 @@ def resolve_track_b_task(task_id: str) -> TrackBPackage:
             objective = load_objective(root / "objective.yaml")
             design = single_sv_file(root / "design")
             top = _find_top_module(design, fallback=task_id)
+            validate_identifier(top, label="top module")
             clock = float(objective.params.get("clock_ns") or _read_clock_target(root / "task.yaml"))
             return TrackBPackage(task_id=objective.task_id, root=root, objective=objective, top_module=top, clock_target_ns=clock)
     raise FileNotFoundError(f"unknown Track B task: {task_id}")
@@ -263,6 +278,16 @@ def diff_guard(canonical: Path, submission: Path) -> str | None:
     design_files = sorted(design.glob("*.sv"))
     if len(design_files) != 1:
         return f"malformed submission: expected exactly one .sv file in design, found {len(design_files)}"
+    try:
+        validate_sv_filename(design_files[0])
+        validate_source_file(design_files[0])
+        canonical_top = _find_top_module(
+            single_sv_file(canonical / "design"),
+            fallback=canonical.name,
+        )
+        validate_module_declarations(design_files[0], expected_top=canonical_top)
+    except (OSError, UnicodeError, SubmissionValidationError) as exc:
+        return f"malformed submission: {exc}"
     for entry in IMMUTABLE_ENTRIES:
         left = canonical / entry
         right = submission / entry
@@ -310,7 +335,7 @@ def run_sec(package: TrackBPackage, baseline: Path, design: Path, work_root: Pat
         "equiv_status -assert\n",
         encoding="utf-8",
     )
-    result = _run(["yosys", "-s", str(script)], timeout_s=60)
+    result = _run([YOSYS_BIN, "-s", str(script)], timeout_s=60)
     if result.returncode == 124:
         return {"stage": 2, "name": "sec", "status": "fail"}, {"status": "timeout", "backend": "yosys-equiv", "seconds": None}, result.stdout
     status = "pass" if result.returncode == 0 else "fail"

@@ -105,17 +105,34 @@ docker build --platform linux/amd64 -t siliconbench:v1 -f flows/Dockerfile .
 Score a reference design through the Track A pipeline:
 
 ```bash
-docker run --rm -v "$PWD:/work" -w /work siliconbench:v1 ./siliconbench run \
-  --task t1_gray_counter \
-  --submission tasks/t1_gray_counter/ref/ref.sv \
-  --out results/refs/t1_gray_counter.json
+mkdir -p build/secure-src build/secure-output
+git archive --format=tar HEAD | tar -xf - -C build/secure-src
+chmod 0777 build/secure-output
+docker run --rm --network none --cap-drop=ALL \
+  --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
+  --mount "type=bind,src=$PWD/build/secure-src,dst=/work,readonly" \
+  --mount "type=bind,src=$PWD/build/secure-output,dst=/output" \
+  --workdir /work siliconbench:v1 ./siliconbench run \
+    --task t1_gray_counter \
+    --submission tasks/t1_gray_counter/ref/ref.sv \
+    --out /output/t1_gray_counter.json
 ```
 
 Build the static leaderboard site from signed result manifests:
 
 ```bash
-docker run --rm -v "$PWD:/work" -w /work siliconbench:v1 ./siliconbench site
+mkdir -p build/secure-output/site-build build/secure-src/site/build
+chmod 0777 build/secure-output/site-build
+docker run --rm --network none --cap-drop=ALL \
+  --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
+  --mount "type=bind,src=$PWD/build/secure-src,dst=/work,readonly" \
+  --mount "type=bind,src=$PWD/build/secure-output/site-build,dst=/work/site/build" \
+  --workdir /work siliconbench:v1 ./siliconbench site
 ```
+
+See [Secure execution](docs/SECURE_EXECUTION.md) for the canonical isolation
+contract. The staged source tree contains no `.git/`, and execution containers
+never receive provider API keys.
 
 ## Repository layout
 

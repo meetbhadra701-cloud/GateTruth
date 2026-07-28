@@ -11,6 +11,22 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 FLOWS_ROOT = REPO_ROOT / "flows"
 DEFAULT_LIBERTY = Path("/pdk/sky130hd/sky130_fd_sc_hd__tt_025C_1v80.lib")
+YOSYS_BIN = "/opt/oss-cad-suite/bin/yosys"
+OPENSTA_BIN = "/usr/bin/sta"
+SYNTH_TIMEOUT_S = 120.0
+STA_TIMEOUT_S = 120.0
+POWER_TIMEOUT_S = 120.0
+_CHILD_ENV_ALLOWLIST = (
+    "HOME",
+    "LANG",
+    "LC_ALL",
+    "LC_CTYPE",
+    "PATH",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "TMPDIR",
+)
 
 
 @dataclass(frozen=True)
@@ -42,6 +58,7 @@ def run_synth(
     clock_target_ns: float,
     work_root: Path,
     liberty: Path = DEFAULT_LIBERTY,
+    timeout_s: float = SYNTH_TIMEOUT_S,
 ) -> SynthResult:
     netlist = work_root / "synth_netlist.v"
     report = work_root / "synth_stat.rpt"
@@ -57,9 +74,9 @@ def run_synth(
         .replace("{{NETLIST}}", _yosys_path(netlist)),
         encoding="utf-8",
     )
-    result = _run(["yosys", "-s", str(script)])
+    result = _run([YOSYS_BIN, "-s", str(script)], timeout_s=timeout_s)
     if result.returncode != 0:
-        raise FlowError(result.stdout)
+        raise FlowError(_failure_message("synth", result, timeout_s))
     report_text = report.read_text(encoding="utf-8")
     return SynthResult(
         netlist=netlist,
@@ -76,11 +93,16 @@ def run_sta(
     constraints: Path,
     clock_target_ns: float,
     liberty: Path = DEFAULT_LIBERTY,
+    timeout_s: float = STA_TIMEOUT_S,
 ) -> StaResult:
     env = _sta_env(netlist=netlist, top_module=top_module, constraints=constraints, liberty=liberty)
-    result = _run(["sta", "-no_init", "-exit", str(FLOWS_ROOT / "sta.tcl")], env=env)
+    result = _run(
+        [OPENSTA_BIN, "-no_init", "-exit", str(FLOWS_ROOT / "sta.tcl")],
+        env=env,
+        timeout_s=timeout_s,
+    )
     if result.returncode != 0:
-        raise FlowError(result.stdout)
+        raise FlowError(_failure_message("sta", result, timeout_s))
     wns = _parse_named_float(result.stdout, "SB_WNS_NS")
     tns = _parse_named_float(result.stdout, "SB_TNS_NS")
     delay_ns = clock_target_ns - wns
@@ -94,11 +116,16 @@ def run_power(
     top_module: str,
     constraints: Path,
     liberty: Path = DEFAULT_LIBERTY,
+    timeout_s: float = POWER_TIMEOUT_S,
 ) -> PowerResult:
     env = _sta_env(netlist=netlist, top_module=top_module, constraints=constraints, liberty=liberty)
-    result = _run(["sta", "-no_init", "-exit", str(FLOWS_ROOT / "power.tcl")], env=env)
+    result = _run(
+        [OPENSTA_BIN, "-no_init", "-exit", str(FLOWS_ROOT / "power.tcl")],
+        env=env,
+        timeout_s=timeout_s,
+    )
     if result.returncode != 0:
-        raise FlowError(result.stdout)
+        raise FlowError(_failure_message("power", result, timeout_s))
     return PowerResult(power_mw=_parse_power_watts(result.stdout) * 1000.0, log=result.stdout)
 
 
@@ -106,12 +133,39 @@ class FlowError(RuntimeError):
     """Raised when a deterministic flow command fails or emits unparsable output."""
 
 
-def _run(args: list[str], *, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(args, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False, env=env)
+def _run(
+    args: list[str],
+    *,
+    env: dict[str, str] | None = None,
+    timeout_s: float,
+) -> subprocess.CompletedProcess[str]:
+    try:
+        return subprocess.run(
+            args,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            check=False,
+            env=env,
+            timeout=timeout_s,
+        )
+    except subprocess.TimeoutExpired as exc:
+        output = exc.stdout or ""
+        if isinstance(output, bytes):
+            output = output.decode("utf-8", errors="replace")
+        return subprocess.CompletedProcess(
+            args,
+            124,
+            output + f"\nTIMEOUT after {timeout_s:g} seconds\n",
+        )
 
 
 def _sta_env(*, netlist: Path, top_module: str, constraints: Path, liberty: Path) -> dict[str, str]:
-    env = os.environ.copy()
+    env = {
+        name: os.environ[name]
+        for name in _CHILD_ENV_ALLOWLIST
+        if name in os.environ
+    }
     env.update(
         {
             "SB_LIBERTY": str(liberty),
@@ -121,6 +175,16 @@ def _sta_env(*, netlist: Path, top_module: str, constraints: Path, liberty: Path
         }
     )
     return env
+
+
+def _failure_message(
+    stage: str,
+    result: subprocess.CompletedProcess[str],
+    timeout_s: float,
+) -> str:
+    if result.returncode == 124:
+        return f"{stage} timed out after {timeout_s:g} seconds\n{result.stdout}"
+    return result.stdout
 
 
 def _yosys_path(path: Path) -> str:

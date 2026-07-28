@@ -85,10 +85,12 @@ RUN curl -fsSLo sky130_fd_sc_hd.tar.zst \
 
 FROM base AS runtime
 ARG SILICONBENCH_IMAGE_DIGEST=sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62
-ENV PATH="/work:/opt/iverilog/bin:/opt/oss-cad-suite/bin:${PATH}"
+ENV PATH="/opt/iverilog/bin:/opt/oss-cad-suite/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 ENV PDK_ROOT=/pdk
 ENV SILICONBENCH_PLATFORM=linux/amd64
+ENV HOME=/home/siliconbench
 
 COPY --from=iverilog-build /opt/iverilog /opt/iverilog
 COPY --from=oss-cad-suite /opt/oss-cad-suite /opt/oss-cad-suite
@@ -107,19 +109,26 @@ RUN python3.11 -m pip install --no-cache-dir --break-system-packages \
       ruff==0.8.4 \
       pydantic==2.10.4
 
+RUN groupadd --gid 10001 siliconbench \
+    && useradd --uid 10001 --gid 10001 --create-home --shell /bin/bash siliconbench \
+    && mkdir -p /work /output \
+    && chown 10001:10001 /work /output
+
+USER 10001:10001
+
 RUN set -eux; \
     test "$(uname -m)" = "x86_64"; \
-    verilator --version | grep -E 'Verilator 5\.'; \
+    /opt/oss-cad-suite/bin/verilator --version | grep -E 'Verilator 5\.'; \
     test "$(command -v python)" = "/usr/local/bin/python"; \
     test "$(command -v python3)" = "/usr/local/bin/python3"; \
     python --version | grep -E 'Python 3\.11\.'; \
     python3 --version | grep -E 'Python 3\.11\.'; \
     test "$(command -v iverilog)" = "/opt/iverilog/bin/iverilog"; \
-    iverilog -V; \
-    yosys -V; \
-    sta -version; \
-    sby --help >/dev/null; \
-    eqy --help >/dev/null; \
+    /opt/iverilog/bin/iverilog -V; \
+    /opt/oss-cad-suite/bin/yosys -V; \
+    /usr/bin/sta -version; \
+    /opt/oss-cad-suite/bin/sby --help >/dev/null; \
+    /opt/oss-cad-suite/bin/eqy --help >/dev/null; \
     python3.11 -c "import cocotb, pydantic"; \
     ls /pdk/sky130hd/*.lib /pdk/sky130hd/*.lef >/dev/null
 

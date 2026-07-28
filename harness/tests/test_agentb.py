@@ -167,7 +167,7 @@ def test_agentb_retries_transport_then_completes_without_leaking_spend(
         }
 
     monkeypatch.setattr(anthropic_module, "post_json", flaky_post)
-    monkeypatch.setattr(agentb.time, "sleep", delays.append)
+    monkeypatch.setattr(agentb, "_retry_sleep", delays.append)
     spend_path = tmp_path / "spend.json"
     provider = AnthropicProvider(
         "claude-haiku-4-5-20251001",

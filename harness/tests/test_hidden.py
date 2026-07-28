@@ -85,6 +85,33 @@ def test_configured_malformed_module_raises(
         load_hidden({}, "demo")
 
 
+def test_hidden_test_name_collision_raises(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "hidden"
+    _write_hidden(
+        root,
+        "demo",
+        """
+@cocotb.test()
+async def hidden_collision(dut):
+    pass
+""",
+    )
+    monkeypatch.setenv(HIDDEN_ROOT_ENV, str(root))
+
+    async def public_collision(_dut):
+        pass
+
+    namespace = {
+        "cocotb": cocotb,
+        "hidden_collision": cocotb.test()(public_collision),
+    }
+    with pytest.raises(HiddenTestError, match="collide.*hidden_collision"):
+        load_hidden(namespace, "demo")
+
+
 def test_official_registered_task_fails_closed_without_root(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -108,3 +135,125 @@ def test_official_registered_task_fails_closed_without_root(
     assert stage["status"] == "fail"
     assert HIDDEN_FAILURE_PREFIX in log
     assert HIDDEN_ROOT_ENV in log
+
+
+def test_official_hidden_tests_are_staged_without_exposing_root(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    task_root = tmp_path / "tasks" / "demo"
+    tb_dir = task_root / "tb"
+    tb_dir.mkdir(parents=True)
+    (tb_dir / "test_demo.py").write_text(
+        """
+import json
+import os
+
+import cocotb
+
+from harness.hidden import load_hidden
+
+
+@cocotb.test()
+async def smoke_environment(dut):
+    print("SB_CHILD_ENV=" + json.dumps(dict(os.environ), sort_keys=True))
+
+
+load_hidden(globals(), "demo")
+""".lstrip(),
+        encoding="utf-8",
+    )
+    source = tmp_path / "demo.sv"
+    source.write_text("module demo; endmodule\n", encoding="utf-8")
+    hidden_root = tmp_path / "hidden-secret-root"
+    _write_hidden(
+        hidden_root,
+        "demo",
+        """
+@cocotb.test()
+async def hidden_loaded(dut):
+    assert "SILICONBENCH_HIDDEN_ROOT" not in os.environ
+""".lstrip(),
+    )
+    monkeypatch.setenv(HIDDEN_ROOT_ENV, str(hidden_root))
+    monkeypatch.setenv("OPENAI_API_KEY", "openai-secret-value")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "anthropic-secret-value")
+    work_root = tmp_path / "work"
+    work_root.mkdir()
+    task = TaskPackage(
+        task_id="demo",
+        root=task_root,
+        task_yaml=SimpleNamespace(formal=False),
+        top_module="demo",
+    )
+
+    stage, log = run_sim(
+        task,
+        source,
+        work_root,
+        official=True,
+    )
+
+    assert stage["status"] == "pass"
+    assert stage["tests_run"] == 2
+    assert "OPENAI_API_KEY" not in log
+    assert "ANTHROPIC_API_KEY" not in log
+    assert HIDDEN_ROOT_ENV not in log
+    assert "openai-secret-value" not in log
+    assert "anthropic-secret-value" not in log
+
+
+def test_official_staging_rejects_hidden_public_name_collision(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    task_root = tmp_path / "tasks" / "demo"
+    tb_dir = task_root / "tb"
+    tb_dir.mkdir(parents=True)
+    (tb_dir / "test_demo.py").write_text(
+        """
+import cocotb
+
+from harness.hidden import load_hidden
+
+
+@cocotb.test()
+async def hidden_collision(dut):
+    pass
+
+
+load_hidden(globals(), "demo")
+""".lstrip(),
+        encoding="utf-8",
+    )
+    hidden_root = tmp_path / "hidden"
+    _write_hidden(
+        hidden_root,
+        "demo",
+        """
+@cocotb.test()
+async def hidden_collision(dut):
+    pass
+""".lstrip(),
+    )
+    monkeypatch.setenv(HIDDEN_ROOT_ENV, str(hidden_root))
+    work_root = tmp_path / "work"
+    work_root.mkdir()
+    task = TaskPackage(
+        task_id="demo",
+        root=task_root,
+        task_yaml=SimpleNamespace(formal=False),
+        top_module="demo",
+    )
+
+    stage, log = run_sim(
+        task,
+        tmp_path / "unused.sv",
+        work_root,
+        official=True,
+    )
+
+    assert stage["status"] == "fail"
+    assert HIDDEN_FAILURE_PREFIX in log
+    assert "collide" in log
+    assert "hidden_collision" in log
