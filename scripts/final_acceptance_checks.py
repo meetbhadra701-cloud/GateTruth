@@ -9,6 +9,7 @@ import os
 import shutil
 import sys
 import tempfile
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -115,7 +116,65 @@ def _run_reference(task_id: str, out: Path, *, official: bool) -> str:
     return manifest.signature
 
 
-def check_determinism(root: Path, *, official: bool) -> None:
+def _all_task_ids() -> list[str]:
+    return sorted(path.parent.name for path in (REPO_ROOT / "tasks").glob("*/task.yaml"))
+
+
+def check_determinism(
+    root: Path,
+    *,
+    official: bool,
+    baseline_dir: Path | None,
+) -> None:
+    if baseline_dir is not None:
+        tasks = _all_task_ids()
+        if len(tasks) != 60:
+            raise AcceptanceError(f"expected 60 Track A tasks, found {len(tasks)}")
+        baseline = {
+            task_id: load_manifest(baseline_dir / f"{task_id}.json").signature
+            for task_id in tasks
+        }
+
+        def rerun(task_id: str) -> tuple[str, str | None]:
+            try:
+                signature = _run_reference(
+                    task_id,
+                    root / "order-shuffled" / f"{task_id}.json",
+                    official=official,
+                )
+            except AcceptanceError:
+                signature = None
+            return task_id, signature
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            parallel_results = dict(pool.map(rerun, reversed(tasks)))
+        retry_ids = sorted(
+            task_id for task_id, signature in parallel_results.items() if signature is None
+        )
+        shuffled = {
+            task_id: signature
+            for task_id, signature in parallel_results.items()
+            if signature is not None
+        }
+        for task_id in retry_ids:
+            shuffled[task_id] = _run_reference(
+                task_id,
+                root / "order-shuffled-solo-retry" / f"{task_id}.json",
+                official=official,
+            )
+        if baseline != shuffled:
+            mismatches = sorted(
+                task_id
+                for task_id in tasks
+                if baseline[task_id] != shuffled[task_id]
+            )
+            raise AcceptanceError(f"determinism mismatch: {mismatches}")
+        print(
+            "CHECK6 PASS shuffled_tasks=60 signature_matches=60/60 "
+            f"contention_retries={len(retry_ids)}"
+        )
+        return
+
     first = {
         task_id: _run_reference(
             task_id,
@@ -238,6 +297,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--eval-root", type=Path, default=Path("results/eval/official"))
     parser.add_argument("--agent-eval-root", type=Path, default=Path("results/evalB/official"))
+    parser.add_argument("--determinism-baseline", type=Path)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
     args.out.mkdir(parents=True, exist_ok=True)
@@ -261,7 +321,11 @@ def main(argv: list[str] | None = None) -> int:
         dir=args.out,
     ) as temp:
         root = Path(temp)
-        check_determinism(root, official=official)
+        check_determinism(
+            root,
+            official=official,
+            baseline_dir=args.determinism_baseline,
+        )
         check_submission_outcomes(root, official=official)
         check_track_b_tamper(root, official=official)
     print("FINAL_ACCEPTANCE_PROBE PASS checks=1,3,4,6,7,8,9,10")
