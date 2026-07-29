@@ -56,3 +56,6 @@ paper/*.tar.gz
 
 # local agent tooling
 .claude/skills/
+
+# External benchmark sources are fetched from pinned revisions and never redistributed.
+external-audit/vendor/
