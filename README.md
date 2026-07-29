@@ -12,7 +12,7 @@
   <img alt="Platform linux/amd64" src="https://img.shields.io/badge/platform-linux%2Famd64-lightgrey.svg">
   <img alt="EDA: open-source" src="https://img.shields.io/badge/EDA-Yosys%20%7C%20OpenSTA%20%7C%20sky130-green.svg">
   <img alt="Reproducible" src="https://img.shields.io/badge/results-byte--reproducible-success.svg">
-  <a href="https://github.com/meetbhadra701-cloud/SiliconBench/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/meetbhadra701-cloud/SiliconBench/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/meetbhadra701-cloud/GateTruth/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/meetbhadra701-cloud/GateTruth/actions/workflows/ci.yml/badge.svg"></a>
 </p>
 
 ---
@@ -66,7 +66,7 @@ quality. See the [paper](#citation) for full per-tier results and analysis.
 
 **Want your model on the board?** Open a [model request](.github/ISSUE_TEMPLATE/model_request.md) —
 the maintainer runs it through the official pinned flow and adds the result. Once public,
-the live leaderboard is published at `https://meetbhadra701-cloud.github.io/SiliconBench/`.
+the live leaderboard is published at `https://meetbhadra701-cloud.github.io/GateTruth/`.
 
 ## Two tracks
 
@@ -107,7 +107,7 @@ cannot win by removing functionality.
 Build the pinned image from the repository root:
 
 ```bash
-docker build --platform linux/amd64 -t siliconbench:v1 -f flows/Dockerfile .
+docker build --platform linux/amd64 -t gatetruth:v1 -f flows/Dockerfile .
 ```
 
 Score a reference design through the Track A pipeline:
@@ -120,7 +120,7 @@ docker run --rm --network none --cap-drop=ALL \
   --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
   --mount "type=bind,src=$PWD/build/secure-src,dst=/work,readonly" \
   --mount "type=bind,src=$PWD/build/secure-output,dst=/output" \
-  --workdir /work siliconbench:v1 ./siliconbench run \
+  --workdir /work gatetruth:v1 ./gatetruth run \
     --task t1_gray_counter \
     --submission tasks/t1_gray_counter/ref/ref.sv \
     --out /output/t1_gray_counter.json
@@ -135,7 +135,7 @@ docker run --rm --network none --cap-drop=ALL \
   --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
   --mount "type=bind,src=$PWD/build/secure-src,dst=/work,readonly" \
   --mount "type=bind,src=$PWD/build/secure-output/site-build,dst=/work/site/build" \
-  --workdir /work siliconbench:v1 ./siliconbench site
+  --workdir /work gatetruth:v1 ./gatetruth site
 ```
 
 See [Secure execution](docs/SECURE_EXECUTION.md) for the canonical isolation
@@ -175,7 +175,8 @@ designs and hidden vectors require human sign-off; models never see them.
 - **Reproducibility scope.** A clean public checkout runs the public smoke tests, and
   the reference reproduces its 66.67 by construction. Reproducing official *model*
   scores additionally requires the maintainer-held hidden vectors (kept private for
-  contamination control), mounted via `SILICONBENCH_HIDDEN_ROOT`.
+  contamination control), mounted via `GATETRUTH_HIDDEN_ROOT` (the legacy
+  `SILICONBENCH_HIDDEN_ROOT` alias remains accepted).
 
 ## Contributing
 
@@ -185,7 +186,7 @@ New tasks, bug reports, and model requests are welcome — see
 
 ## Citation
 
-A paper describing SiliconBench is in preparation. Until then, please cite the
+A paper describing GateTruth is in preparation. Until then, please cite the
 repository (see [CITATION.cff](CITATION.cff)).
 
 ## License

@@ -1,4 +1,4 @@
-"""Public-repository contamination checks for SiliconBench."""
+"""Public-repository contamination checks for GateTruth."""
 
 from __future__ import annotations
 

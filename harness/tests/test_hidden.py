@@ -12,6 +12,8 @@ from harness.hidden import (
     HIDDEN_LOADED_KEY,
     HIDDEN_REPORT_ENV,
     HIDDEN_ROOT_ENV,
+    LEGACY_HIDDEN_REPORT_ENV,
+    LEGACY_HIDDEN_ROOT_ENV,
     HiddenTestError,
     load_hidden,
 )
@@ -27,10 +29,53 @@ def _write_hidden(root: Path, task_id: str, source: str) -> Path:
 
 def test_unset_root_is_smoke_only(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv(HIDDEN_ROOT_ENV, raising=False)
+    monkeypatch.delenv(LEGACY_HIDDEN_ROOT_ENV, raising=False)
     namespace: dict[str, object] = {}
 
     assert load_hidden(namespace, "demo") == 0
     assert namespace[HIDDEN_LOADED_KEY] == 0
+
+
+def test_primary_hidden_root_wins_and_legacy_root_remains_supported(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    primary_root = tmp_path / "primary"
+    legacy_root = tmp_path / "legacy"
+    _write_hidden(
+        primary_root,
+        "demo",
+        """
+import cocotb
+
+@cocotb.test()
+async def hidden_primary(dut):
+    pass
+""",
+    )
+    _write_hidden(
+        legacy_root,
+        "demo",
+        """
+import cocotb
+
+@cocotb.test()
+async def hidden_legacy(dut):
+    pass
+""",
+    )
+    monkeypatch.setenv(HIDDEN_ROOT_ENV, str(primary_root))
+    monkeypatch.setenv(LEGACY_HIDDEN_ROOT_ENV, str(legacy_root))
+
+    primary_namespace: dict[str, object] = {}
+    assert load_hidden(primary_namespace, "demo") == 1
+    assert "hidden_primary" in primary_namespace
+    assert "hidden_legacy" not in primary_namespace
+
+    monkeypatch.delenv(HIDDEN_ROOT_ENV)
+    legacy_namespace: dict[str, object] = {}
+    assert load_hidden(legacy_namespace, "demo") == 1
+    assert "hidden_legacy" in legacy_namespace
 
 
 def test_present_root_loads_hidden_tests_in_name_order(
@@ -52,8 +97,10 @@ async def hidden_alpha(dut):
 """,
     )
     report = tmp_path / "report.json"
+    legacy_report = tmp_path / "legacy-report.json"
     monkeypatch.setenv(HIDDEN_ROOT_ENV, str(root))
     monkeypatch.setenv(HIDDEN_REPORT_ENV, str(report))
+    monkeypatch.setenv(LEGACY_HIDDEN_REPORT_ENV, str(legacy_report))
     namespace = {"cocotb": cocotb, "helper": lambda: 7}
 
     assert load_hidden(namespace, "demo") == 2
@@ -61,6 +108,11 @@ async def hidden_alpha(dut):
     assert isinstance(namespace["hidden_alpha"], cocotb.test)
     assert namespace[HIDDEN_LOADED_KEY] == 2
     assert '"count":2' in report.read_text(encoding="utf-8")
+    assert not legacy_report.exists()
+
+    monkeypatch.delenv(HIDDEN_REPORT_ENV)
+    assert load_hidden({"cocotb": cocotb, "helper": lambda: 7}, "demo") == 2
+    assert '"count":2' in legacy_report.read_text(encoding="utf-8")
 
 
 def test_configured_missing_module_raises(
@@ -172,6 +224,7 @@ load_hidden(globals(), "demo")
         """
 @cocotb.test()
 async def hidden_loaded(dut):
+    assert "GATETRUTH_HIDDEN_ROOT" not in os.environ
     assert "SILICONBENCH_HIDDEN_ROOT" not in os.environ
 """.lstrip(),
     )
@@ -199,6 +252,7 @@ async def hidden_loaded(dut):
     assert "OPENAI_API_KEY" not in log
     assert "ANTHROPIC_API_KEY" not in log
     assert HIDDEN_ROOT_ENV not in log
+    assert LEGACY_HIDDEN_ROOT_ENV not in log
     assert "openai-secret-value" not in log
     assert "anthropic-secret-value" not in log
 

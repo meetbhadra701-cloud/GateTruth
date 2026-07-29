@@ -16,7 +16,17 @@ from harness.spend import (
     reconcile_spend_reservations,
     reserve_spend,
     settle_spend_reservation,
+    spend_cap_from_env,
 )
+
+
+def test_spend_cap_prefers_gatetruth_and_supports_legacy(monkeypatch):
+    monkeypatch.setenv("SILICONBENCH_SPEND_CAP_USD", "41")
+    monkeypatch.delenv("GATETRUTH_SPEND_CAP_USD", raising=False)
+    assert spend_cap_from_env() == 41.0
+
+    monkeypatch.setenv("GATETRUTH_SPEND_CAP_USD", "17")
+    assert spend_cap_from_env() == 17.0
 
 
 def test_total_is_settled_only_but_cap_includes_reservations(tmp_path):

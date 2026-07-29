@@ -159,7 +159,7 @@ def validate_manifest(path: str | Path) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Validate a SiliconBench manifest")
+    parser = argparse.ArgumentParser(description="Validate a GateTruth manifest")
     parser.add_argument("--validate", metavar="PATH", help="manifest JSON to validate")
     args = parser.parse_args(argv)
 

@@ -27,6 +27,6 @@ For a **new task**, also include:
 
 ## Checklist
 
-- [ ] I ran the tests and linter inside `siliconbench:v1`
+- [ ] I ran the tests and linter inside `gatetruth:v1`
 - [ ] I did not modify unrelated tasks or results
 - [ ] I agree to license my contribution under Apache 2.0

@@ -1,1 +1,1 @@
-"""Tests for the SiliconBench harness."""
+"""Tests for the GateTruth harness."""

@@ -2,12 +2,12 @@
 
 ## Reporting a vulnerability
 
-SiliconBench executes untrusted, model-generated RTL and untrusted repositories inside
+GateTruth executes untrusted, model-generated RTL and untrusted repositories inside
 a pinned Docker container. If you find a way for a submission to escape that sandbox —
 read host files, reach the network, exhaust host resources, or influence another
 submission's score — please report it privately rather than opening a public issue.
 
-- **Preferred:** open a [GitHub security advisory](https://github.com/meetbhadra701-cloud/SiliconBench/security/advisories/new)
+- **Preferred:** open a [GitHub security advisory](https://github.com/meetbhadra701-cloud/GateTruth/security/advisories/new)
   (private).
 - Or email the maintainer (address on the project's arXiv paper / GitHub profile).
 

@@ -1,11 +1,10 @@
-"""Run the bounded, no-network SiliconBench final-acceptance probes."""
+"""Run the bounded, no-network GateTruth final-acceptance probes."""
 
 from __future__ import annotations
 
 import argparse
 import json
 import math
-import os
 import shutil
 import sys
 import tempfile
@@ -17,6 +16,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from harness.env_compat import read_env  # noqa: E402
 from harness.runner import DEFAULT_DOCKER_DIGEST_FILE, run_task  # noqa: E402
 from harness.schemas.canonical_json import compute_manifest_signature  # noqa: E402
 from harness.schemas.manifest import load_manifest  # noqa: E402
@@ -301,7 +301,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
     args.out.mkdir(parents=True, exist_ok=True)
-    official = bool(os.environ.get("SILICONBENCH_HIDDEN_ROOT"))
+    official = bool(read_env("HIDDEN_ROOT"))
 
     track_a_count, track_a_digests = check_track_a(args.eval_root)
     track_b_count, track_b_digests = check_track_b(args.agent_eval_root)
@@ -317,7 +317,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     with tempfile.TemporaryDirectory(
-        prefix="siliconbench-final-acceptance-",
+        prefix="gatetruth-final-acceptance-",
         dir=args.out,
     ) as temp:
         root = Path(temp)

@@ -107,7 +107,7 @@ def check_loaders(
         testbenches = sorted((root / kind / task_id / "tb").glob("test_*.py"))
         if len(testbenches) != 1:
             raise ValueError(f"expected one testbench for {task_id}")
-        module_name = f"_siliconbench_freeze_check_{task_id}"
+        module_name = f"_gatetruth_freeze_check_{task_id}"
         spec = importlib.util.spec_from_file_location(module_name, testbenches[0])
         if spec is None or spec.loader is None:
             raise ValueError(f"cannot import testbench for {task_id}")

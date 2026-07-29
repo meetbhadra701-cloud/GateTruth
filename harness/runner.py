@@ -1,4 +1,4 @@
-"""Stage 0-2 runner spine for SiliconBench."""
+"""Stage 0-2 runner spine for GateTruth."""
 
 from __future__ import annotations
 
@@ -18,8 +18,10 @@ from pathlib import Path
 from xml.etree import ElementTree
 
 from harness.flows import FlowError, run_power, run_sta, run_synth
+from harness.env_compat import read_env
 from harness.hidden import (
     HIDDEN_ROOT_ENV,
+    LEGACY_HIDDEN_ROOT_ENV,
     HiddenTestError,
     resolve_hidden_module,
 )
@@ -37,7 +39,8 @@ from harness.validation import SubmissionValidationError, validate_source_file
 
 SUITE_VERSION = "v0.2"
 DEFAULT_DOCKER_DIGEST = "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62"
-DEFAULT_DOCKER_DIGEST_FILE = Path("/etc/siliconbench-image-digest")
+DEFAULT_DOCKER_DIGEST_FILE = Path("/etc/gatetruth-image-digest")
+LEGACY_DOCKER_DIGEST_FILE = Path("/etc/siliconbench-image-digest")
 REPO_ROOT = Path(__file__).resolve().parents[1]
 TOY_FIXTURE_ROOT = REPO_ROOT / "harness" / "tests" / "fixtures" / "toy_task"
 HIDDEN_FAILURE_PREFIX = "official hidden-test error: "
@@ -80,12 +83,18 @@ def resolve_task(task_id: str) -> TaskPackage:
 
 
 def runtime_docker_digest() -> str:
-    explicit = os.environ.get("SILICONBENCH_DOCKER_DIGEST")
+    explicit = read_env("DOCKER_DIGEST")
     if explicit:
         return explicit
-    path = Path(os.environ.get("SILICONBENCH_DOCKER_DIGEST_FILE", DEFAULT_DOCKER_DIGEST_FILE))
-    if path.is_file():
-        return path.read_text(encoding="utf-8").strip()
+    configured_path = read_env("DOCKER_DIGEST_FILE")
+    paths = (
+        (Path(configured_path),)
+        if configured_path
+        else (DEFAULT_DOCKER_DIGEST_FILE, LEGACY_DOCKER_DIGEST_FILE)
+    )
+    for path in paths:
+        if path.is_file():
+            return path.read_text(encoding="utf-8").strip()
     return DEFAULT_DOCKER_DIGEST
 
 
@@ -195,10 +204,11 @@ def official_hidden_preflight(
     if not official or kind is None:
         return None
     environment = os.environ if env is None else env
-    root = environment.get(HIDDEN_ROOT_ENV)
+    root = read_env("HIDDEN_ROOT", environ=environment)
     if not root:
         return (
-            f"{HIDDEN_FAILURE_PREFIX}{HIDDEN_ROOT_ENV} is required for "
+            f"{HIDDEN_FAILURE_PREFIX}{HIDDEN_ROOT_ENV} "
+            f"(legacy {LEGACY_HIDDEN_ROOT_ENV}) is required for "
             f"registered task {task.task_id}\n"
         )
     try:
@@ -226,7 +236,11 @@ def _prepare_sim_tests(
         return public_dir, public_module, None
 
     try:
-        hidden_root = os.environ[HIDDEN_ROOT_ENV]
+        hidden_root = read_env("HIDDEN_ROOT")
+        if not hidden_root:
+            raise HiddenTestError(
+                f"{HIDDEN_ROOT_ENV} (legacy {LEGACY_HIDDEN_ROOT_ENV}) is required"
+            )
         hidden_path, _ = resolve_hidden_module(
             hidden_root,
             task.task_id,
@@ -475,7 +489,7 @@ def run_task(
         ]
         logs.append(f"submission rejected before tool execution: {exc}\n")
     else:
-        with tempfile.TemporaryDirectory(prefix="siliconbench-") as temp:
+        with tempfile.TemporaryDirectory(prefix="gatetruth-") as temp:
             work_root = Path(temp)
             stages = []
             stage, log = run_lint(submission_path)

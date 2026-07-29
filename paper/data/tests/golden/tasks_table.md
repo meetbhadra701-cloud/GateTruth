@@ -3,4 +3,4 @@
 |---|---:|:---:|---:|---:|---:|---:|
 | t1_alpha | T1 | yes | 10.00 | 168.91 | 7.472 | 0.002709 |
 | t2_beta | T2 | no | 10.00 | N/A | N/A | N/A |
-<!-- Missing ref PPA for t2_beta: ./siliconbench run --task t2_beta --submission tasks/t2_beta/ref/ref.sv --out results/refs/t2_beta.json -->
+<!-- Missing ref PPA for t2_beta: ./gatetruth run --task t2_beta --submission tasks/t2_beta/ref/ref.sv --out results/refs/t2_beta.json -->

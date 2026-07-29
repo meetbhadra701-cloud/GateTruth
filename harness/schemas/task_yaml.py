@@ -107,7 +107,7 @@ def _parse_value(value: str) -> Any:
 
 
 def parse_task_yaml_text(text: str) -> dict[str, Any]:
-    """Parse the flat YAML subset used by frozen SiliconBench task files."""
+    """Parse the flat YAML subset used by frozen GateTruth task files."""
 
     result: dict[str, Any] = {}
     for line_number, raw_line in enumerate(text.splitlines(), start=1):

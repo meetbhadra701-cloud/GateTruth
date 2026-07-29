@@ -1,4 +1,4 @@
-"""Provider adapter skeletons for SiliconBench."""
+"""Provider adapter skeletons for GateTruth."""
 
 from __future__ import annotations
 

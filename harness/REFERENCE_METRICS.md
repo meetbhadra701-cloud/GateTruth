@@ -2,7 +2,7 @@
 
 `reference_metrics.json` is the committed scoring denominator for the 60-task
 Track A suite. It is derived from the signed reference manifests produced by
-`siliconbench:v1`, not from model submissions.
+`gatetruth:v1`, not from model submissions.
 
 Regenerate it only after an intentional reference RTL, flow, task clock, or
 image change:

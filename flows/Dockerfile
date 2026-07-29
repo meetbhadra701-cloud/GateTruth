@@ -84,19 +84,17 @@ RUN curl -fsSLo sky130_fd_sc_hd.tar.zst \
     && test -n "$(find /pdk/sky130hd -name '*.lef' -print -quit)"
 
 FROM base AS runtime
-ARG SILICONBENCH_IMAGE_DIGEST=sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62
 ENV PATH="/opt/iverilog/bin:/opt/oss-cad-suite/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PDK_ROOT=/pdk
+ENV GATETRUTH_PLATFORM=linux/amd64
 ENV SILICONBENCH_PLATFORM=linux/amd64
-ENV HOME=/home/siliconbench
+ENV HOME=/home/gatetruth
 
 COPY --from=iverilog-build /opt/iverilog /opt/iverilog
 COPY --from=oss-cad-suite /opt/oss-cad-suite /opt/oss-cad-suite
 COPY --from=pdk-subset /pdk/sky130hd /pdk/sky130hd
-
-RUN printf '%s\n' "$SILICONBENCH_IMAGE_DIGEST" > /etc/siliconbench-image-digest
 
 RUN ln -sf /usr/bin/python3.11 /usr/local/bin/python \
     && ln -sf /usr/bin/python3.11 /usr/local/bin/python3 \
@@ -109,10 +107,13 @@ RUN python3.11 -m pip install --no-cache-dir --break-system-packages \
       ruff==0.8.4 \
       pydantic==2.10.4
 
-RUN groupadd --gid 10001 siliconbench \
-    && useradd --uid 10001 --gid 10001 --create-home --shell /bin/bash siliconbench \
+RUN groupadd --gid 10001 gatetruth \
+    && useradd --uid 10001 --gid 10001 --create-home --shell /bin/bash gatetruth \
     && mkdir -p /work /output \
     && chown 10001:10001 /work /output
+
+ARG GATETRUTH_IMAGE_DIGEST=sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62
+RUN printf '%s\n' "$GATETRUTH_IMAGE_DIGEST" > /etc/gatetruth-image-digest
 
 USER 10001:10001
 

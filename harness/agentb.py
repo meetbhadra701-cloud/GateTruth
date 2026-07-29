@@ -70,7 +70,7 @@ def run_agent_task(
     tool_calls = 0
     budget_exceeded: BudgetLimit | None = None
 
-    with tempfile.TemporaryDirectory(prefix="siliconbench-agentb-") as temp:
+    with tempfile.TemporaryDirectory(prefix="gatetruth-agentb-") as temp:
         temp_root = Path(temp)
         sandbox = temp_root / "submission"
         shutil.copytree(package.root, sandbox)

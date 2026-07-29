@@ -1,16 +1,16 @@
 # Guidance for AI coding assistants
 
-This file orients AI coding agents (and their humans) working in the SiliconBench
+This file orients AI coding agents (and their humans) working in the GateTruth
 repository. For the full contributor workflow and task standards, see
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Golden rules
 
 1. **Everything runs in the pinned image.** Build, test, and score inside
-   `siliconbench:v1` (`flows/Dockerfile`), never on the host — results are only
+   `gatetruth:v1` (`flows/Dockerfile`), never on the host — results are only
    meaningful when the toolchain is pinned. Build it with:
    ```bash
-   docker build --platform linux/amd64 -t siliconbench:v1 -f flows/Dockerfile .
+   docker build --platform linux/amd64 -t gatetruth:v1 -f flows/Dockerfile .
    ```
 
 2. **Never author or alter reference designs or hidden test vectors.** A task's

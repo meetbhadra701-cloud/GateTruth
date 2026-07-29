@@ -7,7 +7,7 @@ Ticket: SB-009
 ## Inputs
 
 - Host: Windows Docker Desktop/WSL2 on x86-64 hardware.
-- ORFS image: `siliconbench-orfs:v1`.
+- ORFS image: `gatetruth-orfs:v1`.
 - Base image: official `openroad/orfs`, linux/amd64 manifest digest `sha256:25cba7b97fd4fec67481564e37096825010b499d7afca791ced28130cf03b252`.
 - Smoke design: ORFS built-in `flow/designs/sky130hd/gcd/config.mk`.
 - Hard timeout: 7200 seconds.
@@ -15,7 +15,7 @@ Ticket: SB-009
 ## Command
 
 ```bash
-docker build --platform linux/amd64 -t siliconbench-orfs:v1 -f flows/orfs/Dockerfile flows/orfs/
+docker build --platform linux/amd64 -t gatetruth-orfs:v1 -f flows/orfs/Dockerfile flows/orfs/
 timeout 7200 flows/orfs/run_gcd_sky130hd.sh
 echo "EXIT:$?"
 ```

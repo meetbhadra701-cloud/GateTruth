@@ -1,10 +1,13 @@
 import json
+from pathlib import Path
 import subprocess
 import sys
 import inspect
 
 from harness.providers import GenParams
 from harness.schemas.manifest import load_manifest
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_score_cli_prints_task_score():
@@ -16,6 +19,26 @@ def test_score_cli_prints_task_score():
     )
 
     assert result.stdout.strip() == "66.6666666667"
+
+
+def test_primary_and_legacy_cli_wrappers_are_equivalent():
+    outputs = []
+    for wrapper in ("gatetruth", "silicon" + "bench"):
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(REPO_ROOT / wrapper),
+                "score",
+                "--manifest",
+                "harness/tests/fixtures/valid_manifest.json",
+            ],
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+        )
+        outputs.append(result.stdout)
+
+    assert outputs == ["66.6666666667\n", "66.6666666667\n"]
 
 
 def test_assert_score_reference_helper():

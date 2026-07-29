@@ -19,7 +19,7 @@ docker run --rm --network none --cap-drop=ALL \
   --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
   --mount "type=bind,src=$PWD/build/secure-src,dst=/work,readonly" \
   --mount "type=bind,src=$PWD/build/secure-output,dst=/output" \
-  --workdir /work siliconbench:v1 ...
+  --workdir /work gatetruth:v1 ...
 ```
 
 **Expected vs. actual**
@@ -27,5 +27,5 @@ What you expected, and what happened instead. Paste raw output (lint, simulation
 or pipeline logs) rather than a summary.
 
 **Environment**
-- Image digest (`docker inspect --format '{{.Id}}' siliconbench:v1`):
+- Image digest (`docker inspect --format '{{.Id}}' gatetruth:v1`):
 - Host OS / architecture:

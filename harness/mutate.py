@@ -73,7 +73,7 @@ def run_mutation(*, task_id: str, min_kill: float, seed: int) -> dict[str, Any]:
 
 def _run_one(task_id: str, mutant: Mutant) -> dict[str, Any]:
     task = resolve_task(task_id)
-    with tempfile.TemporaryDirectory(prefix=f"siliconbench-mut-{task_id}-") as temp:
+    with tempfile.TemporaryDirectory(prefix=f"gatetruth-mut-{task_id}-") as temp:
         work_root = Path(temp)
         mutated = work_root / "mutant.sv"
         mutated.write_text(mutant.source, encoding="utf-8")
