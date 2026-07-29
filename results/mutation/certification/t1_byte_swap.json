@@ -1,0 +1,71 @@
+{
+  "indeterminate": 0,
+  "jobs": 1,
+  "kill_rate": 100.0,
+  "killed": 7,
+  "min_kill": 95.0,
+  "official": true,
+  "results": [
+    {
+      "description": "reset condition inverted",
+      "id": "t1_byte_swap-m000",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "reset_polarity_flip"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t1_byte_swap-m005",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t1_byte_swap-m003",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t1_byte_swap-m001",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t1_byte_swap-m002",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t1_byte_swap-m006",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t1_byte_swap-m004",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "lint",
+      "operator": "blocking_output_inversion"
+    }
+  ],
+  "seed": 1337,
+  "survived": 0,
+  "survivors": [],
+  "task": "t1_byte_swap",
+  "total": 7
+}

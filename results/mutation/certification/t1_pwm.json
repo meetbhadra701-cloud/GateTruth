@@ -1,0 +1,63 @@
+{
+  "indeterminate": 0,
+  "jobs": 1,
+  "kill_rate": 100.0,
+  "killed": 6,
+  "min_kill": 95.0,
+  "official": true,
+  "results": [
+    {
+      "description": "reset condition inverted",
+      "id": "t1_pwm-m001",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "reset_polarity_flip"
+    },
+    {
+      "description": "increment becomes decrement",
+      "id": "t1_pwm-m000",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "operator_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t1_pwm-m003",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t1_pwm-m002",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t1_pwm-m005",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "lint",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t1_pwm-m004",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    }
+  ],
+  "seed": 1337,
+  "survived": 0,
+  "survivors": [],
+  "task": "t1_pwm",
+  "total": 6
+}

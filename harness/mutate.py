@@ -23,10 +23,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--task", required=True)
     parser.add_argument("--min-kill", type=float, default=95.0)
     parser.add_argument("--seed", type=int, required=True)
+    parser.add_argument("--jobs", type=int, default=1)
+    parser.add_argument("--official", action="store_true")
     parser.add_argument("--json", dest="json_path")
     args = parser.parse_args(argv)
 
-    report = run_mutation(task_id=args.task, min_kill=args.min_kill, seed=args.seed)
+    report = run_mutation(
+        task_id=args.task,
+        min_kill=args.min_kill,
+        seed=args.seed,
+        jobs=args.jobs,
+        official=args.official,
+    )
     if args.json_path:
         path = Path(args.json_path)
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -41,7 +49,14 @@ def main(argv: list[str] | None = None) -> int:
     return 0 if report["kill_rate"] >= args.min_kill else 1
 
 
-def run_mutation(*, task_id: str, min_kill: float, seed: int) -> dict[str, Any]:
+def run_mutation(
+    *,
+    task_id: str,
+    min_kill: float,
+    seed: int,
+    jobs: int = 1,
+    official: bool = False,
+) -> dict[str, Any]:
     task = resolve_task(task_id)
     ref = task.root / "ref" / "ref.sv"
     source = ref.read_text(encoding="utf-8")
@@ -49,10 +64,17 @@ def run_mutation(*, task_id: str, min_kill: float, seed: int) -> dict[str, Any]:
     rng = random.Random(seed)
     rng.shuffle(mutants)
 
-    # Each mutant is isolated in its own temporary directory, so bounded parallelism
-    # shortens the 60-task audit without changing report order or seeded determinism.
-    with ThreadPoolExecutor(max_workers=6) as pool:
-        results = list(pool.map(lambda mutant: _run_one(task_id, mutant), mutants))
+    if jobs <= 1:
+        results = [_run_one(task_id, mutant, official=official) for mutant in mutants]
+    else:
+        # Parallel execution is exploratory only. Certification calls this with jobs=1.
+        with ThreadPoolExecutor(max_workers=jobs) as pool:
+            results = list(
+                pool.map(
+                    lambda mutant: _run_one(task_id, mutant, official=official),
+                    mutants,
+                )
+            )
     killed = [result for result in results if result["killed"]]
     indeterminate = [result for result in results if result["indeterminate"]]
     survivors = [result for result in results if not result["killed"]]
@@ -60,6 +82,8 @@ def run_mutation(*, task_id: str, min_kill: float, seed: int) -> dict[str, Any]:
     return {
         "task": task_id,
         "seed": seed,
+        "jobs": jobs,
+        "official": official,
         "min_kill": min_kill,
         "total": len(results),
         "killed": len(killed),
@@ -71,7 +95,12 @@ def run_mutation(*, task_id: str, min_kill: float, seed: int) -> dict[str, Any]:
     }
 
 
-def _run_one(task_id: str, mutant: Mutant) -> dict[str, Any]:
+def _run_one(
+    task_id: str,
+    mutant: Mutant,
+    *,
+    official: bool,
+) -> dict[str, Any]:
     task = resolve_task(task_id)
     with tempfile.TemporaryDirectory(prefix=f"gatetruth-mut-{task_id}-") as temp:
         work_root = Path(temp)
@@ -82,12 +111,18 @@ def _run_one(task_id: str, mutant: Mutant) -> dict[str, Any]:
         if stage["status"] != "pass":
             return _result(mutant, killed=True, killed_by="lint", log=log)
 
-        stage, log = run_sim(task, mutated, work_root)
+        stage, log = run_sim(task, mutated, work_root, official=official)
         if stage["status"] != "pass":
             if _is_timeout(log):
                 retry_root = work_root / "timeout_retry"
                 retry_root.mkdir()
-                retry_stage, retry_log = run_sim(task, mutated, retry_root, timeout_s=60)
+                retry_stage, retry_log = run_sim(
+                    task,
+                    mutated,
+                    retry_root,
+                    timeout_s=60,
+                    official=official,
+                )
                 if retry_stage["status"] == "pass":
                     stage, log = retry_stage, retry_log
                 elif _is_timeout(retry_log):
