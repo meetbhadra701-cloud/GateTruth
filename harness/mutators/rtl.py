@@ -18,9 +18,15 @@ class Mutant:
     source: str
 
 
-def generate_mutants(task_id: str, source: str) -> list[Mutant]:
-    specs = _generic_specs() + _task_specs(task_id)
-    generic_count = len(_generic_specs())
+def generate_mutants(
+    task_id: str,
+    source: str,
+    *,
+    include_task_specs: bool = True,
+) -> list[Mutant]:
+    generic_specs = _generic_specs()
+    specs = generic_specs + (_task_specs(task_id) if include_task_specs else [])
+    generic_count = len(generic_specs)
     mutants: list[Mutant] = []
     seen: set[str] = set()
     for spec_index, (operator, description, old, new) in enumerate(specs):
