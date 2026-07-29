@@ -237,7 +237,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--metadata", type=Path, default=DEFAULT_METADATA)
     parser.add_argument("--summary", type=Path, default=DEFAULT_SUMMARY)
     parser.add_argument("--cvdp-gap", type=Path, default=DEFAULT_CVDP_GAP)
+    parser.add_argument(
+        "--print-sample",
+        action="store_true",
+        help="print the ticket-defined sample without requiring a redo directory",
+    )
     args = parser.parse_args(argv)
+
+    if args.print_sample:
+        reports = _load_reports(args.final_dir, args.catalog)
+        _eligible, sampled = select_sample(reports, args.seed)
+        print(",".join(sampled))
+        return 0
 
     metadata = package_results(
         final_dir=args.final_dir,

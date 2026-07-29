@@ -18,6 +18,7 @@ DEFAULT_VENDOR_ROOT = AUDIT_ROOT / "vendor"
 LOCK_PATH = AUDIT_ROOT / "provenance.lock.json"
 PROVENANCE_PATH = AUDIT_ROOT / "PROVENANCE.md"
 FETCH_DATE = date(2026, 7, 29)
+GIT_TEXT_CHECKOUT = ["-c", "core.autocrlf=true"]
 
 
 @dataclass(frozen=True)
@@ -127,10 +128,41 @@ def _checkout(vendor: Vendor, vendor_root: Path) -> Path:
             )
     else:
         vendor_root.mkdir(parents=True, exist_ok=True)
-        _run(["git", "clone", "--no-checkout", vendor.url, str(destination)])
+        _run(
+            [
+                "git",
+                *GIT_TEXT_CHECKOUT,
+                "clone",
+                "--no-checkout",
+                vendor.url,
+                str(destination),
+            ]
+        )
 
-    _run(["git", "fetch", "--depth", "1", "origin", vendor.revision], cwd=destination)
-    _run(["git", "checkout", "--detach", "--force", vendor.revision], cwd=destination)
+    _run(["git", "config", "core.autocrlf", "true"], cwd=destination)
+    _run(
+        [
+            "git",
+            *GIT_TEXT_CHECKOUT,
+            "fetch",
+            "--depth",
+            "1",
+            "origin",
+            vendor.revision,
+        ],
+        cwd=destination,
+    )
+    _run(
+        [
+            "git",
+            *GIT_TEXT_CHECKOUT,
+            "checkout",
+            "--detach",
+            "--force",
+            vendor.revision,
+        ],
+        cwd=destination,
+    )
     head = _run(["git", "rev-parse", "HEAD"], cwd=destination)
     if head != vendor.revision:
         raise RuntimeError(
@@ -202,6 +234,12 @@ def _write_provenance(
         "Vendor source trees are not redistributed. Only GateTruth-generated JSON reports",
         "containing stable identifiers and hashes are committed. Audit runs mount vendor trees",
         "read-only and execute mutants from temporary copies.",
+        "",
+        "RTLLM's shipped golden files often declare a `verified_<design>` top module while",
+        "their testbenches instantiate `<design>`, matching the candidate-module contract in",
+        "the per-design makefiles. The compatibility sweep reproduces that contract by changing",
+        "only the top-module declaration in a temporary compile copy. It never edits the pinned",
+        "vendor file, and each report records any applied module alias.",
         "",
     ]
     for key in sorted(records):

@@ -7,7 +7,7 @@ AUDIT_ROOT = Path(__file__).resolve().parents[1]
 if str(AUDIT_ROOT) not in sys.path:
     sys.path.insert(0, str(AUDIT_ROOT))
 
-from fetch_vendor import tree_hash  # noqa: E402
+from fetch_vendor import GIT_TEXT_CHECKOUT, tree_hash  # noqa: E402
 from sweep_cvdp import _row_report  # noqa: E402
 from sweep_rtllm import (  # noqa: E402
     IVERILOG,
@@ -32,6 +32,10 @@ def test_tree_hash_is_content_sensitive_and_ignores_git(tmp_path):
 
     (tmp_path / "a.txt").write_text("changed\n", encoding="utf-8")
     assert tree_hash(tmp_path) != baseline
+
+
+def test_vendor_fetch_pins_certified_text_checkout_convention():
+    assert GIT_TEXT_CHECKOUT == ["-c", "core.autocrlf=true"]
 
 
 def test_cvdp_row_requires_actual_output_not_only_an_oss_origin():
