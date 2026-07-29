@@ -112,7 +112,7 @@ RUN groupadd --gid 10001 gatetruth \
     && mkdir -p /work /output \
     && chown 10001:10001 /work /output
 
-ARG GATETRUTH_IMAGE_DIGEST=sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62
+ARG GATETRUTH_IMAGE_DIGEST=sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4
 RUN printf '%s\n' "$GATETRUTH_IMAGE_DIGEST" > /etc/gatetruth-image-digest
 
 USER 10001:10001

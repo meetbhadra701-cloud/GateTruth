@@ -13,7 +13,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from harness.hidden import HIDDEN_LOADED_KEY, HIDDEN_ROOT_ENV  # noqa: E402
+from harness.hidden import (  # noqa: E402
+    HIDDEN_LOADED_KEY,
+    HIDDEN_ROOT_ENV,
+    LEGACY_HIDDEN_ROOT_ENV,
+)
 from harness.runner import run_task  # noqa: E402
 from harness.trackb import run_track_b  # noqa: E402
 
@@ -52,6 +56,7 @@ def run_manifest(
 
 def capture(tasks: list[str], destination: Path) -> int:
     os.environ.pop(HIDDEN_ROOT_ENV, None)
+    os.environ.pop(LEGACY_HIDDEN_ROOT_ENV, None)
     destination.mkdir(parents=True, exist_ok=True)
     for task_id in tasks:
         signature = run_manifest(

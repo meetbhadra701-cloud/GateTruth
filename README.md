@@ -129,13 +129,13 @@ docker run --rm --network none --cap-drop=ALL \
 Build the static leaderboard site from signed result manifests:
 
 ```bash
-mkdir -p build/secure-output/site-build build/secure-src/site/build
-chmod 0777 build/secure-output/site-build
+mkdir -p build/secure-output
+chmod 0777 build/secure-output
 docker run --rm --network none --cap-drop=ALL \
   --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
   --mount "type=bind,src=$PWD/build/secure-src,dst=/work,readonly" \
-  --mount "type=bind,src=$PWD/build/secure-output/site-build,dst=/work/site/build" \
-  --workdir /work gatetruth:v1 ./gatetruth site
+  --mount "type=bind,src=$PWD/build/secure-output,dst=/output" \
+  --workdir /work gatetruth:v1 ./gatetruth site --out /output/site-build
 ```
 
 See [Secure execution](docs/SECURE_EXECUTION.md) for the canonical isolation
