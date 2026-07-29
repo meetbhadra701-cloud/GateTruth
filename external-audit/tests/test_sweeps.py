@@ -10,9 +10,12 @@ if str(AUDIT_ROOT) not in sys.path:
 from fetch_vendor import tree_hash  # noqa: E402
 from sweep_cvdp import _row_report  # noqa: E402
 from sweep_rtllm import (  # noqa: E402
+    IVERILOG,
+    VVP,
     _module_names,
     _reference_top_module,
     _support_files,
+    sweep_design,
 )
 
 
@@ -80,3 +83,46 @@ def test_rtllm_module_and_support_file_discovery(tmp_path):
     assert modules == ["helper", "verified_example"]
     assert _reference_top_module(modules, "example") == "verified_example"
     assert _support_files(testbench) == ["vectors.dat"]
+
+
+def test_rtllm_sweep_aliases_verified_module_in_temporary_copy(tmp_path):
+    source = tmp_path / "verified_foo.v"
+    original_source = (
+        "module verified_foo\n"
+        "#(parameter ONE = 1'b1)\n"
+        "(output wire value);\n"
+        "  assign value = ONE;\n"
+        "endmodule\n"
+    )
+    source.write_text(original_source, encoding="utf-8")
+    testbench = tmp_path / "testbench.v"
+    testbench.write_text(
+        "module testbench;\n"
+        "  wire value;\n"
+        "  foo #(.ONE(1'b1)) uut(.value(value));\n"
+        "  initial begin\n"
+        "    #1;\n"
+        '    if (value) $display("Your Design Passed");\n'
+        "    $finish;\n"
+        "  end\n"
+        "endmodule\n",
+        encoding="utf-8",
+    )
+
+    result = sweep_design(
+        {
+            "design_id": "foo",
+            "directory": tmp_path,
+            "sources": [source],
+            "testbench": testbench,
+        },
+        vendor=tmp_path,
+        iverilog=IVERILOG,
+        vvp=VVP,
+        timeout_s=5.0,
+    )
+
+    assert result["runnable"] is True
+    assert result["compatibility"] == "icarus-pass-with-module-alias"
+    assert result["module_alias"] == {"from": "verified_foo", "to": "foo"}
+    assert source.read_text(encoding="utf-8") == original_source

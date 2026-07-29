@@ -1,20 +1,23 @@
 {
   "benchmark": "rtllm",
   "compatibility_counts": {
-    "iverilog-incompatible": 4,
-    "module-name-mismatch": 28,
+    "icarus-pass-with-module-alias": 26,
+    "iverilog-incompatible": 5,
+    "no-pass-banner": 1,
     "unmodified-icarus-pass": 18
   },
   "designs": [
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "JC_counter",
-      "expected_design_modules": [
-        "JC_counter"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | JC_counter referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_JC_counter",
+        "to": "JC_counter"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_JC_counter -> JC_counter",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_JC_counter"
       ],
@@ -22,7 +25,7 @@
       "reference_sources": [
         "Control/Counter/JC_counter/verified_JC_counter.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Control/Counter/JC_counter/testbench.v",
       "testbench_sha256": "c6ed57c452501abdff9d81721fe4892fe2afdee88568aa2ed3262c230f81ac25",
       "testbench_top_module": "testbench",
@@ -33,6 +36,7 @@
       "design_id": "LFSR",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -53,6 +57,7 @@
       "design_id": "LIFObuffer",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -69,14 +74,16 @@
       "top_module": "LIFObuffer"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "RAM",
-      "expected_design_modules": [
-        "RAM"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | RAM referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_RAM",
+        "to": "RAM"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_RAM -> RAM",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_RAM"
       ],
@@ -84,7 +91,7 @@
       "reference_sources": [
         "Miscellaneous/RISC-V/RAM/verified_RAM.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Miscellaneous/RISC-V/RAM/testbench.v",
       "testbench_sha256": "7bf2b2180c7a48d39d868cc6219b0bd54e30cb3a57f189f37a12a428ec5f6cd9",
       "testbench_top_module": "tb_RAM",
@@ -95,6 +102,7 @@
       "design_id": "ROM",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -111,14 +119,16 @@
       "top_module": "ROM"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "accu",
-      "expected_design_modules": [
-        "accu"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | accu referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_accu",
+        "to": "accu"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_accu -> accu",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_accu"
       ],
@@ -126,21 +136,23 @@
       "reference_sources": [
         "Arithmetic/Accumulator/accu/verified_accu.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Arithmetic/Accumulator/accu/testbench.v",
       "testbench_sha256": "caa0a4c575f65691ab0dc1ceb018a64611b64cf3f6a20049c6f191c720f724b0",
       "testbench_top_module": "tb_valid_ready",
       "top_module": "verified_accu"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "adder_16bit",
-      "expected_design_modules": [
-        "adder_16bit"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | adder_16bit referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_adder_16bit",
+        "to": "adder_16bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_16bit -> adder_16bit",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_adder_16bit",
         "add8",
@@ -152,21 +164,23 @@
       "reference_sources": [
         "Arithmetic/Adder/adder_16bit/verified_adder_16bit.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Arithmetic/Adder/adder_16bit/testbench.v",
       "testbench_sha256": "5f48355ae0dac83362b9961724d817980426815e6310f9c76205fb83fdbeb19d",
       "testbench_top_module": "add16_tb",
       "top_module": "verified_adder_16bit"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "adder_32bit",
-      "expected_design_modules": [
-        "adder_32bit"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | adder_32bit referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_adder_32bit",
+        "to": "adder_32bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_32bit -> adder_32bit",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_adder_32bit",
         "CLA_16",
@@ -178,21 +192,23 @@
       "reference_sources": [
         "Arithmetic/Adder/adder_32bit/verified_adder_32bit.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Arithmetic/Adder/adder_32bit/testbench.v",
       "testbench_sha256": "acc53536661a63eba6267decd86487fc8171555006a0801028217884b3c37c08",
       "testbench_top_module": "adder32_tb",
       "top_module": "verified_adder_32bit"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "adder_8bit",
-      "expected_design_modules": [
-        "adder_8bit"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | adder_8bit referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_adder_8bit",
+        "to": "adder_8bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_8bit -> adder_8bit",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_adder_8bit",
         "full_adder"
@@ -201,7 +217,7 @@
       "reference_sources": [
         "Arithmetic/Adder/adder_8bit/verified_adder_8bit.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Arithmetic/Adder/adder_8bit/testbench.v",
       "testbench_sha256": "0ce39c493ed2f55b9b08077ced9dbe0f06ecb7fd7853aa2384a174c9c4d2a465",
       "testbench_top_module": "testbench",
@@ -212,6 +228,7 @@
       "design_id": "adder_bcd",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -228,14 +245,16 @@
       "top_module": "adder_bcd"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "adder_pipe_64bit",
-      "expected_design_modules": [
-        "adder_pipe_64bit"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | adder_pipe_64bit referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_adder_64bit",
+        "to": "adder_pipe_64bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_64bit -> adder_pipe_64bit",
+      "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "verified_adder_64bit"
       ],
@@ -243,23 +262,25 @@
       "reference_sources": [
         "Arithmetic/Adder/adder_pipe_64bit/verified_adder_64bit.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Arithmetic/Adder/adder_pipe_64bit/testbench.v",
       "testbench_sha256": "01c3ed8ef8b4a56c554fb6d0667cc385f1bf0b867e12f9bd79660705b4673405",
       "testbench_top_module": "tb_adder64",
       "top_module": "verified_adder_64bit"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "alu",
-      "expected_design_modules": [
-        "alu"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [
         "reference.dat"
       ],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | alu referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_alu",
+        "to": "alu"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_alu -> alu",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_alu"
       ],
@@ -267,24 +288,26 @@
       "reference_sources": [
         "Miscellaneous/RISC-V/alu/verified_alu.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Miscellaneous/RISC-V/alu/testbench.v",
       "testbench_sha256": "adb9ec60ed1196959e14de8376c7cc4c709177da97ade183553635c33a37af71",
       "testbench_top_module": "test_alu",
       "top_module": "verified_alu"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "iverilog-incompatible",
       "design_id": "asyn_fifo",
-      "expected_design_modules": [
-        "asyn_fifo"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [
         "rempty.txt",
         "tdata.txt",
         "wfull.txt"
       ],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | asyn_fifo referenced 1 times. | ***",
+      "module_alias": {
+        "from": "verified_asyn_fifo",
+        "to": "asyn_fifo"
+      },
+      "notes": "Icarus compile failed (exit 1): <vendor>/Memory/FIFO/asyn_fifo/testbench.v:102: error: Enable of unknown task ``break''. | 1 error(s) during elaboration.",
       "pass_string": null,
       "reference_modules": [
         "dual_port_RAM",
@@ -305,6 +328,7 @@
       "design_id": "barrel_shifter",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -322,16 +346,18 @@
       "top_module": "barrel_shifter"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "calendar",
-      "expected_design_modules": [
-        "calendar"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [
         "reference.txt"
       ],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | calendar referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_calendar",
+        "to": "calendar"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_calendar -> calendar",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_calendar"
       ],
@@ -339,7 +365,7 @@
       "reference_sources": [
         "Miscellaneous/Others/calendar/verified_calendar.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Miscellaneous/Others/calendar/testbench.v",
       "testbench_sha256": "3f3c9d46290a9932ef00d293f2d87e2320ce3fbf1225a8ce7d1960c500e02b5d",
       "testbench_top_module": "main",
@@ -350,6 +376,7 @@
       "design_id": "clkgenerator",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "Icarus compile failed (exit 2): <vendor>/Miscellaneous/RISC-V/clkgenerator/testbench.v:8: error: Output port expression must support continuous assignment. | <vendor>/Miscellaneous/RISC-V/clkgenerator/testbench.v:8:      : Port 1 (clk) of clkgenerator is connected to clk_tb | 2 error(s) during elaboration.",
       "pass_string": null,
       "reference_modules": [
@@ -370,6 +397,7 @@
       "design_id": "comparator_3bit",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -390,6 +418,7 @@
       "design_id": "comparator_4bit",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -406,14 +435,16 @@
       "top_module": "comparator_4bit"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "counter_12",
-      "expected_design_modules": [
-        "counter_12"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | counter_12 referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_counter_12",
+        "to": "counter_12"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_counter_12 -> counter_12",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_counter_12"
       ],
@@ -421,21 +452,23 @@
       "reference_sources": [
         "Control/Counter/counter_12/verified_counter_12.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Control/Counter/counter_12/testbench.v",
       "testbench_sha256": "d42e3a798a72ffc19a6af5d51b0e686e77e93993e7ea6b5566894c4eb58c1b33",
       "testbench_top_module": "counter_12_tb",
       "top_module": "verified_counter_12"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "div_16bit",
-      "expected_design_modules": [
-        "div_16bit"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | div_16bit referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_div_16bit",
+        "to": "div_16bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_div_16bit -> div_16bit",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_div_16bit"
       ],
@@ -443,21 +476,23 @@
       "reference_sources": [
         "Arithmetic/Divider/div_16bit/verified_div_16bit.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Arithmetic/Divider/div_16bit/testbench.v",
       "testbench_sha256": "6fb3bcb03463c374e7c9bde3966bbda08cf247e5b6b1ccb791759e402c100dc9",
       "testbench_top_module": "tb_division",
       "top_module": "verified_div_16bit"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "edge_detect",
-      "expected_design_modules": [
-        "edge_detect"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | edge_detect referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_edge_detect",
+        "to": "edge_detect"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_edge_detect -> edge_detect",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_edge_detect"
       ],
@@ -465,7 +500,7 @@
       "reference_sources": [
         "Miscellaneous/Others/edge_detect/verified_edge_detect.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Miscellaneous/Others/edge_detect/testbench.v",
       "testbench_sha256": "56997d7c3794f1cb3b9b826006ff6d961a21299133f1135f20e4f13aaf566b5c",
       "testbench_top_module": "testbench",
@@ -476,6 +511,7 @@
       "design_id": "fixed_point_adder",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -496,6 +532,7 @@
       "design_id": "fixed_point_substractor",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -516,6 +553,7 @@
       "design_id": "float_multi",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -536,6 +574,7 @@
       "design_id": "freq_div",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
@@ -556,6 +595,7 @@
       "design_id": "freq_divbyeven",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -576,6 +616,7 @@
       "design_id": "freq_divbyfrac",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -596,6 +637,7 @@
       "design_id": "freq_divbyodd",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "Icarus compile failed (exit 1): <vendor>/Miscellaneous/Frequency divider/freq_divbyodd/verified_freq_divbyodd.v:48: error: reg clk_div; cannot be driven by primitives or continuous assignment. | 1 error(s) during elaboration.",
       "pass_string": null,
       "reference_modules": [
@@ -612,14 +654,16 @@
       "top_module": "freq_divbyodd"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "fsm",
-      "expected_design_modules": [
-        "fsm"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | fsm referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_fsm",
+        "to": "fsm"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_fsm -> fsm",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_fsm"
       ],
@@ -627,7 +671,7 @@
       "reference_sources": [
         "Control/Finite State Machine/fsm/verified_fsm.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Control/Finite State Machine/fsm/testbench.v",
       "testbench_sha256": "b38b265f50b6fc9148dc3ee9776b6451c4cb587557ef7261893bef85b45cb05d",
       "testbench_top_module": "main",
@@ -638,6 +682,7 @@
       "design_id": "instr_reg",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -654,14 +699,16 @@
       "top_module": "instr_reg"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "multi_16bit",
-      "expected_design_modules": [
-        "multi_16bit"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | multi_16bit referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_multi_16bit",
+        "to": "multi_16bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_16bit -> multi_16bit",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_multi_16bit"
       ],
@@ -669,7 +716,7 @@
       "reference_sources": [
         "Arithmetic/Multiplier/multi_16bit/verified_multi_16bit.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Arithmetic/Multiplier/multi_16bit/testbench.v",
       "testbench_sha256": "80b1fc3113cf6237aff2793083f5dec4a1704373903b4dc95f632d07a32226a3",
       "testbench_top_module": "tb_multi_16bit",
@@ -680,6 +727,7 @@
       "design_id": "multi_8bit",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "Icarus compile failed (exit 2): <vendor>/Arithmetic/Multiplier/multi_8bit/verified_multi_8bit.v:15: syntax error | <vendor>/Arithmetic/Multiplier/multi_8bit/verified_multi_8bit.v:15: error: Incomprehensible for loop.",
       "pass_string": null,
       "reference_modules": [
@@ -696,16 +744,18 @@
       "top_module": "multi_8bit"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "multi_booth_8bit",
-      "expected_design_modules": [
-        "multi_booth_8bit"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [
         "test_data.dat"
       ],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | multi_booth_8bit referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_multi_booth_8bit",
+        "to": "multi_booth_8bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_booth_8bit -> multi_booth_8bit",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_multi_booth_8bit"
       ],
@@ -713,21 +763,23 @@
       "reference_sources": [
         "Arithmetic/Multiplier/multi_booth_8bit/verified_booth4_mul.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Arithmetic/Multiplier/multi_booth_8bit/testbench.v",
       "testbench_sha256": "1eb680425ce277fcbbd8e92be4085484477b247e93366eef8b5e909584694392",
       "testbench_top_module": "booth4_mul_tb",
       "top_module": "verified_multi_booth_8bit"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "multi_pipe_4bit",
-      "expected_design_modules": [
-        "multi_pipe_4bit"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | multi_pipe_4bit referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_multi_pipe",
+        "to": "multi_pipe_4bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_pipe -> multi_pipe_4bit",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_multi_pipe"
       ],
@@ -735,21 +787,23 @@
       "reference_sources": [
         "Arithmetic/Multiplier/multi_pipe_4bit/verified_multi_pipe_4bit.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Arithmetic/Multiplier/multi_pipe_4bit/testbench.v",
       "testbench_sha256": "9ee2469af2d3d9632bcf360a9a911f59ca57baa2ea8721b1f2f2e0557569fb8b",
       "testbench_top_module": "multi_pipe_tb",
       "top_module": "verified_multi_pipe"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "multi_pipe_8bit",
-      "expected_design_modules": [
-        "multi_pipe_8bit"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | multi_pipe_8bit referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_multi_pipe_8bit",
+        "to": "multi_pipe_8bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_pipe_8bit -> multi_pipe_8bit",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_multi_pipe_8bit"
       ],
@@ -757,21 +811,23 @@
       "reference_sources": [
         "Arithmetic/Multiplier/multi_pipe_8bit/verified_multi_pipe_8bit.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Arithmetic/Multiplier/multi_pipe_8bit/testbench.v",
       "testbench_sha256": "2465c907fba0a7717e406afef124b7a21907fb6ab4ccf574976f6eba8911aa02",
       "testbench_top_module": "tb_multi_pipe",
       "top_module": "verified_multi_pipe_8bit"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "parallel2serial",
-      "expected_design_modules": [
-        "parallel2serial"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | parallel2serial referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_parallel2serial",
+        "to": "parallel2serial"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_parallel2serial -> parallel2serial",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_parallel2serial"
       ],
@@ -779,21 +835,23 @@
       "reference_sources": [
         "Miscellaneous/Others/parallel2serial/verified_parallel2serial.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Miscellaneous/Others/parallel2serial/testbench.v",
       "testbench_sha256": "fc1bc3caeefe23e9ef182cbe927de225842d9fe220c8d037d9cb287c71fab9b7",
       "testbench_top_module": "parallel2serial_tb",
       "top_module": "verified_parallel2serial"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "pe",
-      "expected_design_modules": [
-        "pe"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | pe referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_pe",
+        "to": "pe"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_pe -> pe",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_pe"
       ],
@@ -801,21 +859,23 @@
       "reference_sources": [
         "Miscellaneous/RISC-V/pe/verified_pe.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Miscellaneous/RISC-V/pe/testbench.v",
       "testbench_sha256": "608b9c8548f0089210316d2fdbf6e6fa0893df30974d297d771a0fc57d90d9e8",
       "testbench_top_module": "test54",
       "top_module": "verified_pe"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "pulse_detect",
-      "expected_design_modules": [
-        "pulse_detect"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | pulse_detect referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_pulse_detect",
+        "to": "pulse_detect"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_pulse_detect -> pulse_detect",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_pulse_detect"
       ],
@@ -823,20 +883,22 @@
       "reference_sources": [
         "Miscellaneous/Others/pulse_detect/verified_pulse_detect.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Miscellaneous/Others/pulse_detect/testbench.v",
       "testbench_sha256": "3848abea43a6ff404c69a32425c40f1ff1fddf9b7b842f883b66df189ba6b5d2",
       "testbench_top_module": "pulse_detect_tb",
       "top_module": "verified_pulse_detect"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "no-pass-banner",
       "design_id": "radix2_div",
-      "expected_design_modules": [
-        "radix2_div"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | radix2_div referenced 1 times. | ***",
+      "module_alias": {
+        "from": "verified_radix2_div",
+        "to": "radix2_div"
+      },
+      "notes": "simulation emitted no recognized pass banner: Error: dividend=123, divisor=123, expected=0001, got=6400 | ===========Failed===========          3 | <vendor>/Arithmetic/Divider/radix2_div/testbench.v:87: $finish called at 825000 (1ps)",
       "pass_string": null,
       "reference_modules": [
         "verified_radix2_div"
@@ -852,14 +914,16 @@
       "top_module": "verified_radix2_div"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "right_shifter",
-      "expected_design_modules": [
-        "right_shifter"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | right_shifter referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_right_shifter",
+        "to": "right_shifter"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_right_shifter -> right_shifter",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_right_shifter"
       ],
@@ -867,7 +931,7 @@
       "reference_sources": [
         "Memory/Shifter/right_shifter/verified_right_shifter.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Memory/Shifter/right_shifter/testbench.v",
       "testbench_sha256": "e3fa4fa4dbe08b79c1742ce1b8fb4a863da7cd510ae1d4f08e4399ca9746c790",
       "testbench_top_module": "right_shifter_tb",
@@ -878,6 +942,7 @@
       "design_id": "ring_counter",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "Icarus compile failed (exit 1): <vendor>/Control/Counter/ring_counter/verified_ring_counter.v:19: error: reg out; cannot be driven by primitives or continuous assignment. | <vendor>/Control/Counter/ring_counter/testbench.v:20: error: Assignment to an entire array or to an array slice requires SystemVerilog. | Elaboration failed",
       "pass_string": null,
       "reference_modules": [
@@ -898,6 +963,7 @@
       "design_id": "sequence_detector",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -914,14 +980,16 @@
       "top_module": "sequence_detector"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "serial2parallel",
-      "expected_design_modules": [
-        "serial2parallel"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | serial2parallel referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_serial2parallel",
+        "to": "serial2parallel"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_serial2parallel -> serial2parallel",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_serial2parallel"
       ],
@@ -929,23 +997,25 @@
       "reference_sources": [
         "Miscellaneous/Others/serial2parallel/verified_serial2parallel.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Miscellaneous/Others/serial2parallel/testbench.v",
       "testbench_sha256": "4971f08793435f0843e058dbef2671864c133fdeabae097b99420b8fbc1dde66",
       "testbench_top_module": "tb",
       "top_module": "verified_serial2parallel"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "signal_generator",
-      "expected_design_modules": [
-        "signal_generator"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [
         "tri_gen.txt"
       ],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | signal_generator referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_signal_generator",
+        "to": "signal_generator"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_signal_generator -> signal_generator",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_signal_generator"
       ],
@@ -953,7 +1023,7 @@
       "reference_sources": [
         "Miscellaneous/Signal generation/signal_generator/verified_signal_generator.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Miscellaneous/Signal generation/signal_generator/testbench.v",
       "testbench_sha256": "1f15877f6852b3709dc057153743fef5c29f29e1479fca6235568c15a3f35754",
       "testbench_top_module": "tb_signal_generator",
@@ -964,6 +1034,7 @@
       "design_id": "square_wave",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -984,6 +1055,7 @@
       "design_id": "sub_64bit",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -1000,14 +1072,16 @@
       "top_module": "sub_64bit"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "synchronizer",
-      "expected_design_modules": [
-        "synchronizer"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | synchronizer referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_synchronizer",
+        "to": "synchronizer"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_synchronizer -> synchronizer",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_synchronizer"
       ],
@@ -1015,21 +1089,23 @@
       "reference_sources": [
         "Miscellaneous/Others/synchronizer/verified_synchronizer.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Miscellaneous/Others/synchronizer/testbench.v",
       "testbench_sha256": "fcf2afc2d3cf28392cb7754c3fe14436fcf6dd8e13546a3f22553c124e4f4f25",
       "testbench_top_module": "testbench",
       "top_module": "verified_synchronizer"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "traffic_light",
-      "expected_design_modules": [
-        "traffic_light"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | traffic_light referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_traffic_light",
+        "to": "traffic_light"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_traffic_light -> traffic_light",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_traffic_light"
       ],
@@ -1037,7 +1113,7 @@
       "reference_sources": [
         "Miscellaneous/Others/traffic_light/verified_traffic_light.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Miscellaneous/Others/traffic_light/testbench.v",
       "testbench_sha256": "3f2d842c635df0739214515233a6546236fd302c5c5902995d831e655c1db789",
       "testbench_top_module": "tb_traffic_light",
@@ -1048,6 +1124,7 @@
       "design_id": "up_down_counter",
       "expected_design_modules": [],
       "extra_sources_needed": [],
+      "module_alias": null,
       "notes": "baseline passed under Icarus Verilog-2001",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
@@ -1064,14 +1141,16 @@
       "top_module": "up_down_counter"
     },
     {
-      "compatibility": "module-name-mismatch",
+      "compatibility": "icarus-pass-with-module-alias",
       "design_id": "width_8to16",
-      "expected_design_modules": [
-        "width_8to16"
-      ],
+      "expected_design_modules": [],
       "extra_sources_needed": [],
-      "notes": "Icarus compile failed (exit 3): *** These modules were missing: | width_8to16 referenced 1 times. | ***",
-      "pass_string": null,
+      "module_alias": {
+        "from": "verified_width_8to16",
+        "to": "width_8to16"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_width_8to16 -> width_8to16",
+      "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_width_8to16"
       ],
@@ -1079,16 +1158,16 @@
       "reference_sources": [
         "Miscellaneous/Others/width_8to16/verified_width_8to16.v"
       ],
-      "runnable": false,
+      "runnable": true,
       "testbench": "Miscellaneous/Others/width_8to16/testbench.v",
       "testbench_sha256": "55ace40c26b5e38451f171a7650a0035c933898c0b17b7f2d5039582b8fc1c12",
       "testbench_top_module": "testbench",
       "top_module": "verified_width_8to16"
     }
   ],
-  "runnable_designs": 18,
+  "runnable_designs": 44,
   "schema_version": "1.0",
-  "unsupported_designs": 32,
+  "unsupported_designs": 6,
   "vendor_commit": "41b26896e33b536940116a975626455eed3de65e",
   "vendor_content_sha256": "03c7354b51550210e0d28e6a6dcddf5e5361c68365403e007e9979d3ae6e6158"
 }

@@ -1,4 +1,11 @@
-"""Inventory and baseline-check the pinned RTLLM v2.0 suite under Icarus."""
+"""Inventory and baseline-check the pinned RTLLM v2.0 suite under Icarus.
+
+RTLLM ships many golden files whose top module is prefixed with ``verified_``,
+while each testbench instantiates the candidate contract name. The official
+flow replaces that candidate file. For baseline validation, this sweep rewrites
+only the top-module declaration in a temporary compile copy; the pinned vendor
+tree is never modified.
+"""
 
 from __future__ import annotations
 
@@ -35,11 +42,14 @@ def _normalize_output(output: str, vendor: Path) -> str:
     return output.replace(str(vendor), "<vendor>").replace(vendor.as_posix(), "<vendor>")
 
 
+def _without_comments(text: str) -> str:
+    text = re.sub(r"//[^\n]*", "", text)
+    return re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
+
+
 def _module_names(path: Path) -> list[str]:
     text = path.read_text(encoding="utf-8", errors="replace")
-    text = re.sub(r"//[^\n]*", "", text)
-    text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
-    return MODULE_RE.findall(text)
+    return MODULE_RE.findall(_without_comments(text))
 
 
 def _reference_top_module(modules: list[str], design_id: str) -> str | None:
@@ -50,6 +60,93 @@ def _reference_top_module(modules: list[str], design_id: str) -> str | None:
     if len(verified) == 1:
         return verified[0]
     return modules[0] if modules else None
+
+
+def _testbench_instantiates(testbench: Path, module_name: str) -> bool:
+    text = _without_comments(
+        testbench.read_text(encoding="utf-8", errors="replace")
+    )
+    instance_start = re.compile(
+        rf"(?m)^[ \t]*{re.escape(module_name)}[ \t]*"
+        rf"(?:#[ \t]*\(|[A-Za-z_][A-Za-z0-9_$]*[ \t]*\()"
+    )
+    return instance_start.search(text) is not None
+
+
+def _rewrite_module_declaration(
+    source: Path,
+    *,
+    actual_module: str,
+    expected_module: str,
+) -> str:
+    text = source.read_text(encoding="utf-8")
+    declaration = re.compile(
+        rf"(?m)^([ \t]*module[ \t]+){re.escape(actual_module)}"
+        rf"(?=\s*(?:#|\(|;))"
+    )
+    rewritten, replacements = declaration.subn(
+        rf"\g<1>{expected_module}",
+        text,
+        count=1,
+    )
+    if replacements != 1:
+        raise ValueError(
+            f"{source}: expected one declaration for module {actual_module}, "
+            f"replaced {replacements}"
+        )
+    return rewritten
+
+
+def _prepare_compile_sources(
+    sources: list[Path],
+    *,
+    design_id: str,
+    testbench: Path,
+    temp_root: Path,
+) -> tuple[list[Path], dict[str, str] | None]:
+    modules_by_source = {source: _module_names(source) for source in sources}
+    modules = [
+        module
+        for source_modules in modules_by_source.values()
+        for module in source_modules
+    ]
+    actual_module = _reference_top_module(modules, design_id)
+    if (
+        actual_module is None
+        or actual_module == design_id
+        or not _testbench_instantiates(testbench, design_id)
+    ):
+        return sources, None
+
+    matching_sources = [
+        source
+        for source, source_modules in modules_by_source.items()
+        if actual_module in source_modules
+    ]
+    if len(matching_sources) != 1:
+        raise ValueError(
+            f"{design_id}: expected one source declaring {actual_module}, "
+            f"found {len(matching_sources)}"
+        )
+    target = matching_sources[0]
+    aliased_root = temp_root / "aliased"
+    aliased_root.mkdir()
+    compile_sources: list[Path] = []
+    for index, source in enumerate(sources):
+        if source != target:
+            compile_sources.append(source)
+            continue
+        temporary_source = aliased_root / f"{index}_{source.name}"
+        temporary_source.write_text(
+            _rewrite_module_declaration(
+                source,
+                actual_module=actual_module,
+                expected_module=design_id,
+            ),
+            encoding="utf-8",
+        )
+        compile_sources.append(temporary_source)
+    return compile_sources, {"from": actual_module, "to": design_id}
 
 
 def _support_files(testbench: Path) -> list[str]:
@@ -125,6 +222,7 @@ def sweep_design(
         "extra_sources_needed": _support_files(testbench),
         "notes": "",
         "pass_string": None,
+        "module_alias": None,
         "reference_sha256": (
             _sha256(sources[0]) if len(sources) == 1 else None
         ),
@@ -144,13 +242,23 @@ def sweep_design(
         }
 
     with tempfile.TemporaryDirectory(prefix=f"gatetruth-rtllm-{design_id}-") as temp:
-        executable = Path(temp) / "sim.out"
+        temp_root = Path(temp)
+        executable = temp_root / "sim.out"
+        compile_sources, module_alias = _prepare_compile_sources(
+            sources,
+            design_id=design_id,
+            testbench=testbench,
+            temp_root=temp_root,
+        )
+        compile_base = {**base, "module_alias": module_alias}
         compile_args = [
             iverilog,
             "-g2001",
+            "-I",
+            str(directory),
             "-o",
             str(executable),
-            *(str(path) for path in sources),
+            *(str(path) for path in compile_sources),
             str(testbench),
         ]
         try:
@@ -165,7 +273,7 @@ def sweep_design(
             )
         except subprocess.TimeoutExpired:
             return {
-                **base,
+                **compile_base,
                 "compatibility": "compile-timeout",
                 "notes": f"compile timeout after {timeout_s:g}s",
             }
@@ -177,7 +285,7 @@ def sweep_design(
                 else "iverilog-incompatible"
             )
             return {
-                **base,
+                **compile_base,
                 "compatibility": compatibility,
                 "expected_design_modules": missing_modules,
                 "notes": _failure_note(
@@ -198,7 +306,7 @@ def sweep_design(
             )
         except subprocess.TimeoutExpired:
             return {
-                **base,
+                **compile_base,
                 "compatibility": "simulation-timeout",
                 "notes": f"simulation timeout after {timeout_s:g}s",
             }
@@ -206,7 +314,7 @@ def sweep_design(
         pass_line = next((line for line in lines if PASS_RE.search(line)), None)
         if ran.returncode != 0:
             return {
-                **base,
+                **compile_base,
                 "compatibility": "simulation-failed",
                 "notes": _failure_note(
                     f"vvp failed (exit {ran.returncode})",
@@ -216,7 +324,7 @@ def sweep_design(
             }
         if pass_line is None:
             return {
-                **base,
+                **compile_base,
                 "compatibility": "no-pass-banner",
                 "notes": _failure_note(
                     "simulation emitted no recognized pass banner",
@@ -224,10 +332,21 @@ def sweep_design(
                     vendor,
                 ),
             }
+        compatibility = (
+            "icarus-pass-with-module-alias"
+            if module_alias is not None
+            else "unmodified-icarus-pass"
+        )
+        notes = (
+            "baseline passed under Icarus Verilog-2001 after temporary "
+            f"module alias {module_alias['from']} -> {module_alias['to']}"
+            if module_alias is not None
+            else "baseline passed under Icarus Verilog-2001"
+        )
         return {
-            **base,
-            "compatibility": "unmodified-icarus-pass",
-            "notes": "baseline passed under Icarus Verilog-2001",
+            **compile_base,
+            "compatibility": compatibility,
+            "notes": notes,
             "pass_string": pass_line,
             "runnable": True,
         }

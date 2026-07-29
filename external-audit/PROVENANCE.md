@@ -6,6 +6,12 @@ Vendor source trees are not redistributed. Only GateTruth-generated JSON reports
 containing stable identifiers and hashes are committed. Audit runs mount vendor trees
 read-only and execute mutants from temporary copies.
 
+RTLLM's shipped golden files often declare a `verified_<design>` top module while
+their testbenches instantiate `<design>`, matching the candidate-module contract in
+the per-design makefiles. The compatibility sweep reproduces that contract by changing
+only the top-module declaration in a temporary compile copy. It never edits the pinned
+vendor file, and each report records any applied module alias.
+
 ## CVDP benchmark dataset
 
 - Upstream: https://huggingface.co/datasets/nvidia/cvdp-benchmark-dataset
