@@ -1,11 +1,10 @@
-"""Private hidden-test loader used by split SiliconBench testbenches."""
+"""Private hidden-test loader used by split GateTruth testbenches."""
 
 from __future__ import annotations
 
 import hashlib
 import importlib.util
 import json
-import os
 import re
 import sys
 from pathlib import Path
@@ -14,8 +13,12 @@ from typing import Any
 
 import cocotb
 
-HIDDEN_ROOT_ENV = "SILICONBENCH_HIDDEN_ROOT"
-HIDDEN_REPORT_ENV = "SILICONBENCH_HIDDEN_REPORT"
+from harness.env_compat import read_env
+
+HIDDEN_ROOT_ENV = "GATETRUTH_HIDDEN_ROOT"
+LEGACY_HIDDEN_ROOT_ENV = "SILICONBENCH_HIDDEN_ROOT"
+HIDDEN_REPORT_ENV = "GATETRUTH_HIDDEN_REPORT"
+LEGACY_HIDDEN_REPORT_ENV = "SILICONBENCH_HIDDEN_REPORT"
 HIDDEN_LOADED_KEY = "__siliconbench_hidden_loaded__"
 TASK_ID_RE = re.compile(r"^[A-Za-z0-9_]+$")
 HIDDEN_KINDS = ("tasks", "tasksB")
@@ -38,7 +41,7 @@ def load_hidden(module_globals: dict[str, Any], task_id: str) -> int:
     """Load a task's private cocotb tests into its public testbench namespace."""
 
     module_globals[HIDDEN_LOADED_KEY] = 0
-    root_value = os.environ.get(HIDDEN_ROOT_ENV)
+    root_value = read_env("HIDDEN_ROOT")
     if not root_value:
         return 0
 
@@ -114,7 +117,7 @@ def _load_module(
     public_globals: dict[str, Any],
 ) -> ModuleType:
     digest = hashlib.sha256(str(path).encode("utf-8")).hexdigest()[:16]
-    module_name = f"_siliconbench_hidden_{task_id}_{digest}"
+    module_name = f"_gatetruth_hidden_{task_id}_{digest}"
     spec = importlib.util.spec_from_file_location(module_name, path)
     if spec is None or spec.loader is None:
         raise HiddenTestError(f"cannot create import spec for hidden module: {path}")
@@ -136,7 +139,7 @@ def _load_module(
 
 
 def _write_report(*, task_id: str, kind: str, path: Path, count: int) -> None:
-    report_value = os.environ.get(HIDDEN_REPORT_ENV)
+    report_value = read_env("HIDDEN_REPORT")
     if not report_value:
         return
     report_path = Path(report_value)

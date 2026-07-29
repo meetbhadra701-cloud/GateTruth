@@ -1,4 +1,4 @@
-"""Generate the fully static SiliconBench leaderboard site."""
+"""Generate the fully static GateTruth leaderboard site."""
 
 from __future__ import annotations
 
@@ -546,12 +546,12 @@ def _render_index(rows: list[LeaderboardRow], agent_rows: list[AgentRow]) -> str
         )
     track_b_table = "".join(agent_body) or '<tr><td colspan="8">No Track B results.</td></tr>'
     content = (
-        '<header><p class="kicker">SiliconBench</p><h1>RTL model leaderboard</h1>'
+        '<header><p class="kicker">GateTruth</p><h1>RTL model leaderboard</h1>'
         '<p class="lede">Signed PPA-aware evaluation results.</p>'
         '<nav class="resource-nav" aria-label="Leaderboard resources">'
-        '<a data-tour="submit-model" href="https://github.com/meetbhadra701-cloud/SiliconBench/compare">'
+        '<a data-tour="submit-model" href="https://github.com/meetbhadra701-cloud/GateTruth/compare">'
         'Submit your model</a>'
-        '<a data-tour="methodology" href="https://github.com/meetbhadra701-cloud/SiliconBench/blob/main/paper/main.tex">'
+        '<a data-tour="methodology" href="https://github.com/meetbhadra701-cloud/GateTruth/blob/main/paper/main.tex">'
         'Methodology</a></nav></header>'
         '<main><aside class="score-guide" aria-label="Score guide">'
         '<div data-tour="silicon-score"><strong>SiliconScore</strong>'
@@ -579,7 +579,7 @@ def _render_index(rows: list[LeaderboardRow], agent_rows: list[AgentRow]) -> str
         '<th>Budget limit</th><th>Cost</th><th>Tokens</th><th>Run</th></tr></thead>'
         f"<tbody>{track_b_table}</tbody></table></div></section></main>"
     )
-    return _page("SiliconBench leaderboard", content)
+    return _page("GateTruth leaderboard", content)
 
 
 def _render_detail(row: LeaderboardRow) -> str:
@@ -610,7 +610,7 @@ def _render_detail(row: LeaderboardRow) -> str:
         '</section><div class="table-wrap"><table><thead><tr><th>Task</th><th>Score</th>'
         f"<th>Stages</th></tr></thead><tbody>{''.join(task_rows)}</tbody></table></div></main>"
     )
-    return _page(f"{row.model} - SiliconBench", content)
+    return _page(f"{row.model} - GateTruth", content)
 
 
 def _render_agent_detail(rows: list[AgentRow]) -> str:
@@ -644,7 +644,7 @@ def _render_agent_detail(rows: list[AgentRow]) -> str:
         f"<th>WNS delta</th><th>Stages</th></tr></thead><tbody>{''.join(task_rows)}"
         "</tbody></table></div></main>"
     )
-    return _page(f"{first.model} Track B - SiliconBench", content)
+    return _page(f"{first.model} Track B - GateTruth", content)
 
 
 def _ratio(value: float | None) -> str:

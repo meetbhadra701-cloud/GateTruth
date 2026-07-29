@@ -1,0 +1,2119 @@
+{
+  "indeterminate": 0,
+  "jobs": 1,
+  "kill_rate": 100.0,
+  "killed": 263,
+  "min_kill": 95.0,
+  "official": true,
+  "results": [
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m008",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m066",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m086",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m068",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m192",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m075",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m257",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m121",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m057",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m052",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m096",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m180",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m193",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m249",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m243",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m122",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m253",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m101",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m123",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m036",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m241",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m130",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m105",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m224",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m174",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m059",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m185",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m125",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m023",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m136",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m215",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m143",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m100",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m029",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m087",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m044",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t3_aes_sbox_datapath-m001",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m083",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m094",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m071",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_aes_sbox_datapath-m002",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m260",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m120",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m009",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m248",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m206",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m164",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m037",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m092",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m021",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m034",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m022",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m256",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m236",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m114",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m031",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m099",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m019",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m153",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m190",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m007",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m229",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m106",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m025",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m095",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m183",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m197",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m201",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m077",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m242",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m062",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m111",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m139",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m238",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "reset condition inverted",
+      "id": "t3_aes_sbox_datapath-m000",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "reset_polarity_flip"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m182",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m181",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m127",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m226",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m035",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m202",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m222",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m261",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m081",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m048",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m074",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m056",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m250",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m240",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m045",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m212",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m040",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m098",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m137",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m055",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m082",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m148",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m076",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m069",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m262",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_aes_sbox_datapath-m005",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m041",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m151",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m144",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m159",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m060",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m216",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m119",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m131",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m113",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m209",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m245",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m024",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m232",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m259",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m042",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m107",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m091",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m028",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m150",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m032",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m070",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m128",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m177",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m191",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m061",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m132",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m166",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m252",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m175",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m160",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m053",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m155",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m097",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m088",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m118",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m014",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m039",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m073",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m258",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m010",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m239",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m109",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m038",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m141",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m199",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m064",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m161",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m112",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m049",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m020",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m234",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m223",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m015",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m033",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m247",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m214",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m065",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m189",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m179",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m228",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m138",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m124",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m133",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_aes_sbox_datapath-m006",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m116",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m149",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m126",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m012",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m231",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m047",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m219",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m208",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m135",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m046",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m186",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m054",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m078",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m165",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m142",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m251",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m211",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m058",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m146",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m110",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m085",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m156",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_aes_sbox_datapath-m003",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m220",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m145",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m115",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m254",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m072",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m026",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m195",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m050",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m246",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m244",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m172",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m013",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m207",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m167",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m255",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m018",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m011",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m198",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m147",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m158",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m134",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m163",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m017",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m140",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m051",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m235",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m067",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m217",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m225",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m154",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m176",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m173",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m080",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m218",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m203",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m043",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m063",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m117",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m030",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m152",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m090",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m213",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_aes_sbox_datapath-m004",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m169",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m079",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m204",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m188",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m205",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m237",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m103",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m227",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m089",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m171",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m178",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m129",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m016",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m230",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m102",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m162",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m210",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m108",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m027",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m093",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m233",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m221",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m168",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m194",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m104",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m200",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m157",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m184",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m196",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m170",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m084",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_aes_sbox_datapath-m187",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    }
+  ],
+  "seed": 1337,
+  "survived": 0,
+  "survivors": [],
+  "task": "t3_aes_sbox_datapath",
+  "total": 263
+}

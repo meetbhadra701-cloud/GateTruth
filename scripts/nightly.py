@@ -1,4 +1,4 @@
-"""Run the schedule-ready SiliconBench nightly regression inside siliconbench:v1."""
+"""Run the schedule-ready GateTruth nightly regression inside gatetruth:v1."""
 
 from __future__ import annotations
 

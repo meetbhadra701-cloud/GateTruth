@@ -136,7 +136,7 @@ def reproduce_manifest(
         Path(submission) if submission is not None else None,
     )
 
-    with tempfile.TemporaryDirectory(prefix="siliconbench-reproduce-") as temp:
+    with tempfile.TemporaryDirectory(prefix="gatetruth-reproduce-") as temp:
         rerun = run_task(original.task_id, source, Path(temp) / "manifest.json")
 
     recorded_payload = manifest_signature_payload(raw)

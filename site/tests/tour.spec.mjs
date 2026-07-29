@@ -6,8 +6,14 @@ import process from "node:process";
 
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
-const root = path.resolve(process.env.SILICONBENCH_TOUR_BUILD || "site/build-tour");
-const screenshotRoot = process.env.SILICONBENCH_TOUR_SCREENSHOTS;
+const root = path.resolve(
+  process.env.GATETRUTH_TOUR_BUILD ||
+    process.env.SILICONBENCH_TOUR_BUILD ||
+    "site/build-tour",
+);
+const screenshotRoot =
+  process.env.GATETRUTH_TOUR_SCREENSHOTS ||
+  process.env.SILICONBENCH_TOUR_SCREENSHOTS;
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);

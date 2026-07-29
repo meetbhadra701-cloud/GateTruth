@@ -5,7 +5,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$RunRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("siliconbench-nightly-" + [guid]::NewGuid())
+$RunRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("gatetruth-nightly-" + [guid]::NewGuid())
 $SourceRoot = Join-Path $RunRoot "source"
 $Archive = Join-Path $RunRoot "source.tar"
 $OutputRoot = Join-Path $RepoRoot "build\nightly-output"
@@ -32,7 +32,7 @@ try {
         --mount "type=bind,source=${OutputRoot},target=/work/results/nightly" `
         --mount "type=bind,source=${SiteOutputRoot},target=/work/site/build" `
         --workdir /work `
-        siliconbench:v1 `
+        gatetruth:v1 `
         python scripts/nightly.py @NightlyArgs
     exit $LASTEXITCODE
 }

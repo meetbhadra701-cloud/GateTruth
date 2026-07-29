@@ -22,7 +22,7 @@ from harness.spend import DEFAULT_SPEND_PATH, SpendCapExceeded, load_spend, spen
 PROMPT_VERSION = "track-a-rtl-v1"
 DEFAULT_MAX_TOKENS = 4096
 SYSTEM_PROMPT = (
-    "You are generating a SiliconBench Track A RTL submission. Emit exactly one complete "
+    "You are generating a GateTruth Track A RTL submission. Emit exactly one complete "
     "SystemVerilog module implementing the locked interface. Do not emit a testbench, prose, "
     "analysis, or more than one module. Output only SystemVerilog source code."
 )

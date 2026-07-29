@@ -1,0 +1,47 @@
+{
+  "indeterminate": 0,
+  "jobs": 1,
+  "kill_rate": 100.0,
+  "killed": 4,
+  "min_kill": 95.0,
+  "official": true,
+  "results": [
+    {
+      "description": "continuous output is inverted",
+      "id": "t2_cdc_synchronizer-m001",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "output_inversion"
+    },
+    {
+      "description": "reset condition inverted",
+      "id": "t2_cdc_synchronizer-m000",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "reset_polarity_flip"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t2_cdc_synchronizer-m003",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "lint",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_cdc_synchronizer-m002",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    }
+  ],
+  "seed": 1337,
+  "survived": 0,
+  "survivors": [],
+  "task": "t2_cdc_synchronizer",
+  "total": 4
+}

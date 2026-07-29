@@ -1,0 +1,430 @@
+{
+  "all_above_floor": true,
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "jobs": 1,
+  "min_kill": 95.0,
+  "official": true,
+  "seed": 1337,
+  "tasks": {
+    "t1_barrel_shifter": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 7,
+      "survived": 0,
+      "total": 7
+    },
+    "t1_binary_to_onehot_decoder": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 8,
+      "survived": 0,
+      "total": 8
+    },
+    "t1_bit_reverser": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 6,
+      "survived": 0,
+      "total": 6
+    },
+    "t1_byte_swap": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 7,
+      "survived": 0,
+      "total": 7
+    },
+    "t1_debouncer": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 14,
+      "survived": 0,
+      "total": 14
+    },
+    "t1_edge_detector": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 6,
+      "survived": 0,
+      "total": 6
+    },
+    "t1_gray_counter": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 11,
+      "survived": 0,
+      "total": 11
+    },
+    "t1_gray_to_binary": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 8,
+      "survived": 0,
+      "total": 8
+    },
+    "t1_leading_zero_counter": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 11,
+      "survived": 0,
+      "total": 11
+    },
+    "t1_lfsr": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 10,
+      "survived": 0,
+      "total": 10
+    },
+    "t1_magnitude_comparator": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 9,
+      "survived": 0,
+      "total": 9
+    },
+    "t1_mod_n_counter": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 15,
+      "survived": 0,
+      "total": 15
+    },
+    "t1_onehot_fsm": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 12,
+      "survived": 0,
+      "total": 12
+    },
+    "t1_parity_gen": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 8,
+      "survived": 0,
+      "total": 8
+    },
+    "t1_popcount": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 8,
+      "survived": 0,
+      "total": 8
+    },
+    "t1_priority_encoder": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 12,
+      "survived": 0,
+      "total": 12
+    },
+    "t1_pwm": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 6,
+      "survived": 0,
+      "total": 6
+    },
+    "t1_range_checker": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 5,
+      "survived": 0,
+      "total": 5
+    },
+    "t1_saturating_adder": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 11,
+      "survived": 0,
+      "total": 11
+    },
+    "t1_signed_abs": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 7,
+      "survived": 0,
+      "total": 7
+    },
+    "t2_axi_lite_regfile": {
+      "indeterminate": 0,
+      "kill_rate": 97.619,
+      "killed": 41,
+      "survived": 1,
+      "total": 42
+    },
+    "t2_cdc_synchronizer": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 4,
+      "survived": 0,
+      "total": 4
+    },
+    "t2_counter_compare": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 9,
+      "survived": 0,
+      "total": 9
+    },
+    "t2_delay_trigger": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 16,
+      "survived": 0,
+      "total": 16
+    },
+    "t2_i2c_slave": {
+      "indeterminate": 0,
+      "kill_rate": 97.1429,
+      "killed": 34,
+      "survived": 1,
+      "total": 35
+    },
+    "t2_majority_filter": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 18,
+      "survived": 0,
+      "total": 18
+    },
+    "t2_mm_timer": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 15,
+      "survived": 0,
+      "total": 15
+    },
+    "t2_priority_interrupt_controller": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 13,
+      "survived": 0,
+      "total": 13
+    },
+    "t2_pulse_stretcher": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 10,
+      "survived": 0,
+      "total": 10
+    },
+    "t2_pulse_synchronizer": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 7,
+      "survived": 0,
+      "total": 7
+    },
+    "t2_pulse_width_meter": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 19,
+      "survived": 0,
+      "total": 19
+    },
+    "t2_round_robin_arbiter": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 12,
+      "survived": 0,
+      "total": 12
+    },
+    "t2_running_min_max_tracker": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 16,
+      "survived": 0,
+      "total": 16
+    },
+    "t2_shift_register": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 12,
+      "survived": 0,
+      "total": 12
+    },
+    "t2_skid_buffer": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 16,
+      "survived": 0,
+      "total": 16
+    },
+    "t2_spi_master": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 44,
+      "survived": 0,
+      "total": 44
+    },
+    "t2_spi_slave": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 22,
+      "survived": 0,
+      "total": 22
+    },
+    "t2_stream_downsizer": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 17,
+      "survived": 0,
+      "total": 17
+    },
+    "t2_stream_upsizer": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 20,
+      "survived": 0,
+      "total": 20
+    },
+    "t2_sync_fifo": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 27,
+      "survived": 0,
+      "total": 27
+    },
+    "t2_token_bucket_limiter": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 12,
+      "survived": 0,
+      "total": 12
+    },
+    "t2_uart_rx": {
+      "indeterminate": 0,
+      "kill_rate": 97.1429,
+      "killed": 34,
+      "survived": 1,
+      "total": 35
+    },
+    "t2_uart_tx": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 38,
+      "survived": 0,
+      "total": 38
+    },
+    "t2_updown_saturating_counter": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 11,
+      "survived": 0,
+      "total": 11
+    },
+    "t2_watchdog_timer": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 13,
+      "survived": 0,
+      "total": 13
+    },
+    "t3_aes_sbox_datapath": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 263,
+      "survived": 0,
+      "total": 263
+    },
+    "t3_booth_multiplier": {
+      "indeterminate": 0,
+      "kill_rate": 96.7742,
+      "killed": 30,
+      "survived": 1,
+      "total": 31
+    },
+    "t3_cache_tag_comparator": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 10,
+      "survived": 0,
+      "total": 10
+    },
+    "t3_crc32": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 14,
+      "survived": 0,
+      "total": 14
+    },
+    "t3_fir_filter_3tap": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 14,
+      "survived": 0,
+      "total": 14
+    },
+    "t3_fir_filter_loadable": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 17,
+      "survived": 0,
+      "total": 17
+    },
+    "t3_fixed_point_mac": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 10,
+      "survived": 0,
+      "total": 10
+    },
+    "t3_hamming74_codec": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 39,
+      "survived": 0,
+      "total": 39
+    },
+    "t3_iir_filter_1st_order": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 14,
+      "survived": 0,
+      "total": 14
+    },
+    "t3_lru_tracker": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 9,
+      "survived": 0,
+      "total": 9
+    },
+    "t3_moving_sum": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 17,
+      "survived": 0,
+      "total": 17
+    },
+    "t3_pipelined_multiplier": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 8,
+      "survived": 0,
+      "total": 8
+    },
+    "t3_saturating_accumulator": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 17,
+      "survived": 0,
+      "total": 17
+    },
+    "t3_sequential_divider": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 35,
+      "survived": 0,
+      "total": 35
+    },
+    "t3_systolic_pe_tile": {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 11,
+      "survived": 0,
+      "total": 11
+    }
+  }
+}

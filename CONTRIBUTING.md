@@ -1,6 +1,6 @@
-# Contributing to SiliconBench
+# Contributing to GateTruth
 
-Thanks for your interest in SiliconBench. Contributions of new tasks, bug fixes,
+Thanks for your interest in GateTruth. Contributions of new tasks, bug fixes,
 and evaluation results are welcome. This document explains how the pieces fit
 together so a contribution can be merged with confidence.
 
@@ -21,7 +21,7 @@ All evaluation runs inside the pinned image so results are reproducible. Build i
 from the repository root:
 
 ```bash
-docker build --platform linux/amd64 -t siliconbench:v1 -f flows/Dockerfile .
+docker build --platform linux/amd64 -t gatetruth:v1 -f flows/Dockerfile .
 ```
 
 Run the tests and linter inside the image before opening a PR:
@@ -35,8 +35,8 @@ docker run --rm --network none --cap-drop=ALL \
   --mount "type=bind,src=$PWD/build/secure-src,dst=/work,readonly" \
   --mount "type=bind,src=$PWD/build/secure-output,dst=/output" \
   --mount "type=bind,src=$PWD/build/secure-output/results,dst=/work/results" \
-  --workdir /work siliconbench:v1 \
-  bash -c "pytest -q -p no:cacheprovider --basetemp=/tmp/siliconbench-pytest && ruff check --no-cache harness/"
+  --workdir /work gatetruth:v1 \
+  bash -c "pytest -q -p no:cacheprovider --basetemp=/tmp/gatetruth-pytest && ruff check --no-cache harness/"
 ```
 
 The full isolation contract, including why execution uses a `.git`-free source

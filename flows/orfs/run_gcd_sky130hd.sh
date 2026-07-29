@@ -13,7 +13,7 @@ else
   docker_out_dir="${out_dir}"
 fi
 
-image="${SILICONBENCH_ORFS_IMAGE:-siliconbench-orfs:v1}"
+image="${GATETRUTH_ORFS_IMAGE:-${SILICONBENCH_ORFS_IMAGE:-gatetruth-orfs:v1}}"
 
 echo "SB-009 ORFS native amd64 go/no-go"
 echo "image=${image}"
@@ -22,7 +22,7 @@ echo "out_dir=${out_dir}"
 set +e
 env MSYS_NO_PATHCONV=1 docker run --rm \
   --platform linux/amd64 \
-  -v "${docker_out_dir}:/siliconbench-orfs-output" \
+  -v "${docker_out_dir}:/gatetruth-orfs-output" \
   "${image}" \
   bash -lc '
     set -euo pipefail
@@ -36,11 +36,11 @@ env MSYS_NO_PATHCONV=1 docker run --rm \
     make DESIGN_CONFIG=./designs/sky130hd/gcd/config.mk
     status=$?
     set -e
-    mkdir -p /siliconbench-orfs-output
+    mkdir -p /gatetruth-orfs-output
     for kind in logs reports results; do
       src="${kind}/sky130hd/gcd/base"
       if [ -e "${src}" ]; then
-        cp -r "${src}" "/siliconbench-orfs-output/${kind}-gcd-base"
+        cp -r "${src}" "/gatetruth-orfs-output/${kind}-gcd-base"
       fi
     done
     if [ "${status}" -eq 0 ]; then

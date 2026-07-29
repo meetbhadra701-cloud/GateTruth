@@ -1,6 +1,6 @@
-# SiliconBench paper
+# GateTruth paper
 
-LaTeX source for the SiliconBench v1.0 paper.
+LaTeX source for the GateTruth v1.0 paper.
 
 ## Build
 

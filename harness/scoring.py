@@ -1,4 +1,4 @@
-"""Single-source PPA scoring helpers for SiliconBench manifests."""
+"""Single-source PPA scoring helpers for GateTruth manifests."""
 
 from __future__ import annotations
 

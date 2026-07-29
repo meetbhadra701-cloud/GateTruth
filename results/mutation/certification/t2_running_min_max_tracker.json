@@ -1,0 +1,143 @@
+{
+  "indeterminate": 0,
+  "jobs": 1,
+  "kill_rate": 100.0,
+  "killed": 16,
+  "min_kill": 95.0,
+  "official": true,
+  "results": [
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_running_min_max_tracker-m013",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_running_min_max_tracker-m007",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "reset condition inverted",
+      "id": "t2_running_min_max_tracker-m000",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "reset_polarity_flip"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_running_min_max_tracker-m012",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_running_min_max_tracker-m001",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "formal",
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_running_min_max_tracker-m008",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_running_min_max_tracker-m003",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_running_min_max_tracker-m004",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_running_min_max_tracker-m010",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_running_min_max_tracker-m006",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_running_min_max_tracker-m005",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_running_min_max_tracker-m002",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "formal",
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t2_running_min_max_tracker-m015",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "lint",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_running_min_max_tracker-m014",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_running_min_max_tracker-m009",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_running_min_max_tracker-m011",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    }
+  ],
+  "seed": 1337,
+  "survived": 0,
+  "survivors": [],
+  "task": "t2_running_min_max_tracker",
+  "total": 16
+}

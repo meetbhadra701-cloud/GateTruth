@@ -1,4 +1,4 @@
-"""Command-line interface for SiliconBench."""
+"""Command-line interface for GateTruth."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ from harness.spend import SpendCapExceeded
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="siliconbench")
+    parser = argparse.ArgumentParser(prog="gatetruth")
     sub = parser.add_subparsers(dest="command", required=True)
 
     run = sub.add_parser("run", help="run a task submission")

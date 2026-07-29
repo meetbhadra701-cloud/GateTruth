@@ -1,4 +1,4 @@
-"""Generate deterministic SiliconBench paper data tables from live repository data."""
+"""Generate deterministic GateTruth paper data tables from live repository data."""
 
 from __future__ import annotations
 
@@ -532,7 +532,7 @@ def _tasks_markdown(rows: list[TaskRecord], metadata: str) -> str:
         for row in rows
     )
     lines.extend(
-        f"<!-- Missing ref PPA for {row.task_id}: ./siliconbench run --task {row.task_id} "
+        f"<!-- Missing ref PPA for {row.task_id}: ./gatetruth run --task {row.task_id} "
         f"--submission tasks/{row.task_id}/ref/ref.sv --out results/refs/{row.task_id}.json -->"
         for row in rows
         if row.area_um2 is None or row.wns_ns is None or row.power_mw is None
@@ -556,7 +556,7 @@ def _tasks_latex(rows: list[TaskRecord], metadata: str) -> str:
     )
     lines.extend([r"\bottomrule", r"\end{tabular}"])
     lines.extend(
-        f"% Missing ref PPA for {row.task_id}: ./siliconbench run --task {row.task_id} "
+        f"% Missing ref PPA for {row.task_id}: ./gatetruth run --task {row.task_id} "
         f"--submission tasks/{row.task_id}/ref/ref.sv --out results/refs/{row.task_id}.json"
         for row in rows
         if row.area_um2 is None or row.wns_ns is None or row.power_mw is None

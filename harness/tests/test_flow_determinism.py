@@ -130,10 +130,49 @@ def test_runtime_docker_digest_tracks_baked_file(tmp_path, monkeypatch):
     rebuilt_digest = "sha256:" + "ab" * 32
     digest_file = tmp_path / "image-digest"
     digest_file.write_text(rebuilt_digest + "\n", encoding="utf-8")
+    monkeypatch.delenv("GATETRUTH_DOCKER_DIGEST", raising=False)
     monkeypatch.delenv("SILICONBENCH_DOCKER_DIGEST", raising=False)
+    monkeypatch.delenv("GATETRUTH_DOCKER_DIGEST_FILE", raising=False)
     monkeypatch.setenv("SILICONBENCH_DOCKER_DIGEST_FILE", str(digest_file))
 
     assert runtime_docker_digest() == rebuilt_digest
+
+
+def test_runtime_docker_digest_prefers_gatetruth_variables(tmp_path, monkeypatch):
+    primary_digest = "sha256:" + "12" * 32
+    legacy_digest = "sha256:" + "34" * 32
+    primary_file = tmp_path / "gatetruth-digest"
+    legacy_file = tmp_path / "legacy-digest"
+    primary_file.write_text(primary_digest + "\n", encoding="utf-8")
+    legacy_file.write_text(legacy_digest + "\n", encoding="utf-8")
+    monkeypatch.delenv("GATETRUTH_DOCKER_DIGEST", raising=False)
+    monkeypatch.delenv("SILICONBENCH_DOCKER_DIGEST", raising=False)
+    monkeypatch.setenv("GATETRUTH_DOCKER_DIGEST_FILE", str(primary_file))
+    monkeypatch.setenv("SILICONBENCH_DOCKER_DIGEST_FILE", str(legacy_file))
+
+    assert runtime_docker_digest() == primary_digest
+
+
+def test_runtime_docker_digest_checks_primary_then_legacy_default_files(
+    tmp_path,
+    monkeypatch,
+):
+    primary_digest = "sha256:" + "56" * 32
+    legacy_digest = "sha256:" + "78" * 32
+    primary_file = tmp_path / "gatetruth-image-digest"
+    legacy_file = tmp_path / "legacy-image-digest"
+    legacy_file.write_text(legacy_digest + "\n", encoding="utf-8")
+    monkeypatch.delenv("GATETRUTH_DOCKER_DIGEST", raising=False)
+    monkeypatch.delenv("SILICONBENCH_DOCKER_DIGEST", raising=False)
+    monkeypatch.delenv("GATETRUTH_DOCKER_DIGEST_FILE", raising=False)
+    monkeypatch.delenv("SILICONBENCH_DOCKER_DIGEST_FILE", raising=False)
+    monkeypatch.setattr(runner, "DEFAULT_DOCKER_DIGEST_FILE", primary_file)
+    monkeypatch.setattr(runner, "LEGACY_DOCKER_DIGEST_FILE", legacy_file)
+
+    assert runtime_docker_digest() == legacy_digest
+
+    primary_file.write_text(primary_digest + "\n", encoding="utf-8")
+    assert runtime_docker_digest() == primary_digest
 
 
 def test_flow_subprocess_timeout_is_bounded_and_reported():

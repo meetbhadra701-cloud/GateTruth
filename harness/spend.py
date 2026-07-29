@@ -12,6 +12,8 @@ from typing import Any, Iterator
 
 import fcntl
 
+from harness.env_compat import read_env
+
 DEFAULT_SPEND_PATH = Path("results/spend.json")
 DEFAULT_SPEND_CAP_USD = 300.0
 
@@ -21,7 +23,11 @@ class SpendCapExceeded(RuntimeError):
 
 
 def spend_cap_from_env() -> float:
-    return float(os.environ.get("SILICONBENCH_SPEND_CAP_USD", DEFAULT_SPEND_CAP_USD))
+    value = read_env(
+        "SPEND_CAP_USD",
+        str(DEFAULT_SPEND_CAP_USD),
+    )
+    return float(value)
 
 
 def load_spend(path: str | Path = DEFAULT_SPEND_PATH) -> dict[str, Any]:

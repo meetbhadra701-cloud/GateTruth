@@ -1,1 +1,1 @@
-"""Executable schema contracts for SiliconBench."""
+"""Executable schema contracts for GateTruth."""

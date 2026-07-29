@@ -34,3 +34,12 @@ CI rebuilds instead of relying on the moving bookworm mirrors.
 - SB-003 image digest: sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62. Superseded for runtime policy by SB-104: `/work` is no longer on `PATH`, tools use fixed absolute paths, and the repo-level wrapper must be invoked explicitly as `./siliconbench`.
 - SB-010 reproducibility-hardening rebuild digest: sha256:c59845d212386b901d315fbbffee29da6c04700ed948dfb180b0ef1c45c04a2e. Built from the digest-pinned base image and apt-pinned runtime/result-affecting packages above.
 - SB-104 keeps the frozen result-affecting toolchain and marker while changing only runtime security policy: UID/GID 10001, trusted-tool-only `PATH`, read-only `.git`-free source mounts, a separate writable output mount, no network, no capabilities, no privilege escalation, and fixed memory/process/CPU limits.
+
+## GateTruth rename rebuild (SB-107, 2026-07-29)
+
+- Primary image tag: `gatetruth:v1`.
+- Release marker: `sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4`.
+- Runtime identity: non-root user `gatetruth` at fixed uid/gid 10001, with the
+  marker stored at `/etc/gatetruth-image-digest`.
+- The toolchain and package pins below are unchanged; this rebuild combines the
+  GateTruth rename with the already-landed SB-104 runtime hardening.

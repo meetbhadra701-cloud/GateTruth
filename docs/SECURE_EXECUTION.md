@@ -44,8 +44,8 @@ docker run --rm \
   --mount "type=bind,src=$PWD/build/secure-src,dst=/work,readonly" \
   --mount "type=bind,src=$PWD/build/secure-output,dst=/output" \
   --workdir /work \
-  siliconbench:v1 \
-  ./siliconbench run \
+  gatetruth:v1 \
+  ./gatetruth run \
     --task t1_gray_counter \
     --submission tasks/t1_gray_counter/ref/ref.sv \
     --out /output/t1_gray_counter.json

@@ -1,1 +1,1 @@
-"""SiliconBench harness package."""
+"""GateTruth harness package."""

@@ -101,7 +101,7 @@ def run_track_b(
         design = single_sv_file(submission_root / "design")
         baseline = single_sv_file(package.root / "baseline")
         import tempfile
-        with tempfile.TemporaryDirectory(prefix="siliconbench-trackb-") as temp:
+        with tempfile.TemporaryDirectory(prefix="gatetruth-trackb-") as temp:
             work_root = Path(temp)
             safe_design = work_root / "submission.sv"
             safe_baseline = work_root / "baseline.sv"

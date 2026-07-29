@@ -14,7 +14,12 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from harness.hidden import HIDDEN_REPORT_ENV, HIDDEN_ROOT_ENV  # noqa: E402
+from harness.hidden import (  # noqa: E402
+    HIDDEN_REPORT_ENV,
+    HIDDEN_ROOT_ENV,
+    LEGACY_HIDDEN_REPORT_ENV,
+    LEGACY_HIDDEN_ROOT_ENV,
+)
 from harness.runner import run_task  # noqa: E402
 from harness.schemas.manifest import ResultManifest  # noqa: E402
 from harness.schemas.task_yaml import load_task_yaml  # noqa: E402
@@ -94,7 +99,9 @@ def run_t1_smoke(output_root: Path, *, jobs: int = 4) -> list[SmokeResult]:
     if jobs < 1:
         raise ValueError("jobs must be at least 1")
     os.environ.pop(HIDDEN_ROOT_ENV, None)
+    os.environ.pop(LEGACY_HIDDEN_ROOT_ENV, None)
     os.environ.pop(HIDDEN_REPORT_ENV, None)
+    os.environ.pop(LEGACY_HIDDEN_REPORT_ENV, None)
     output_root.mkdir(parents=True, exist_ok=True)
     tasks = t1_task_ids()
     with ThreadPoolExecutor(max_workers=min(jobs, len(tasks))) as pool:

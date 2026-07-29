@@ -1,0 +1,93 @@
+"""Certify all Track A mutation gates sequentially and reproducibly."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+from typing import Any
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from harness.mutate import run_mutation  # noqa: E402
+from harness.runner import runtime_docker_digest  # noqa: E402
+
+EXPECTED_TASKS = 60
+
+
+def task_ids(root: Path = REPO_ROOT) -> list[str]:
+    return sorted(path.parent.name for path in (root / "tasks").glob("*/task.yaml"))
+
+
+def write_json(path: Path, value: dict[str, Any]) -> None:
+    path.write_text(
+        json.dumps(value, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--seed", type=int, default=1337)
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=REPO_ROOT / "results" / "mutation" / "certification",
+    )
+    parser.add_argument("--min-kill", type=float, default=95.0)
+    args = parser.parse_args(argv)
+
+    tasks = task_ids()
+    if len(tasks) != EXPECTED_TASKS:
+        raise ValueError(f"expected {EXPECTED_TASKS} Track A tasks, found {len(tasks)}")
+    args.out.mkdir(parents=True, exist_ok=True)
+
+    task_summaries: dict[str, dict[str, int | float]] = {}
+    all_above_floor = True
+    for index, task_id in enumerate(tasks, start=1):
+        report = run_mutation(
+            task_id=task_id,
+            min_kill=args.min_kill,
+            seed=args.seed,
+            jobs=1,
+            official=True,
+        )
+        write_json(args.out / f"{task_id}.json", report)
+        task_summaries[task_id] = {
+            "indeterminate": report["indeterminate"],
+            "kill_rate": report["kill_rate"],
+            "killed": report["killed"],
+            "survived": report["survived"],
+            "total": report["total"],
+        }
+        passed = report["kill_rate"] >= args.min_kill
+        all_above_floor = all_above_floor and passed
+        print(
+            f"[{index:02d}/{EXPECTED_TASKS}] "
+            f"{'PASS' if passed else 'FAIL'} {task_id} "
+            f"kill_rate={report['kill_rate']:.4f}%"
+        )
+
+    summary = {
+        "all_above_floor": all_above_floor,
+        "docker_digest": runtime_docker_digest(),
+        "jobs": 1,
+        "min_kill": args.min_kill,
+        "official": True,
+        "seed": args.seed,
+        "tasks": task_summaries,
+    }
+    write_json(args.out / "summary.json", summary)
+    print(
+        f"mutation certification: "
+        f"{sum(item['kill_rate'] >= args.min_kill for item in task_summaries.values())}"
+        f"/{EXPECTED_TASKS} at or above {args.min_kill:.2f}%"
+    )
+    return 0 if all_above_floor else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

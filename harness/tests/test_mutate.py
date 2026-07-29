@@ -1,11 +1,77 @@
+from types import SimpleNamespace
+
+import harness.mutate as mutate_module
 from harness.mutate import _is_timeout, run_mutation
-from harness.mutators import generate_mutants
+from harness.mutators import Mutant, generate_mutants
 
 
 def test_mutants_are_deterministic_for_seed():
     first = run_mutation(task_id="t1_gray_counter", min_kill=0, seed=1337)
     second = run_mutation(task_id="t1_gray_counter", min_kill=0, seed=1337)
     assert first == second
+
+
+def test_sequential_and_parallel_mutation_verdicts_match():
+    sequential = run_mutation(
+        task_id="t1_gray_counter",
+        min_kill=0,
+        seed=1337,
+        jobs=1,
+    )
+    parallel = run_mutation(
+        task_id="t1_gray_counter",
+        min_kill=0,
+        seed=1337,
+        jobs=6,
+    )
+
+    assert sequential.pop("jobs") == 1
+    assert parallel.pop("jobs") == 6
+    assert sequential == parallel
+
+
+def test_official_mutation_mode_is_threaded_to_mutant_runs(tmp_path, monkeypatch):
+    ref_dir = tmp_path / "ref"
+    ref_dir.mkdir()
+    (ref_dir / "ref.sv").write_text("module m; endmodule\n", encoding="utf-8")
+    task = SimpleNamespace(root=tmp_path)
+    mutant = Mutant(
+        id="m-000",
+        operator="test",
+        description="test mutant",
+        source="module m; wire changed; endmodule\n",
+    )
+    official_values = []
+
+    monkeypatch.setattr(mutate_module, "resolve_task", lambda _task_id: task)
+    monkeypatch.setattr(
+        mutate_module,
+        "generate_mutants",
+        lambda _task_id, _source: [mutant],
+    )
+
+    def fake_run_one(_task_id, _mutant, *, official):
+        official_values.append(official)
+        return {
+            "id": mutant.id,
+            "operator": mutant.operator,
+            "description": mutant.description,
+            "killed": True,
+            "killed_by": "sim",
+            "indeterminate": False,
+        }
+
+    monkeypatch.setattr(mutate_module, "_run_one", fake_run_one)
+
+    report = run_mutation(
+        task_id="fixture",
+        min_kill=95,
+        seed=1337,
+        official=True,
+    )
+
+    assert official_values == [True]
+    assert report["official"] is True
 
 
 def test_mutator_generates_expected_gray_operators():
