@@ -1,0 +1,173 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 5.0,
+  "killed": 1,
+  "mutants_total": 20,
+  "notes": "baseline passed under Icarus Verilog-2001",
+  "operator_counts": {
+    "blocking_output_inversion": 13,
+    "comparator_boundary_flip": 5,
+    "logic_inversion": 1,
+    "output_inversion": 1
+  },
+  "per_mutant": [
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_fixed_point_substractor-m000",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_fixed_point_substractor-m001",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_fixed_point_substractor-m005",
+      "killed_by": null,
+      "operator": "logic_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_fixed_point_substractor-m018",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_fixed_point_substractor-m007",
+      "killed_by": "compile",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_fixed_point_substractor-m010",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_fixed_point_substractor-m016",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_fixed_point_substractor-m011",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_fixed_point_substractor-m008",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_fixed_point_substractor-m004",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_fixed_point_substractor-m014",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_fixed_point_substractor-m017",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_fixed_point_substractor-m002",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_fixed_point_substractor-m003",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_fixed_point_substractor-m019",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_fixed_point_substractor-m009",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_fixed_point_substractor-m006",
+      "killed_by": null,
+      "operator": "output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_fixed_point_substractor-m012",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_fixed_point_substractor-m015",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_fixed_point_substractor-m013",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "548bf3a85f2023a2dc0975f2ea3e35eda37edc0a6cf983035761739ee90592c4",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 19,
+  "task_id": "fixed_point_substractor",
+  "testbench_sha256": "967d4b197101211e6c94b4024faceb3b2a3f24e5c43789fb065c13281108642e",
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

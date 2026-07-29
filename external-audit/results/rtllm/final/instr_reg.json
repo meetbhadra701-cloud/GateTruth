@@ -1,0 +1,89 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 75.0,
+  "killed": 6,
+  "mutants_total": 8,
+  "notes": "baseline passed under Icarus Verilog-2001",
+  "operator_counts": {
+    "assignment_hold": 2,
+    "comparator_boundary_flip": 2,
+    "output_inversion": 3,
+    "reset_polarity_flip": 1
+  },
+  "per_mutant": [
+    {
+      "description": "active-low reset condition inverted",
+      "id": "rtllm_instr_reg-m002",
+      "killed_by": "tb",
+      "operator": "reset_polarity_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_instr_reg-m000",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_instr_reg-m004",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_instr_reg-m001",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_instr_reg-m007",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_instr_reg-m003",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_instr_reg-m005",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_instr_reg-m006",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "36c734469454009c55a305149022708559b2a44c8dc7534478fc86d7ef467dbb",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 2,
+  "task_id": "instr_reg",
+  "testbench_sha256": "0bd712606c9a4be8ad7e31b327dcbe97f139d4fbdfbcbc8d235c3aba4d205d4d",
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

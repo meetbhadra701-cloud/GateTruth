@@ -1,0 +1,59 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 75.0,
+  "killed": 3,
+  "mutants_total": 4,
+  "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_counter_12 -> counter_12",
+  "operator_counts": {
+    "assignment_hold": 3,
+    "comparator_boundary_flip": 1
+  },
+  "per_mutant": [
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_counter_12-m000",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_counter_12-m001",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_counter_12-m002",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_counter_12-m003",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "9e42bf55ab4dbdf96c12a7a309ff98877d6ea2e89a2b5b0c337041edfd232bbb",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 1,
+  "task_id": "counter_12",
+  "testbench_sha256": "d42e3a798a72ffc19a6af5d51b0e686e77e93993e7ea6b5566894c4eb58c1b33",
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

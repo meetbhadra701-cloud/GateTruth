@@ -1,0 +1,27 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "not-runnable"
+  },
+  "indeterminate": 0,
+  "kill_rate": 0.0,
+  "killed": 0,
+  "mutants_total": 0,
+  "notes": "Icarus compile failed (exit 1): <vendor>/Miscellaneous/Frequency divider/freq_divbyodd/verified_freq_divbyodd.v:48: error: reg clk_div; cannot be driven by primitives or continuous assignment. | 1 error(s) during elaboration.",
+  "operator_counts": {},
+  "per_mutant": [],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "7f868f7c5ec9414eccc4996736c71315ece15e392148dfee2c229770445e3602",
+  "status": "unsupported",
+  "suite": "rtllm",
+  "survived": 0,
+  "task_id": "freq_divbyodd",
+  "testbench_sha256": "8d6b9b69b39399d1922645abf56f4f6c0249785b35a68d5ce52000a3f6d232f6",
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

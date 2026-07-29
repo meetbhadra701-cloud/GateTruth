@@ -1,0 +1,74 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 0.0,
+  "killed": 0,
+  "mutants_total": 6,
+  "notes": "baseline passed under Icarus Verilog-2001",
+  "operator_counts": {
+    "assignment_hold": 3,
+    "blocking_output_inversion": 2,
+    "comparator_boundary_flip": 1
+  },
+  "per_mutant": [
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_square_wave-m001",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_square_wave-m000",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_square_wave-m002",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_square_wave-m004",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_square_wave-m005",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_square_wave-m003",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "94a2cf7c9dda3e779dc1df3da9ba75596d624434f621e2f77616eea1fb53e550",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 6,
+  "task_id": "square_wave",
+  "testbench_sha256": "99333189f36a991503f678f234e0f98f1103a1d9c3c040d66e0162ecd9c0bdac",
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

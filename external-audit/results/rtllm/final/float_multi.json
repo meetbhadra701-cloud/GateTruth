@@ -1,0 +1,840 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 28.6957,
+  "killed": 33,
+  "mutants_total": 115,
+  "notes": "baseline passed under Icarus Verilog-2001",
+  "operator_counts": {
+    "assignment_hold": 65,
+    "bitwise_inversion": 8,
+    "comparator_boundary_flip": 28,
+    "logic_inversion": 9,
+    "reset_polarity_flip": 1,
+    "shift_inversion": 4
+  },
+  "per_mutant": [
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m085",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m077",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m110",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m100",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m069",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m104",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m097",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "reset condition inverted",
+      "id": "rtllm_float_multi-m049",
+      "killed_by": "tb",
+      "operator": "reset_polarity_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m113",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m005",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m076",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m053",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m011",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m075",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m013",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m009",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m106",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m008",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "or becomes xor",
+      "id": "rtllm_float_multi-m042",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m108",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m063",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m080",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m007",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m078",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "inequality becomes equality",
+      "id": "rtllm_float_multi-m027",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m002",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m068",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m091",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m003",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m056",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m015",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m096",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_float_multi-m039",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m057",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m090",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m072",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "left shift becomes right shift",
+      "id": "rtllm_float_multi-m047",
+      "killed_by": "tb",
+      "operator": "shift_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m051",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m084",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m082",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_float_multi-m033",
+      "killed_by": null,
+      "operator": "logic_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m020",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_float_multi-m037",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m098",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "or becomes xor",
+      "id": "rtllm_float_multi-m043",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m024",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m083",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m019",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m114",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "left shift becomes right shift",
+      "id": "rtllm_float_multi-m045",
+      "killed_by": null,
+      "operator": "shift_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m000",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m103",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m089",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_float_multi-m034",
+      "killed_by": null,
+      "operator": "logic_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_float_multi-m028",
+      "killed_by": "tb",
+      "operator": "logic_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m094",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m018",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m010",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m050",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m017",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m074",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m102",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m071",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m021",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m065",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m087",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m006",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m111",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m014",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_float_multi-m032",
+      "killed_by": null,
+      "operator": "logic_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m081",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m062",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m070",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m095",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m059",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_float_multi-m031",
+      "killed_by": null,
+      "operator": "logic_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m055",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "left shift becomes right shift",
+      "id": "rtllm_float_multi-m046",
+      "killed_by": null,
+      "operator": "shift_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m067",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_float_multi-m038",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m061",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m064",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m001",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m079",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m052",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m012",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m004",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m112",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m101",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m109",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "inequality becomes equality",
+      "id": "rtllm_float_multi-m026",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "or becomes xor",
+      "id": "rtllm_float_multi-m044",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m093",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m092",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_float_multi-m041",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m073",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_float_multi-m040",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m058",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m016",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m066",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m099",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_float_multi-m035",
+      "killed_by": null,
+      "operator": "logic_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_float_multi-m029",
+      "killed_by": "tb",
+      "operator": "logic_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m023",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_float_multi-m022",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_float_multi-m030",
+      "killed_by": null,
+      "operator": "logic_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "or becomes and",
+      "id": "rtllm_float_multi-m036",
+      "killed_by": null,
+      "operator": "logic_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "inequality becomes equality",
+      "id": "rtllm_float_multi-m025",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m105",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m088",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "right shift becomes left shift",
+      "id": "rtllm_float_multi-m048",
+      "killed_by": null,
+      "operator": "shift_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m060",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m086",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m054",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_float_multi-m107",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "5d177a50368c81385d9328a950d5b403a36605e7c41d573a965713520613f137",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 82,
+  "task_id": "float_multi",
+  "testbench_sha256": "93329fc0cdd3cdfa1cb71c37e38a0d09e0b1e3096d363cfd0d7826c04a9e0e46",
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

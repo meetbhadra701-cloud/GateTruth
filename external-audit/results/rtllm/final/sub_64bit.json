@@ -1,0 +1,74 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 16.6667,
+  "killed": 1,
+  "mutants_total": 6,
+  "notes": "baseline passed under Icarus Verilog-2001",
+  "operator_counts": {
+    "blocking_output_inversion": 3,
+    "comparator_boundary_flip": 2,
+    "logic_inversion": 1
+  },
+  "per_mutant": [
+    {
+      "description": "inequality becomes equality",
+      "id": "rtllm_sub_64bit-m001",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "inequality becomes equality",
+      "id": "rtllm_sub_64bit-m000",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_sub_64bit-m002",
+      "killed_by": null,
+      "operator": "logic_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_sub_64bit-m004",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_sub_64bit-m005",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_sub_64bit-m003",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "17710f6267a1523d10103214f29894bbcbc2b2af94225c8338b22eed162fe7a8",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 5,
+  "task_id": "sub_64bit",
+  "testbench_sha256": "fabac9dcec033d92fdcdab9a9d3495c418c90cb5c84274dce4a8c3b81634ba7f",
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

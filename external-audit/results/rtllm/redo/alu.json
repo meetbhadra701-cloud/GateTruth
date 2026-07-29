@@ -1,0 +1,407 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 66.0377,
+  "killed": 35,
+  "mutants_total": 53,
+  "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_alu -> alu",
+  "operator_counts": {
+    "assignment_hold": 18,
+    "bitwise_inversion": 3,
+    "blocking_output_inversion": 18,
+    "comparator_boundary_flip": 4,
+    "logic_inversion": 1,
+    "output_inversion": 5,
+    "shift_inversion": 4
+  },
+  "per_mutant": [
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m026",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_alu-m005",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "or becomes and",
+      "id": "rtllm_alu-m004",
+      "killed_by": null,
+      "operator": "logic_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m028",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "or becomes xor",
+      "id": "rtllm_alu-m006",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m032",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m021",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m047",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m031",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "right shift becomes left shift",
+      "id": "rtllm_alu-m010",
+      "killed_by": "tb",
+      "operator": "shift_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m035",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m025",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m046",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m034",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_alu-m001",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m039",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m038",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m042",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "or becomes xor",
+      "id": "rtllm_alu-m007",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m052",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m051",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m050",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "left shift becomes right shift",
+      "id": "rtllm_alu-m009",
+      "killed_by": "tb",
+      "operator": "shift_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m045",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_alu-m016",
+      "killed_by": null,
+      "operator": "output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_alu-m000",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m019",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m040",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_alu-m003",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m023",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m049",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_alu-m002",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m041",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_alu-m013",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m022",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m037",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m036",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m020",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m029",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "left shift becomes right shift",
+      "id": "rtllm_alu-m008",
+      "killed_by": "tb",
+      "operator": "shift_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m033",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m017",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_alu-m014",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m048",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "right shift becomes left shift",
+      "id": "rtllm_alu-m011",
+      "killed_by": "tb",
+      "operator": "shift_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_alu-m015",
+      "killed_by": null,
+      "operator": "output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m018",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_alu-m012",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m044",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m024",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m030",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_alu-m043",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_alu-m027",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "54cfb2b2a9db2318aa3610c29a61723cda3684a4798d2cc04820f6f5d95fed6e",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 18,
+  "task_id": "alu",
+  "testbench_sha256": "adb9ec60ed1196959e14de8376c7cc4c709177da97ade183553635c33a37af71",
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

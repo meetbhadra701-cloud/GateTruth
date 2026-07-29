@@ -1,0 +1,466 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 4,
+  "kill_rate": 51.6129,
+  "killed": 32,
+  "mutants_total": 62,
+  "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_64bit -> adder_pipe_64bit",
+  "operator_counts": {
+    "assignment_hold": 52,
+    "blocking_output_inversion": 1,
+    "output_inversion": 9
+  },
+  "per_mutant": [
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m037",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m031",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m047",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m041",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m060",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m025",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_pipe_64bit-m005",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m009",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m050",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_pipe_64bit-m004",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m028",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m038",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m054",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m035",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m010",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m057",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_pipe_64bit-m001",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m021",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_pipe_64bit-m003",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m046",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m016",
+      "killed_by": "tb-timeout",
+      "operator": "assignment_hold",
+      "verdict": "indeterminate"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m055",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m034",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m039",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m042",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m045",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_adder_pipe_64bit-m061",
+      "killed_by": "compile",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m049",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_pipe_64bit-m007",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m059",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m040",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m023",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m019",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m058",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m032",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_pipe_64bit-m000",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m026",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_pipe_64bit-m006",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_pipe_64bit-m002",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m048",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m013",
+      "killed_by": "tb-timeout",
+      "operator": "assignment_hold",
+      "verdict": "indeterminate"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m022",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m056",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m036",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m020",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m029",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_pipe_64bit-m008",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m033",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m017",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m014",
+      "killed_by": "tb-timeout",
+      "operator": "assignment_hold",
+      "verdict": "indeterminate"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m051",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m011",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m015",
+      "killed_by": "tb-timeout",
+      "operator": "assignment_hold",
+      "verdict": "indeterminate"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m018",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m012",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m052",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m044",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m024",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m030",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m043",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m027",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_adder_pipe_64bit-m053",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "ad19ff34d7525b67888212677ba8630c8c54f3bc1030af3608bf9a303f060392",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 26,
+  "task_id": "adder_pipe_64bit",
+  "testbench_sha256": "01c3ed8ef8b4a56c554fb6d0667cc385f1bf0b867e12f9bd79660705b4673405",
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}
