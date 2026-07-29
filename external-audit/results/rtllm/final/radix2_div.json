@@ -1,0 +1,27 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "not-runnable"
+  },
+  "indeterminate": 0,
+  "kill_rate": 0.0,
+  "killed": 0,
+  "mutants_total": 0,
+  "notes": "simulation emitted no recognized pass banner: Error: dividend=123, divisor=123, expected=0001, got=6400 | ===========Failed===========          3 | <vendor>/Arithmetic/Divider/radix2_div/testbench.v:87: $finish called at 825000 (1ps)",
+  "operator_counts": {},
+  "per_mutant": [],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "4ec0998f85d18ed1fbcf65f7422e6d0270bcbf0fe3183d815d9a26e6d3851939",
+  "status": "unsupported",
+  "suite": "rtllm",
+  "survived": 0,
+  "task_id": "radix2_div",
+  "testbench_sha256": "58fb7a9c86474d9a4fcd83624d8646f47cec38c990f72f5741163313082ca726",
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

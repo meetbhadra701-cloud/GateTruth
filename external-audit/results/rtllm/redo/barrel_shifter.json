@@ -1,0 +1,37 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 100.0,
+  "killed": 1,
+  "mutants_total": 1,
+  "notes": "baseline passed under Icarus Verilog-2001",
+  "operator_counts": {
+    "output_inversion": 1
+  },
+  "per_mutant": [
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_barrel_shifter-m000",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "5a60c25a5d6a5057a9d8b876d856387efe82d8158bc2a42497b591c18a247e9d",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 0,
+  "task_id": "barrel_shifter",
+  "testbench_sha256": "fafb8adc863166854d1cca365c641f7ccecc8f0cc6c099c27f79adf06702a4c7",
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

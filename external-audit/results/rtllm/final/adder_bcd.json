@@ -1,0 +1,65 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 100.0,
+  "killed": 5,
+  "mutants_total": 5,
+  "notes": "baseline passed under Icarus Verilog-2001",
+  "operator_counts": {
+    "output_inversion": 5
+  },
+  "per_mutant": [
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_bcd-m002",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_bcd-m000",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_bcd-m001",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_bcd-m004",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_bcd-m003",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "c2cfeca31ceca9e55d3a6e09ced55614ceab3270485de9c63c601eba3a0c7b45",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 0,
+  "task_id": "adder_bcd",
+  "testbench_sha256": "11ee1d2ece533dd353f8d4acbaa6a7a7360350f9cfd97d60bb2fb39fa63df275",
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

@@ -1,0 +1,27 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "not-runnable"
+  },
+  "indeterminate": 0,
+  "kill_rate": 0.0,
+  "killed": 0,
+  "mutants_total": 0,
+  "notes": "Icarus compile failed (exit 1): <vendor>/Memory/FIFO/asyn_fifo/testbench.v:102: error: Enable of unknown task ``break''. | 1 error(s) during elaboration.",
+  "operator_counts": {},
+  "per_mutant": [],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "0d667ba5d89fc9440057b101ac4dbc71ac67156e3bbf661a54a42283d884fbb9",
+  "status": "unsupported",
+  "suite": "rtllm",
+  "survived": 0,
+  "task_id": "asyn_fifo",
+  "testbench_sha256": "e0e2ceae67c6c6bad98e51742c327c23fdd7f9f2da673236eeedecc294ea178a",
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

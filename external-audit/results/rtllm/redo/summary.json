@@ -1,0 +1,180 @@
+{
+  "designs": [
+    {
+      "indeterminate": 0,
+      "kill_rate": 66.0377,
+      "killed": 35,
+      "mutants_total": 53,
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_alu -> alu",
+      "status": "audited",
+      "survived": 18,
+      "task_id": "alu"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 1,
+      "mutants_total": 1,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "status": "audited",
+      "survived": 0,
+      "task_id": "barrel_shifter"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 83.3333,
+      "killed": 5,
+      "mutants_total": 6,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "status": "audited",
+      "survived": 1,
+      "task_id": "comparator_4bit"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 0.0,
+      "killed": 0,
+      "mutants_total": 10,
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_edge_detect -> edge_detect",
+      "status": "audited",
+      "survived": 10,
+      "task_id": "edge_detect"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 90.0,
+      "killed": 18,
+      "mutants_total": 20,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "status": "audited",
+      "survived": 2,
+      "task_id": "freq_divbyfrac"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 66.6667,
+      "killed": 14,
+      "mutants_total": 21,
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_16bit -> multi_16bit",
+      "status": "audited",
+      "survived": 7,
+      "task_id": "multi_16bit"
+    },
+    {
+      "indeterminate": 2,
+      "kill_rate": 56.6667,
+      "killed": 17,
+      "mutants_total": 30,
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_pipe_8bit -> multi_pipe_8bit",
+      "status": "audited",
+      "survived": 11,
+      "task_id": "multi_pipe_8bit"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 8,
+      "mutants_total": 8,
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_signal_generator -> signal_generator",
+      "status": "audited",
+      "survived": 0,
+      "task_id": "signal_generator"
+    }
+  ],
+  "designs_requested": 8,
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "status_counts": {
+    "audited": 8
+  },
+  "suite": "rtllm",
+  "tasks": [
+    {
+      "indeterminate": 0,
+      "kill_rate": 66.0377,
+      "killed": 35,
+      "mutants_total": 53,
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_alu -> alu",
+      "status": "audited",
+      "survived": 18,
+      "task_id": "alu"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 1,
+      "mutants_total": 1,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "status": "audited",
+      "survived": 0,
+      "task_id": "barrel_shifter"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 83.3333,
+      "killed": 5,
+      "mutants_total": 6,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "status": "audited",
+      "survived": 1,
+      "task_id": "comparator_4bit"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 0.0,
+      "killed": 0,
+      "mutants_total": 10,
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_edge_detect -> edge_detect",
+      "status": "audited",
+      "survived": 10,
+      "task_id": "edge_detect"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 90.0,
+      "killed": 18,
+      "mutants_total": 20,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "status": "audited",
+      "survived": 2,
+      "task_id": "freq_divbyfrac"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 66.6667,
+      "killed": 14,
+      "mutants_total": 21,
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_16bit -> multi_16bit",
+      "status": "audited",
+      "survived": 7,
+      "task_id": "multi_16bit"
+    },
+    {
+      "indeterminate": 2,
+      "kill_rate": 56.6667,
+      "killed": 17,
+      "mutants_total": 30,
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_pipe_8bit -> multi_pipe_8bit",
+      "status": "audited",
+      "survived": 11,
+      "task_id": "multi_pipe_8bit"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 8,
+      "mutants_total": 8,
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_signal_generator -> signal_generator",
+      "status": "audited",
+      "survived": 0,
+      "task_id": "signal_generator"
+    }
+  ],
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e",
+  "vendor_content_sha256": "03c7354b51550210e0d28e6a6dcddf5e5361c68365403e007e9979d3ae6e6158"
+}

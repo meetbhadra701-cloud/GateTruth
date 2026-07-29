@@ -1,0 +1,27 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "not-runnable"
+  },
+  "indeterminate": 0,
+  "kill_rate": 0.0,
+  "killed": 0,
+  "mutants_total": 0,
+  "notes": "Icarus compile failed (exit 2): <vendor>/Arithmetic/Multiplier/multi_8bit/verified_multi_8bit.v:15: syntax error | <vendor>/Arithmetic/Multiplier/multi_8bit/verified_multi_8bit.v:15: error: Incomprehensible for loop.",
+  "operator_counts": {},
+  "per_mutant": [],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "2f4a0bde4ecb6ecda2f14f7885c1d82fb51d51947b192bb01e710c3a35e8d200",
+  "status": "unsupported",
+  "suite": "rtllm",
+  "survived": 0,
+  "task_id": "multi_8bit",
+  "testbench_sha256": "b8fc5bd5a25cb84f64417d30e2b04e459805c763d48cedd192f1d927a80318dc",
+  "tool_versions": {
+    "harness_git": "5ea85d0",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}
