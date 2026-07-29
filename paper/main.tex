@@ -174,6 +174,21 @@ with an explicit \texttt{unsupported} status and excluded from kill-rate aggrega
 scored as a misleading 0\% kill rate, which would conflate ``the testbench caught nothing'' with
 ``we could not run the testbench at all.''
 
+\paragraph{Build-convention normalization, not silent inflation.} Some external benchmarks ship a
+golden reference whose internal module name differs from the name their own testbench instantiates
+(for instance, a file that declares one module identifier while the benchmark's own per-design build
+recipe expects the candidate file to be renamed and re-moduled before compilation). Naively compiling
+such a design against its testbench fails not because the design is genuinely incompatible with an
+open-source simulator, but because our harness has not yet replicated the vendor's own build
+convention. Where a design's own build recipe documents this convention, the audit reproduces it at
+compile time only: the golden source is copied into a temporary location, its module declaration is
+rewritten to the name the testbench expects, and only that temporary copy is compiled --- the pinned
+vendor file on disk is never modified. Every report row records whether this alias was applied and,
+if so, the exact rename performed, so a third party can distinguish ``passed as shipped'' from
+``passed after a documented, vendor-convention-matching alias'' at a glance. Designs that still fail
+to compile or run after this normalization are reported as genuine incompatibilities, not silently
+retried with looser semantics.
+
 \paragraph{Operator set.} The audit uses exclusively the generic, benchmark-agnostic mutation
 operators already certified against GateTruth's own suite in Section~\ref{sec:rigor} (comparator
 and operator inversions, logic and bitwise inversions, shift-direction inversion, reset- and
