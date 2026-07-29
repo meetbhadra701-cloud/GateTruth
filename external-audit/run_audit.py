@@ -193,6 +193,7 @@ def run_rtllm_audit(
         "designs_requested": len(selected),
         "status_counts": dict(sorted(status_counts.items())),
         "designs": summary_designs,
+        "tasks": summary_designs,
     }
     _write_json(out_dir / "summary.json", summary)
     return summary
