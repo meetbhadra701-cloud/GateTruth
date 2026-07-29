@@ -1,8 +1,9 @@
-<h1 align="center">SiliconBench</h1>
+<h1 align="center">GateTruth</h1>
 
 <p align="center">
-  <strong>A PPA-aware benchmark for LLM &amp; agent RTL design.</strong><br>
-  Not just <em>does the hardware work</em> — <em>is it good silicon?</em>
+  <strong>Auditing the rigor of RTL design benchmarks via mutation testing.</strong><br>
+  A testbench that never fails isn't proof of a correct design — it may just never
+  stimulate what's actually broken.
 </p>
 
 <p align="center">
@@ -16,14 +17,21 @@
 
 ---
 
-Most benchmarks for language-model hardware design stop at **functional
-correctness** — does the generated Verilog simulate? But correctness is the entry
-fee in digital design, not the goal. A working divider that is twice the area,
-misses timing, or burns needless power is a *bad* design. SiliconBench carries
-every submission through a **real, pinned open-source ASIC flow** (synthesis +
-static timing/power on the sky130 technology) and scores it on **power,
-performance, and area** relative to a human-reviewed reference — with correctness
-as a hard gate, so a design that is wrong scores zero no matter how small or fast.
+Benchmarks for LLM-generated RTL treat their own testbenches as ground truth, and
+almost none check whether that trust is earned. GateTruth is a mutation-testing
+engine: inject deterministic, seeded semantic faults into a reference design and
+measure what fraction the testbench actually catches. A testbench that lets a
+broken design pass is a testbench that will also let a broken model-generated
+design pass — and no amount of pass@k tells you which kind you have.
+
+We certify the methodology against our own open reference suite first — 60
+specification-to-RTL generation tasks plus 8 agentic-repair tasks, each carried
+through a **real, pinned open-source ASIC flow** (synthesis + static timing/power
+on the sky130 technology) with correctness enforced as a **hard gate**, and every
+one of the suite's 68 testbenches certified above a 95% mutation-kill floor — and
+then point the same engine, unmodified, at external RTL benchmarks the field
+already relies on. See the [paper](#citation) for the audit methodology, the
+reference-suite design, and the resulting measurements.
 
 ## Leaderboard (v1.0)
 

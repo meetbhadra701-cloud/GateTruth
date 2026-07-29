@@ -1,12 +1,14 @@
 cff-version: 1.2.0
-message: "If you use SiliconBench, please cite it as below."
-title: "SiliconBench: A PPA-Aware Benchmark for LLM and Agent RTL Design"
+message: "If you use GateTruth, please cite it as below."
+title: "GateTruth: Auditing the Rigor of RTL Design Benchmarks via Mutation Testing"
 abstract: >-
-  SiliconBench is a power-, performance-, and area-aware benchmark for evaluating
-  large language models and agents on register-transfer-level hardware design. It
-  scores generated and agent-repaired RTL through a pinned open-source synthesis
-  and static-timing flow, treating functional correctness as a severability gate
-  and PPA as the primary score relative to a human-reviewed reference.
+  GateTruth is a mutation-testing engine and methodology for auditing the rigor of RTL benchmark
+  testbenches for LLM/agent hardware design: inject deterministic, seeded semantic mutants into a
+  reference implementation and measure what fraction the testbench catches. The methodology is
+  certified against an included open reference suite (60 specification-to-RTL generation tasks
+  and 8 agentic-repair tasks, scored through a pinned, deterministic synthesis-to-timing flow with
+  correctness enforced as a strict gate) before being applied, unmodified, to external RTL
+  benchmarks.
 type: software
 authors:
   - family-names: Bhadra
@@ -14,10 +16,11 @@ authors:
 version: "1.0.0"
 date-released: "2026-07-24"
 license: Apache-2.0
-repository-code: "https://github.com/meetbhadra701-cloud/SiliconBench"
-url: "https://github.com/meetbhadra701-cloud/SiliconBench"
+repository-code: "https://github.com/meetbhadra701-cloud/GateTruth"
+url: "https://github.com/meetbhadra701-cloud/GateTruth"
 keywords:
   - benchmark
+  - mutation testing
   - large language models
   - RTL
   - hardware design
