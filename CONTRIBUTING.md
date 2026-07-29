@@ -15,6 +15,12 @@ together so a contribution can be merged with confidence.
 - **Improve the harness, docs, or flow** — PRs welcome; please open an issue first
   for anything non-trivial.
 
+`external-audit/` (the mutation-testing audit of external RTL benchmarks) is
+maintainer-run infrastructure, not a typical PR target: it fetches third-party
+sources read-only at a pinned commit and its findings are not published without
+maintainer sign-off. If you'd like to help extend it (e.g. a new benchmark
+target or mutation operator), open an issue first.
+
 ## Development setup
 
 All evaluation runs inside the pinned image so results are reproducible. Build it

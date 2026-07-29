@@ -153,6 +153,8 @@ scripts/     reproduction and contamination-scan utilities
 site/        static leaderboard generator
 paper/       auto-generated result/task tables
 docs/        methodology notes
+external-audit/  mutation-testing audit of external RTL benchmarks (read-only
+             vendor fetches, pinned commits, GateTruth-generated reports only)
 ```
 
 Each task is a self-contained package: an original-prose spec (with a unique
