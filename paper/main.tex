@@ -270,6 +270,46 @@ Two additional methodological limitations bound the reference suite's claims reg
 
 The prevailing paradigm for evaluating large language models on register-transfer-level (RTL) design predominantly assesses the functional correctness of generated code. VerilogEval~\cite{liu2023verilogeval} established this framework utilizing a suite of tasks derived from the HDLBits teaching platform, evaluated via simulation testbenches under a pass@k protocol; its subsequent iteration~\cite{pinckney2024revisiting} expanded to specification-to-RTL generation, introduced in-context prompting, and implemented granular failure classification. RTLLM~\cite{lu2024rtllm} adopted a complementary approach, originally curating thirty designs encompassing arithmetic and logic circuits, each formalized as a triplet comprising a natural-language specification, a testbench, and a human-authored reference; the project's public repository has since expanded to fifty designs under the same MIT license, released by the authors as RTLLM v2.0, and is the primary target of the external audit reported in Section~\ref{sec:audit-results}. These foundational benchmarks codified a critical distinction: syntactic validity diverges significantly from functional correctness. A highly capable model may reliably emit compilable code while achieving functional correctness on less than 75\% of problems. None of these benchmarks report a mutation-kill floor for their own testbenches --- the gap this paper's audit methodology is designed to measure.
 
+Table~\ref{tab:related} summarizes recent RTL-generation and system-level LLM benchmarks against
+two properties central to this paper: whether the benchmark reports a mutation-testing (or
+equivalent systematic fault-injection) rigor measurement of its own testbenches, and whether it
+scores generated designs on post-synthesis PPA rather than functional correctness alone. ChipBench~\cite{yu2026chipbench}
+evaluates Verilog generation, debugging, and reference-model synthesis across three task families
+using directed and constrained-random testing; ArchXBench~\cite{purini2025archxbench} scales
+generation difficulty across six complexity tiers from logic primitives to full accelerators;
+SLDB~\cite{alvanaki2025sldb} evaluates system-level integration and configuration of accelerators
+into heterogeneous SoCs rather than module-level generation; and ProtocolLLM~\cite{sheth2025protocolllm}
+narrows scope to SystemVerilog generation for four communication protocols (SPI, I\textsuperscript{2}C,
+UART, AXI), evaluating syntax, synthesizability, and timing fidelity. None of the four reports a
+mutation-testing or systematic fault-coverage measurement of its own testbenches in its published
+paper or public repository, and none reports post-synthesis PPA scoring of the RTL it evaluates ---
+based on the papers, repositories, and documentation we were able to access; we did not exhaustively
+audit every appendix or supplementary artifact, and report this as the most accurate characterization
+available rather than a certified negative claim.
+
+\begin{table}[t]
+\centering
+\caption{Related RTL/hardware LLM benchmarks. ``Mutation rigor'' = reports a mutation-testing or
+equivalent fault-injection measurement of its own testbenches. ``PPA'' = scores generated designs
+on post-synthesis area/timing/power, not correctness alone.}
+\label{tab:related}
+\small
+\begin{tabular}{lp{4.7cm}cc}
+\toprule
+Benchmark & Scope & Mutation rigor & PPA \\
+\midrule
+VerilogEval~\cite{liu2023verilogeval,pinckney2024revisiting} & HDLBits-derived generation, pass@k & No & No \\
+RTLLM v2.0~\cite{lu2024rtllm} & 50-design generation, self-checking TBs & No & No \\
+CVDP~\cite{nvidia2025cvdp} & Generation + comprehension, agentic \& non-agentic & No & No \\
+ChipBench~\cite{yu2026chipbench} & Generation, debugging, reference-model synthesis & No & No \\
+ArchXBench~\cite{purini2025archxbench} & Tiered-complexity generation & No & No \\
+SLDB~\cite{alvanaki2025sldb} & System-level SoC integration/configuration & No & No \\
+ProtocolLLM~\cite{sheth2025protocolllm} & Protocol-specific (SPI/I\textsuperscript{2}C/UART/AXI) generation & No & No \\
+\textbf{GateTruth (this work)} & Generation + agentic repair; audits external benchmarks & \textbf{Yes} & \textbf{Yes} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 NVIDIA's CVDP~\cite{nvidia2025cvdp} takes a substantially broader approach, spanning code generation, code comprehension, and both agentic and non-agentic evaluation across thousands of problems, with an Apache-2.0 harness and a CC~BY~4.0 public dataset. CVDP is also the foundation of the Si2 (Silicon Integration Initiative) LLM Benchmarking Coalition, an industry effort co-chaired by NVIDIA's Nathaniel Pinckney and Synopsys's Ramesh Narayanaswamy, which extends CVDP with additional problem categories and operates a public results leaderboard (LBC-bench, launched 2026). As detailed in Section~\ref{sec:audit-method}, CVDP's public release deliberately withholds reference solutions to mitigate evaluation contamination; this is a sound design choice for CVDP's own scoring purpose but leaves the benchmark's own testbench rigor unauditable via mutation testing from the public release alone, a limitation we report rather than route around.
 
 Research engaging with post-synthesis metrics has predominantly approached the problem from predictive modeling rather than generation scoring. MetRex~\cite{abdelatty2025metrex} compiled a comprehensive dataset of Verilog designs correlated with post-synthesis area, delay, and static power to evaluate whether models can infer these metrics from source code, while related frameworks like RocketPPA~\cite{abdollahi2025rocketppa} train models for code-level PPA prediction. Although these works advance metric estimation, they do not evaluate the physical viability of generated designs executed through an actual synthesis flow, nor do they address testbench rigor. GateTruth's own reference suite enforces a rigidly deterministic pipeline---a single content-addressed container image, uniform liberty and clock targets per task, a fixed Yosys-plus-OpenSTA path, and SHA-256 content hashes over canonical-JSON results---so that PPA comparisons produced by it are reproducible directly from the recorded digest.
