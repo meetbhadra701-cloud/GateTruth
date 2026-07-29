@@ -82,6 +82,31 @@ def test_mutator_generates_expected_gray_operators():
     assert "operator_inversion" in operators
 
 
+def test_generic_only_mutation_excludes_task_specific_operators():
+    source = """module m;
+localparam LAST_TICK = CLKS_PER_BIT - 1;
+endmodule
+"""
+
+    generic = generate_mutants(
+        "t2_uart_tx",
+        source,
+        include_task_specs=False,
+    )
+    default = generate_mutants("t2_uart_tx", source)
+
+    assert all(mutant.operator != "off_by_one_counter_limit" for mutant in generic)
+    assert any(mutant.operator == "off_by_one_counter_limit" for mutant in default)
+    assert default == generate_mutants(
+        "t2_uart_tx",
+        source,
+        include_task_specs=True,
+    )
+    assert generate_mutants("no_such_task", source, include_task_specs=False) == (
+        generate_mutants("no_such_task", source)
+    )
+
+
 def test_mutator_never_changes_comment_text():
     source = "module m; // x == y and x + 1'b1\nassign y = x == z;\nendmodule\n"
     mutants = generate_mutants("generic", source)
