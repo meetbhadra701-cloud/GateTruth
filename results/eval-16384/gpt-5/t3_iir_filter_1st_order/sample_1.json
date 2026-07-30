@@ -1,0 +1,65 @@
+{
+  "task_id": "t3_iir_filter_1st_order",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "pass",
+      "warnings": 0
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "pass",
+      "tests_run": 11,
+      "tests_passed": 11
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "pass"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "pass",
+      "area_um2": 4344.1664,
+      "cell_count": 520
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "pass",
+      "wns_ns": 3.785759368700525,
+      "tns_ns": 0.0,
+      "fmax_mhz": 160.92070766672057
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "pass",
+      "power_mw": 0.49061933500000005
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 0.9946983372434214,
+  "task_score": 66.31322248289476,
+  "wall_clock_s": 25.862671,
+  "provider": "openai",
+  "model": "gpt-5",
+  "temperature": "provider_default",
+  "tokens_in": 1395,
+  "tokens_out": 2239,
+  "cost_usd": 0.024133749999999843,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-07-30T13:44:10.150451Z",
+  "signature": "9acfc2a6cbdb9f50d602e9fec0557975426f3f08eb4046f4e7d2f4b8b3736d84"
+}

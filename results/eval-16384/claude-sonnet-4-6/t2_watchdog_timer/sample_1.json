@@ -1,0 +1,65 @@
+{
+  "task_id": "t2_watchdog_timer",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "pass",
+      "warnings": 0
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "pass",
+      "tests_run": 10,
+      "tests_passed": 10
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "pass"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "pass",
+      "area_um2": 195.1872,
+      "cell_count": 21
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "pass",
+      "wns_ns": 7.0362881956976855,
+      "tns_ns": 0.0,
+      "fmax_mhz": 337.4147238433696
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "pass",
+      "power_mw": 0.0017331968800000002
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 0.8848412872421759,
+  "task_score": 58.9894191494784,
+  "wall_clock_s": 1.394315,
+  "provider": "anthropic",
+  "model": "claude-sonnet-4-6",
+  "temperature": 0.0,
+  "tokens_in": 2261,
+  "tokens_out": 318,
+  "cost_usd": 0.011553000000000035,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-07-30T13:57:41.803417Z",
+  "signature": "2650e3d3682e7fbe687332575c9e63d439a985f51da0ec2bc0f86854e4238f98"
+}

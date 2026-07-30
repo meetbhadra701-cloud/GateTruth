@@ -1,0 +1,57 @@
+{
+  "task_id": "t2_round_robin_arbiter",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "fail"
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "fail"
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "fail"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "fail"
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "fail"
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "fail"
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 0.0,
+  "ppa": 0.0,
+  "task_score": 0.0,
+  "wall_clock_s": 144.671946,
+  "provider": "openrouter",
+  "model": "google/gemini-2.5-pro",
+  "temperature": 0.0,
+  "tokens_in": 0,
+  "tokens_out": 0,
+  "cost_usd": 0.0,
+  "prompt_version": "track-a-rtl-v1",
+  "generation_error": "provider error: ProviderRetryableError: OpenRouter response contained no text",
+  "timestamp": "2026-07-30T06:11:35.161462Z",
+  "signature": "1ca6744177d5f27ce3bf9f4fcc4a38237d572c91518b3554973c1393f82defad"
+}

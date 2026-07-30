@@ -1,0 +1,65 @@
+{
+  "task_id": "t3_fir_filter_3tap",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "pass",
+      "warnings": 0
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "pass",
+      "tests_run": 8,
+      "tests_passed": 8
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "pass"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "pass",
+      "area_um2": 1674.1056,
+      "cell_count": 186
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "pass",
+      "wns_ns": 4.726277725184045,
+      "tns_ns": 0.0,
+      "fmax_mhz": 189.61938985209426
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "pass",
+      "power_mw": 0.0455923837
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 0.9822240235650269,
+  "task_score": 65.4816015710018,
+  "wall_clock_s": 5.266035,
+  "provider": "openrouter",
+  "model": "google/gemini-2.5-pro",
+  "temperature": 0.0,
+  "tokens_in": 2395,
+  "tokens_out": 6528,
+  "cost_usd": 0.06827374999999991,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-07-30T06:39:52.651606Z",
+  "signature": "09484fb4fef87f75c19038a02ca2bd9d47ad988b4e1b34b7bc0a0e3f59994ec4"
+}
