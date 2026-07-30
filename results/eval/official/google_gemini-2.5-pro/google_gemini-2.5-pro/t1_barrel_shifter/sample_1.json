@@ -1,7 +1,7 @@
 {
   "task_id": "t1_barrel_shifter",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -43,14 +43,14 @@
   "sec": 1.0,
   "ppa": 0.0,
   "task_score": 0.0,
-  "wall_clock_s": 0.074737,
+  "wall_clock_s": 0.074954,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 1379,
-  "tokens_out": 3666,
-  "cost_usd": 0.03838375,
+  "tokens_out": 4092,
+  "cost_usd": 0.04264375,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-30T05:40:21.473727Z",
-  "signature": "0ba0aa15721807b478170f0c3bdaa98468157c1bd881dd42e0285ed04ecdbf3f"
+  "timestamp": "2026-07-22T03:55:02.231573Z",
+  "signature": "851f4a5a3b980a678ff459074fc65b6df51927b69fffc9b88982105047ebe97b"
 }

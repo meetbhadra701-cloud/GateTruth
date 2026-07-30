@@ -1,14 +1,13 @@
 {
   "task_id": "t3_aes_sbox_datapath",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
   "platform": "linux/amd64",
   "stages": [
     {
       "stage": 0,
       "name": "lint",
-      "status": "pass",
-      "warnings": 0
+      "status": "fail"
     },
     {
       "stage": 1,
@@ -44,14 +43,14 @@
   "sec": 1.0,
   "ppa": 0.0,
   "task_score": 0.0,
-  "wall_clock_s": 0.768836,
+  "wall_clock_s": 0.098622,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 1104,
-  "tokens_out": 10425,
-  "cost_usd": 0.10563000000000011,
+  "tokens_out": 4092,
+  "cost_usd": 0.042300000000000004,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-30T06:33:25.044676Z",
-  "signature": "46b754993cb18fe104cf4ff3facba1267db814c0505463d401bace02b7b4f013"
+  "timestamp": "2026-07-22T04:21:59.390784Z",
+  "signature": "25a6b06756007822bd99c550b6f32d7849f431f49166af5f868da7ffeb59509c"
 }

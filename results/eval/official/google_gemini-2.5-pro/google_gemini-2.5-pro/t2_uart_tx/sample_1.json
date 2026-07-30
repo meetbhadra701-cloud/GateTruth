@@ -1,7 +1,7 @@
 {
   "task_id": "t2_uart_tx",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -43,14 +43,14 @@
   "sec": 1.0,
   "ppa": 0.0,
   "task_score": 0.0,
-  "wall_clock_s": 0.164188,
+  "wall_clock_s": 0.102702,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 1844,
-  "tokens_out": 12192,
-  "cost_usd": 0.12422500000000003,
+  "tokens_out": 4092,
+  "cost_usd": 0.04322500000000007,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-30T06:30:53.890192Z",
-  "signature": "7f04c11b594760983c56ea6b8ef93f38273ab2c46d6f32cea047abf645c163fd"
+  "timestamp": "2026-07-22T04:20:15.005097Z",
+  "signature": "8e2991b222738aca676e8d6678122770eb25598b211e44bd1b44bdd77f969b0f"
 }

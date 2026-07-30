@@ -1,7 +1,7 @@
 {
   "task_id": "t1_magnitude_comparator",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -52,14 +52,14 @@
   "sec": 1.0,
   "ppa": 1.0,
   "task_score": 66.66666666666667,
-  "wall_clock_s": 1.448937,
+  "wall_clock_s": 1.714137,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 1518,
-  "tokens_out": 1854,
-  "cost_usd": 0.020437499999999997,
+  "tokens_out": 1762,
+  "cost_usd": 0.01951750000000002,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-30T05:47:19.259246Z",
-  "signature": "c6a4843a3fac6d279f801cc4d440768d0dedfc8b1e2462619af0b013c491952b"
+  "timestamp": "2026-07-22T04:00:06.892191Z",
+  "signature": "3e7bdb8965a50d1ee2e87a3b593ad9ce0bec519fe661bd981d158fdfba32da4a"
 }

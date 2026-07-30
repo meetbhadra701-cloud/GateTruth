@@ -1,7 +1,7 @@
 {
   "task_id": "t2_watchdog_timer",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -43,14 +43,14 @@
   "sec": 1.0,
   "ppa": 0.0,
   "task_score": 0.0,
-  "wall_clock_s": 0.197301,
+  "wall_clock_s": 0.104242,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 2122,
-  "tokens_out": 6423,
-  "cost_usd": 0.06688250000000018,
+  "tokens_out": 4092,
+  "cost_usd": 0.043572500000000014,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-30T06:32:04.540440Z",
-  "signature": "bbd73f8f80c68671994919f1edd92a18424219770ddbd6b6314c4e5debf86f5f"
+  "timestamp": "2026-07-22T04:21:25.467563Z",
+  "signature": "236ef32e49bd4be234b73e05d7a7c93dfc5e4cd813fe66dd7a3cd9c0b8d0a5c4"
 }

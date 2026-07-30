@@ -1,7 +1,7 @@
 {
   "task_id": "t2_token_bucket_limiter",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -40,18 +40,17 @@
       "status": "skip"
     }
   ],
-  "sec": 0.0,
+  "sec": 1.0,
   "ppa": 0.0,
   "task_score": 0.0,
-  "wall_clock_s": 172.757659,
+  "wall_clock_s": 0.082321,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
-  "tokens_in": 0,
-  "tokens_out": 0,
-  "cost_usd": 0.0,
+  "tokens_in": 2087,
+  "tokens_out": 4092,
+  "cost_usd": 0.043528749999999894,
   "prompt_version": "track-a-rtl-v1",
-  "generation_error": "provider error: ProviderRetryableError: OpenRouter response contained no text",
-  "timestamp": "2026-07-30T06:27:12.712002Z",
-  "signature": "9b787ac6fff078bb25602cb84c9f5c02461b3b0e2de7cbf7fed2c5fbcaaf5939"
+  "timestamp": "2026-07-22T04:19:06.683143Z",
+  "signature": "19faa16a0c7f33aa60a4b9fe10433be0f3f3e32b6afa4228a55c947575744656"
 }

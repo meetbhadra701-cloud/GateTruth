@@ -1,7 +1,7 @@
 {
   "task_id": "t2_axi_lite_regfile",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -40,18 +40,17 @@
       "status": "skip"
     }
   ],
-  "sec": 0.0,
+  "sec": 1.0,
   "ppa": 0.0,
   "task_score": 0.0,
-  "wall_clock_s": 172.821024,
+  "wall_clock_s": 0.06735,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
-  "tokens_in": 0,
-  "tokens_out": 0,
-  "cost_usd": 0.0,
+  "tokens_in": 2653,
+  "tokens_out": 4092,
+  "cost_usd": 0.04423624999999998,
   "prompt_version": "track-a-rtl-v1",
-  "generation_error": "provider error: ProviderRetryableError: OpenRouter response contained no text",
-  "timestamp": "2026-07-30T05:54:33.747131Z",
-  "signature": "847ec98dc8b9e638dc6eb639035474a4b32c0c99c24abb01eb251b383028dc3a"
+  "timestamp": "2026-07-22T04:07:13.336866Z",
+  "signature": "4fe96a898a12c7e3eae23001ba3039e886373d3fc4ed323065f4f7e5c3dae13f"
 }

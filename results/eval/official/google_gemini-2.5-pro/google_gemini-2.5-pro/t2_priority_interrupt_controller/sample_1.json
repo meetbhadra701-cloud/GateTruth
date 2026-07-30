@@ -1,7 +1,7 @@
 {
   "task_id": "t2_priority_interrupt_controller",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -43,14 +43,14 @@
   "sec": 1.0,
   "ppa": 0.0,
   "task_score": 0.0,
-  "wall_clock_s": 0.727407,
+  "wall_clock_s": 0.109875,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 2254,
-  "tokens_out": 5806,
-  "cost_usd": 0.06087749999999992,
+  "tokens_out": 4092,
+  "cost_usd": 0.043737499999999985,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-30T06:03:10.876616Z",
-  "signature": "54bad3978caa83d4c4c9450e0e35a27d2a608ee921e92dfa1b391aff66122a00"
+  "timestamp": "2026-07-22T04:11:21.668566Z",
+  "signature": "f62f496b917568ce4c04fb565c9154201b3a410c7bcc6980326cbbb19a286510"
 }

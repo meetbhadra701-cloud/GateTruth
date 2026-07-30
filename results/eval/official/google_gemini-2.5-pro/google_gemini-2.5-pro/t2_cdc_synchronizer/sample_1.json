@@ -1,7 +1,7 @@
 {
   "task_id": "t2_cdc_synchronizer",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -52,14 +52,14 @@
   "sec": 1.0,
   "ppa": 1.0,
   "task_score": 66.66666666666667,
-  "wall_clock_s": 1.715332,
+  "wall_clock_s": 1.680753,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 1662,
-  "tokens_out": 2737,
-  "cost_usd": 0.02944749999999996,
+  "tokens_out": 2552,
+  "cost_usd": 0.027597500000000053,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-30T05:54:57.821948Z",
-  "signature": "b067926b89cfdd3cb91b472928d3c362b9d5c7502589b066ade36173e0fd3c81"
+  "timestamp": "2026-07-22T04:07:39.609584Z",
+  "signature": "a9787e871fd4099af111d68262c8ea4195908c7d01c4de3e96669b4f27d7b3aa"
 }
