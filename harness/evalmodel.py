@@ -62,6 +62,9 @@ def extract_module_source(response: str) -> str:
 
     if not isinstance(response, str):
         raise ValueError("provider response must be text")
+    fence_count = response.count("```")
+    if fence_count % 2:
+        raise ValueError("generation contained an unterminated code fence")
     fenced = FENCE_RE.findall(response)
     if fenced:
         for candidate in fenced:
@@ -69,6 +72,8 @@ def extract_module_source(response: str) -> str:
             if MODULE_RE.search(source):
                 return source + "\n"
         raise ValueError("generation contained no SystemVerilog module declaration")
+    if fence_count:
+        raise ValueError("generation contained a malformed code fence")
     source = response.strip()
     if not MODULE_RE.search(source):
         raise ValueError("generation contained no SystemVerilog module declaration")

@@ -6,7 +6,13 @@ from pathlib import Path
 import pytest
 
 from harness import cli, evalmodel
-from harness.evalmodel import PROMPT_VERSION, build_generation_prompt, eval_model, task_ids_for_tier
+from harness.evalmodel import (
+    PROMPT_VERSION,
+    build_generation_prompt,
+    eval_model,
+    extract_module_source,
+    task_ids_for_tier,
+)
 from harness.providers.mock import MockCompletionProvider
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import load_manifest
@@ -27,6 +33,32 @@ class RecordingProvider(MockCompletionProvider):
 
 def manifest_path(root: Path, model: str = "mock-eval") -> Path:
     return root / model / "toy_task" / "sample_1.json"
+
+
+def test_extract_module_source_rejects_truncated_fence():
+    response = """```systemverilog
+module truncated_example (
+    input logic clk,
+    output logic value
+);
+    always_ff @(posedge clk) begin
+        value <=
+"""
+
+    with pytest.raises(ValueError, match="unterminated code fence"):
+        extract_module_source(response)
+
+
+def test_extract_module_source_accepts_well_formed_fence():
+    source = "module fenced_example(input logic a, output logic y);\nassign y = a;\nendmodule"
+
+    assert extract_module_source(f"```systemverilog\n{source}\n```") == source + "\n"
+
+
+def test_extract_module_source_accepts_fenceless_raw_code():
+    source = "module raw_example(input logic a, output logic y);\nassign y = a;\nendmodule"
+
+    assert extract_module_source(source) == source + "\n"
 
 
 def test_tier_selection_covers_frozen_60_task_suite():
@@ -210,3 +242,45 @@ def test_estimate_only_prints_cost_without_provider_or_output(
     assert projected > 0
     assert constructed == 0
     assert list(tmp_path.iterdir()) == []
+
+
+def test_estimate_only_threads_max_tokens_for_single_model_full_suite(
+    monkeypatch, capsys
+):
+    captured: dict[str, object] = {}
+
+    def record_estimate(task_ids, provider_name, model, **kwargs):
+        captured.update(
+            task_ids=task_ids,
+            provider_name=provider_name,
+            model=model,
+            **kwargs,
+        )
+        return 1.25
+
+    monkeypatch.setattr(cli, "estimate_model_cost", record_estimate)
+
+    result = cli.main(
+        [
+            "eval-model",
+            "--tier",
+            "all",
+            "--provider",
+            "openrouter",
+            "--model",
+            "google/gemini-2.5-pro",
+            "--official",
+            "--estimate-only",
+            "--max-tokens",
+            "16384",
+        ]
+    )
+
+    assert result == 0
+    assert captured["task_ids"] == task_ids_for_tier("all")
+    assert captured["provider_name"] == "openrouter"
+    assert captured["model"] == "google/gemini-2.5-pro"
+    assert captured["samples"] == 1
+    assert captured["official"] is True
+    assert captured["max_tokens"] == 16384
+    assert "tasks_requested=60" in capsys.readouterr().out
