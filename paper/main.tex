@@ -43,7 +43,9 @@ We validate the methodology first against our own
 agentic-repair tasks, each scored through a pinned, deterministic synthesis-to-timing flow with
 correctness enforced as a strict gate rather than a weighted term --- certifying that every one of
 the 60 Track A testbenches kills at least 95\% of injected mutants under sequential, reproducible
-execution. We then point the same engine, unmodified, at RTLLM v2.0, a widely adopted external
+execution. Ten of those 60 reached that floor only after revision prompted by the gate itself; we
+measure what they scored beforehand (median 77.5\%) rather than let the certified figure stand
+unqualified. We then point the same engine, unmodified, at RTLLM v2.0, a widely adopted external
 RTL-generation benchmark, and report the measured mutation-kill rates of its public testbenches
 against its own reference implementations: of the 44 designs whose reference (as shipped, or after
 a documented compile-time build-convention alias) passes baseline validation, 73\% fall below the
@@ -56,7 +58,16 @@ independent of mutation.
 Where a comparable audit of NVIDIA's CVDP benchmark is
 not possible --- its public release deliberately withholds reference solutions to prevent
 contamination, which also removes the golden RTL that mutation testing requires --- we report that
-gap as a structural finding in its own right rather than silently omitting the benchmark. We detail
+gap as a structural finding in its own right rather than silently omitting the benchmark.
+
+Auditing our own instrument produced a second, unanticipated result about benchmark methodology
+generally. Our reference suite's leaderboard was initially produced under a 4096-token output cap
+applied uniformly to all seven evaluated models. Uniform is not fair: three models exhausted that
+cap and returned no parseable code on up to 22 of 60 tasks. Re-running all seven at 16{,}384 tokens,
+with every other input held fixed, moved one model from fifth place to first (pass@1 28 to 43) while
+leaving models that never hit the cap within run-to-run noise. An output-token budget is thus an
+experimental variable capable of reordering a leaderboard, and a benchmark that does not report its
+cap has not reported its condition. We detail
 the audit methodology, the reference-suite design used to validate it, and the resulting kill-rate
 measurements, and argue that mutation-kill certification should become a standard reporting
 requirement for RTL-generation benchmarks generally.
@@ -99,7 +110,7 @@ power/performance/area (PPA) scoring built into that reference suite is real and
 useful (Section~\ref{sec:results} reports it), but it is not this paper's headline: the headline is
 what the same rigor-checking apparatus finds when pointed outward.
 
-This paper makes three contributions. First, a mutation-testing audit methodology for RTL
+This paper makes four contributions. First, a mutation-testing audit methodology for RTL
 benchmarks --- a deterministic, seeded, sequential-execution protocol for measuring testbench
 kill rates against external reference implementations, together with an explicit policy for
 designs whose testbenches cannot be run at all (reported, never silently dropped or scored as a
@@ -117,7 +128,14 @@ designs that do not pass baseline validation and are therefore excluded from the
 excluded for a notable reason distinct from the rest: its own shipped golden reference fails its
 own shipped testbench outright --- plus a documented structural finding,
 rather than a silent gap, for why an equivalent measurement against NVIDIA's CVDP benchmark is
-not currently possible from its public release.
+not currently possible from its public release. Fourth, a methodological result that emerged from
+auditing our own instrument rather than someone else's: the per-call output-token budget, a
+parameter most RTL benchmarks neither vary nor report, is capable of reordering a leaderboard.
+Holding prompts, image, scoring, and seeds fixed and changing only that cap moved one evaluated
+model from fifth place to first, while leaving models that never exhausted the cap within
+run-to-run noise (Section~ef{sec:results}). We report it because it applies to any benchmark that
+samples a fixed number of output tokens from models with very different reasoning verbosity, which
+is to say most of them, including ours before this measurement.
 
 \section{GateTruth Design}
 \label{sec:design}
@@ -628,7 +646,7 @@ NVIDIA's CVDP~\cite{pinckney2025cvdp} takes a substantially broader approach, sp
 
 Research engaging with post-synthesis metrics has predominantly approached the problem from predictive modeling rather than generation scoring. MetRex~\cite{abdelatty2025metrex} compiled a comprehensive dataset of Verilog designs correlated with post-synthesis area, delay, and static power to evaluate whether models can infer these metrics from source code, while related frameworks like RocketPPA~\cite{abdollahi2025rocketppa} train models for code-level PPA prediction. Although these works advance metric estimation, they do not evaluate the physical viability of generated designs executed through an actual synthesis flow, nor do they address testbench rigor. GateTruth's own reference suite enforces a rigidly deterministic pipeline---a single content-addressed container image, uniform liberty and clock targets per task, a fixed Yosys-plus-OpenSTA path, and SHA-256 content hashes over canonical-JSON results---so that PPA comparisons produced by it are reproducible directly from the recorded digest.
 
-In summary, GateTruth is, to our knowledge, the first tool to apply mutation-testing certification to existing public RTL-generation benchmarks and report the result, and the first to combine that audit methodology with an openly published, mutation-certified reference implementation used to validate it before external application (self-certified under a published protocol by this paper's sole author, not independently reviewed; Section~\ref{sec:limitations}). It uniquely combines: (a) a deterministic, seeded mutation-audit protocol applicable to any RTL benchmark with a golden reference and a runnable testbench; (b) an explicit, non-silent policy for benchmarks or designs that cannot be audited (\texttt{unsupported} status, or a documented structural finding, rather than a misleading score); (c) an openly published 68-task, dual-track reference suite in which the same protocol is certified against every one of the suite's 60 Track A testbenches before external use; and (d) a fully deterministic, reproducible RTL-to-PPA synthesis-and-timing flow underlying that reference suite's independent, secondary contribution as a model/agent benchmark.
+In summary, GateTruth is, to our knowledge, the first tool to apply mutation-testing certification to existing public RTL-generation benchmarks and report the result, and the first to combine that audit methodology with an openly published, mutation-certified reference implementation used to validate it before external application (self-certified under a published protocol by this paper's sole author, not independently reviewed; Section~\ref{sec:limitations}). It uniquely combines: (a) a deterministic, seeded mutation-audit protocol applicable to any RTL benchmark with a golden reference and a runnable testbench; (b) an explicit, non-silent policy for benchmarks or designs that cannot be audited (\texttt{unsupported} status, or a documented structural finding, rather than a misleading score); (c) an openly published 68-task, dual-track reference suite in which the same protocol is certified against every one of the suite's 60 Track A testbenches before external use; (d) a fully deterministic, reproducible RTL-to-PPA synthesis-and-timing flow underlying that reference suite's independent, secondary contribution as a model/agent benchmark; and (e) a controlled demonstration that the per-call output-token budget --- a parameter most RTL benchmarks neither vary nor report --- can reorder a leaderboard, which we surfaced by applying the same scepticism to our own instrument that the audit applies to others'.
 
 \appendix
 
