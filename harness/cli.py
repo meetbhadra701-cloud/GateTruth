@@ -11,7 +11,12 @@ from pathlib import Path
 
 from harness.agentb import run_agent_task
 from harness.evalagent import estimate_agent_cost, eval_agent, track_b_task_ids
-from harness.evalmodel import estimate_model_cost, eval_model, task_ids_for_tier
+from harness.evalmodel import (
+    DEFAULT_MAX_TOKENS,
+    estimate_model_cost,
+    eval_model,
+    task_ids_for_tier,
+)
 from harness.providers.anthropic import AnthropicProvider
 from harness.providers.mock import MockCompletionProvider, MockProvider
 from harness.providers.openai import OpenAIProvider
@@ -71,6 +76,12 @@ def build_parser() -> argparse.ArgumentParser:
     eval_model_parser.add_argument("--out")
     eval_model_parser.add_argument("--samples", type=int, default=1)
     eval_model_parser.add_argument("--temperature", type=float, default=0.0)
+    eval_model_parser.add_argument(
+        "--max-tokens",
+        type=int,
+        default=DEFAULT_MAX_TOKENS,
+        help="maximum output tokens per model generation",
+    )
     eval_model_parser.add_argument("--official", action="store_true")
     eval_model_parser.add_argument(
         "--estimate-only",
@@ -185,6 +196,9 @@ def main(argv: list[str] | None = None) -> int:
         if args.temperature < 0:
             print("--temperature must be nonnegative", file=sys.stderr)
             return 2
+        if args.max_tokens < 1:
+            print("--max-tokens must be at least 1", file=sys.stderr)
+            return 2
         if args.tasks:
             task_ids = [task.strip() for task in args.tasks.split(",") if task.strip()]
             if not task_ids:
@@ -200,6 +214,7 @@ def main(argv: list[str] | None = None) -> int:
                     args.model,
                     samples=args.samples,
                     official=args.official,
+                    max_tokens=args.max_tokens,
                 )
                 print("estimate_only=true")
                 print(f"tasks_requested={len(task_ids)}")
@@ -237,6 +252,7 @@ def main(argv: list[str] | None = None) -> int:
                 out_dir=args.out,
                 samples=args.samples,
                 official=args.official,
+                max_tokens=args.max_tokens,
             )
         except (OSError, ValueError, SpendCapExceeded) as exc:
             print(f"eval-model refused: {exc}", file=sys.stderr)
