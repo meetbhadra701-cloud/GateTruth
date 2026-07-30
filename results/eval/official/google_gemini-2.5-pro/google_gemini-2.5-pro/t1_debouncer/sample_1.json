@@ -1,7 +1,7 @@
 {
   "task_id": "t1_debouncer",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -40,17 +40,18 @@
       "status": "skip"
     }
   ],
-  "sec": 1.0,
+  "sec": 0.0,
   "ppa": 0.0,
   "task_score": 0.0,
-  "wall_clock_s": 0.110785,
+  "wall_clock_s": 19.249667,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
-  "tokens_in": 1231,
-  "tokens_out": 4092,
-  "cost_usd": 0.04245875000000002,
+  "tokens_in": 0,
+  "tokens_out": 0,
+  "cost_usd": 0.0,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-22T03:57:21.545326Z",
-  "signature": "d17d24c0e844b4e8495ed3071f9d8922f2c2cb02ebaaca4a4b0145f0875dc7e2"
+  "generation_error": "provider error: ProviderTransportError: provider transport error: TLS/SSL connection has been closed (EOF) (_ssl.c:992)",
+  "timestamp": "2026-07-30T05:44:42.152922Z",
+  "signature": "c895f8a1d99585b5f40b434f5358d34e05953c3d64708360ef7343e51f388c4c"
 }

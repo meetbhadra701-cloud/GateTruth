@@ -1,7 +1,7 @@
 {
   "task_id": "t1_range_checker",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -52,14 +52,14 @@
   "sec": 1.0,
   "ppa": 1.0,
   "task_score": 66.66666666666667,
-  "wall_clock_s": 1.97204,
+  "wall_clock_s": 1.499795,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 1485,
-  "tokens_out": 1509,
-  "cost_usd": 0.01694625000000005,
+  "tokens_out": 1636,
+  "cost_usd": 0.018216250000000045,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-22T04:05:22.505530Z",
-  "signature": "e87ec6473d657ccb44cc60f974aed0bd09c452f9037438f29ad058498fcaa214"
+  "timestamp": "2026-07-30T05:50:39.348004Z",
+  "signature": "b7083bdcc7d7584643ba689efe4179508dc21bb45ed52cf504ebb977578a4332"
 }

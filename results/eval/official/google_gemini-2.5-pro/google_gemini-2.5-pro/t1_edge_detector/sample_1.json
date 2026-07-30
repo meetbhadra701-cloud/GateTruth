@@ -1,7 +1,7 @@
 {
   "task_id": "t1_edge_detector",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -52,14 +52,14 @@
   "sec": 1.0,
   "ppa": 1.0,
   "task_score": 66.66666666666667,
-  "wall_clock_s": 1.350532,
+  "wall_clock_s": 1.374952,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 1277,
-  "tokens_out": 3890,
-  "cost_usd": 0.04049625000000001,
+  "tokens_out": 2648,
+  "cost_usd": 0.028076249999999997,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-22T03:57:59.967853Z",
-  "signature": "065fbd46990d5ff32973827ceff98777d8baf3760d2ee4eab0c88753200d0006"
+  "timestamp": "2026-07-30T05:45:04.700865Z",
+  "signature": "6363f6c96a0efef8bf6e20f5bebf470db1e6559a622cf2b020a852a1f7747913"
 }

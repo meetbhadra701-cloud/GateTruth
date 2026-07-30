@@ -1,7 +1,7 @@
 {
   "task_id": "t2_uart_rx",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -40,17 +40,18 @@
       "status": "skip"
     }
   ],
-  "sec": 1.0,
+  "sec": 0.0,
   "ppa": 0.0,
   "task_score": 0.0,
-  "wall_clock_s": 0.166675,
+  "wall_clock_s": 119.631039,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 2020,
-  "tokens_out": 4092,
-  "cost_usd": 0.043444999999999956,
+  "tokens_out": 16380,
+  "cost_usd": 0.16632499999999983,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-22T04:19:39.611851Z",
-  "signature": "569559c698f338984c6aaf3ef723692adc6f83099ae8a6d6d784bdc8e2656cf0"
+  "generation_error": "ValueError: generation contained an unterminated code fence",
+  "timestamp": "2026-07-30T06:29:12.366092Z",
+  "signature": "6305313e04fd30552c3a8e1a189912cf10e7667138a895608b71915473f806c4"
 }

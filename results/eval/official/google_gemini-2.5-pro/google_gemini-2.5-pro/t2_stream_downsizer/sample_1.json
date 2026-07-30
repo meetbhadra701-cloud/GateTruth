@@ -1,7 +1,7 @@
 {
   "task_id": "t2_stream_downsizer",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -43,14 +43,14 @@
   "sec": 1.0,
   "ppa": 0.0,
   "task_score": 0.0,
-  "wall_clock_s": 0.156638,
+  "wall_clock_s": 0.539938,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 1343,
-  "tokens_out": 4092,
-  "cost_usd": 0.04259875000000002,
+  "tokens_out": 7533,
+  "cost_usd": 0.07700875000000007,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-22T04:17:19.502460Z",
-  "signature": "5f3b7aa288885c27adf6d475540c9ec16ba55173969b719a1990e2126af7f013"
+  "timestamp": "2026-07-30T06:21:59.322414Z",
+  "signature": "10e02048440404f5d6db00a5112e9a3d6e1520f8cd6d862fb9d074565c5d6caf"
 }

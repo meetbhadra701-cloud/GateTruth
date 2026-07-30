@@ -1,14 +1,13 @@
 {
   "task_id": "t1_priority_encoder",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
   "platform": "linux/amd64",
   "stages": [
     {
       "stage": 0,
       "name": "lint",
-      "status": "pass",
-      "warnings": 0
+      "status": "fail"
     },
     {
       "stage": 1,
@@ -44,14 +43,14 @@
   "sec": 1.0,
   "ppa": 0.0,
   "task_score": 0.0,
-  "wall_clock_s": 1.131413,
+  "wall_clock_s": 0.083878,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 1656,
-  "tokens_out": 3594,
-  "cost_usd": 0.03800999999999999,
+  "tokens_out": 3302,
+  "cost_usd": 0.03509000000000001,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-22T04:04:47.034039Z",
-  "signature": "78944963279884479b4021721a7c98a41b1dd5c3692ab528715979349c6b0cef"
+  "timestamp": "2026-07-30T05:50:10.526066Z",
+  "signature": "09b9da2bdc7f10b57259cf62d258708ae7cbd919dd5b8b9d183d3aceeb8bc948"
 }

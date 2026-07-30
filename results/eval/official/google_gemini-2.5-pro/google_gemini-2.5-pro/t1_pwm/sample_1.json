@@ -1,7 +1,7 @@
 {
   "task_id": "t1_pwm",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -52,14 +52,14 @@
   "sec": 1.0,
   "ppa": 1.0,
   "task_score": 66.66666666666667,
-  "wall_clock_s": 2.18698,
+  "wall_clock_s": 1.642687,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 1363,
-  "tokens_out": 1977,
-  "cost_usd": 0.021473749999999958,
+  "tokens_out": 1370,
+  "cost_usd": 0.015403749999999994,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-22T04:05:07.013641Z",
-  "signature": "5cdf01040eeed98afe351cc80be416c90e2e88fb3528a59884f5c114c72a2499"
+  "timestamp": "2026-07-30T05:50:23.990111Z",
+  "signature": "7d47e32c6a766f8df68713546d1768311fe3149cf56d54ba58127b580bae6419"
 }

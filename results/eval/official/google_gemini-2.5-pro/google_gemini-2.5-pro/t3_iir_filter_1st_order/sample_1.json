@@ -1,7 +1,7 @@
 {
   "task_id": "t3_iir_filter_1st_order",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -40,18 +40,17 @@
       "status": "skip"
     }
   ],
-  "sec": 0.0,
+  "sec": 1.0,
   "ppa": 0.0,
   "task_score": 0.0,
-  "wall_clock_s": 145.17124,
+  "wall_clock_s": 0.108098,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
-  "tokens_in": 0,
-  "tokens_out": 0,
-  "cost_usd": 0.0,
+  "tokens_in": 1542,
+  "tokens_out": 5786,
+  "cost_usd": 0.059787500000000104,
   "prompt_version": "track-a-rtl-v1",
-  "generation_error": "provider error: ValueError: OpenRouter response contained no text",
-  "timestamp": "2026-07-22T04:28:20.222011Z",
-  "signature": "da1812ecbf66ae06b9c492baf13388ae566f4f4fbfb4f4bcd0e0416097cbc0e6"
+  "timestamp": "2026-07-30T06:44:09.426279Z",
+  "signature": "cdb329310f91e253e1422c0c8684765f9e9c7a95ae8a2ca3d2ac7bbe0c476cd5"
 }

@@ -1,38 +1,47 @@
 {
   "task_id": "t2_skid_buffer",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
   "platform": "linux/amd64",
   "stages": [
     {
       "stage": 0,
       "name": "lint",
-      "status": "fail"
+      "status": "pass",
+      "warnings": 0
     },
     {
       "stage": 1,
       "name": "sim",
-      "status": "fail"
+      "status": "pass",
+      "tests_run": 9,
+      "tests_passed": 9
     },
     {
       "stage": 2,
       "name": "formal",
-      "status": "fail"
+      "status": "pass"
     },
     {
       "stage": 3,
       "name": "synth",
-      "status": "fail"
+      "status": "pass",
+      "area_um2": 724.4448,
+      "cell_count": 77
     },
     {
       "stage": 4,
       "name": "sta",
-      "status": "fail"
+      "status": "pass",
+      "wns_ns": 6.268217677881881,
+      "tns_ns": 0.0,
+      "fmax_mhz": 267.9684702060572
     },
     {
       "stage": 5,
       "name": "power",
-      "status": "fail"
+      "status": "pass",
+      "power_mw": 0.0105295048
     },
     {
       "stage": 6,
@@ -41,16 +50,16 @@
     }
   ],
   "sec": 1.0,
-  "ppa": 0.0,
-  "task_score": 0.0,
-  "wall_clock_s": 0.077858,
+  "ppa": 1.0276639807689139,
+  "task_score": 68.51093205126092,
+  "wall_clock_s": 3.291663,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 2249,
-  "tokens_out": 4092,
-  "cost_usd": 0.04373125,
+  "tokens_out": 15293,
+  "cost_usd": 0.15574124999999994,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-22T04:15:30.131528Z",
-  "signature": "79a86121b4dc320e2903cf714da1c3714221c0f884be580d130dfd115cc51fb3"
+  "timestamp": "2026-07-30T06:15:04.053234Z",
+  "signature": "97104637603be71884f46ad2359379fc473a7360f1431983f90581fcf7b75bf6"
 }

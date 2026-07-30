@@ -1,38 +1,47 @@
 {
   "task_id": "t1_parity_gen",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
   "platform": "linux/amd64",
   "stages": [
     {
       "stage": 0,
       "name": "lint",
-      "status": "fail"
+      "status": "pass",
+      "warnings": 0
     },
     {
       "stage": 1,
       "name": "sim",
-      "status": "fail"
+      "status": "pass",
+      "tests_run": 9,
+      "tests_passed": 9
     },
     {
       "stage": 2,
       "name": "formal",
-      "status": "fail"
+      "status": "pass"
     },
     {
       "stage": 3,
       "name": "synth",
-      "status": "fail"
+      "status": "pass",
+      "area_um2": 136.3808,
+      "cell_count": 13
     },
     {
       "stage": 4,
       "name": "sta",
-      "status": "fail"
+      "status": "pass",
+      "wns_ns": 6.979490072329922,
+      "tns_ns": 0.0,
+      "fmax_mhz": 331.069926584008
     },
     {
       "stage": 5,
       "name": "power",
-      "status": "fail"
+      "status": "pass",
+      "power_mw": 0.00164895755
     },
     {
       "stage": 6,
@@ -40,18 +49,17 @@
       "status": "skip"
     }
   ],
-  "sec": 0.0,
-  "ppa": 0.0,
-  "task_score": 0.0,
-  "wall_clock_s": 138.779194,
+  "sec": 1.0,
+  "ppa": 1.0,
+  "task_score": 66.66666666666667,
+  "wall_clock_s": 2.044231,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
-  "tokens_in": 0,
-  "tokens_out": 0,
-  "cost_usd": 0.0,
+  "tokens_in": 1607,
+  "tokens_out": 1883,
+  "cost_usd": 0.020838750000000017,
   "prompt_version": "track-a-rtl-v1",
-  "generation_error": "provider error: ValueError: OpenRouter response contained no text",
-  "timestamp": "2026-07-22T04:03:38.293063Z",
-  "signature": "beca30d0d15754e0101dfc79379fe44feab2a343ef52feaf4e79787f82daa02e"
+  "timestamp": "2026-07-30T05:49:16.167550Z",
+  "signature": "52d482dd7b54c8b05f259b05580d8d5a69428b57a765bcd7b6c02c54049c18c8"
 }

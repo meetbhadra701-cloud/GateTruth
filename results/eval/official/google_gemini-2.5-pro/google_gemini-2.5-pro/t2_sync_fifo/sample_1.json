@@ -1,7 +1,7 @@
 {
   "task_id": "t2_sync_fifo",
   "suite_version": "v0.2",
-  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
   "platform": "linux/amd64",
   "stages": [
     {
@@ -43,14 +43,14 @@
   "sec": 1.0,
   "ppa": 0.0,
   "task_score": 0.0,
-  "wall_clock_s": 0.160291,
+  "wall_clock_s": 0.112361,
   "provider": "openrouter",
   "model": "google/gemini-2.5-pro",
   "temperature": 0.0,
   "tokens_in": 2026,
-  "tokens_out": 4092,
-  "cost_usd": 0.043452499999999894,
+  "tokens_out": 8875,
+  "cost_usd": 0.09128249999999993,
   "prompt_version": "track-a-rtl-v1",
-  "timestamp": "2026-07-22T04:18:31.820377Z",
-  "signature": "7d9e9991b683c5b84621a83bf444c4f07f98322ce9a00b4a458e432bfe030ff2"
+  "timestamp": "2026-07-30T06:24:19.884946Z",
+  "signature": "d067978c533380ce4d127e9effbf0ea78fd0b4a4764280eb9b5e6511faaad380"
 }
