@@ -47,8 +47,8 @@ execution. Ten of those 60 reached that floor only after revision prompted by th
 measure what they scored beforehand (median 77.5\%) rather than let the certified figure stand
 unqualified. We then point the same engine, unmodified, at RTLLM v2.0, a widely adopted external
 RTL-generation benchmark, and report the measured mutation-kill rates of its public testbenches
-against its own reference implementations: of the 44 designs whose reference (as shipped, or after
-a documented compile-time build-convention alias) passes baseline validation, 73\% fall below the
+against its own reference implementations: of the 46 designs whose reference (as shipped, or after
+a documented compile-time build-convention alias) passes baseline validation, 72\% fall below the
 95\% floor our own suite is held to, and three score a 0\% kill rate outright --- in two of those
 three, the undetected faults include an inverted primary output, which we confirmed by inspecting
 the individual surviving mutants rather than inferring it from the percentage. One of the six designs excluded from this count is excluded for a different
@@ -133,7 +133,8 @@ auditing our own instrument rather than someone else's: the per-call output-toke
 parameter most RTL benchmarks neither vary nor report, is capable of reordering a leaderboard.
 Holding prompts, image, scoring, and seeds fixed and changing only that cap moved one evaluated
 model from fifth place to first, while leaving models that never exhausted the cap within
-run-to-run noise (Section~ef{sec:results}). We report it because it applies to any benchmark that
+run-to-run noise (Section~
+ef{sec:results}). We report it because it applies to any benchmark that
 samples a fixed number of output tokens from models with very different reasoning verbosity, which
 is to say most of them, including ours before this measurement.
 
@@ -281,60 +282,91 @@ the methodology of Section~\ref{sec:audit-method} against vendor commit
 \texttt{iverilog -g2001} and simulated with \texttt{vvp}, both from Icarus Verilog 12.0 (stable,
 \texttt{v12\_0}). Of the 50 designs in RTLLM v2.0, 44 passed
 baseline validation and were audited (26 required the compile-time module alias of
-Section~\ref{sec:audit-method}, 18 passed as shipped); 6 were reported \texttt{unsupported}. Five of the six are genuine
-incompatibilities between the vendor's own shipped files and the \texttt{-g2001} generation
-flag, and we quote the diagnostics verbatim rather than paraphrasing them, because the
-classification matters: \texttt{asyn\_fifo}'s testbench uses a SystemVerilog \texttt{break}
-statement (\texttt{Enable of unknown task `break'}); \texttt{clkgenerator},
-\texttt{freq\_divbyodd}, and \texttt{ring\_counter} each fail with a variant of \texttt{reg $x$;
-cannot be driven by primitives or continuous assignment}; and \texttt{multi\_8bit}'s reference file
-reports a bare \texttt{syntax error} at line~15. \texttt{ring\_counter} in fact triggers two
-distinct diagnostics --- the \texttt{reg}-driven-by-continuous-assignment error in its reference
-file \emph{and} \texttt{Assignment to an entire array or to an array slice requires SystemVerilog}
-in its testbench --- so it belongs to both categories rather than only the array-assignment one.
-We flag one hypothesis we have not tested: if the offending declarations are \texttt{logic} rather
-than \texttt{reg} (Icarus reports both as \texttt{reg}), SystemVerilog permits continuous
-assignment to them and \texttt{-g2012} would likely accept those three designs, in which case they
-are an artifact of our flag choice rather than vendor defects. Likewise \texttt{multi\_8bit}'s
-unelaborated syntax error is consistent with a SystemVerilog-only construct such as a
-\texttt{for (int i \ldots)} loop header. We therefore do not characterize these five as vendor bugs:
-we report the exact flag used, name the specific constructs, and treat the \texttt{-g2012} re-check
-as required future work (Section~\ref{sec:limitations}) rather than asserting a conclusion the
-evidence does not yet support. If that re-check admits designs currently excluded, every aggregate
-in this section changes accordingly.
+Section~\ref{sec:audit-method}, 18 passed as shipped); 6 were reported \texttt{unsupported}. An earlier version of this audit compiled with \texttt{-g2001} and reported six unsupported
+designs. We subsequently re-ran the entire audit under \texttt{-g2012}, Icarus's SystemVerilog
+generation flag, and that re-check corrected two of our own errors, so we report the more permissive
+flag as the primary condition and both sets of aggregates in Table~\ref{tab:flags}.
 
-The sixth is the only one of the six we treat as a consequential finding in its own right rather
-than a tooling gap: \texttt{radix2\_div}'s \emph{unmodified golden reference fails its own shipped
-testbench}, independent of anything GateTruth's mutation engine or generation flag does. Its own
-self-checking harness reports three failing vectors and terminates with its own
-\texttt{===========Failed===========} banner; one recorded mismatch is
-\texttt{dividend=123, divisor=123, expected=0001, got=6400}. We quote it because the magnitude of
-the discrepancy is itself evidence about the failure's nature: $123/123 = 1$ matches the
-testbench's own expected value, and the observed result is not a plausible
-uninitialized-signal or race artifact but a definitively wrong quotient. This is a
-single-simulator observation and we scope it as such throughout (Section~\ref{sec:limitations});
-we have not cross-checked it under a second simulator.
+Two designs we had classified as incompatible are in fact valid SystemVerilog that our flag choice
+rejected. \texttt{multi\_8bit}'s reference declares its loop variable in the loop header,
+\texttt{for (int i = 0; i < 8; i = i + 1)}, which \texttt{-g2001} reports as a bare
+\texttt{syntax error}; \texttt{freq\_divbyodd} continuously assigns a variable, which SystemVerilog
+permits and Verilog-2001 does not. Both compile and pass their own testbenches under
+\texttt{-g2012}, and both are now audited (\texttt{freq\_divbyodd} 88.2\%, \texttt{multi\_8bit}
+100\%). Excluding them was our defect, not the vendor's.
+
+Of the four designs that remain unsupported under \texttt{-g2012}, the diagnostics separate them
+into three distinct classes, and conflating these would misattribute blame. \texttt{asyn\_fifo} and
+\texttt{ring\_counter} fail with messages Icarus prefixes \texttt{sorry:} --- \texttt{break
+statements not supported} and \texttt{Assignment to an entire array or to an array slice is not yet
+supported} --- which is the simulator's marker for a construct it has not implemented, as distinct
+from \texttt{error:} for illegal code. These are open-source tooling gaps, and we count them against
+our harness rather than against RTLLM. \texttt{clkgenerator} compiles and runs but reports 20
+failures; we examined it and do \emph{not} treat this as a golden-reference defect, because its
+testbench samples the clock in the same simulation instant in which the design under test toggles
+it (both on a 5-time-unit period, with no \texttt{timescale} declared in either file), so the
+failure count reflects event-ordering that Verilog leaves undefined rather than a functional
+mismatch. A different simulator could report zero failures. Only the fourth,
+\texttt{radix2\_div}, is a substantive finding, and it is discussed next.
+
+\texttt{radix2\_div} is the one unsupported design we treat as a consequential finding rather than a
+tooling gap: its \emph{unmodified golden reference fails its own shipped testbench}, independent of
+anything GateTruth's mutation engine does. Its own self-checking harness reports three failing
+vectors and terminates with its own \texttt{===========Failed===========} banner; two recorded
+mismatches are \texttt{dividend=123, divisor=123, expected=0001, got=6400} and
+\texttt{dividend=156, divisor=10, expected=00f6, got=faf1}. We quote them because the magnitude of
+the discrepancy is itself evidence about the failure's nature: $123/123 = 1$ matches the testbench's
+own expected value, and the observed results are not plausible uninitialized-signal or event-ordering
+artifacts but definitively wrong quotients --- which is precisely the distinction that leads us to
+treat \texttt{clkgenerator} differently above. We confirmed the failure is not an artifact of the
+generation flag by reproducing it identically under both \texttt{-g2001} and \texttt{-g2012}. It
+remains a single-simulator observation, and we scope it as such throughout
+(Section~\ref{sec:limitations}); we have not cross-checked it under a second simulator.
+
+\begin{table}[h]
+\centering
+\caption{The audit is not an artifact of the Icarus generation flag. Re-running the entire sweep
+under \texttt{-g2012} admits two designs that \texttt{-g2001} rejected as syntax errors
+(\texttt{multi\_8bit}, \texttt{freq\_divbyodd}), both of which score at or above the suite median, and
+still leaves the headline essentially unchanged. Same vendor commit, same seed, same engine,
+sequential execution throughout.}
+\label{tab:flags}
+\small
+\begin{tabular}{lrr}
+\toprule
+& \texttt{-g2001} & \texttt{-g2012} (reported) \\
+\midrule
+Designs audited        & 44    & 46 \\
+Reported unsupported   & 6     & 4 \\
+Mutants generated      & 751   & 775 \\
+Killed / survived / indeterminate & 418 / 318 / 15 & 440 / 320 / 15 \\
+Pooled kill rate       & 55.7\% & 56.8\% \\
+Median kill rate       & 71.2\% & 74.0\% \\
+Designs below the 95\% floor & 32 of 44 (73\%) & 33 of 46 (72\%) \\
+Designs at 100\%       & 12    & 13 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 A natural objection to the headline figure is that it is denominator-driven: with a median of only
 10.5 mutants per design, designs with few mutants can reach extreme kill rates easily, so perhaps
 the below-floor count is an artifact of small samples. The data contradicts this, and in the
 direction that strengthens the finding. Kill rate is \emph{negatively} correlated with mutant count
-across the 44 audited designs (Spearman $\rho = -0.39$, Pearson $r = -0.24$): splitting the designs
-into terciles by mutant count, the smallest third (1--6 mutants) has a median kill rate of 91.7\%,
-the middle third (7--13) 78.4\%, and the largest third (13--115) just 55.8\%, with pooled rates of
-70.7\%, 70.7\%, and 50.3\% respectively. RTLLM's larger and structurally richer designs --- the ones
+across the 46 audited designs (Spearman $\rho = -0.39$, Pearson $r = -0.25$): splitting the designs
+into terciles by mutant count, the smallest third (1--7 mutants) has a median kill rate of 100\%,
+the middle third (7--13) 75.0\%, and the largest third (15--115) just 61.4\%. RTLLM's larger and structurally richer designs --- the ones
 whose testbenches matter most, and where a small denominator cannot explain the result --- have the
 \emph{weakest} fault detection. The below-floor finding is therefore not an artifact of thin
 denominators; the thin-denominator designs are the ones performing best.
 
-Across the 44 audited designs, the median mutation-kill rate was 71.2\%, and 32 of the44---73\%---
+Across the 46 audited designs, the median mutation-kill rate was 74.0\%, and 33 of the 46---72\%---
 fall below the 95\% floor every one of GateTruth's own 60 Track A tasks clears (Section~\ref{sec:rigor}). This comparison carries an important asymmetry --- our testbenches were authored under that gate and ten of them were revised until they passed it, while RTLLM's authors never saw the metric --- which we quantify directly in Section~\ref{sec:limitations} rather than leave implicit here.
 The remaining 12 designs all reach exactly 100\%; no audited design falls in the $[95\%, 100\%)$
 band our own suite's near-floor survivors occupy, a byproduct of small per-design mutant counts that
 we report explicitly rather than leave as an unremarked coincidence. Because per-design mutant counts
 range so widely (1 to 115), the median can diverge from a pooled, mutant-weighted figure: pooled
-across all 751 mutants generated for the 44 designs, 418 were killed, 318 survived, and 15 were
-indeterminate, giving a pooled kill rate of 55.7\%, quite different from the 71.2\% per-design median
+across all 775 mutants generated for the 46 designs, 440 were killed, 320 survived, and 15 were
+indeterminate, giving a pooled kill rate of 56.8\%, quite different from the 74.0\% per-design median
 --- we report both rather than only the more favorable-looking one. The 15 indeterminate (timeout,
 after one extended-budget retry) mutants are 2.0\% of the total and are concentrated in only 5 of
 the 32 below-floor designs, each of which retains substantially more \emph{survived} than
@@ -347,7 +379,7 @@ testbench failure during simulation. We flag an inconsistency with our own state
 rather than let it pass: Section~\ref{sec:rigor} argues that counting non-compiling mutants as
 killed provides no signal about testbench quality, yet those 13 are included in RTLLM's reported
 kill counts. The effect is small and runs \emph{in RTLLM's favor} --- excluding them lowers the
-pooled kill rate from 55.7\% to 55.0\% and strengthens rather than weakens our finding --- so we
+pooled kill rate from 56.8\% to 55.1\% and strengthens rather than weakens our finding --- so we
 report the measured numbers as produced and state the policy gap explicitly. The symmetric
 measurement for our own 60-task suite (the compile-versus-behavioral split across all tasks, not
 just the three M1 pilots for which Section~\ref{sec:rigor} reports it) has not been produced, so
@@ -363,17 +395,23 @@ so basic that a testbench missing even one of them is not measuring that output 
 \texttt{edge\_detect} the reading is narrower: all ten of its mutants are the same operator
 (\texttt{assignment\_hold}), so its 0\% establishes only that register-hold faults go undetected,
 not that a broad class of faults does. Full per-design
-mutant counts, operator breakdowns, and pass/fail logs for all 44 audited and 6 unsupported designs
+mutant counts, operator breakdowns, and pass/fail logs for all 46 audited and 4 unsupported designs
 are committed at \texttt{external-audit/results/rtllm/final/*.json} and summarized in
 \texttt{external-audit/results/summary.md} in the GateTruth repository
 (\url{https://github.com/meetbhadra701-cloud/GateTruth}, currently private during review and made
 public upon submission), so every number in this section can be checked against the raw evidence.
-At the other extreme, 12 of the 44 designs do
+At the other extreme, 13 of the 46 designs do
 reach a 100\% kill rate, so the result is not that RTLLM's testbenches are uniformly weak, but that
 their rigor is highly uneven and, for a majority of designs, well short of what a mutation-kill
-floor would require. A deterministic re-run of a fixed sample of 8 of the 44 eligible
-designs (18.2\%, selected via \texttt{random.Random(20260729).sample}) reproduced byte-identical
-per-design results across two independent runs, certifying the measurement; because the container
+floor would require. A deterministic re-run of a fixed sample of the eligible
+designs (8 of the 44 eligible under \texttt{-g2001}, 18.2\%, selected via
+\texttt{random.Random(20260729).sample}) reproduced byte-identical per-design results across two
+independent runs, certifying the measurement. We repeated the check for the reported
+\texttt{-g2012} condition over a six-design sample chosen to include both newly-admitted designs
+(\texttt{freq\_divbyodd}, \texttt{multi\_8bit}) and the widest mutant-count spread in the suite
+(\texttt{alu} 53, \texttt{float\_multi} 115, \texttt{edge\_detect} 10, \texttt{serial2parallel} 13,
+the last two chosen because they carry surviving and indeterminate verdicts respectively, which are
+the classes most at risk of nondeterminism); all six reproduced byte-identically. because the container
 digest recorded with each run pins the exact CPython build the sample was drawn under, this
 reproduces even though \texttt{random.Random.sample}'s output is not guaranteed stable across
 arbitrary Python versions in general. The 8 sampled designs were \texttt{multi\_16bit},
@@ -481,11 +519,11 @@ Synthesizing the data across both tracks reveals a consistent ordinal ranking, t
 \section{Limitations and Threats to Validity}
 \label{sec:limitations}
 
-\paragraph{Audit scope.} The external audit (Sections~\ref{sec:audit-method}--\ref{sec:audit-results}) covers all 50 public designs of RTLLM v2.0 (44 audited, 6 reported \texttt{unsupported} with a stated reason each) and reports a structural finding, rather than a measurement, for CVDP given its withheld reference solutions. It does not cover every RTL-generation benchmark in current use. In particular, VerilogEval~\cite{liu2023verilogeval,pinckney2024revisiting} --- arguably the field's most-cited benchmark --- is not audited here; this is a scope decision made to keep the first application of this methodology focused on one primary target (RTLLM v2.0) and one structural finding (CVDP) rather than a principled exclusion, and we name it explicitly rather than let the omission pass silently. ChipBench, ArchXBench, SLDB, and ProtocolLLM are likewise out of scope for this round. Coverage of the Si2 LLM Benchmarking Coalition's evolving CVDP-derived leaderboard is necessarily a snapshot rather than a standing measurement. The audit measures testbench sensitivity to a fixed, generic operator set; a testbench could in principle be robust to our specific operators while remaining weak against fault classes we do not inject. The methodology and tooling are open specifically so others can extend the operator set or apply it to additional benchmarks. The build-convention normalization described in Section~\ref{sec:audit-method} is bounded strictly to what a target's own documented build recipe already specifies (e.g., a per-design makefile's stated candidate-module contract); it is not a search over renamings intended to maximize the reported compatibility count, and every applied alias is recorded per design so a third party can audit the boundary between ``ran as vendor-intended'' and ``ran after our own compatibility work'' for themselves. More broadly, ``rigor'' as measured here is specifically testbench sensitivity to injected mutants; it is not a claim about a benchmark's specification correctness, golden-reference correctness, task representativeness, contamination resistance, or scoring methodology, none of which this audit examines.
+\paragraph{Audit scope.} The external audit (Sections~\ref{sec:audit-method}--\ref{sec:audit-results}) covers all 50 public designs of RTLLM v2.0 (46 audited, 4 reported \texttt{unsupported} with a stated reason each) and reports a structural finding, rather than a measurement, for CVDP given its withheld reference solutions. It does not cover every RTL-generation benchmark in current use. In particular, VerilogEval~\cite{liu2023verilogeval,pinckney2024revisiting} --- arguably the field's most-cited benchmark --- is not audited here; this is a scope decision made to keep the first application of this methodology focused on one primary target (RTLLM v2.0) and one structural finding (CVDP) rather than a principled exclusion, and we name it explicitly rather than let the omission pass silently. ChipBench, ArchXBench, SLDB, and ProtocolLLM are likewise out of scope for this round. Coverage of the Si2 LLM Benchmarking Coalition's evolving CVDP-derived leaderboard is necessarily a snapshot rather than a standing measurement. The audit measures testbench sensitivity to a fixed, generic operator set; a testbench could in principle be robust to our specific operators while remaining weak against fault classes we do not inject. The methodology and tooling are open specifically so others can extend the operator set or apply it to additional benchmarks. The build-convention normalization described in Section~\ref{sec:audit-method} is bounded strictly to what a target's own documented build recipe already specifies (e.g., a per-design makefile's stated candidate-module contract); it is not a search over renamings intended to maximize the reported compatibility count, and every applied alias is recorded per design so a third party can audit the boundary between ``ran as vendor-intended'' and ``ran after our own compatibility work'' for themselves. More broadly, ``rigor'' as measured here is specifically testbench sensitivity to injected mutants; it is not a claim about a benchmark's specification correctness, golden-reference correctness, task representativeness, contamination resistance, or scoring methodology, none of which this audit examines.
 
 \paragraph{Sensitivity is not the same as correctness.} A high kill rate establishes that a testbench is sensitive to the specific faults injected; it does not establish that the testbench's own oracle (the golden reference and the pass/fail check itself) is correct, nor that a testbench with a high kill rate would correctly accept every valid alternative implementation (specificity, or false-rejection rate, in the terminology of software mutation testing). RTLLM's \texttt{radix2\_div} illustrates the first point directly: its testbench is exercised by our mutants in the same way as any other design in the audit, but the underlying golden reference itself fails that same testbench, independent of mutation. We do not attempt to measure false-rejection rate in this work, since it would require independently correct alternative implementations or a formal specification per design, neither of which is available for RTLLM's designs; this is future work, not a property this audit currently reports.
 
-\paragraph{Mutant generation, equivalence, and the role of the seed.} GateTruth's generator deterministically enumerates every syntactically viable mutation site for its fixed generic operator set; no sampling of mutants occurs, so the fixed seed governs only execution order (relevant to how simulation timeouts interact with per-run budgets under sequential execution, Section~\ref{sec:rigor}), not which or how many mutants are generated. We do not detect or exclude equivalent mutants (mutants that are syntactically distinct but behaviorally identical to the original under the design's reachable state space); any equivalent mutants present would depress the reported kill rate relative to a hypothetical equivalent-mutant-free count, so our reported rates are, if anything, a conservative (lower) estimate of true fault-detection sensitivity. Mutant counts per RTLLM design range from 1 to 115 (median 10.5); we report every design's raw count rather than filtering by a minimum, but results built on very small counts (as low as 1) carry correspondingly less statistical weight, and we flag this explicitly rather than let a headline percentage stand without its denominator (Section~\ref{sec:audit-results}). We also do not perform a manual audit distinguishing genuine functional-mismatch kills from incidental simulator artifacts (e.g., uninitialized-signal propagation), nor a manual audit reclassifying survivors; verdicts throughout are produced by the automated compile/simulate/pass-string pipeline described in Section~\ref{sec:audit-method}. Finally, RTLLM's 44 audited designs share common benchmark authorship, testbench-writing conventions, and a single vendor's coding style; they should not be treated as fully independent samples when interpreting the aggregate 71.2\% median or the 73\% below-floor rate.
+\paragraph{Mutant generation, equivalence, and the role of the seed.} GateTruth's generator deterministically enumerates every syntactically viable mutation site for its fixed generic operator set; no sampling of mutants occurs, so the fixed seed governs only execution order (relevant to how simulation timeouts interact with per-run budgets under sequential execution, Section~\ref{sec:rigor}), not which or how many mutants are generated. We do not detect or exclude equivalent mutants (mutants that are syntactically distinct but behaviorally identical to the original under the design's reachable state space); any equivalent mutants present would depress the reported kill rate relative to a hypothetical equivalent-mutant-free count, so our reported rates are, if anything, a conservative (lower) estimate of true fault-detection sensitivity. Mutant counts per RTLLM design range from 1 to 115 (median 10.5); we report every design's raw count rather than filtering by a minimum, but results built on very small counts (as low as 1) carry correspondingly less statistical weight, and we flag this explicitly rather than let a headline percentage stand without its denominator (Section~\ref{sec:audit-results}). We also do not perform a manual audit distinguishing genuine functional-mismatch kills from incidental simulator artifacts (e.g., uninitialized-signal propagation), nor a manual audit reclassifying survivors; verdicts throughout are produced by the automated compile/simulate/pass-string pipeline described in Section~\ref{sec:audit-method}. Finally, RTLLM's 46 audited designs share common benchmark authorship, testbench-writing conventions, and a single vendor's coding style; they should not be treated as fully independent samples when interpreting the aggregate 74.0\% median or the 72\% below-floor rate.
 
 \paragraph{Pre-layout physical estimates, not signoff values.} The physical metrics reported by GateTruth's own reference suite represent synthesis and static-timing estimates rather than post-place-and-route signoff values. The evaluation flow synthesizes designs utilizing the sky130hd standard-cell library and performs timing analysis via OpenSTA at a single typical-typical process corner. Because the pipeline does not execute placement, routing, or parasitic extraction, the reported area corresponds strictly to pre-layout cell area, and the reported timing reflects pre-layout slack. While a complete place-and-route trajectory was scoped and evaluated during development, it was deferred for the v1.0 release; an open-source routed-flow feasibility assessment failed to meet the requisite reliability thresholds necessary to enforce routed metrics as a scored gate (as documented in the project's decision log). Consequently, the manuscript reports pre-route estimates---explicitly labeled as such---and designates a fully routed evaluation track as future work rather than presenting it as a silent approximation. Therefore, PPA comparisons within this paper are rigorously valid within the confines of the pinned evaluation flow, but they must not be extrapolated as predictive of taped-out physical silicon.
 
@@ -525,7 +563,7 @@ Five other audited designs are similarly single-operator, and their outcomes spa
 0\%), which is itself a caution against over-reading any individual design's figure.
 
 The aggregate operator mix bears on this directly, and we report it rather than leave the reader to
-infer it: of 751 generated mutants, 355 (47\%) are \texttt{assignment\_hold}, 148
+infer it: of 775 generated mutants, 367 (47\%) are \texttt{assignment\_hold}, 154
 \texttt{blocking\_output\_inversion}, 91 \texttt{comparator\_boundary\_flip}, 59
 \texttt{output\_inversion}, 48 \texttt{bitwise\_inversion}, 29 \texttt{logic\_inversion}, 13
 \texttt{shift\_inversion}, and only 4 each of \texttt{reset\_polarity\_flip} and
@@ -565,9 +603,9 @@ Two facts bound how far it lands. First, it is ten tasks, not sixty: the remaini
 were never revised in response to a measured kill rate, and they clear the floor as originally
 authored. That subset is a within-suite comparison the aggregate figure obscures. Second, the
 direction of the correction is informative: an ungated version of our own suite's weakest decile
-sits at a 77.5\% median, against RTLLM's measured median of 71.2\% across all 44 of its audited designs. The
+sits at a 77.5\% median, against RTLLM's measured median of 74.0\% across all 46 of its audited designs. The
 defensible claim is therefore not that our testbenches are categorically better, but that mutation
-gating is what separates an ungated suite (ours at 77.5\%, RTLLM's at 71.2\%, both in the same broad
+gating is what separates an ungated suite (ours at 77.5\%, RTLLM's at 74.0\%, both in the same broad
 range) from a gated one (ours at 97--100\%). That is a weaker claim about our authoring and a
 stronger claim about the intervention, and it is the one the data supports.
 
@@ -705,7 +743,7 @@ headline external claim, Table~\ref{tab:perdesign} gives the complete per-design
 computed from --- every one of RTLLM v2.0's 50 designs, its mutant count, the kill/survive/
 indeterminate split, and whether its baseline passed as shipped or required the documented
 compile-time module alias of Section~\ref{sec:audit-method}. A reader can recompute the median
-(71.2\%), the pooled rate (55.7\%), and the below-floor count (32 of 44) directly from this table
+(74.0\%), the pooled rate (56.8\%), and the below-floor count (33 of 46) directly from this table
 without access to our repository. Every figure here is generated from the raw per-design JSON by
 \texttt{paper/data/generate\_audit\_appendix.py} rather than transcribed, so the table cannot drift
 from the underlying measurements. Designs are ordered by kill rate to make the distribution legible;

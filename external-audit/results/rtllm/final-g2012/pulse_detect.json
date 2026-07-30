@@ -1,0 +1,201 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 87.5,
+  "killed": 21,
+  "mutants_total": 24,
+  "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_pulse_detect -> pulse_detect",
+  "operator_counts": {
+    "assignment_hold": 2,
+    "blocking_output_inversion": 15,
+    "comparator_boundary_flip": 6,
+    "logic_inversion": 1
+  },
+  "per_mutant": [
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_pulse_detect-m000",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m014",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m023",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_pulse_detect-m001",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m010",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m019",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m018",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m011",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m022",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m017",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_pulse_detect-m002",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_pulse_detect-m008",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m020",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_pulse_detect-m004",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_pulse_detect-m003",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m016",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_pulse_detect-m005",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_pulse_detect-m007",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m009",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_pulse_detect-m006",
+      "killed_by": "tb",
+      "operator": "logic_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m012",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m015",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m021",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_pulse_detect-m013",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "c1018f39d73fcc4b8fd17785ef8d1138c9262a344495b07919ead5f0eabb29e5",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 3,
+  "task_id": "pulse_detect",
+  "testbench_sha256": "3848abea43a6ff404c69a32425c40f1ff1fddf9b7b842f883b66df189ba6b5d2",
+  "tool_versions": {
+    "harness_git": "unavailable",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

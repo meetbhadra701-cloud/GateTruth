@@ -1,0 +1,74 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 83.3333,
+  "killed": 5,
+  "mutants_total": 6,
+  "notes": "baseline passed under Icarus Verilog-2001",
+  "operator_counts": {
+    "comparator_boundary_flip": 2,
+    "logic_inversion": 1,
+    "output_inversion": 3
+  },
+  "per_mutant": [
+    {
+      "description": "inequality becomes equality",
+      "id": "rtllm_comparator_4bit-m001",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_comparator_4bit-m000",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_comparator_4bit-m002",
+      "killed_by": null,
+      "operator": "logic_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_comparator_4bit-m004",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_comparator_4bit-m005",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_comparator_4bit-m003",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "cf70fb9c69215053b6ef7da701f25c9f36ede29eb66e4822964305f1a2b8b6b3",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 1,
+  "task_id": "comparator_4bit",
+  "testbench_sha256": "8f05985d1a6203b2d06ebe41a137275fc81a87207458b7c851ec297fe3edcf53",
+  "tool_versions": {
+    "harness_git": "unavailable",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

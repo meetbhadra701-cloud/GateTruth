@@ -1,0 +1,355 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 45.6522,
+  "killed": 21,
+  "mutants_total": 46,
+  "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_32bit -> adder_32bit",
+  "operator_counts": {
+    "bitwise_inversion": 28,
+    "blocking_output_inversion": 7,
+    "logic_inversion": 2,
+    "output_inversion": 9
+  },
+  "per_mutant": [
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_32bit-m035",
+      "killed_by": "compile",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_adder_32bit-m042",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m019",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_adder_32bit-m044",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m002",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m004",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_32bit-m032",
+      "killed_by": "compile",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_32bit-m036",
+      "killed_by": "compile",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m007",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_32bit-m031",
+      "killed_by": "compile",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m025",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m005",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_adder_32bit-m045",
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m026",
+      "killed_by": "tb",
+      "operator": "bitwise_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_adder_32bit-m041",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m009",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_adder_32bit-m039",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m016",
+      "killed_by": "tb",
+      "operator": "bitwise_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_adder_32bit-m000",
+      "killed_by": null,
+      "operator": "logic_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m013",
+      "killed_by": "tb",
+      "operator": "bitwise_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m003",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_adder_32bit-m001",
+      "killed_by": "tb",
+      "operator": "logic_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m021",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_32bit-m034",
+      "killed_by": "compile",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m022",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m006",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_32bit-m037",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m028",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m023",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m010",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_adder_32bit-m040",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m020",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "or becomes xor",
+      "id": "rtllm_adder_32bit-m029",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m008",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_32bit-m033",
+      "killed_by": "compile",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m017",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m014",
+      "killed_by": "tb",
+      "operator": "bitwise_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_32bit-m038",
+      "killed_by": null,
+      "operator": "output_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m011",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m015",
+      "killed_by": "tb",
+      "operator": "bitwise_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m018",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m012",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m024",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_32bit-m030",
+      "killed_by": "compile",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_adder_32bit-m043",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_adder_32bit-m027",
+      "killed_by": "tb",
+      "operator": "bitwise_inversion",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "09e516fe8a678b350169447a7071ea063178c10bb7c0de81e22477bb1115c48c",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 25,
+  "task_id": "adder_32bit",
+  "testbench_sha256": "acc53536661a63eba6267decd86487fc8171555006a0801028217884b3c37c08",
+  "tool_versions": {
+    "harness_git": "unavailable",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

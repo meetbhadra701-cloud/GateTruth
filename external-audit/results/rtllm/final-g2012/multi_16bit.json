@@ -1,0 +1,182 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 66.6667,
+  "killed": 14,
+  "mutants_total": 21,
+  "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_16bit -> multi_16bit",
+  "operator_counts": {
+    "assignment_hold": 12,
+    "comparator_boundary_flip": 3,
+    "logic_inversion": 2,
+    "operator_inversion": 1,
+    "output_inversion": 2,
+    "shift_inversion": 1
+  },
+  "per_mutant": [
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_multi_16bit-m000",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_16bit-m018",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_16bit-m017",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_multi_16bit-m001",
+      "killed_by": null,
+      "operator": "comparator_boundary_flip",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_16bit-m010",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_16bit-m016",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_16bit-m011",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_multi_16bit-m005",
+      "killed_by": null,
+      "operator": "logic_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_16bit-m019",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_16bit-m020",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_multi_16bit-m008",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "and becomes or",
+      "id": "rtllm_multi_16bit-m004",
+      "killed_by": "tb",
+      "operator": "logic_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "increment becomes decrement",
+      "id": "rtllm_multi_16bit-m003",
+      "killed_by": "tb",
+      "operator": "operator_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_16bit-m014",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_multi_16bit-m002",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_multi_16bit-m007",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_16bit-m009",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "left shift becomes right shift",
+      "id": "rtllm_multi_16bit-m006",
+      "killed_by": "tb",
+      "operator": "shift_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_16bit-m012",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_16bit-m015",
+      "killed_by": null,
+      "operator": "assignment_hold",
+      "verdict": "survived"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_16bit-m013",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "7cdf38dd95a7a38582679bc02f844bdd9f5a7d61441d9db554a157fa2353543e",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 7,
+  "task_id": "multi_16bit",
+  "testbench_sha256": "80b1fc3113cf6237aff2793083f5dec4a1704373903b4dc95f632d07a32226a3",
+  "tool_versions": {
+    "harness_git": "unavailable",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

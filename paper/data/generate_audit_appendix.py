@@ -1,7 +1,7 @@
 """Generate the per-design RTLLM audit appendix table from raw committed audit JSON.
 
 Deliberately separate from generate_tables.py: this reads only
-external-audit/results/rtllm/final/*.json and emits one LaTeX fragment. Every number in the
+external-audit/results/rtllm/final-g2012/*.json and emits one LaTeX fragment. Every number in the
 appendix is derived here rather than hand-typed, so the table cannot drift from the raw evidence.
 """
 
@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-AUDIT_DIR = REPO_ROOT / "external-audit" / "results" / "rtllm" / "final"
+AUDIT_DIR = REPO_ROOT / "external-audit" / "results" / "rtllm" / "final-g2012"
 OUT_PATH = REPO_ROOT / "paper" / "data" / "build" / "audit_per_design.tex"
 
 

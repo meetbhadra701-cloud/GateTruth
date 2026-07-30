@@ -1,0 +1,65 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 100.0,
+  "killed": 5,
+  "mutants_total": 5,
+  "notes": "baseline passed under Icarus Verilog-2001",
+  "operator_counts": {
+    "blocking_output_inversion": 5
+  },
+  "per_mutant": [
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_ROM-m002",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_ROM-m000",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_ROM-m001",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_ROM-m004",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_ROM-m003",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "4cd1183899c88635912efd1b788f05bdcb3cab43d05d0aaf9a926d0bd22450c2",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 0,
+  "task_id": "ROM",
+  "testbench_sha256": "99e7f7744ebbd996b98fc79d82582b28486bd6129aa9db30e927dff23ebf64cc",
+  "tool_versions": {
+    "harness_git": "unavailable",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

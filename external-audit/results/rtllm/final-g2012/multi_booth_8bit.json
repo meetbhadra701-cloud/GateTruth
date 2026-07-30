@@ -1,0 +1,109 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 2,
+  "kill_rate": 81.8182,
+  "killed": 9,
+  "mutants_total": 11,
+  "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_booth_8bit -> multi_booth_8bit",
+  "operator_counts": {
+    "assignment_hold": 9,
+    "comparator_boundary_flip": 1,
+    "shift_inversion": 1
+  },
+  "per_mutant": [
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_booth_8bit-m008",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_booth_8bit-m009",
+      "killed_by": "tb-timeout",
+      "operator": "assignment_hold",
+      "verdict": "indeterminate"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_multi_booth_8bit-m000",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_booth_8bit-m004",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_booth_8bit-m005",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "left shift becomes right shift",
+      "id": "rtllm_multi_booth_8bit-m001",
+      "killed_by": "tb",
+      "operator": "shift_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_booth_8bit-m002",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_booth_8bit-m003",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_booth_8bit-m010",
+      "killed_by": "tb-timeout",
+      "operator": "assignment_hold",
+      "verdict": "indeterminate"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_booth_8bit-m007",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "rtllm_multi_booth_8bit-m006",
+      "killed_by": "tb",
+      "operator": "assignment_hold",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "ec44eb55d46418df5aceff041a25479e4e3c7945dbcf098a320d96a3ca663c72",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 0,
+  "task_id": "multi_booth_8bit",
+  "testbench_sha256": "1eb680425ce277fcbbd8e92be4085484477b247e93366eef8b5e909584694392",
+  "tool_versions": {
+    "harness_git": "unavailable",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

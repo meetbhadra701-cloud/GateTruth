@@ -1,0 +1,1173 @@
+{
+  "benchmark": "rtllm",
+  "compatibility_counts": {
+    "icarus-pass-with-module-alias": 26,
+    "iverilog-incompatible": 2,
+    "no-pass-banner": 2,
+    "unmodified-icarus-pass": 20
+  },
+  "designs": [
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "JC_counter",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_JC_counter",
+        "to": "JC_counter"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_JC_counter -> JC_counter",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_JC_counter"
+      ],
+      "reference_sha256": "ba6515409d4c7cd252264ef6aed241479db5d4eb8d8a13ca45e604a057d21d4b",
+      "reference_sources": [
+        "Control/Counter/JC_counter/verified_JC_counter.v"
+      ],
+      "runnable": true,
+      "testbench": "Control/Counter/JC_counter/testbench.v",
+      "testbench_sha256": "c6ed57c452501abdff9d81721fe4892fe2afdee88568aa2ed3262c230f81ac25",
+      "testbench_top_module": "testbench",
+      "top_module": "verified_JC_counter"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "LFSR",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "LFSR"
+      ],
+      "reference_sha256": "24686004ff8eeadf59ea13b32c9553c8d5cf153df1b0b6cb1775d422974c474f",
+      "reference_sources": [
+        "Memory/Shifter/LFSR/verified_LFSR.v"
+      ],
+      "runnable": true,
+      "testbench": "Memory/Shifter/LFSR/testbench.v",
+      "testbench_sha256": "8d69cf56d1dbbb4aeda06993fe0ac38ba76af159448b8cd986f7af889c2b42f1",
+      "testbench_top_module": "lfsr_tb",
+      "top_module": "LFSR"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "LIFObuffer",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "LIFObuffer"
+      ],
+      "reference_sha256": "668e55a9ecd3e0d5d53ebdeba7906766915370e88a77f1d91d54d147005a61b5",
+      "reference_sources": [
+        "Memory/LIFO/LIFObuffer/verified_LIFObuffer.v"
+      ],
+      "runnable": true,
+      "testbench": "Memory/LIFO/LIFObuffer/testbench.v",
+      "testbench_sha256": "64b441540adc469cc0b8422a6ac12b1e0800eb2b5ba5e0bd0cf1416b4a713822",
+      "testbench_top_module": "LIFObuffer_tb",
+      "top_module": "LIFObuffer"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "RAM",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_RAM",
+        "to": "RAM"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_RAM -> RAM",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_RAM"
+      ],
+      "reference_sha256": "7003afdb8bb6daa53d288a47818d7ecc2cbbba90a43e3f645dcdac50ef3335ce",
+      "reference_sources": [
+        "Miscellaneous/RISC-V/RAM/verified_RAM.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/RISC-V/RAM/testbench.v",
+      "testbench_sha256": "7bf2b2180c7a48d39d868cc6219b0bd54e30cb3a57f189f37a12a428ec5f6cd9",
+      "testbench_top_module": "tb_RAM",
+      "top_module": "verified_RAM"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "ROM",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "ROM"
+      ],
+      "reference_sha256": "4cd1183899c88635912efd1b788f05bdcb3cab43d05d0aaf9a926d0bd22450c2",
+      "reference_sources": [
+        "Miscellaneous/RISC-V/ROM/verified_ROM.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/RISC-V/ROM/testbench.v",
+      "testbench_sha256": "99e7f7744ebbd996b98fc79d82582b28486bd6129aa9db30e927dff23ebf64cc",
+      "testbench_top_module": "rom_tb",
+      "top_module": "ROM"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "accu",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_accu",
+        "to": "accu"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_accu -> accu",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_accu"
+      ],
+      "reference_sha256": "2245cf9654fcafdd1d1c78c61989cd0e13882a83ce90fba0cc72f948605178dd",
+      "reference_sources": [
+        "Arithmetic/Accumulator/accu/verified_accu.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Accumulator/accu/testbench.v",
+      "testbench_sha256": "caa0a4c575f65691ab0dc1ceb018a64611b64cf3f6a20049c6f191c720f724b0",
+      "testbench_top_module": "tb_valid_ready",
+      "top_module": "verified_accu"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "adder_16bit",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_adder_16bit",
+        "to": "adder_16bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_16bit -> adder_16bit",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_adder_16bit",
+        "add8",
+        "add4",
+        "add2",
+        "add1"
+      ],
+      "reference_sha256": "d5c1fb4f9306b5d14c908eac05d74ed971620f53d33ae6293a71a7451c474cfe",
+      "reference_sources": [
+        "Arithmetic/Adder/adder_16bit/verified_adder_16bit.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Adder/adder_16bit/testbench.v",
+      "testbench_sha256": "5f48355ae0dac83362b9961724d817980426815e6310f9c76205fb83fdbeb19d",
+      "testbench_top_module": "add16_tb",
+      "top_module": "verified_adder_16bit"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "adder_32bit",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_adder_32bit",
+        "to": "adder_32bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_32bit -> adder_32bit",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_adder_32bit",
+        "CLA_16",
+        "adder_4",
+        "CLA",
+        "adder"
+      ],
+      "reference_sha256": "09e516fe8a678b350169447a7071ea063178c10bb7c0de81e22477bb1115c48c",
+      "reference_sources": [
+        "Arithmetic/Adder/adder_32bit/verified_adder_32bit.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Adder/adder_32bit/testbench.v",
+      "testbench_sha256": "acc53536661a63eba6267decd86487fc8171555006a0801028217884b3c37c08",
+      "testbench_top_module": "adder32_tb",
+      "top_module": "verified_adder_32bit"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "adder_8bit",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_adder_8bit",
+        "to": "adder_8bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_8bit -> adder_8bit",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_adder_8bit",
+        "full_adder"
+      ],
+      "reference_sha256": "c418cbe1bd6b377ad8c6318dc2ffc6f355f8d8f4d48a1cee7c9ae30635a8f89c",
+      "reference_sources": [
+        "Arithmetic/Adder/adder_8bit/verified_adder_8bit.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Adder/adder_8bit/testbench.v",
+      "testbench_sha256": "0ce39c493ed2f55b9b08077ced9dbe0f06ecb7fd7853aa2384a174c9c4d2a465",
+      "testbench_top_module": "testbench",
+      "top_module": "verified_adder_8bit"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "adder_bcd",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "adder_bcd"
+      ],
+      "reference_sha256": "c2cfeca31ceca9e55d3a6e09ced55614ceab3270485de9c63c601eba3a0c7b45",
+      "reference_sources": [
+        "Arithmetic/Adder/adder_bcd/verified_adder_bcd.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Adder/adder_bcd/testbench.v",
+      "testbench_sha256": "11ee1d2ece533dd353f8d4acbaa6a7a7360350f9cfd97d60bb2fb39fa63df275",
+      "testbench_top_module": "testbench",
+      "top_module": "adder_bcd"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "adder_pipe_64bit",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_adder_64bit",
+        "to": "adder_pipe_64bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_64bit -> adder_pipe_64bit",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "verified_adder_64bit"
+      ],
+      "reference_sha256": "ad19ff34d7525b67888212677ba8630c8c54f3bc1030af3608bf9a303f060392",
+      "reference_sources": [
+        "Arithmetic/Adder/adder_pipe_64bit/verified_adder_64bit.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Adder/adder_pipe_64bit/testbench.v",
+      "testbench_sha256": "01c3ed8ef8b4a56c554fb6d0667cc385f1bf0b867e12f9bd79660705b4673405",
+      "testbench_top_module": "tb_adder64",
+      "top_module": "verified_adder_64bit"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "alu",
+      "expected_design_modules": [],
+      "extra_sources_needed": [
+        "reference.dat"
+      ],
+      "module_alias": {
+        "from": "verified_alu",
+        "to": "alu"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_alu -> alu",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_alu"
+      ],
+      "reference_sha256": "54cfb2b2a9db2318aa3610c29a61723cda3684a4798d2cc04820f6f5d95fed6e",
+      "reference_sources": [
+        "Miscellaneous/RISC-V/alu/verified_alu.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/RISC-V/alu/testbench.v",
+      "testbench_sha256": "adb9ec60ed1196959e14de8376c7cc4c709177da97ade183553635c33a37af71",
+      "testbench_top_module": "test_alu",
+      "top_module": "verified_alu"
+    },
+    {
+      "compatibility": "iverilog-incompatible",
+      "design_id": "asyn_fifo",
+      "expected_design_modules": [],
+      "extra_sources_needed": [
+        "rempty.txt",
+        "tdata.txt",
+        "wfull.txt"
+      ],
+      "module_alias": {
+        "from": "verified_asyn_fifo",
+        "to": "asyn_fifo"
+      },
+      "notes": "Icarus compile failed (exit 1): <vendor>/Memory/FIFO/asyn_fifo/testbench.v:102: sorry: break statements not supported.",
+      "pass_string": null,
+      "reference_modules": [
+        "dual_port_RAM",
+        "verified_asyn_fifo"
+      ],
+      "reference_sha256": "0d667ba5d89fc9440057b101ac4dbc71ac67156e3bbf661a54a42283d884fbb9",
+      "reference_sources": [
+        "Memory/FIFO/asyn_fifo/verified_asyn_fifo.v"
+      ],
+      "runnable": false,
+      "testbench": "Memory/FIFO/asyn_fifo/testbench.v",
+      "testbench_sha256": "e0e2ceae67c6c6bad98e51742c327c23fdd7f9f2da673236eeedecc294ea178a",
+      "testbench_top_module": "asyn_fifo_tb",
+      "top_module": "verified_asyn_fifo"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "barrel_shifter",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "barrel_shifter",
+        "mux2X1"
+      ],
+      "reference_sha256": "5a60c25a5d6a5057a9d8b876d856387efe82d8158bc2a42497b591c18a247e9d",
+      "reference_sources": [
+        "Memory/Shifter/barrel_shifter/verified_barrel_shifter.v"
+      ],
+      "runnable": true,
+      "testbench": "Memory/Shifter/barrel_shifter/testbench.v",
+      "testbench_sha256": "fafb8adc863166854d1cca365c641f7ccecc8f0cc6c099c27f79adf06702a4c7",
+      "testbench_top_module": "barrel_shifter_tb",
+      "top_module": "barrel_shifter"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "calendar",
+      "expected_design_modules": [],
+      "extra_sources_needed": [
+        "reference.txt"
+      ],
+      "module_alias": {
+        "from": "verified_calendar",
+        "to": "calendar"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_calendar -> calendar",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_calendar"
+      ],
+      "reference_sha256": "ff80391c81391c30ce05cb4921a8a4894c33667520d1d7a8a2a8366c78051e18",
+      "reference_sources": [
+        "Miscellaneous/Others/calendar/verified_calendar.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/Others/calendar/testbench.v",
+      "testbench_sha256": "3f3c9d46290a9932ef00d293f2d87e2320ce3fbf1225a8ce7d1960c500e02b5d",
+      "testbench_top_module": "main",
+      "top_module": "verified_calendar"
+    },
+    {
+      "compatibility": "no-pass-banner",
+      "design_id": "clkgenerator",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "simulation emitted no recognized pass banner: =========== Test completed with          20 failures =========== | <vendor>/Miscellaneous/RISC-V/clkgenerator/testbench.v:29: $finish called at 100 (1s)",
+      "pass_string": null,
+      "reference_modules": [
+        "clkgenerator"
+      ],
+      "reference_sha256": "65ea69fac07d66329af011b7447fda4f0583c5ece0c8894662c100c0ede55170",
+      "reference_sources": [
+        "Miscellaneous/RISC-V/clkgenerator/verified_clkgenerator.v"
+      ],
+      "runnable": false,
+      "testbench": "Miscellaneous/RISC-V/clkgenerator/testbench.v",
+      "testbench_sha256": "3afff2a0f7006a3dcc544f381fa332db645834626d5709defd0ce59bec1a6b04",
+      "testbench_top_module": "clkgenerator_tb",
+      "top_module": "clkgenerator"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "comparator_3bit",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "comparator_3bit"
+      ],
+      "reference_sha256": "f20a0ea6b8e785eca0c3ee8500004f9619afe3edfa2d707e0a8a706438d4f407",
+      "reference_sources": [
+        "Arithmetic/Comparator/comparator_3bit/verified_comparator_3bit.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Comparator/comparator_3bit/testbench.v",
+      "testbench_sha256": "a46023a6a223269a2c8fa3c791fe52dd712eba526f1fcce3b62bf2739c7f7125",
+      "testbench_top_module": "testbench",
+      "top_module": "comparator_3bit"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "comparator_4bit",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "comparator_4bit"
+      ],
+      "reference_sha256": "cf70fb9c69215053b6ef7da701f25c9f36ede29eb66e4822964305f1a2b8b6b3",
+      "reference_sources": [
+        "Arithmetic/Comparator/comparator_4bit/verified_comparator_4bit.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Comparator/comparator_4bit/testbench.v",
+      "testbench_sha256": "8f05985d1a6203b2d06ebe41a137275fc81a87207458b7c851ec297fe3edcf53",
+      "testbench_top_module": "testbench",
+      "top_module": "comparator_4bit"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "counter_12",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_counter_12",
+        "to": "counter_12"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_counter_12 -> counter_12",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_counter_12"
+      ],
+      "reference_sha256": "9e42bf55ab4dbdf96c12a7a309ff98877d6ea2e89a2b5b0c337041edfd232bbb",
+      "reference_sources": [
+        "Control/Counter/counter_12/verified_counter_12.v"
+      ],
+      "runnable": true,
+      "testbench": "Control/Counter/counter_12/testbench.v",
+      "testbench_sha256": "d42e3a798a72ffc19a6af5d51b0e686e77e93993e7ea6b5566894c4eb58c1b33",
+      "testbench_top_module": "counter_12_tb",
+      "top_module": "verified_counter_12"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "div_16bit",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_div_16bit",
+        "to": "div_16bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_div_16bit -> div_16bit",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_div_16bit"
+      ],
+      "reference_sha256": "689db4df93bcd5f6b6a5c4a11d58b374e7ff9bbd32cf484d42c1349cf2e186c1",
+      "reference_sources": [
+        "Arithmetic/Divider/div_16bit/verified_div_16bit.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Divider/div_16bit/testbench.v",
+      "testbench_sha256": "6fb3bcb03463c374e7c9bde3966bbda08cf247e5b6b1ccb791759e402c100dc9",
+      "testbench_top_module": "tb_division",
+      "top_module": "verified_div_16bit"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "edge_detect",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_edge_detect",
+        "to": "edge_detect"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_edge_detect -> edge_detect",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_edge_detect"
+      ],
+      "reference_sha256": "a6a59e41e6208e62699470bcb4b4c43938f5ba57cf4b8b25194c8921a02333ab",
+      "reference_sources": [
+        "Miscellaneous/Others/edge_detect/verified_edge_detect.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/Others/edge_detect/testbench.v",
+      "testbench_sha256": "56997d7c3794f1cb3b9b826006ff6d961a21299133f1135f20e4f13aaf566b5c",
+      "testbench_top_module": "testbench",
+      "top_module": "verified_edge_detect"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "fixed_point_adder",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "fixed_point_adder"
+      ],
+      "reference_sha256": "22ceb88330804cfb3e71503dbabf231f1b79e18c38bf86ffdd22902f959c23b0",
+      "reference_sources": [
+        "Arithmetic/Other/fixed_point_adder/verified_fixed_point_adder.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Other/fixed_point_adder/testbench.v",
+      "testbench_sha256": "0363e474c124a7b7cd518b973d091add026ea61a33b20eb3add707e558f9c625",
+      "testbench_top_module": "testbench",
+      "top_module": "fixed_point_adder"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "fixed_point_substractor",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "fixed_point_subtractor"
+      ],
+      "reference_sha256": "548bf3a85f2023a2dc0975f2ea3e35eda37edc0a6cf983035761739ee90592c4",
+      "reference_sources": [
+        "Arithmetic/Other/fixed_point_substractor/verified_fixed_point_substractor.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Other/fixed_point_substractor/testbench.v",
+      "testbench_sha256": "967d4b197101211e6c94b4024faceb3b2a3f24e5c43789fb065c13281108642e",
+      "testbench_top_module": "tb_fixed_point_subtractor",
+      "top_module": "fixed_point_subtractor"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "float_multi",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "float_multi"
+      ],
+      "reference_sha256": "5d177a50368c81385d9328a950d5b403a36605e7c41d573a965713520613f137",
+      "reference_sources": [
+        "Arithmetic/Other/float_multi/verified_float_multi.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Other/float_multi/testbench.v",
+      "testbench_sha256": "93329fc0cdd3cdfa1cb71c37e38a0d09e0b1e3096d363cfd0d7826c04a9e0e46",
+      "testbench_top_module": "fmultiplier_tb",
+      "top_module": "float_multi"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "freq_div",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "freq_div"
+      ],
+      "reference_sha256": "a73b87a7e66269f59fc604dda73ef3b7b3fdfd6fc6d752f86df109676de44a2d",
+      "reference_sources": [
+        "Miscellaneous/Frequency divider/freq_div/verified_freq_div.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/Frequency divider/freq_div/testbench.v",
+      "testbench_sha256": "ab248ba588a39008fd1bd86e3cb77332c9db9feece770c417055ac4dc3508b6c",
+      "testbench_top_module": "test",
+      "top_module": "freq_div"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "freq_divbyeven",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "freq_divbyeven"
+      ],
+      "reference_sha256": "255631a4c6398f318a6a175129069b95bfaaad52830b6940d3d7b7b448b4f5f8",
+      "reference_sources": [
+        "Miscellaneous/Frequency divider/freq_divbyeven/verified_freq_divbyeven.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/Frequency divider/freq_divbyeven/testbench.v",
+      "testbench_sha256": "8d7c2fea00448898934cbad08adba421595313ea98835971dc61c2623683e08f",
+      "testbench_top_module": "testb_div_even",
+      "top_module": "freq_divbyeven"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "freq_divbyfrac",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "freq_divbyfrac"
+      ],
+      "reference_sha256": "721d0c7e7b08b3e10a50d4738e5925efb9d8723798a28a656f9ba9918e404e79",
+      "reference_sources": [
+        "Miscellaneous/Frequency divider/freq_divbyfrac/verified_freq_divbyfrac.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/Frequency divider/freq_divbyfrac/testbench.v",
+      "testbench_sha256": "04ea55171625721c2b504523c998d65491699b8dc1981d83b6399e9698e3410a",
+      "testbench_top_module": "freq_divbyfrac_tb",
+      "top_module": "freq_divbyfrac"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "freq_divbyodd",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "freq_divbyodd"
+      ],
+      "reference_sha256": "7f868f7c5ec9414eccc4996736c71315ece15e392148dfee2c229770445e3602",
+      "reference_sources": [
+        "Miscellaneous/Frequency divider/freq_divbyodd/verified_freq_divbyodd.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/Frequency divider/freq_divbyodd/testbench.v",
+      "testbench_sha256": "8d6b9b69b39399d1922645abf56f4f6c0249785b35a68d5ce52000a3f6d232f6",
+      "testbench_top_module": "testb_div_odd",
+      "top_module": "freq_divbyodd"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "fsm",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_fsm",
+        "to": "fsm"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_fsm -> fsm",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_fsm"
+      ],
+      "reference_sha256": "43ba0644cd56f7a0aa0a0dbb161bfcb028fd044aa8015d5b6ab0fad9eceb9308",
+      "reference_sources": [
+        "Control/Finite State Machine/fsm/verified_fsm.v"
+      ],
+      "runnable": true,
+      "testbench": "Control/Finite State Machine/fsm/testbench.v",
+      "testbench_sha256": "b38b265f50b6fc9148dc3ee9776b6451c4cb587557ef7261893bef85b45cb05d",
+      "testbench_top_module": "main",
+      "top_module": "verified_fsm"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "instr_reg",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "instr_reg"
+      ],
+      "reference_sha256": "36c734469454009c55a305149022708559b2a44c8dc7534478fc86d7ef467dbb",
+      "reference_sources": [
+        "Miscellaneous/RISC-V/instr_reg/verified_instr_reg.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/RISC-V/instr_reg/testbench.v",
+      "testbench_sha256": "0bd712606c9a4be8ad7e31b327dcbe97f139d4fbdfbcbc8d235c3aba4d205d4d",
+      "testbench_top_module": "instr_reg_tb",
+      "top_module": "instr_reg"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "multi_16bit",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_multi_16bit",
+        "to": "multi_16bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_16bit -> multi_16bit",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_multi_16bit"
+      ],
+      "reference_sha256": "7cdf38dd95a7a38582679bc02f844bdd9f5a7d61441d9db554a157fa2353543e",
+      "reference_sources": [
+        "Arithmetic/Multiplier/multi_16bit/verified_multi_16bit.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Multiplier/multi_16bit/testbench.v",
+      "testbench_sha256": "80b1fc3113cf6237aff2793083f5dec4a1704373903b4dc95f632d07a32226a3",
+      "testbench_top_module": "tb_multi_16bit",
+      "top_module": "verified_multi_16bit"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "multi_8bit",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "multi_8bit"
+      ],
+      "reference_sha256": "2f4a0bde4ecb6ecda2f14f7885c1d82fb51d51947b192bb01e710c3a35e8d200",
+      "reference_sources": [
+        "Arithmetic/Multiplier/multi_8bit/verified_multi_8bit.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Multiplier/multi_8bit/testbench.v",
+      "testbench_sha256": "b8fc5bd5a25cb84f64417d30e2b04e459805c763d48cedd192f1d927a80318dc",
+      "testbench_top_module": "testbench",
+      "top_module": "multi_8bit"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "multi_booth_8bit",
+      "expected_design_modules": [],
+      "extra_sources_needed": [
+        "test_data.dat"
+      ],
+      "module_alias": {
+        "from": "verified_multi_booth_8bit",
+        "to": "multi_booth_8bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_booth_8bit -> multi_booth_8bit",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_multi_booth_8bit"
+      ],
+      "reference_sha256": "ec44eb55d46418df5aceff041a25479e4e3c7945dbcf098a320d96a3ca663c72",
+      "reference_sources": [
+        "Arithmetic/Multiplier/multi_booth_8bit/verified_booth4_mul.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Multiplier/multi_booth_8bit/testbench.v",
+      "testbench_sha256": "1eb680425ce277fcbbd8e92be4085484477b247e93366eef8b5e909584694392",
+      "testbench_top_module": "booth4_mul_tb",
+      "top_module": "verified_multi_booth_8bit"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "multi_pipe_4bit",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_multi_pipe",
+        "to": "multi_pipe_4bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_pipe -> multi_pipe_4bit",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_multi_pipe"
+      ],
+      "reference_sha256": "95da22f99f6ccf56608f98758234744aaaf7934643d2b7f636f19eb78e3eb6fc",
+      "reference_sources": [
+        "Arithmetic/Multiplier/multi_pipe_4bit/verified_multi_pipe_4bit.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Multiplier/multi_pipe_4bit/testbench.v",
+      "testbench_sha256": "9ee2469af2d3d9632bcf360a9a911f59ca57baa2ea8721b1f2f2e0557569fb8b",
+      "testbench_top_module": "multi_pipe_tb",
+      "top_module": "verified_multi_pipe"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "multi_pipe_8bit",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_multi_pipe_8bit",
+        "to": "multi_pipe_8bit"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_pipe_8bit -> multi_pipe_8bit",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_multi_pipe_8bit"
+      ],
+      "reference_sha256": "6512310d7889ddb59c992ef6c92766c3a400333fe0f51b5e748a05a41a2357ef",
+      "reference_sources": [
+        "Arithmetic/Multiplier/multi_pipe_8bit/verified_multi_pipe_8bit.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Multiplier/multi_pipe_8bit/testbench.v",
+      "testbench_sha256": "2465c907fba0a7717e406afef124b7a21907fb6ab4ccf574976f6eba8911aa02",
+      "testbench_top_module": "tb_multi_pipe",
+      "top_module": "verified_multi_pipe_8bit"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "parallel2serial",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_parallel2serial",
+        "to": "parallel2serial"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_parallel2serial -> parallel2serial",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_parallel2serial"
+      ],
+      "reference_sha256": "dbe0c8e745098edf99b49d648815f5c2620e04af22d095921fdc658701d1bb96",
+      "reference_sources": [
+        "Miscellaneous/Others/parallel2serial/verified_parallel2serial.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/Others/parallel2serial/testbench.v",
+      "testbench_sha256": "fc1bc3caeefe23e9ef182cbe927de225842d9fe220c8d037d9cb287c71fab9b7",
+      "testbench_top_module": "parallel2serial_tb",
+      "top_module": "verified_parallel2serial"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "pe",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_pe",
+        "to": "pe"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_pe -> pe",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_pe"
+      ],
+      "reference_sha256": "f4c2ad613bd5e8c69509b00fcff91c637c0962604f207982cf7f53485e20a39d",
+      "reference_sources": [
+        "Miscellaneous/RISC-V/pe/verified_pe.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/RISC-V/pe/testbench.v",
+      "testbench_sha256": "608b9c8548f0089210316d2fdbf6e6fa0893df30974d297d771a0fc57d90d9e8",
+      "testbench_top_module": "test54",
+      "top_module": "verified_pe"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "pulse_detect",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_pulse_detect",
+        "to": "pulse_detect"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_pulse_detect -> pulse_detect",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_pulse_detect"
+      ],
+      "reference_sha256": "c1018f39d73fcc4b8fd17785ef8d1138c9262a344495b07919ead5f0eabb29e5",
+      "reference_sources": [
+        "Miscellaneous/Others/pulse_detect/verified_pulse_detect.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/Others/pulse_detect/testbench.v",
+      "testbench_sha256": "3848abea43a6ff404c69a32425c40f1ff1fddf9b7b842f883b66df189ba6b5d2",
+      "testbench_top_module": "pulse_detect_tb",
+      "top_module": "verified_pulse_detect"
+    },
+    {
+      "compatibility": "no-pass-banner",
+      "design_id": "radix2_div",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_radix2_div",
+        "to": "radix2_div"
+      },
+      "notes": "simulation emitted no recognized pass banner: Error: dividend=123, divisor=123, expected=0001, got=6400 | ===========Failed===========          3 | <vendor>/Arithmetic/Divider/radix2_div/testbench.v:87: $finish called at 825000 (1ps)",
+      "pass_string": null,
+      "reference_modules": [
+        "verified_radix2_div"
+      ],
+      "reference_sha256": "4ec0998f85d18ed1fbcf65f7422e6d0270bcbf0fe3183d815d9a26e6d3851939",
+      "reference_sources": [
+        "Arithmetic/Divider/radix2_div/verified_radix2_div.v"
+      ],
+      "runnable": false,
+      "testbench": "Arithmetic/Divider/radix2_div/testbench.v",
+      "testbench_sha256": "58fb7a9c86474d9a4fcd83624d8646f47cec38c990f72f5741163313082ca726",
+      "testbench_top_module": "radix2_div_tb",
+      "top_module": "verified_radix2_div"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "right_shifter",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_right_shifter",
+        "to": "right_shifter"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_right_shifter -> right_shifter",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_right_shifter"
+      ],
+      "reference_sha256": "f8bf2e2eb843f69221cafa21de06d349ec772f95c9336460312b27f1d92e4299",
+      "reference_sources": [
+        "Memory/Shifter/right_shifter/verified_right_shifter.v"
+      ],
+      "runnable": true,
+      "testbench": "Memory/Shifter/right_shifter/testbench.v",
+      "testbench_sha256": "e3fa4fa4dbe08b79c1742ce1b8fb4a863da7cd510ae1d4f08e4399ca9746c790",
+      "testbench_top_module": "right_shifter_tb",
+      "top_module": "verified_right_shifter"
+    },
+    {
+      "compatibility": "iverilog-incompatible",
+      "design_id": "ring_counter",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "Icarus compile failed (exit 1): <vendor>/Control/Counter/ring_counter/testbench.v:20: sorry: Assignment to an entire array or to an array slice is not yet supported. | Elaboration failed",
+      "pass_string": null,
+      "reference_modules": [
+        "ring_counter"
+      ],
+      "reference_sha256": "b8f9109b97063fdabb5edc1fe9e69ca1f27fd703443af3795274fefe984a8f07",
+      "reference_sources": [
+        "Control/Counter/ring_counter/verified_ring_counter.v"
+      ],
+      "runnable": false,
+      "testbench": "Control/Counter/ring_counter/testbench.v",
+      "testbench_sha256": "5a268ef63f00a802160e10be1f8257b9a0e3c0f41c08033e530025b2cac1950c",
+      "testbench_top_module": "testbench",
+      "top_module": "ring_counter"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "sequence_detector",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "sequence_detector"
+      ],
+      "reference_sha256": "573bbf1a2e9afb77960131b731cd6aae85b3508a09465c7589a131b517401f23",
+      "reference_sources": [
+        "Control/Finite State Machine/sequence_detector/verified_sequence_detector.v"
+      ],
+      "runnable": true,
+      "testbench": "Control/Finite State Machine/sequence_detector/testbench.v",
+      "testbench_sha256": "c42b3e81cb0d510b0b48dc6f191a36b6a39c92f76db09637529a32f026a86940",
+      "testbench_top_module": "tb_sequence_detector",
+      "top_module": "sequence_detector"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "serial2parallel",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_serial2parallel",
+        "to": "serial2parallel"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_serial2parallel -> serial2parallel",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_serial2parallel"
+      ],
+      "reference_sha256": "fbe06125300075e5b242b1ba57884b711eb5087de46177569979b776fcc05b70",
+      "reference_sources": [
+        "Miscellaneous/Others/serial2parallel/verified_serial2parallel.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/Others/serial2parallel/testbench.v",
+      "testbench_sha256": "4971f08793435f0843e058dbef2671864c133fdeabae097b99420b8fbc1dde66",
+      "testbench_top_module": "tb",
+      "top_module": "verified_serial2parallel"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "signal_generator",
+      "expected_design_modules": [],
+      "extra_sources_needed": [
+        "tri_gen.txt"
+      ],
+      "module_alias": {
+        "from": "verified_signal_generator",
+        "to": "signal_generator"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_signal_generator -> signal_generator",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_signal_generator"
+      ],
+      "reference_sha256": "a48c952d216c662ae1b4c9e9379d5f25a4ec3a2f64befc02008148bdcc0d2b02",
+      "reference_sources": [
+        "Miscellaneous/Signal generation/signal_generator/verified_signal_generator.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/Signal generation/signal_generator/testbench.v",
+      "testbench_sha256": "1f15877f6852b3709dc057153743fef5c29f29e1479fca6235568c15a3f35754",
+      "testbench_top_module": "tb_signal_generator",
+      "top_module": "verified_signal_generator"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "square_wave",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "square_wave"
+      ],
+      "reference_sha256": "94a2cf7c9dda3e779dc1df3da9ba75596d624434f621e2f77616eea1fb53e550",
+      "reference_sources": [
+        "Miscellaneous/Signal generation/square_wave/verified_square_wave.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/Signal generation/square_wave/testbench.v",
+      "testbench_sha256": "99333189f36a991503f678f234e0f98f1103a1d9c3c040d66e0162ecd9c0bdac",
+      "testbench_top_module": "square_wave_tb",
+      "top_module": "square_wave"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "sub_64bit",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "sub_64bit"
+      ],
+      "reference_sha256": "17710f6267a1523d10103214f29894bbcbc2b2af94225c8338b22eed162fe7a8",
+      "reference_sources": [
+        "Arithmetic/Substractor/sub_64bit/verified_sub_64bit.v"
+      ],
+      "runnable": true,
+      "testbench": "Arithmetic/Substractor/sub_64bit/testbench.v",
+      "testbench_sha256": "fabac9dcec033d92fdcdab9a9d3495c418c90cb5c84274dce4a8c3b81634ba7f",
+      "testbench_top_module": "testbench",
+      "top_module": "sub_64bit"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "synchronizer",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_synchronizer",
+        "to": "synchronizer"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_synchronizer -> synchronizer",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_synchronizer"
+      ],
+      "reference_sha256": "c8fe8d7f5c92f08558e86b50d4112f47420d48eace3d29df43e4a4304aa5e827",
+      "reference_sources": [
+        "Miscellaneous/Others/synchronizer/verified_synchronizer.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/Others/synchronizer/testbench.v",
+      "testbench_sha256": "fcf2afc2d3cf28392cb7754c3fe14436fcf6dd8e13546a3f22553c124e4f4f25",
+      "testbench_top_module": "testbench",
+      "top_module": "verified_synchronizer"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "traffic_light",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_traffic_light",
+        "to": "traffic_light"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_traffic_light -> traffic_light",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_traffic_light"
+      ],
+      "reference_sha256": "b0ec13717fc534de2b9634a99c2e68fa9ec742456c6ad734bc8ec6b19b0d3204",
+      "reference_sources": [
+        "Miscellaneous/Others/traffic_light/verified_traffic_light.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/Others/traffic_light/testbench.v",
+      "testbench_sha256": "3f2d842c635df0739214515233a6546236fd302c5c5902995d831e655c1db789",
+      "testbench_top_module": "tb_traffic_light",
+      "top_module": "verified_traffic_light"
+    },
+    {
+      "compatibility": "unmodified-icarus-pass",
+      "design_id": "up_down_counter",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": null,
+      "notes": "baseline passed under Icarus Verilog-2001",
+      "pass_string": "=========== Your Design Passed ===========",
+      "reference_modules": [
+        "up_down_counter"
+      ],
+      "reference_sha256": "70206ee2a1f35f1c72479b2c1041b9a6e69b26ebeecd06e3974b1030d42af4cf",
+      "reference_sources": [
+        "Control/Counter/up_down_counter/verified_up_down_counter.v"
+      ],
+      "runnable": true,
+      "testbench": "Control/Counter/up_down_counter/testbench.v",
+      "testbench_sha256": "0ae9ee28c5d02ef26caf2834ef378c58849b5cdbaabaa9515e93712802fdcebd",
+      "testbench_top_module": "testbench",
+      "top_module": "up_down_counter"
+    },
+    {
+      "compatibility": "icarus-pass-with-module-alias",
+      "design_id": "width_8to16",
+      "expected_design_modules": [],
+      "extra_sources_needed": [],
+      "module_alias": {
+        "from": "verified_width_8to16",
+        "to": "width_8to16"
+      },
+      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_width_8to16 -> width_8to16",
+      "pass_string": "===========Your Design Passed===========",
+      "reference_modules": [
+        "verified_width_8to16"
+      ],
+      "reference_sha256": "189996b7edab90f852a9b8bd367dfd7eda9f35f48857e4db0c91a27dfdc6b01d",
+      "reference_sources": [
+        "Miscellaneous/Others/width_8to16/verified_width_8to16.v"
+      ],
+      "runnable": true,
+      "testbench": "Miscellaneous/Others/width_8to16/testbench.v",
+      "testbench_sha256": "55ace40c26b5e38451f171a7650a0035c933898c0b17b7f2d5039582b8fc1c12",
+      "testbench_top_module": "testbench",
+      "top_module": "verified_width_8to16"
+    }
+  ],
+  "runnable_designs": 46,
+  "schema_version": "1.0",
+  "unsupported_designs": 4,
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e",
+  "vendor_content_sha256": "03c7354b51550210e0d28e6a6dcddf5e5361c68365403e007e9979d3ae6e6158"
+}

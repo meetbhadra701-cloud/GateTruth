@@ -1,0 +1,102 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 100.0,
+  "killed": 10,
+  "mutants_total": 10,
+  "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_div_16bit -> div_16bit",
+  "operator_counts": {
+    "blocking_output_inversion": 7,
+    "output_inversion": 2,
+    "shift_inversion": 1
+  },
+  "per_mutant": [
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_div_16bit-m003",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_div_16bit-m004",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "left shift becomes right shift",
+      "id": "rtllm_div_16bit-m000",
+      "killed_by": "tb",
+      "operator": "shift_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_div_16bit-m008",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_div_16bit-m002",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_div_16bit-m001",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_div_16bit-m005",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_div_16bit-m009",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_div_16bit-m007",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_div_16bit-m006",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "689db4df93bcd5f6b6a5c4a11d58b374e7ff9bbd32cf484d42c1349cf2e186c1",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 0,
+  "task_id": "div_16bit",
+  "testbench_sha256": "6fb3bcb03463c374e7c9bde3966bbda08cf247e5b6b1ccb791759e402c100dc9",
+  "tool_versions": {
+    "harness_git": "unavailable",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

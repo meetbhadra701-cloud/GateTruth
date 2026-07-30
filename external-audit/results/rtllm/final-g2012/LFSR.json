@@ -1,0 +1,68 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 100.0,
+  "killed": 5,
+  "mutants_total": 5,
+  "notes": "baseline passed under Icarus Verilog-2001",
+  "operator_counts": {
+    "bitwise_inversion": 1,
+    "blocking_output_inversion": 2,
+    "output_inversion": 1,
+    "reset_polarity_flip": 1
+  },
+  "per_mutant": [
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_LFSR-m002",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "xor becomes or",
+      "id": "rtllm_LFSR-m000",
+      "killed_by": "tb",
+      "operator": "bitwise_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "reset condition inverted",
+      "id": "rtllm_LFSR-m001",
+      "killed_by": "tb",
+      "operator": "reset_polarity_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_LFSR-m004",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_LFSR-m003",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "24686004ff8eeadf59ea13b32c9553c8d5cf153df1b0b6cb1775d422974c474f",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 0,
+  "task_id": "LFSR",
+  "testbench_sha256": "8d69cf56d1dbbb4aeda06993fe0ac38ba76af159448b8cd986f7af889c2b42f1",
+  "tool_versions": {
+    "harness_git": "unavailable",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

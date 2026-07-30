@@ -1,0 +1,27 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "not-runnable"
+  },
+  "indeterminate": 0,
+  "kill_rate": 0.0,
+  "killed": 0,
+  "mutants_total": 0,
+  "notes": "simulation emitted no recognized pass banner: =========== Test completed with          20 failures =========== | <vendor>/Miscellaneous/RISC-V/clkgenerator/testbench.v:29: $finish called at 100 (1s)",
+  "operator_counts": {},
+  "per_mutant": [],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "65ea69fac07d66329af011b7447fda4f0583c5ece0c8894662c100c0ede55170",
+  "status": "unsupported",
+  "suite": "rtllm",
+  "survived": 0,
+  "task_id": "clkgenerator",
+  "testbench_sha256": "3afff2a0f7006a3dcc544f381fa332db645834626d5709defd0ce59bec1a6b04",
+  "tool_versions": {
+    "harness_git": "unavailable",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

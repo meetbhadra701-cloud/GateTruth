@@ -1,0 +1,37 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 0.0,
+  "killed": 0,
+  "mutants_total": 1,
+  "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_8bit -> adder_8bit",
+  "operator_counts": {
+    "output_inversion": 1
+  },
+  "per_mutant": [
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_8bit-m000",
+      "killed_by": null,
+      "operator": "output_inversion",
+      "verdict": "survived"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "c418cbe1bd6b377ad8c6318dc2ffc6f355f8d8f4d48a1cee7c9ae30635a8f89c",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 1,
+  "task_id": "adder_8bit",
+  "testbench_sha256": "0ce39c493ed2f55b9b08077ced9dbe0f06ecb7fd7853aa2384a174c9c4d2a465",
+  "tool_versions": {
+    "harness_git": "unavailable",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

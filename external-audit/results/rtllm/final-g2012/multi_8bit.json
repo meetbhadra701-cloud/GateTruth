@@ -1,0 +1,81 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 100.0,
+  "killed": 7,
+  "mutants_total": 7,
+  "notes": "baseline passed under Icarus Verilog-2001",
+  "operator_counts": {
+    "blocking_output_inversion": 5,
+    "comparator_boundary_flip": 1,
+    "shift_inversion": 1
+  },
+  "per_mutant": [
+    {
+      "description": "left shift becomes right shift",
+      "id": "rtllm_multi_8bit-m001",
+      "killed_by": "tb",
+      "operator": "shift_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "rtllm_multi_8bit-m000",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_multi_8bit-m002",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_multi_8bit-m004",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_multi_8bit-m005",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_multi_8bit-m003",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "rtllm_multi_8bit-m006",
+      "killed_by": "tb",
+      "operator": "blocking_output_inversion",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "2f4a0bde4ecb6ecda2f14f7885c1d82fb51d51947b192bb01e710c3a35e8d200",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 0,
+  "task_id": "multi_8bit",
+  "testbench_sha256": "b8fc5bd5a25cb84f64417d30e2b04e459805c763d48cedd192f1d927a80318dc",
+  "tool_versions": {
+    "harness_git": "unavailable",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

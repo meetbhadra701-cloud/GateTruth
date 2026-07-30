@@ -1,0 +1,27 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "not-runnable"
+  },
+  "indeterminate": 0,
+  "kill_rate": 0.0,
+  "killed": 0,
+  "mutants_total": 0,
+  "notes": "Icarus compile failed (exit 1): <vendor>/Control/Counter/ring_counter/testbench.v:20: sorry: Assignment to an entire array or to an array slice is not yet supported. | Elaboration failed",
+  "operator_counts": {},
+  "per_mutant": [],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "b8f9109b97063fdabb5edc1fe9e69ca1f27fd703443af3795274fefe984a8f07",
+  "status": "unsupported",
+  "suite": "rtllm",
+  "survived": 0,
+  "task_id": "ring_counter",
+  "testbench_sha256": "5a268ef63f00a802160e10be1f8257b9a0e3c0f41c08033e530025b2cac1950c",
+  "tool_versions": {
+    "harness_git": "unavailable",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}

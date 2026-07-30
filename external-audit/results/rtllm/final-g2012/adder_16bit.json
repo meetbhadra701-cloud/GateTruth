@@ -1,0 +1,87 @@
+{
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "indeterminate": 0,
+  "kill_rate": 25.0,
+  "killed": 2,
+  "mutants_total": 8,
+  "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_16bit -> adder_16bit",
+  "operator_counts": {
+    "bitwise_inversion": 6,
+    "output_inversion": 2
+  },
+  "per_mutant": [
+    {
+      "description": "or becomes xor",
+      "id": "rtllm_adder_16bit-m002",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "or becomes xor",
+      "id": "rtllm_adder_16bit-m000",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "or becomes xor",
+      "id": "rtllm_adder_16bit-m004",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "or becomes xor",
+      "id": "rtllm_adder_16bit-m001",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_16bit-m007",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "or becomes xor",
+      "id": "rtllm_adder_16bit-m003",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "or becomes xor",
+      "id": "rtllm_adder_16bit-m005",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "rtllm_adder_16bit-m006",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "d5c1fb4f9306b5d14c908eac05d74ed971620f53d33ae6293a71a7451c474cfe",
+  "status": "audited",
+  "suite": "rtllm",
+  "survived": 6,
+  "task_id": "adder_16bit",
+  "testbench_sha256": "5f48355ae0dac83362b9961724d817980426815e6310f9c76205fb83fdbeb19d",
+  "tool_versions": {
+    "harness_git": "unavailable",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e"
+}
