@@ -18,6 +18,7 @@ from paper.data.generate_tables import (
     generate_tables,
     load_agent_evaluations,
     load_evaluations,
+    load_mutations,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -414,6 +415,163 @@ def test_complete_runs_win_over_partial_diagnostics(tmp_path: Path) -> None:
     assert [row.model for row in track_b_rows].count("model-beta") == 1
     beta = next(row for row in track_b_rows if row.model == "model-beta")
     assert (beta.tasks_attempted, beta.tasks_objective_met) == (2, 2)
+
+
+def test_duplicate_complete_official_run_raises_instead_of_picking_one(
+    tmp_path: Path,
+) -> None:
+    """A second, fully complete official summary for the same (provider, model)
+    is always either an archival copy or a mistake -- the generator must refuse
+    rather than silently pick the lexicographically-last one (the actual
+    incident this regression covers, SB-114: a preserved sensitivity-run copy
+    of a model briefly outranked the restored real official run)."""
+
+    tasks, refs, mutations, evaluations, agent_evaluations, agent_tasks = (
+        _build_fixture(tmp_path)
+    )
+    # _build_fixture's "official" run for model-one already covers both tasks
+    # (complete); add a second, equally complete run under a different path.
+    _write_track_a_summary(
+        evaluations,
+        run_name="archived-copy",
+        provider="mock",
+        model="model-one",
+        task_ids=["t1_alpha", "t2_beta"],
+        aggregate_score=31.06,
+        tokens_in=999,
+        tokens_out=999,
+        cost_usd=3.43,
+    )
+
+    with pytest.raises(TableDataError, match="ambiguous Track A official run") as exc_info:
+        generate_tables(
+            out_dir=tmp_path / "output",
+            tasks_root=tasks,
+            refs_dir=refs,
+            mutation_dir=mutations,
+            eval_dir=evaluations,
+            agent_eval_dir=agent_evaluations,
+            agent_tasks_root=agent_tasks,
+            generated_date=date(2026, 1, 2),
+            git_sha="abc123def456",
+        )
+    message = str(exc_info.value)
+    assert "official/model-one" in message
+    assert "archived-copy/model-one" in message
+
+
+def test_duplicate_complete_track_b_official_run_raises(tmp_path: Path) -> None:
+    tasks, refs, mutations, evaluations, agent_evaluations, agent_tasks = (
+        _build_fixture(tmp_path)
+    )
+    _write_agent_summary(
+        agent_evaluations,
+        run_name="archived-copy",
+        provider="provider-b",
+        model="model-beta",
+        task_ids=["b1_alpha", "b2_beta"],
+        objective_met=2,
+        area_ratio=0.75,
+        power_ratio=0.7,
+        wns_delta_ns=0.5,
+        tokens_in=250,
+        tokens_out=50,
+        cost_usd=0.015,
+    )
+
+    with pytest.raises(TableDataError, match="ambiguous Track B official run"):
+        generate_tables(
+            out_dir=tmp_path / "output",
+            tasks_root=tasks,
+            refs_dir=refs,
+            mutation_dir=mutations,
+            eval_dir=evaluations,
+            agent_eval_dir=agent_evaluations,
+            agent_tasks_root=agent_tasks,
+            generated_date=date(2026, 1, 2),
+            git_sha="abc123def456",
+        )
+
+
+def test_mutation_loader_ignores_a_stray_file_outside_the_scoped_directory(
+    tmp_path: Path,
+) -> None:
+    """results/mutation/ has held ad hoc determinism-check repeats (repeat_a.json,
+    repeat_b.json) alongside the real certification/ directory before. Pointing
+    the loader at certification/ specifically -- and reading it non-recursively
+    -- must not see a sibling file, even one with a colliding task id."""
+
+    root = tmp_path / "mutation"
+    certification = root / "certification"
+    certification.mkdir(parents=True)
+    (certification / "t1_alpha.json").write_text(
+        json.dumps({"task": "t1_alpha", "total": 10, "killed": 10, "kill_rate": 100.0}),
+        encoding="utf-8",
+    )
+    (root / "repeat_a.json").write_text(
+        json.dumps({"task": "t1_alpha", "total": 8, "killed": 8, "kill_rate": 100.0}),
+        encoding="utf-8",
+    )
+
+    rows = load_mutations(certification)
+
+    assert len(rows) == 1
+    assert rows[0].mutants == 10
+
+
+def test_mutation_loader_rejects_two_files_claiming_the_same_task(
+    tmp_path: Path,
+) -> None:
+    certification = tmp_path / "certification"
+    certification.mkdir()
+    (certification / "a.json").write_text(
+        json.dumps({"task": "t1_alpha", "total": 10, "killed": 10, "kill_rate": 100.0}),
+        encoding="utf-8",
+    )
+    (certification / "b.json").write_text(
+        json.dumps({"task": "t1_alpha", "total": 8, "killed": 8, "kill_rate": 100.0}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(TableDataError, match="duplicate mutation certification"):
+        load_mutations(certification)
+
+
+def test_mutation_loader_rejects_a_non_ok_status_report(tmp_path: Path) -> None:
+    certification = tmp_path / "certification"
+    certification.mkdir()
+    (certification / "t1_alpha.json").write_text(
+        json.dumps(
+            {
+                "task": "t1_alpha",
+                "status": "setup_error",
+                "total": 0,
+                "killed": 0,
+                "kill_rate": 0.0,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(TableDataError, match="status='setup_error'"):
+        load_mutations(certification)
+
+
+def test_mutation_loader_ignores_the_summary_file(tmp_path: Path) -> None:
+    certification = tmp_path / "certification"
+    certification.mkdir()
+    (certification / "t1_alpha.json").write_text(
+        json.dumps({"task": "t1_alpha", "total": 10, "killed": 10, "kill_rate": 100.0}),
+        encoding="utf-8",
+    )
+    (certification / "summary.json").write_text(
+        json.dumps({"all_above_floor": True, "tasks": {}}),
+        encoding="utf-8",
+    )
+
+    rows = load_mutations(certification)
+
+    assert len(rows) == 1
 
 
 def test_partial_only_run_warns_and_is_omitted(tmp_path: Path, capsys) -> None:

@@ -83,7 +83,7 @@ def generate_tables(
     out_dir: str | Path,
     tasks_root: str | Path = REPO_ROOT / "tasks",
     refs_dir: str | Path = REPO_ROOT / "results" / "refs",
-    mutation_dir: str | Path = REPO_ROOT / "results" / "mutation",
+    mutation_dir: str | Path = REPO_ROOT / "results" / "mutation" / "certification",
     eval_dir: str | Path = REPO_ROOT / "results" / "eval",
     agent_eval_dir: str | Path = REPO_ROOT / "results" / "evalB",
     agent_tasks_root: str | Path = REPO_ROOT / "tasksB",
@@ -162,19 +162,37 @@ def load_tasks(tasks_root: Path, refs_dir: Path) -> list[TaskRecord]:
 
 
 def load_mutations(directory: Path) -> list[MutationRecord]:
-    """Load the lexically latest valid sequential report for each task."""
+    """Load every per-task report directly inside the one versioned certification
+    directory. Intentionally flat, not recursive: results/mutation/ has held
+    stray non-certification artifacts before (ad hoc determinism-check repeats),
+    and an unbounded walk would silently let one of those overwrite a real
+    task's row instead of only ever reading the certification set itself."""
 
     latest: dict[str, MutationRecord] = {}
     if not directory.is_dir():
         return []
-    for path in sorted(directory.rglob("*.json")):
+    for path in sorted(directory.glob("*.json")):
+        if path.name == "summary.json":
+            continue
         try:
             raw = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as exc:
             raise TableDataError(f"invalid mutation JSON {path}: {exc}") from exc
         if not isinstance(raw, dict) or "kill_rate" not in raw:
             continue
+        status = raw.get("status")
+        if status is not None and status != "ok":
+            raise TableDataError(
+                f"mutation report {path} has status={status!r}, not ok -- "
+                "a broken or unsupported task must not silently render as a "
+                "measured kill rate in a paper table"
+            )
         task_id = _text(raw, "task", path)
+        if task_id in latest:
+            raise TableDataError(
+                f"duplicate mutation certification for {task_id}: "
+                f"{path} conflicts with an earlier file for the same task"
+            )
         total = _integer(raw, "total", path)
         killed = _integer(raw, "killed", path)
         kill_rate = _number(raw, "kill_rate", path)
@@ -218,7 +236,9 @@ def load_evaluations(
         if not complete:
             _warn_omitted_run("Track A", key, reasons)
             continue
-        path, raw = max(complete, key=lambda candidate: candidate[0].as_posix())
+        if len(complete) > 1:
+            _raise_ambiguous_run("Track A", key, complete)
+        path, raw = complete[0]
         records.append(
             EvalRecord(
                 provider=_text(raw, "provider", path),
@@ -264,8 +284,10 @@ def load_agent_evaluations(
         if not complete:
             _warn_omitted_run("Track B", key, reasons)
             continue
+        if len(complete) > 1:
+            _raise_ambiguous_run("Track B", key, complete)
 
-        path, raw = max(complete, key=lambda candidate: candidate[0].as_posix())
+        path, raw = complete[0]
         attempted = _integer(raw, "tasks_attempted", path)
         objective_met = _integer(raw, "tasks_objective_met", path)
         rate = _number(raw, "objective_met_rate", path)
@@ -474,6 +496,22 @@ def _warn_omitted_run(
         f"warning: omitted {track} {provider}/{model}; "
         f"no complete official run ({details})",
         file=sys.stderr,
+    )
+
+
+def _raise_ambiguous_run(
+    track: str,
+    key: tuple[str, str],
+    complete: list[tuple[Path, dict[str, Any]]],
+) -> None:
+    provider, model = key
+    paths = ", ".join(path.as_posix() for path, _raw in sorted(complete))
+    raise TableDataError(
+        f"ambiguous {track} official run for {provider}/{model}: "
+        f"{len(complete)} complete, signed candidates found ({paths}). "
+        "A duplicate complete official run is always either an archival copy "
+        "or a mistake -- move or delete the stale one rather than let this "
+        "generator guess which is authoritative."
     )
 
 
@@ -738,7 +776,9 @@ def _git_sha(root: Path) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", default="paper/data/build")
-    parser.add_argument("--from-dir", default="results/mutation", dest="mutation_dir")
+    parser.add_argument(
+        "--from-dir", default="results/mutation/certification", dest="mutation_dir"
+    )
     parser.add_argument("--tasks-root", default="tasks")
     parser.add_argument("--refs-dir", default="results/refs")
     parser.add_argument("--eval-dir", default="results/eval")
