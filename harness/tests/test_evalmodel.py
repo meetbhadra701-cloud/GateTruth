@@ -68,6 +68,74 @@ def test_extract_module_source_accepts_fenceless_raw_code():
     assert extract_module_source(source) == source + "\n"
 
 
+def test_extract_module_source_ignores_a_module_keyword_inside_a_comment():
+    response = (
+        "// module fake_thing; -- not a real declaration\n"
+        "I cannot implement this task."
+    )
+
+    with pytest.raises(ValueError, match="no SystemVerilog module declaration"):
+        extract_module_source(response)
+
+
+def test_extract_module_source_ignores_a_module_keyword_inside_a_string_literal():
+    source = (
+        'module real_example(input logic a, output logic y);\n'
+        '  // synthesis note only, not a declaration\n'
+        '  initial $display("module decoy_thing;");\n'
+        "  assign y = a;\n"
+        "endmodule"
+    )
+
+    assert extract_module_source(source) == source + "\n"
+
+
+def test_extract_module_source_rejects_a_trailing_second_module():
+    source = (
+        "module real_example(input logic a, output logic y);\n"
+        "  assign y = a;\n"
+        "endmodule\n"
+        "module decoy_helper(input logic a, output logic y);\n"
+        "  assign y = a;\n"
+        "endmodule\n"
+    )
+
+    with pytest.raises(ValueError, match="multiple module declarations"):
+        extract_module_source(source)
+
+
+def test_extract_module_source_enforces_the_locked_interface_module_name():
+    source = "module wrong_name(input logic a, output logic y);\nassign y = a;\nendmodule"
+
+    with pytest.raises(ValueError, match="does not match the locked interface"):
+        extract_module_source(source, expected_module="real_example")
+
+    assert (
+        extract_module_source(source, expected_module="wrong_name")
+        == source + "\n"
+    )
+
+
+def test_extract_module_source_picks_the_first_fenced_candidate_with_one_valid_module():
+    response = (
+        "Here's an example usage, then the real module:\n"
+        "```systemverilog\n"
+        "module usage_example; initial $display(\"demo\"); endmodule\n"
+        "module accidental_second; endmodule\n"
+        "```\n"
+        "```systemverilog\n"
+        "module real_example(input logic a, output logic y);\n"
+        "  assign y = a;\n"
+        "endmodule\n"
+        "```\n"
+    )
+
+    result = extract_module_source(response, expected_module="real_example")
+
+    assert "real_example" in result
+    assert "usage_example" not in result
+
+
 def test_tier_selection_covers_frozen_60_task_suite():
     tiers = {tier: task_ids_for_tier(tier) for tier in ("T1", "T2", "T3")}
 

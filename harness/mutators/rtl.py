@@ -9,6 +9,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from harness.sv_mask import mask_code as _code_mask
+
 
 @dataclass(frozen=True)
 class Mutant:
@@ -237,63 +239,6 @@ def _invert_blocking_assignments(source: str) -> list[str]:
         replacement = f"{lhs} = ~({rhs});"
         results.append(source[: match.start()] + replacement + source[match.end() :])
     return results
-
-
-def _code_mask(source: str) -> str:
-    """Blank comments and string literals while preserving source offsets."""
-    chars = list(source)
-    index = 0
-    mode = "code"
-    while index < len(chars):
-        if mode == "code" and chars[index : index + 2] == ["/", "/"]:
-            mode = "line"
-            chars[index] = chars[index + 1] = " "
-            index += 2
-            continue
-        if mode == "code" and chars[index : index + 2] == ["/", "*"]:
-            mode = "block"
-            chars[index] = chars[index + 1] = " "
-            index += 2
-            continue
-        if mode == "code" and chars[index] == '"':
-            mode = "string"
-            chars[index] = " "
-            index += 1
-            continue
-        if mode == "code":
-            index += 1
-            continue
-        if mode == "line":
-            if chars[index] == "\n":
-                mode = "code"
-            else:
-                chars[index] = " "
-            index += 1
-            continue
-        if mode == "block":
-            if chars[index : index + 2] == ["*", "/"]:
-                chars[index] = chars[index + 1] = " "
-                index += 2
-                mode = "code"
-            else:
-                if chars[index] != "\n":
-                    chars[index] = " "
-                index += 1
-            continue
-        if mode == "string":
-            if chars[index] == "\\":
-                chars[index] = " "
-                if index + 1 < len(chars):
-                    chars[index + 1] = " "
-                index += 2
-            elif chars[index] == '"':
-                chars[index] = " "
-                index += 1
-                mode = "code"
-            else:
-                chars[index] = " "
-                index += 1
-    return "".join(chars)
 
 
 def _generic_specs() -> list[tuple[str, str, str, str]]:

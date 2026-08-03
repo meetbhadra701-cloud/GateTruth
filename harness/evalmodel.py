@@ -19,6 +19,7 @@ from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import ResultManifest, TemperatureSetting
 from harness.schemas.task_yaml import load_task_yaml
 from harness.spend import DEFAULT_SPEND_PATH, SpendCapExceeded, load_spend, spend_cap_from_env
+from harness.sv_mask import mask_code
 
 PROMPT_VERSION = "track-a-rtl-v1"
 DEFAULT_MAX_TOKENS = 4096
@@ -27,7 +28,7 @@ SYSTEM_PROMPT = (
     "SystemVerilog module implementing the locked interface. Do not emit a testbench, prose, "
     "analysis, or more than one module. Output only SystemVerilog source code."
 )
-MODULE_RE = re.compile(r"\bmodule\s+[A-Za-z_][A-Za-z0-9_$]*\b")
+MODULE_DECL_RE = re.compile(r"\bmodule\s+([A-Za-z_][A-Za-z0-9_$]*)\b")
 FENCE_RE = re.compile(
     r"```[ \t]*(?:systemverilog|verilog|sv)?[ \t]*\r?\n?(.*?)```",
     flags=re.IGNORECASE | re.DOTALL,
@@ -58,8 +59,16 @@ def build_generation_prompt(task: TaskPackage) -> tuple[str, str]:
     return prompt, SYSTEM_PROMPT
 
 
-def extract_module_source(response: str) -> str:
-    """Return fenced or raw module source, refusing non-code responses."""
+def extract_module_source(response: str, *, expected_module: str | None = None) -> str:
+    """Return fenced or raw module source, refusing non-code responses.
+
+    Module declarations are matched against comment/string-masked text, so a
+    `module` keyword inside a `//` comment or a string literal is never
+    mistaken for a real declaration, and exactly one declaration is required
+    -- a second, trailing module is rejected rather than silently passed
+    through to the synthesis flow. When expected_module is given (the task's
+    locked top-level module name), the one declaration found must match it.
+    """
 
     if not isinstance(response, str):
         raise ValueError("provider response must be text")
@@ -70,15 +79,32 @@ def extract_module_source(response: str) -> str:
     if fenced:
         for candidate in fenced:
             source = candidate.strip()
-            if MODULE_RE.search(source):
+            if _module_shape_error(source, expected_module) is None:
                 return source + "\n"
         raise ValueError("generation contained no SystemVerilog module declaration")
     if fence_count:
         raise ValueError("generation contained a malformed code fence")
     source = response.strip()
-    if not MODULE_RE.search(source):
-        raise ValueError("generation contained no SystemVerilog module declaration")
+    error = _module_shape_error(source, expected_module)
+    if error is not None:
+        raise ValueError(error)
     return source + "\n"
+
+
+def _module_shape_error(source: str, expected_module: str | None) -> str | None:
+    """Return why `source` is not a valid single-module submission, or None."""
+
+    names = MODULE_DECL_RE.findall(mask_code(source))
+    if not names:
+        return "generation contained no SystemVerilog module declaration"
+    if len(names) > 1:
+        return f"generation contained multiple module declarations: {', '.join(names)}"
+    if expected_module is not None and names[0] != expected_module:
+        return (
+            f"generation's module {names[0]!r} does not match the locked "
+            f"interface module {expected_module!r}"
+        )
+    return None
 
 
 def task_ids_for_tier(tier: str) -> list[str]:
@@ -203,7 +229,9 @@ def eval_model(
                     _write_manifest(manifest, manifest_path)
                 else:
                     try:
-                        source = extract_module_source(response or "")
+                        source = extract_module_source(
+                            response or "", expected_module=plan.task.top_module
+                        )
                         source_path = task_dir / f"sample_{sample_number}.sv"
                         source_path.write_text(source, encoding="utf-8")
                         if official:
