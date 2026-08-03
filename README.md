@@ -27,8 +27,9 @@ design pass — and no amount of pass@k tells you which kind you have.
 We certify the methodology against our own open reference suite first — 60
 specification-to-RTL generation tasks plus 8 agentic-repair tasks, each carried
 through a **real, pinned open-source ASIC flow** (synthesis + static timing/power
-on the sky130 technology) with correctness enforced as a **hard gate**, and every
-one of the 60 Track A testbenches certified above a 95% mutation-kill floor
+on the sky130 technology) with correctness enforced as a **hard gate**, and 49 of
+the 60 Track A testbenches certified above a 95% mutation-kill floor — the other
+11 are a disclosed finding, not an omission; see the paper
 (Track B's 8 testbenches are not yet certified under this protocol — see the
 paper) — and then point the same engine, unmodified, at external RTL benchmarks
 the field already relies on. See the [paper](#citation) for the audit
