@@ -5,10 +5,12 @@ abstract: >-
   GateTruth is a mutation-testing engine and methodology for auditing the rigor of RTL benchmark
   testbenches for LLM/agent hardware design: inject deterministic, seeded semantic mutants into a
   reference implementation and measure what fraction the testbench catches. The methodology is
-  certified against an included open reference suite (60 specification-to-RTL generation tasks
+  validated against an included open reference suite (60 specification-to-RTL generation tasks
   and 8 agentic-repair tasks, scored through a pinned, deterministic synthesis-to-timing flow with
   correctness enforced as a strict gate) before being applied, unmodified, to external RTL
-  benchmarks.
+  benchmarks. 46 of the 60 Track A testbenches currently clear the suite's own >=95% mutation-kill
+  floor; the other 14 do not, reported as a finding rather than omitted. See the paper for the
+  exact per-task results.
 type: software
 authors:
   - family-names: Bhadra

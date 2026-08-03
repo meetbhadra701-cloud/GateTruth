@@ -37,8 +37,9 @@ flowchart LR
 We certify the methodology against our own open reference suite first — 60
 specification-to-RTL generation tasks plus 8 agentic-repair tasks, each carried
 through a **real, pinned open-source ASIC flow** (synthesis + static timing/power
-on the sky130 technology) with correctness enforced as a **hard gate**. 49 of the
-60 Track A testbenches clear a ≥95% mutation-kill floor; the other 11 don't, and
+on the sky130 technology) with correctness enforced as a **hard gate**. 46 of the
+60 Track A testbenches clear a ≥95% mutation-kill floor, counting only behavioral
+simulation failures as kills; the other 14 don't, and
 we report that as a finding rather than an omission — see the
 [paper](#citation) for exactly which ones and why. Only then do we point the
 same engine, unmodified, at an external RTL benchmark the field already relies
@@ -190,8 +191,10 @@ designs and hidden vectors require human sign-off; models never see them.
   vectors, re-running a design reproduces it byte-for-byte (tamper-evidence against accidental
   corruption, not a keyed authenticity signature) -- see "Reproducibility scope" below for
   exactly what that does and does not cover from a public checkout.
-- **Mutation-gated tests.** Every task's test suite must kill ≥95% of injected RTL
-  mutants before the task is admitted.
+- **Mutation-gated tests.** New tasks are required to clear a ≥95% mutation-kill floor before
+  admission, counting only behavioral simulation failures as kills. 14 of the 60 currently-admitted
+  Track A tasks do not clear it today, a disclosed finding rather than a silently relaxed gate —
+  see the [paper](#citation) for exactly which ones and why.
 - **Contamination controls.** Per-task canaries, a sign-off-gated hidden-vector
   set, and a pre-publication canary scan.
 - **Reproducibility scope.** A clean public checkout runs the public smoke tests, and

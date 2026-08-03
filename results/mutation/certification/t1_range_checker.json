@@ -1,8 +1,14 @@
 {
+  "baseline": {
+    "log": "",
+    "stage": null,
+    "status": "pass"
+  },
+  "formal_only_kills": 0,
   "indeterminate": 0,
   "jobs": 1,
   "kill_rate": 100.0,
-  "killed": 5,
+  "killed": 4,
   "min_kill": 95.0,
   "official": true,
   "results": [
@@ -10,46 +16,57 @@
       "description": "reset condition inverted",
       "id": "t1_range_checker-m001",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "reset_polarity_flip"
+      "operator": "reset_polarity_flip",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "and becomes or",
       "id": "t1_range_checker-m000",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "logic_inversion"
+      "operator": "logic_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "registered assignment holds its previous value",
       "id": "t1_range_checker-m003",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_hold"
+      "operator": "assignment_hold",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "registered assignment holds its previous value",
       "id": "t1_range_checker-m002",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_hold"
+      "operator": "assignment_hold",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "combinational assignment is inverted",
       "id": "t1_range_checker-m004",
       "indeterminate": false,
-      "killed": true,
-      "killed_by": "lint",
-      "operator": "blocking_output_inversion"
+      "killed_by": null,
+      "operator": "blocking_output_inversion",
+      "setup_error": false,
+      "stillborn": true
     }
   ],
+  "schema_version": 2,
   "seed": 1337,
+  "setup_errors": 0,
+  "status": "ok",
+  "status_reason": null,
+  "stillborn": 1,
   "survived": 0,
   "survivors": [],
   "task": "t1_range_checker",
-  "total": 5
+  "total": 4,
+  "total_generated": 5
 }

@@ -59,6 +59,7 @@ def main(argv: list[str] | None = None) -> int:
         write_json(args.out / f"{task_id}.json", report)
         task_summaries[task_id] = {
             "status": report["status"],
+            "total_generated": report["total_generated"],
             "indeterminate": report["indeterminate"],
             "kill_rate": report["kill_rate"],
             "killed": report["killed"],

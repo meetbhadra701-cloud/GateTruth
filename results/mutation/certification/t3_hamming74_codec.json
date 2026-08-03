@@ -1,4 +1,10 @@
 {
+  "baseline": {
+    "log": "",
+    "stage": null,
+    "status": "pass"
+  },
+  "formal_only_kills": 0,
   "indeterminate": 0,
   "jobs": 1,
   "kill_rate": 100.0,
@@ -10,318 +16,363 @@
       "description": "combinational assignment is inverted",
       "id": "t3_hamming74_codec-m032",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "blocking_output_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m014",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "combinational assignment is inverted",
       "id": "t3_hamming74_codec-m031",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "blocking_output_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m008",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m004",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "zero assignment becomes all ones",
       "id": "t3_hamming74_codec-m018",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_deletion"
+      "operator": "assignment_deletion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "combinational assignment is inverted",
       "id": "t3_hamming74_codec-m028",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "blocking_output_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "combinational assignment is inverted",
       "id": "t3_hamming74_codec-m029",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "blocking_output_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "combinational assignment is inverted",
       "id": "t3_hamming74_codec-m027",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "blocking_output_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m007",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m001",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m015",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m005",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m000",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "combinational assignment is inverted",
       "id": "t3_hamming74_codec-m035",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "blocking_output_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m009",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "reset condition inverted",
       "id": "t3_hamming74_codec-m017",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "reset_polarity_flip"
+      "operator": "reset_polarity_flip",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "combinational assignment is inverted",
       "id": "t3_hamming74_codec-m026",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "blocking_output_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "registered assignment holds its previous value",
       "id": "t3_hamming74_codec-m025",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_hold"
+      "operator": "assignment_hold",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "left shift becomes right shift",
       "id": "t3_hamming74_codec-m016",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "shift_inversion"
+      "operator": "shift_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m002",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "combinational assignment is inverted",
       "id": "t3_hamming74_codec-m030",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "blocking_output_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "registered assignment holds its previous value",
       "id": "t3_hamming74_codec-m020",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_hold"
+      "operator": "assignment_hold",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m013",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m003",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m011",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "combinational assignment is inverted",
       "id": "t3_hamming74_codec-m038",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "blocking_output_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "combinational assignment is inverted",
       "id": "t3_hamming74_codec-m033",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "blocking_output_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m006",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "registered assignment holds its previous value",
       "id": "t3_hamming74_codec-m022",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_hold"
+      "operator": "assignment_hold",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m012",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "zero assignment becomes all ones",
       "id": "t3_hamming74_codec-m019",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_deletion"
+      "operator": "assignment_deletion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "combinational assignment is inverted",
       "id": "t3_hamming74_codec-m037",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "blocking_output_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "registered assignment holds its previous value",
       "id": "t3_hamming74_codec-m024",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_hold"
+      "operator": "assignment_hold",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "registered assignment holds its previous value",
       "id": "t3_hamming74_codec-m021",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_hold"
+      "operator": "assignment_hold",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "xor becomes or",
       "id": "t3_hamming74_codec-m010",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "bitwise_inversion"
+      "operator": "bitwise_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "combinational assignment is inverted",
       "id": "t3_hamming74_codec-m036",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "blocking_output_inversion",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "registered assignment holds its previous value",
       "id": "t3_hamming74_codec-m023",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_hold"
+      "operator": "assignment_hold",
+      "setup_error": false,
+      "stillborn": false
     },
     {
       "description": "combinational assignment is inverted",
       "id": "t3_hamming74_codec-m034",
       "indeterminate": false,
-      "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "blocking_output_inversion",
+      "setup_error": false,
+      "stillborn": false
     }
   ],
+  "schema_version": 2,
   "seed": 1337,
+  "setup_errors": 0,
+  "status": "ok",
+  "status_reason": null,
+  "stillborn": 0,
   "survived": 0,
   "survivors": [],
   "task": "t3_hamming74_codec",
-  "total": 39
+  "total": 39,
+  "total_generated": 39
 }
