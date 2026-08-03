@@ -1,0 +1,396 @@
+{
+  "diagnostic_code_pattern": "%(?:Warning|Error)-([A-Z0-9]+)",
+  "generated_from": "local sample_1.log files under results/eval-16384 (gitignored, not committed)",
+  "pairs": {
+    "claude-haiku-4-5-20251001/t1_barrel_shifter": [
+      "WIDTHEXPAND"
+    ],
+    "claude-haiku-4-5-20251001/t1_debouncer": [
+      "WIDTHEXPAND"
+    ],
+    "claude-haiku-4-5-20251001/t1_leading_zero_counter": [
+      "WIDTHTRUNC"
+    ],
+    "claude-haiku-4-5-20251001/t1_lfsr": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "claude-haiku-4-5-20251001/t1_mod_n_counter": [
+      "WIDTHEXPAND"
+    ],
+    "claude-haiku-4-5-20251001/t1_priority_encoder": [
+      "WIDTHTRUNC"
+    ],
+    "claude-haiku-4-5-20251001/t2_pulse_stretcher": [
+      "WIDTHTRUNC"
+    ],
+    "claude-haiku-4-5-20251001/t2_round_robin_arbiter": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "claude-haiku-4-5-20251001/t2_spi_master": [
+      "WIDTHEXPAND"
+    ],
+    "claude-haiku-4-5-20251001/t2_stream_downsizer": [
+      "WIDTHEXPAND"
+    ],
+    "claude-haiku-4-5-20251001/t2_stream_upsizer": [
+      "WIDTHEXPAND"
+    ],
+    "claude-haiku-4-5-20251001/t2_sync_fifo": [
+      "LATCH",
+      "WIDTHEXPAND"
+    ],
+    "claude-haiku-4-5-20251001/t2_token_bucket_limiter": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "claude-haiku-4-5-20251001/t2_uart_rx": [
+      "WIDTHEXPAND"
+    ],
+    "claude-haiku-4-5-20251001/t2_uart_tx": [],
+    "claude-haiku-4-5-20251001/t3_aes_sbox_datapath": [],
+    "claude-haiku-4-5-20251001/t3_booth_multiplier": [
+      "WIDTHEXPAND"
+    ],
+    "claude-haiku-4-5-20251001/t3_fir_filter_3tap": [
+      "WIDTHEXPAND"
+    ],
+    "claude-haiku-4-5-20251001/t3_fir_filter_loadable": [
+      "WIDTHEXPAND"
+    ],
+    "claude-haiku-4-5-20251001/t3_lru_tracker": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "claude-haiku-4-5-20251001/t3_moving_sum": [
+      "WIDTHEXPAND"
+    ],
+    "claude-haiku-4-5-20251001/t3_sequential_divider": [
+      "WIDTHEXPAND"
+    ],
+    "claude-opus-4-8/t1_barrel_shifter": [
+      "WIDTHEXPAND"
+    ],
+    "claude-opus-4-8/t1_debouncer": [
+      "WIDTHEXPAND"
+    ],
+    "claude-opus-4-8/t1_mod_n_counter": [
+      "WIDTHEXPAND"
+    ],
+    "claude-opus-4-8/t2_majority_filter": [
+      "WIDTHEXPAND"
+    ],
+    "claude-opus-4-8/t2_pulse_stretcher": [
+      "WIDTHTRUNC"
+    ],
+    "claude-opus-4-8/t2_round_robin_arbiter": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "claude-opus-4-8/t2_spi_master": [
+      "WIDTHEXPAND"
+    ],
+    "claude-opus-4-8/t2_stream_downsizer": [
+      "WIDTHEXPAND"
+    ],
+    "claude-opus-4-8/t2_stream_upsizer": [
+      "WIDTHEXPAND"
+    ],
+    "claude-opus-4-8/t2_sync_fifo": [
+      "WIDTHEXPAND"
+    ],
+    "claude-opus-4-8/t2_uart_rx": [
+      "WIDTHEXPAND"
+    ],
+    "claude-opus-4-8/t2_uart_tx": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "claude-opus-4-8/t3_booth_multiplier": [
+      "WIDTHEXPAND"
+    ],
+    "claude-opus-4-8/t3_fir_filter_loadable": [
+      "MULTIDRIVEN"
+    ],
+    "claude-opus-4-8/t3_lru_tracker": [
+      "WIDTHEXPAND"
+    ],
+    "claude-opus-4-8/t3_sequential_divider": [
+      "WIDTHEXPAND"
+    ],
+    "claude-sonnet-4-6/t1_barrel_shifter": [
+      "WIDTHEXPAND"
+    ],
+    "claude-sonnet-4-6/t1_mod_n_counter": [
+      "WIDTHEXPAND"
+    ],
+    "claude-sonnet-4-6/t2_axi_lite_regfile": [
+      "WIDTHEXPAND"
+    ],
+    "claude-sonnet-4-6/t2_majority_filter": [
+      "WIDTHEXPAND"
+    ],
+    "claude-sonnet-4-6/t2_pulse_stretcher": [
+      "WIDTHTRUNC"
+    ],
+    "claude-sonnet-4-6/t2_round_robin_arbiter": [
+      "WIDTHEXPAND"
+    ],
+    "claude-sonnet-4-6/t2_spi_master": [
+      "WIDTHEXPAND"
+    ],
+    "claude-sonnet-4-6/t2_sync_fifo": [
+      "WIDTHEXPAND"
+    ],
+    "claude-sonnet-4-6/t2_token_bucket_limiter": [],
+    "claude-sonnet-4-6/t2_uart_rx": [
+      "WIDTHEXPAND"
+    ],
+    "claude-sonnet-4-6/t2_uart_tx": [
+      "WIDTHEXPAND"
+    ],
+    "claude-sonnet-4-6/t3_lru_tracker": [
+      "WIDTHEXPAND"
+    ],
+    "claude-sonnet-4-6/t3_moving_sum": [
+      "WIDTHEXPAND"
+    ],
+    "claude-sonnet-4-6/t3_sequential_divider": [
+      "WIDTHEXPAND"
+    ],
+    "google_gemini-2.5-pro/t1_barrel_shifter": [
+      "WIDTHEXPAND"
+    ],
+    "google_gemini-2.5-pro/t1_leading_zero_counter": [
+      "WIDTHTRUNC"
+    ],
+    "google_gemini-2.5-pro/t1_mod_n_counter": [
+      "WIDTHEXPAND"
+    ],
+    "google_gemini-2.5-pro/t1_priority_encoder": [
+      "WIDTHTRUNC"
+    ],
+    "google_gemini-2.5-pro/t2_delay_trigger": [],
+    "google_gemini-2.5-pro/t2_i2c_slave": [],
+    "google_gemini-2.5-pro/t2_mm_timer": [
+      "WIDTHEXPAND"
+    ],
+    "google_gemini-2.5-pro/t2_priority_interrupt_controller": [
+      "WIDTHTRUNC"
+    ],
+    "google_gemini-2.5-pro/t2_stream_downsizer": [
+      "WIDTHEXPAND"
+    ],
+    "google_gemini-2.5-pro/t2_stream_upsizer": [
+      "WIDTHEXPAND"
+    ],
+    "google_gemini-2.5-pro/t2_sync_fifo": [
+      "WIDTHEXPAND"
+    ],
+    "google_gemini-2.5-pro/t2_uart_tx": [
+      "WIDTHEXPAND"
+    ],
+    "google_gemini-2.5-pro/t2_watchdog_timer": [
+      "WIDTHTRUNC"
+    ],
+    "google_gemini-2.5-pro/t3_fir_filter_loadable": [],
+    "google_gemini-2.5-pro/t3_iir_filter_1st_order": [],
+    "google_gemini-2.5-pro/t3_lru_tracker": [],
+    "google_gemini-2.5-pro/t3_moving_sum": [
+      "IMPLICITSTATIC",
+      "WIDTHEXPAND"
+    ],
+    "gpt-5-mini/t1_barrel_shifter": [
+      "WIDTHEXPAND"
+    ],
+    "gpt-5-mini/t1_debouncer": [
+      "WIDTHEXPAND"
+    ],
+    "gpt-5-mini/t1_gray_to_binary": [],
+    "gpt-5-mini/t1_leading_zero_counter": [
+      "WIDTHEXPAND"
+    ],
+    "gpt-5-mini/t1_mod_n_counter": [
+      "WIDTHTRUNC"
+    ],
+    "gpt-5-mini/t1_priority_encoder": [
+      "WIDTHTRUNC"
+    ],
+    "gpt-5-mini/t2_axi_lite_regfile": [
+      "IMPLICITSTATIC",
+      "WIDTHEXPAND"
+    ],
+    "gpt-5-mini/t2_majority_filter": [
+      "LATCH",
+      "WIDTHEXPAND"
+    ],
+    "gpt-5-mini/t2_pulse_stretcher": [
+      "WIDTHTRUNC"
+    ],
+    "gpt-5-mini/t2_round_robin_arbiter": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "gpt-5-mini/t2_spi_slave": [],
+    "gpt-5-mini/t2_stream_downsizer": [
+      "WIDTHEXPAND"
+    ],
+    "gpt-5-mini/t2_stream_upsizer": [
+      "WIDTHEXPAND"
+    ],
+    "gpt-5-mini/t2_sync_fifo": [],
+    "gpt-5-mini/t2_token_bucket_limiter": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "gpt-5-mini/t2_uart_rx": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "gpt-5-mini/t3_booth_multiplier": [],
+    "gpt-5-mini/t3_fir_filter_3tap": [],
+    "gpt-5-mini/t3_fir_filter_loadable": [
+      "WIDTHEXPAND"
+    ],
+    "gpt-5-mini/t3_lru_tracker": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "gpt-5-mini/t3_moving_sum": [],
+    "gpt-5-mini/t3_sequential_divider": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "gpt-5-mini/t3_systolic_pe_tile": [
+      "SELRANGE"
+    ],
+    "gpt-5/t1_mod_n_counter": [],
+    "gpt-5/t2_majority_filter": [],
+    "gpt-5/t2_round_robin_arbiter": [],
+    "gpt-5/t2_spi_master": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "gpt-5/t2_stream_downsizer": [
+      "WIDTHEXPAND"
+    ],
+    "gpt-5/t2_stream_upsizer": [
+      "WIDTHEXPAND"
+    ],
+    "gpt-5/t2_token_bucket_limiter": [
+      "WIDTHTRUNC"
+    ],
+    "gpt-5/t2_uart_rx": [
+      "WIDTHEXPAND"
+    ],
+    "gpt-5/t2_uart_tx": [
+      "WIDTHEXPAND"
+    ],
+    "gpt-5/t3_booth_multiplier": [],
+    "gpt-5/t3_fir_filter_3tap": [
+      "WIDTHEXPAND"
+    ],
+    "gpt-5/t3_fir_filter_loadable": [],
+    "gpt-5/t3_moving_sum": [],
+    "gpt-5/t3_systolic_pe_tile": [
+      "WIDTHEXPAND"
+    ],
+    "meta-llama_llama-4-maverick/t1_barrel_shifter": [
+      "WIDTHEXPAND"
+    ],
+    "meta-llama_llama-4-maverick/t1_debouncer": [
+      "WIDTHEXPAND"
+    ],
+    "meta-llama_llama-4-maverick/t1_leading_zero_counter": [
+      "WIDTHTRUNC"
+    ],
+    "meta-llama_llama-4-maverick/t1_mod_n_counter": [
+      "WIDTHEXPAND"
+    ],
+    "meta-llama_llama-4-maverick/t1_priority_encoder": [
+      "WIDTHTRUNC"
+    ],
+    "meta-llama_llama-4-maverick/t1_saturating_adder": [
+      "BLKANDNBLK",
+      "MULTIDRIVEN"
+    ],
+    "meta-llama_llama-4-maverick/t2_i2c_slave": [],
+    "meta-llama_llama-4-maverick/t2_majority_filter": [
+      "BLKANDNBLK",
+      "MULTIDRIVEN",
+      "UNOPTFLAT",
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "meta-llama_llama-4-maverick/t2_priority_interrupt_controller": [
+      "WIDTHTRUNC"
+    ],
+    "meta-llama_llama-4-maverick/t2_pulse_stretcher": [
+      "WIDTHTRUNC"
+    ],
+    "meta-llama_llama-4-maverick/t2_round_robin_arbiter": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "meta-llama_llama-4-maverick/t2_spi_master": [
+      "BLKANDNBLK",
+      "CASEINCOMPLETE",
+      "MULTIDRIVEN",
+      "WIDTHEXPAND"
+    ],
+    "meta-llama_llama-4-maverick/t2_stream_downsizer": [
+      "WIDTHEXPAND"
+    ],
+    "meta-llama_llama-4-maverick/t2_stream_upsizer": [
+      "WIDTHEXPAND"
+    ],
+    "meta-llama_llama-4-maverick/t2_sync_fifo": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "meta-llama_llama-4-maverick/t2_token_bucket_limiter": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "meta-llama_llama-4-maverick/t2_uart_rx": [
+      "BLKANDNBLK",
+      "CASEINCOMPLETE",
+      "MULTIDRIVEN",
+      "WIDTHEXPAND"
+    ],
+    "meta-llama_llama-4-maverick/t2_uart_tx": [
+      "CASEINCOMPLETE",
+      "WIDTHEXPAND"
+    ],
+    "meta-llama_llama-4-maverick/t2_watchdog_timer": [
+      "WIDTHTRUNC"
+    ],
+    "meta-llama_llama-4-maverick/t3_booth_multiplier": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "meta-llama_llama-4-maverick/t3_crc32": [
+      "WIDTHTRUNC"
+    ],
+    "meta-llama_llama-4-maverick/t3_hamming74_codec": [
+      "LATCH"
+    ],
+    "meta-llama_llama-4-maverick/t3_lru_tracker": [
+      "WIDTHEXPAND"
+    ],
+    "meta-llama_llama-4-maverick/t3_moving_sum": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "meta-llama_llama-4-maverick/t3_saturating_accumulator": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ],
+    "meta-llama_llama-4-maverick/t3_sequential_divider": [
+      "WIDTHEXPAND",
+      "WIDTHTRUNC"
+    ]
+  },
+  "schema_version": 1
+}
