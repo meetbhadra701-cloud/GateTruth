@@ -90,6 +90,7 @@ def test_fenced_rtl_scores_end_to_end_and_records_prompt(tmp_path):
         tokens_out_per_call=37,
         cost_usd_per_call=0.00125,
     )
+    provider.spend_path = tmp_path / "spend.json"
 
     summary = eval_model(["toy_task"], provider, out_dir=tmp_path, max_tokens=128)
     manifest = load_manifest(manifest_path(tmp_path))
@@ -115,6 +116,7 @@ def test_fenced_rtl_scores_end_to_end_and_records_prompt(tmp_path):
 
 def test_non_code_generation_emits_valid_score_zero_manifest(tmp_path):
     provider = RecordingProvider(["I cannot provide an implementation."], model="mock-garbage")
+    provider.spend_path = tmp_path / "spend.json"
 
     summary = eval_model(["toy_task"], provider, out_dir=tmp_path)
     manifest = load_manifest(manifest_path(tmp_path, "mock-garbage"))
@@ -152,6 +154,7 @@ def test_provider_default_temperature_is_recorded_in_signed_outputs(tmp_path):
 
 def test_official_gate_skips_unsigned_task_without_provider_call(tmp_path):
     provider = RecordingProvider([TOY_REF.read_text(encoding="utf-8")], model="mock-official")
+    provider.spend_path = tmp_path / "spend.json"
 
     summary = eval_model(["toy_task"], provider, out_dir=tmp_path, official=True)
     manifest = load_manifest(manifest_path(tmp_path, "mock-official"))
@@ -167,14 +170,19 @@ def test_official_gate_skips_unsigned_task_without_provider_call(tmp_path):
 
 
 def test_summary_signature_is_deterministic(tmp_path):
+    first_provider = RecordingProvider(["not code"], model="mock-deterministic")
+    first_provider.spend_path = tmp_path / "spend.json"
+    second_provider = RecordingProvider(["not code"], model="mock-deterministic")
+    second_provider.spend_path = tmp_path / "spend.json"
+
     first = eval_model(
         ["toy_task"],
-        RecordingProvider(["not code"], model="mock-deterministic"),
+        first_provider,
         out_dir=tmp_path / "first",
     )
     second = eval_model(
         ["toy_task"],
-        RecordingProvider(["not code"], model="mock-deterministic"),
+        second_provider,
         out_dir=tmp_path / "second",
     )
 
@@ -201,6 +209,7 @@ def test_preflight_refuses_before_provider_call(tmp_path, monkeypatch):
 
 def test_pipeline_exception_emits_score_zero_manifest(tmp_path, monkeypatch):
     provider = RecordingProvider([TOY_REF.read_text(encoding="utf-8")], model="mock-crash")
+    provider.spend_path = tmp_path / "spend.json"
     monkeypatch.setattr(
         evalmodel,
         "run_task",
@@ -298,6 +307,7 @@ def test_spend_cap_exceeded_mid_call_propagates_instead_of_scoring_zero(tmp_path
     per-sample failure: it must not be folded into a generic "provider error" that
     writes a zeroed manifest indistinguishable from an incorrect submission."""
     provider = SpendCapExceededProvider(["irrelevant"])
+    provider.spend_path = tmp_path / "spend.json"
 
     with pytest.raises(SpendCapExceeded):
         eval_model(["toy_task"], provider, out_dir=tmp_path)

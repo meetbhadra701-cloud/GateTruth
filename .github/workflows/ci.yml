@@ -32,11 +32,16 @@ jobs:
             flows
 
       - name: Stage immutable execution source
+        # /work is mounted read-only from this archive below. Nothing under it
+        # is writable, including subpaths like results/ or site/build/ that
+        # exist in the real tree -- git archive does not materialize
+        # site/build/ at all (it's gitignored), so a bind mount targeting
+        # /work/site/build has no mountpoint to attach to and fails outright.
+        # All writable output goes to /output instead; no step needs to write
+        # under /work (tests use pytest's tmp_path fixture via --basetemp,
+        # and ci_t1_smoke.py takes an explicit --out under /output).
         run: |
-          mkdir -p \
-            "$RUNNER_TEMP/gatetruth-source" \
-            "$RUNNER_TEMP/gatetruth-output/results" \
-            "$RUNNER_TEMP/gatetruth-output/site-build"
+          mkdir -p "$RUNNER_TEMP/gatetruth-source" "$RUNNER_TEMP/gatetruth-output"
           git archive --format=tar HEAD | tar -xf - -C "$RUNNER_TEMP/gatetruth-source"
           chmod -R a+rX "$RUNNER_TEMP/gatetruth-source"
           chmod -R 0777 "$RUNNER_TEMP/gatetruth-output"
@@ -60,9 +65,13 @@ jobs:
             --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
             --mount "type=bind,src=$SB_SOURCE,dst=/work,readonly" \
             --mount "type=bind,src=$SB_OUTPUT,dst=/output" \
-            --mount "type=bind,src=$SB_OUTPUT/results,dst=/work/results" \
             --workdir /work gatetruth:v1 \
             ruff check --no-cache harness/ scripts/ paper/
+
+      - name: git diff --check (no trailing whitespace / conflict markers)
+        # 4b825dc6... is git's well-known empty-tree object ID; diffing against
+        # it lints the entire committed tree, not just this push's delta.
+        run: git diff --check 4b825dc642cb6eb9a060e54bf8d69288fbee4904 HEAD
 
       - name: Pytest
         run: |
@@ -70,11 +79,12 @@ jobs:
             --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
             --mount "type=bind,src=$SB_SOURCE,dst=/work,readonly" \
             --mount "type=bind,src=$SB_OUTPUT,dst=/output" \
-            --mount "type=bind,src=$SB_OUTPUT/results,dst=/work/results" \
-            --mount "type=bind,src=$SB_OUTPUT/site-build,dst=/work/site/build" \
             --workdir /work gatetruth:v1 \
             python -m pytest -q -p no:cacheprovider \
-              --basetemp=/tmp/gatetruth-pytest harness/ scripts/
+              --basetemp=/tmp/gatetruth-pytest harness/ scripts/ \
+            | tee "$SB_OUTPUT/pytest.log"
+          tail -n1 "$SB_OUTPUT/pytest.log" | grep -Eq '^[0-9]+ passed' \
+            || { echo "::error::pytest did not report an all-passed summary line"; exit 1; }
 
       - name: T1 reference smoke (non-official)
         # Fork PRs receive no hidden-test mount or provider secret. Official scoring
@@ -84,6 +94,28 @@ jobs:
             --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
             --mount "type=bind,src=$SB_SOURCE,dst=/work,readonly" \
             --mount "type=bind,src=$SB_OUTPUT,dst=/output" \
-            --mount "type=bind,src=$SB_OUTPUT/results,dst=/work/results" \
             --workdir /work gatetruth:v1 \
-            python scripts/ci_t1_smoke.py --jobs 4 --out /output/ci-t1
+            python scripts/ci_t1_smoke.py --jobs 4 --out /output/ci-t1 \
+            | tee "$SB_OUTPUT/ci-t1-smoke.log"
+          grep -q '^ci_t1_smoke status=PASS' "$SB_OUTPUT/ci-t1-smoke.log" \
+            || { echo "::error::T1 smoke did not report status=PASS"; exit 1; }
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "## Pinned-image validation"
+            echo
+            echo "| Check | Result |"
+            echo "|---|---|"
+            if [ -f "$SB_OUTPUT/pytest.log" ]; then
+              echo "| pytest | $(tail -n1 "$SB_OUTPUT/pytest.log") |"
+            else
+              echo "| pytest | did not run |"
+            fi
+            if [ -f "$SB_OUTPUT/ci-t1-smoke.log" ]; then
+              echo "| T1 smoke | $(grep '^ci_t1_smoke status=' "$SB_OUTPUT/ci-t1-smoke.log") |"
+            else
+              echo "| T1 smoke | did not run |"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -90,6 +90,7 @@ def test_two_task_mock_run_emits_deterministic_summary_and_site_rows(
             tokens_out_per_call=5,
             cost_usd_per_call=0.001,
         )
+        provider.spend_path = tmp_path / "spend.json"
         return eval_agent(tasks, provider, out_dir=path)
 
     agent_root = tmp_path / "agent"
@@ -138,6 +139,7 @@ def test_official_skips_unsigned_task_without_provider_call(
         lambda *args, **kwargs: pytest.fail("unsigned official task must not run"),
     )
     provider = MockProvider([{"tool": "done"}])
+    provider.spend_path = tmp_path / "spend.json"
 
     summary = eval_agent(
         ["toy_taskB"],
@@ -210,6 +212,7 @@ def test_rejected_immutable_edit_still_lands_disqualified_summary_row(
             {"tool": "done"},
         ]
     )
+    provider.spend_path = tmp_path / "spend.json"
     out_dir = tmp_path / "agent" / "rejected"
 
     summary = eval_agent(["toy_taskB"], provider, out_dir=out_dir)
