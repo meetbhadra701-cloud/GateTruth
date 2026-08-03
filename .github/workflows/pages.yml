@@ -8,7 +8,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "results/eval/official/**"
+      - "results/eval-16384/**"
       - "results/evalB/official/**"
       - "site/**"
       - "harness/**"
@@ -41,7 +41,7 @@ jobs:
       - name: Build leaderboard site
         run: |
           python -m harness.cli site \
-            --results results/eval/official \
+            --results results/eval-16384 \
             --agent-results results/evalB/official \
             --out site/build
 

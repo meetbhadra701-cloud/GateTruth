@@ -24,16 +24,26 @@ measure what fraction the testbench actually catches. A testbench that lets a
 broken design pass is a testbench that will also let a broken model-generated
 design pass — and no amount of pass@k tells you which kind you have.
 
+```mermaid
+flowchart LR
+    R[Reference design] -- seeded, deterministic faults --> M[Mutants]
+    M --> T{{Testbench}}
+    T -- caught --> K["✅ Killed"]
+    T -- missed --> S["❌ Survived<br/>= a fault the testbench<br/>can't actually see"]
+    K & S --> Score["Kill rate<br/>= rigor, measured"]
+    Score -.->|"same engine,<br/>unmodified"| Ext["Applied to RTLLM v2.0<br/>(and our own suite first)"]
+```
+
 We certify the methodology against our own open reference suite first — 60
 specification-to-RTL generation tasks plus 8 agentic-repair tasks, each carried
 through a **real, pinned open-source ASIC flow** (synthesis + static timing/power
-on the sky130 technology) with correctness enforced as a **hard gate**, and 49 of
-the 60 Track A testbenches certified above a 95% mutation-kill floor — the other
-11 are a disclosed finding, not an omission; see the paper
-(Track B's 8 testbenches are not yet certified under this protocol — see the
-paper) — and then point the same engine, unmodified, at external RTL benchmarks
-the field already relies on. See the [paper](#citation) for the audit
-methodology, the reference-suite design, and the resulting measurements.
+on the sky130 technology) with correctness enforced as a **hard gate**. 49 of the
+60 Track A testbenches clear a ≥95% mutation-kill floor; the other 11 don't, and
+we report that as a finding rather than an omission — see the
+[paper](#citation) for exactly which ones and why. Only then do we point the
+same engine, unmodified, at an external RTL benchmark the field already relies
+on. The paper has the full audit methodology, the reference-suite design, and
+the resulting measurements.
 
 ## Leaderboard (v1.0)
 
@@ -142,7 +152,8 @@ docker run --rm --network none --cap-drop=ALL \
   --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
   --mount "type=bind,src=$PWD/build/secure-src,dst=/work,readonly" \
   --mount "type=bind,src=$PWD/build/secure-output,dst=/output" \
-  --workdir /work gatetruth:v1 ./gatetruth site --out /output/site-build
+  --workdir /work gatetruth:v1 ./gatetruth site \
+    --results results/eval-16384 --out /output/site-build
 ```
 
 See [Secure execution](docs/SECURE_EXECUTION.md) for the canonical isolation
@@ -158,7 +169,7 @@ harness/     evaluation harness — CLI, scoring, provider adapters, spend ledge
 flows/       pinned Docker image + synthesis/timing/power flow scripts
 scripts/     reproduction and contamination-scan utilities
 site/        static leaderboard generator
-paper/       auto-generated result/task tables
+paper/       full paper source (LaTeX + refs) and its auto-generated result tables
 docs/        methodology notes
 external-audit/  mutation-testing audit of external RTL benchmarks (read-only
              vendor fetches, pinned commits, GateTruth-generated reports only)
@@ -195,8 +206,10 @@ New tasks, bug reports, and model requests are welcome — see
 
 ## Citation
 
-A paper describing GateTruth is in preparation. Until then, please cite the
-repository (see [CITATION.cff](CITATION.cff)).
+The paper (methodology, reference-suite design, and the full audit results) is
+written and compiles cleanly from [`paper/`](paper/) in this repository; an
+arXiv submission is pending. Until it has a permanent identifier, please cite
+the repository (see [CITATION.cff](CITATION.cff)).
 
 ## License
 
