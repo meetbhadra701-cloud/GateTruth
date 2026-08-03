@@ -59,23 +59,27 @@ class OpenAIProvider(PricedProvider):
             choices = response.get("choices")
             if not isinstance(choices, list):
                 raise ValueError("OpenAI response choices must be a list")
+            no_text_reason: str | None = None
+            text = ""
             if not choices:
-                raise ProviderRetryableError(
-                    "OpenAI response choices were empty"
-                )
-            choice = require_mapping(choices[0], "choices[0]")
-            message = require_mapping(choice.get("message"), "choices[0].message")
-            text = message.get("content")
-            if text is None:
-                raise ProviderRetryableError(
-                    "OpenAI response contained no text"
-                )
-            if not isinstance(text, str):
-                raise ValueError("OpenAI response text must be a string")
-            if not text.strip():
-                raise ProviderRetryableError(
-                    "OpenAI response contained no text"
-                )
+                no_text_reason = "OpenAI response choices were empty"
+            else:
+                choice = require_mapping(choices[0], "choices[0]")
+                message = require_mapping(choice.get("message"), "choices[0].message")
+                raw_text = message.get("content")
+                if raw_text is None:
+                    no_text_reason = "OpenAI response contained no text"
+                elif not isinstance(raw_text, str):
+                    raise ValueError("OpenAI response text must be a string")
+                elif not raw_text.strip():
+                    no_text_reason = "OpenAI response contained no text"
+                else:
+                    text = raw_text
+            # Usage is parsed even when there is no usable text: a provider can
+            # bill an attempt that came back empty, and the usage block in this
+            # same response is the only record of that cost. Settling it here
+            # -- rather than releasing the reservation at zero -- means a retry
+            # sequence's total recorded spend still matches what was billed.
             usage = require_mapping(response.get("usage"), "usage")
             tokens_in = require_int(
                 usage.get("prompt_tokens"),
@@ -93,4 +97,6 @@ class OpenAIProvider(PricedProvider):
             tokens_in=tokens_in,
             tokens_out=tokens_out,
         )
+        if no_text_reason is not None:
+            raise ProviderRetryableError(no_text_reason)
         return text

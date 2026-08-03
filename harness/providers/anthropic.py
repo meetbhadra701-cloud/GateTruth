@@ -63,10 +63,12 @@ class AnthropicProvider(PricedProvider):
                 and block.get("type") == "text"
                 and isinstance(block.get("text"), str)
             )
-            if not text.strip():
-                raise ProviderRetryableError(
-                    "Anthropic response contained no text"
-                )
+            # Parse usage before checking for empty text: a provider can bill an
+            # attempt that came back with no usable text, and if it does, the
+            # usage block in this same response is the only record of that cost.
+            # Settling it here -- rather than releasing the reservation at zero
+            # -- means a retry sequence's total recorded spend still matches
+            # what was actually billed.
             usage: dict[str, Any] = require_mapping(response.get("usage"), "usage")
             tokens_in = require_int(
                 usage.get("input_tokens"),
@@ -84,4 +86,6 @@ class AnthropicProvider(PricedProvider):
             tokens_in=tokens_in,
             tokens_out=tokens_out,
         )
+        if not text.strip():
+            raise ProviderRetryableError("Anthropic response contained no text")
         return text

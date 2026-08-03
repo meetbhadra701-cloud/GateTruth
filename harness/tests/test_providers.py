@@ -57,6 +57,129 @@ def test_anthropic_adapter_records_usage_and_settles_reservation(tmp_path, monke
     assert "reservation" not in recorded["runs"][0]
 
 
+def test_anthropic_empty_billed_response_settles_real_cost_not_zero(tmp_path, monkeypatch):
+    """A provider can bill an attempt that comes back with no usable text; the
+    usage block in that same response is the only record of that cost, so it
+    must be settled for real rather than the reservation released at zero.
+    A subsequent successful retry's usage must add to, not replace, that
+    already-settled cost."""
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "unit-test-key")
+    responses = [
+        {
+            "content": [{"type": "text", "text": "   "}],
+            "usage": {"input_tokens": 100, "output_tokens": 20},
+        },
+        {
+            "content": [{"type": "text", "text": '{"tool":"done"}'}],
+            "usage": {"input_tokens": 100, "output_tokens": 15},
+        },
+    ]
+
+    def fake_post(url, *, headers, payload, timeout_s=60.0):
+        return responses.pop(0)
+
+    monkeypatch.setattr(anthropic_module, "post_json", fake_post)
+    spend = tmp_path / "spend.json"
+    provider = AnthropicProvider(PARAMS_ANTHROPIC.model, spend_path=spend)
+
+    with pytest.raises(anthropic_module.ProviderRetryableError, match="no text"):
+        provider.generate("prompt", "system", PARAMS_ANTHROPIC)
+    first_cost = provider.usage["cost_usd"]
+    assert first_cost > 0, "an empty-text attempt with real usage must not settle at zero"
+    assert provider.usage == {"tokens_in": 100, "tokens_out": 20, "cost_usd": pytest.approx(0.0002)}
+
+    assert provider.generate("prompt", "system", PARAMS_ANTHROPIC) == '{"tool":"done"}'
+    assert provider.usage["tokens_in"] == 200
+    assert provider.usage["tokens_out"] == 35
+    assert provider.usage["cost_usd"] == pytest.approx(first_cost + 0.000175)
+    recorded = load_spend(spend)
+    assert recorded["total_usd"] == pytest.approx(provider.usage["cost_usd"])
+
+
+def test_openai_empty_billed_response_settles_real_cost_not_zero(tmp_path, monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "unit-test-key")
+    responses = [
+        {
+            "choices": [{"message": {"content": ""}}],
+            "usage": {"prompt_tokens": 80, "completion_tokens": 10},
+        },
+        {
+            "choices": [{"message": {"content": '{"tool":"sb_lint"}'}}],
+            "usage": {"prompt_tokens": 80, "completion_tokens": 8},
+        },
+    ]
+
+    def fake_post(url, *, headers, payload, timeout_s=60.0):
+        return responses.pop(0)
+
+    monkeypatch.setattr(openai_module, "post_json", fake_post)
+    spend = tmp_path / "spend.json"
+    provider = OpenAIProvider(PARAMS_OPENAI.model, spend_path=spend)
+
+    with pytest.raises(openai_module.ProviderRetryableError, match="no text"):
+        provider.generate("prompt", "system", PARAMS_OPENAI)
+    assert provider.usage == {"tokens_in": 80, "tokens_out": 10, "cost_usd": pytest.approx(0.00004)}
+
+    assert provider.generate("prompt", "system", PARAMS_OPENAI) == '{"tool":"sb_lint"}'
+    assert provider.usage["tokens_in"] == 160
+    assert provider.usage["tokens_out"] == 18
+    recorded = load_spend(spend)
+    assert recorded["total_usd"] == pytest.approx(provider.usage["cost_usd"])
+
+
+def test_openrouter_empty_billed_response_settles_real_cost_not_zero(tmp_path, monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "unit-test-key")
+    responses = [
+        {
+            "choices": [{"message": {"content": None}}],
+            "usage": {"prompt_tokens": 90, "completion_tokens": 12},
+        },
+        {
+            "choices": [{"message": {"content": '{"tool":"read_file","path":"spec.md"}'}}],
+            "usage": {"prompt_tokens": 90, "completion_tokens": 9},
+        },
+    ]
+
+    def fake_post(url, *, headers, payload, timeout_s=60.0):
+        return responses.pop(0)
+
+    monkeypatch.setattr(openrouter_module, "post_json", fake_post)
+    spend = tmp_path / "spend.json"
+    provider = OpenRouterProvider(PARAMS_OPENROUTER.model, spend_path=spend)
+
+    with pytest.raises(openrouter_module.ProviderRetryableError, match="no text"):
+        provider.generate("prompt", "system", PARAMS_OPENROUTER)
+    assert provider.usage == {"tokens_in": 90, "tokens_out": 12, "cost_usd": pytest.approx(0.00015)}
+
+    assert (
+        provider.generate("prompt", "system", PARAMS_OPENROUTER)
+        == '{"tool":"read_file","path":"spec.md"}'
+    )
+    assert provider.usage["tokens_in"] == 180
+    assert provider.usage["tokens_out"] == 21
+    recorded = load_spend(spend)
+    assert recorded["total_usd"] == pytest.approx(provider.usage["cost_usd"])
+
+
+def test_openai_empty_choices_list_still_settles_usage(tmp_path, monkeypatch):
+    """The empty-choices and null-content cases share the same accounting
+    fix as the empty-string case above; this covers the other branch."""
+
+    monkeypatch.setenv("OPENAI_API_KEY", "unit-test-key")
+
+    def fake_post(url, *, headers, payload, timeout_s=60.0):
+        return {"choices": [], "usage": {"prompt_tokens": 50, "completion_tokens": 0}}
+
+    monkeypatch.setattr(openai_module, "post_json", fake_post)
+    spend = tmp_path / "spend.json"
+    provider = OpenAIProvider(PARAMS_OPENAI.model, spend_path=spend)
+
+    with pytest.raises(openai_module.ProviderRetryableError, match="empty"):
+        provider.generate("prompt", "system", PARAMS_OPENAI)
+    assert provider.usage == {"tokens_in": 50, "tokens_out": 0, "cost_usd": pytest.approx(0.0000125)}
+
+
 def test_openai_adapter_parses_recorded_chat_response(tmp_path, monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "unit-test-key")
 
