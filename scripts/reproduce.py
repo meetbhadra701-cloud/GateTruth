@@ -122,8 +122,20 @@ def reproduce_manifest(
     manifest_path: str | Path,
     *,
     submission: str | Path | None = None,
+    official: bool = False,
 ) -> tuple[bool, str]:
-    """Re-run one signed manifest and return whether its canonical payload matches."""
+    """Re-run one signed manifest and return whether its canonical payload matches.
+
+    A per-sample manifest does not itself record whether it was scored under
+    --official (only the aggregate summary.json does), so this cannot be
+    detected automatically. Pass official=True when reproducing a manifest
+    that was originally scored officially -- against public tests only
+    (official=False, the default) it cannot reproduce a hidden-gated
+    verdict, and will most likely report a spurious MISMATCH rather than
+    confirm or refute the recorded result. official=True additionally
+    requires GATETRUTH_HIDDEN_ROOT to be mounted; without it, reproduction
+    fails closed rather than silently falling back to public tests.
+    """
 
     path = Path(manifest_path).resolve()
     raw = _load_raw_manifest(path)
@@ -137,7 +149,9 @@ def reproduce_manifest(
     )
 
     with tempfile.TemporaryDirectory(prefix="gatetruth-reproduce-") as temp:
-        rerun = run_task(original.task_id, source, Path(temp) / "manifest.json")
+        rerun = run_task(
+            original.task_id, source, Path(temp) / "manifest.json", official=official
+        )
 
     recorded_payload = manifest_signature_payload(raw)
     rerun_payload = _candidate_payload(raw, rerun)
@@ -165,12 +179,25 @@ def main(argv: list[str] | None = None) -> int:
         "--submission",
         help="exact RTL source; defaults to sibling .sv or the task reference",
     )
+    parser.add_argument(
+        "--official",
+        action="store_true",
+        help=(
+            "reproduce a manifest that was originally scored with --official "
+            "(requires GATETRUTH_HIDDEN_ROOT). Without this flag, reproduction "
+            "only covers non-official, public-test-only manifests -- passing "
+            "an official manifest without it will not reproduce the "
+            "hidden-gated verdict and will most likely report a spurious "
+            "MISMATCH rather than confirm or refute the recorded result."
+        ),
+    )
     args = parser.parse_args(argv)
 
     try:
         matched, message = reproduce_manifest(
             args.manifest,
             submission=args.submission,
+            official=args.official,
         )
     except (OSError, ValueError) as exc:
         print(f"reproduction refused: {exc}", file=sys.stderr)

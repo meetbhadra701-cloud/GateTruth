@@ -25,15 +25,21 @@ def fresh_reference_manifest(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return path
 
 
-def _run_reproducer(path: Path) -> subprocess.CompletedProcess[str]:
+def _run_reproducer(
+    path: Path, *, official: bool = False, env: dict[str, str] | None = None
+) -> subprocess.CompletedProcess[str]:
+    args = [sys.executable, str(SCRIPT), str(path)]
+    if official:
+        args.append("--official")
     return subprocess.run(
-        [sys.executable, str(SCRIPT), str(path)],
+        args,
         cwd=REPO_ROOT,
         check=False,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         timeout=120,
+        env=env,
     )
 
 
@@ -63,3 +69,25 @@ def test_resigned_tampered_score_is_detected(
     assert "MISMATCH" in result.stderr
     assert '"task_score": 0.0' in result.stderr
     assert '"task_score": 66.66666666666667' in result.stderr
+
+
+def test_official_flag_is_required_to_reproduce_an_official_manifest(
+    fresh_reference_manifest: Path,
+) -> None:
+    """The per-sample manifest schema has no field recording whether it was
+    scored under --official (see reproduce_manifest's docstring), so the
+    caller must say so explicitly. Reproducing an official-mode result
+    without --official, or with it but no hidden root mounted, must not
+    silently report a false MATCH -- it must fail closed as a MISMATCH
+    (or a refusal), never a false positive."""
+
+    import os
+
+    env = dict(os.environ)
+    env.pop("GATETRUTH_HIDDEN_ROOT", None)
+    env.pop("SILICONBENCH_HIDDEN_ROOT", None)
+
+    result = _run_reproducer(fresh_reference_manifest, official=True, env=env)
+
+    assert result.returncode != 0
+    assert "MATCH task=" not in result.stdout
