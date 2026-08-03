@@ -21,6 +21,8 @@ TASKS_B_FIXTURE = Path(__file__).parent / "fixtures" / "tasksB"
 NAMESPACE = runpy.run_path(str(ROOT / "site" / "generate.py"))
 generate_site = NAMESPACE["generate_site"]
 SiteGenerationError = NAMESPACE["SiteGenerationError"]
+LeaderboardRow = NAMESPACE["LeaderboardRow"]
+_reject_duplicate_detail_pages = NAMESPACE["_reject_duplicate_detail_pages"]
 CANARY_RE = re.compile(
     r"SILICONBENCH-CANARY-[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-"
     r"[0-9A-F]{4}-[0-9A-F]{12}",
@@ -47,6 +49,21 @@ def _summary(root: Path) -> Path:
     matches = list(root.glob("**/summary.json"))
     assert len(matches) == 1
     return matches[0]
+
+
+def _patch_canonical_tasks(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, task_ids: list[str]
+) -> None:
+    tasks_root = tmp_path / "canonical-tasks"
+    for task_id in task_ids:
+        task_dir = tasks_root / task_id
+        task_dir.mkdir(parents=True)
+        (task_dir / "task.yaml").write_text(f"id: {task_id}\n", encoding="utf-8")
+    # runpy.run_path's returned namespace is a *copy*: the functions it defines keep
+    # their own __globals__ dict, distinct from NAMESPACE, so patching NAMESPACE
+    # directly is silently ineffective -- patch the real globals via any function
+    # object pulled from it instead.
+    monkeypatch.setitem(generate_site.__globals__, "TASKS_ROOT", tasks_root)
 
 
 def _artifact_bytes(root: Path) -> dict[str, bytes]:
@@ -155,13 +172,16 @@ def test_invalid_summary_is_refused_without_output(tmp_path: Path, mode: str) ->
     assert not output.exists()
 
 
-def test_build_is_byte_deterministic_and_official_is_explicit(tmp_path: Path) -> None:
+def test_build_is_byte_deterministic_and_official_is_explicit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     results, agent_root, tasks_root = _all_fixture_copy(tmp_path)
     summary_path = _summary(results)
     raw = json.loads(summary_path.read_text(encoding="utf-8"))
     raw["official"] = True
     raw["signature"] = compute_manifest_signature(raw)
     summary_path.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+    _patch_canonical_tasks(tmp_path, monkeypatch, raw["task_ids"])
     first = tmp_path / "first"
     second = tmp_path / "second"
 
@@ -182,6 +202,28 @@ def test_build_is_byte_deterministic_and_official_is_explicit(tmp_path: Path) ->
     leaderboard = json.loads((first / "leaderboard.json").read_text(encoding="utf-8"))
     assert leaderboard["runs"][0]["badge"] == "OFFICIAL"
     assert leaderboard["track_b_runs"][0]["badge"] == "DEV"
+
+
+def test_official_badge_requires_full_canonical_suite(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A run marked official=true over a strict subset of the canonical Track A
+    suite must not wear the OFFICIAL badge: a partial run is not full-suite
+    coverage, regardless of what its own official flag claims."""
+
+    results = _fixture_copy(tmp_path)
+    summary_path = _summary(results)
+    raw = json.loads(summary_path.read_text(encoding="utf-8"))
+    raw["official"] = True
+    raw["signature"] = compute_manifest_signature(raw)
+    summary_path.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+    _patch_canonical_tasks(tmp_path, monkeypatch, [*raw["task_ids"], "t1_extra_task"])
+    output = tmp_path / "build"
+
+    generate_site(results, output)
+
+    leaderboard = json.loads((output / "leaderboard.json").read_text(encoding="utf-8"))
+    assert leaderboard["runs"][0]["badge"] == "DEV"
 
 
 def test_cli_site_subcommand(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -290,3 +332,56 @@ def test_run_agent_default_path_uses_canonical_layout() -> None:
     assert _default_agent_output("smoke", "anthropic/haiku", "toy_taskB") == Path(
         "results/agent/smoke/anthropic_haiku/toy_taskB.json"
     )
+
+
+def _row(*, model: str, run_id: str, detail_page: str) -> LeaderboardRow:
+    return LeaderboardRow(
+        run_id=run_id,
+        provider="anthropic",
+        model=model,
+        prompt_version="track-a-rtl-v1",
+        aggregate_score=50.0,
+        pass_at_1=80.0,
+        mean_ppa=1.0,
+        tasks_attempted=1,
+        tasks_passed=1,
+        tokens_in=1,
+        tokens_out=1,
+        cost_usd=0.0,
+        run_date="2026-01-01T00:00:00Z",
+        official=False,
+        signature="0" * 64,
+        detail_page=detail_page,
+        tasks=(),
+    )
+
+
+def test_distinct_runs_with_distinct_detail_pages_are_accepted() -> None:
+    rows = [
+        _row(model="claude-opus-4-8", run_id="a", detail_page="models/opus--a.html"),
+        _row(model="claude-opus-4-8", run_id="b", detail_page="models/opus--b.html"),
+    ]
+    _reject_duplicate_detail_pages(rows)  # must not raise
+
+
+def test_two_different_runs_colliding_on_one_detail_page_are_refused() -> None:
+    rows = [
+        _row(model="claude-opus-4-8", run_id="a", detail_page="models/opus--x.html"),
+        _row(model="claude-opus-4-8", run_id="a!", detail_page="models/opus--x.html"),
+    ]
+    with pytest.raises(SiteGenerationError, match="duplicate leaderboard detail page"):
+        _reject_duplicate_detail_pages(rows)
+
+
+def test_republish_into_the_same_output_leaves_no_staging_debris(tmp_path: Path) -> None:
+    results = _fixture_copy(tmp_path)
+    output = tmp_path / "build"
+
+    generate_site(results, output)
+    first_index = (output / "index.html").read_bytes()
+    generate_site(results, output)
+    second_index = (output / "index.html").read_bytes()
+
+    assert first_index == second_index
+    debris = {p.name for p in output.parent.iterdir() if p.name.startswith(".build")}
+    assert debris == set()

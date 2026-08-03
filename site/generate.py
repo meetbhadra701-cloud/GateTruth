@@ -24,6 +24,11 @@ CANARY_RE = re.compile(
     re.IGNORECASE,
 )
 SIGNED_REVIEW_RE = re.compile(r"SIGNED-OFF-BY-MEET-\d{4}-\d{2}-\d{2}")
+TASKS_ROOT = Path(__file__).resolve().parents[1] / "tasks"
+
+
+def _canonical_track_a_task_ids() -> frozenset[str]:
+    return frozenset(path.parent.name for path in TASKS_ROOT.glob("*/task.yaml"))
 
 
 class SiteGenerationError(ValueError):
@@ -121,6 +126,7 @@ def generate_site(
 
     rows = [_load_summary(path, results_path) for path in summaries]
     rows.sort(key=lambda row: (-row.aggregate_score, row.model.lower(), row.run_id))
+    _reject_duplicate_detail_pages(rows)
     for path in agent_summaries:
         _validate_agent_summary(path, agent_path)
     agent_rows = [_load_agent(path, agent_path, task_path) for path in agent_files]
@@ -166,9 +172,20 @@ def generate_site(
         target = staging / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(content, encoding="utf-8", newline="\n")
+
+    # Rollback-safe publish: never delete the live site before the new one is
+    # confirmed in place. If this process dies between the two renames below, the
+    # previous site survives at `previous` and can be restored by hand; the old
+    # code deleted output_path first, so the same crash would have left no site
+    # published at all.
+    previous = output_path.with_name(f".{output_path.name}.previous")
+    if previous.exists():
+        shutil.rmtree(previous)
     if output_path.exists():
-        shutil.rmtree(output_path)
+        output_path.replace(previous)
     staging.replace(output_path)
+    if previous.exists():
+        shutil.rmtree(previous)
     return {name: output_path / name for name in sorted(artifacts)}
 
 
@@ -311,6 +328,13 @@ def _load_summary(path: Path, results_root: Path) -> LeaderboardRow:
     if not math.isclose(cost, total_cost, abs_tol=1e-9):
         raise SiteGenerationError(f"cost total mismatch: {path}")
 
+    if set(task_ids) != _canonical_track_a_task_ids():
+        # A run over a strict subset (or superset) of the canonical Track A suite may
+        # still be a legitimate dev/partial run, but it must never wear the OFFICIAL
+        # badge: a reader seeing OFFICIAL should be able to assume full-suite coverage
+        # without re-deriving it from task_ids themselves.
+        all_official = False
+
     attempted = sum(not task.skipped for task in task_rows)
     passed = sum(not task.skipped and task.score > 0 for task in task_rows)
     run_parts = path.parent.relative_to(results_root).parts
@@ -335,6 +359,24 @@ def _load_summary(path: Path, results_root: Path) -> LeaderboardRow:
         detail_page=detail_page,
         tasks=tuple(task_rows),
     )
+
+
+def _reject_duplicate_detail_pages(rows: list[LeaderboardRow]) -> None:
+    """Two different (model, run_id) summaries must never collapse onto the same
+    published detail page -- whether from a genuine duplicate result directory or
+    a slug collision between two distinct run_ids -- since one would silently
+    overwrite the other's page with no error."""
+
+    seen: dict[str, LeaderboardRow] = {}
+    for row in rows:
+        clash = seen.get(row.detail_page)
+        if clash is not None:
+            raise SiteGenerationError(
+                f"duplicate leaderboard detail page {row.detail_page!r}: "
+                f"{clash.model!r}/{clash.run_id!r} and {row.model!r}/{row.run_id!r} "
+                "both map to it"
+            )
+        seen[row.detail_page] = row
 
 
 def _load_agent(path: Path, agent_root: Path, tasks_root: Path) -> AgentRow:
