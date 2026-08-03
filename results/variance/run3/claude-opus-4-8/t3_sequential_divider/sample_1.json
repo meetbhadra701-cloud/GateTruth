@@ -1,0 +1,57 @@
+{
+  "task_id": "t3_sequential_divider",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "pass",
+      "warnings": 0
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "fail"
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "fail"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "fail"
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "fail"
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "fail"
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 0.0,
+  "task_score": 0.0,
+  "wall_clock_s": 0.535779,
+  "provider": "anthropic",
+  "model": "claude-opus-4-8",
+  "temperature": "provider_default",
+  "tokens_in": 3126,
+  "tokens_out": 1465,
+  "cost_usd": 0.05225499999999994,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-08-03T20:25:22.216218Z",
+  "signature": "3da3c1bb8e08913de9c40c423d1d1028753e1f2d91ffbfdbc794fb81ee9a58e7"
+}

@@ -1,0 +1,57 @@
+{
+  "task_id": "t3_aes_sbox_datapath",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "pass",
+      "warnings": 0
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "fail"
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "fail"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "fail"
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "fail"
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "fail"
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 0.0,
+  "task_score": 0.0,
+  "wall_clock_s": 0.333904,
+  "provider": "anthropic",
+  "model": "claude-haiku-4-5-20251001",
+  "temperature": 0.0,
+  "tokens_in": 1172,
+  "tokens_out": 1957,
+  "cost_usd": 0.010956999999999995,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-08-03T19:31:50.490585Z",
+  "signature": "8627b1ea5d8226b167b58e73ca56eb01b112c8a1ee197eb86136d152664deccf"
+}

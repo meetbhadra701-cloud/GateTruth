@@ -1,0 +1,56 @@
+{
+  "task_id": "t2_token_bucket_limiter",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "fail"
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "fail"
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "fail"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "fail"
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "fail"
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "fail"
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 0.0,
+  "task_score": 0.0,
+  "wall_clock_s": 0.071255,
+  "provider": "anthropic",
+  "model": "claude-haiku-4-5-20251001",
+  "temperature": 0.0,
+  "tokens_in": 2228,
+  "tokens_out": 499,
+  "cost_usd": 0.004723000000000005,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-08-03T19:23:42.842566Z",
+  "signature": "b014ad57997fe6b2d7c1dc46bbbf06a87a37cc057a1cb6486116b349b4eee87d"
+}

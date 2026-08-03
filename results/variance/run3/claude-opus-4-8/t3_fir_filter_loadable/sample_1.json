@@ -1,0 +1,57 @@
+{
+  "task_id": "t3_fir_filter_loadable",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "fail"
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "fail"
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "fail"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "fail"
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "fail"
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "fail"
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 0.0,
+  "ppa": 0.0,
+  "task_score": 0.0,
+  "wall_clock_s": 30.164394,
+  "provider": "anthropic",
+  "model": "claude-opus-4-8",
+  "temperature": "provider_default",
+  "tokens_in": 0,
+  "tokens_out": 0,
+  "cost_usd": 0.0,
+  "prompt_version": "track-a-rtl-v1",
+  "generation_error": "provider error: RemoteDisconnected: Remote end closed connection without response",
+  "timestamp": "2026-08-03T20:23:34.974922Z",
+  "signature": "edecbbe2a376b008625b55bc72104ab374c313c17aabb75a3c0ba727703cee54"
+}

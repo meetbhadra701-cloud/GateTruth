@@ -14,6 +14,7 @@ results/refs/
 results/eval/
 results/evalB/
 results/eval*/
+results/variance/
 results/spend.json
 results/spend.json.lock
 results/nightly/

@@ -498,9 +498,9 @@ actually perform against this suite? We evaluate seven models (not necessarily e
 
 Track A was run twice, and we report both. The first campaign (2026-07-22) applied a 4096-token output cap; the second (2026-07-30) repeated all seven models at 16{,}384 tokens with the prompt, task set, temperature policy, and scoring formula unchanged, but not every input identical: the two campaigns addressed models by hosted aliases not pinned to an immutable snapshot, the recorded scoring-image build marker differs between them, and the response parser was hardened in the interval (Section~\ref{sec:limitations} discloses all three and what we can and cannot conclude given them). Table~\ref{tab:tracka} reports the second, for reasons given below, and Table~\ref{tab:budget} reports the difference. Track B (Section~\ref{sec:trackb}) was run once, in the first campaign; its per-task budgets are declared separately in each \texttt{objective.yaml} and are unaffected by the Track A output cap.
 
-On cost: the 2026-07-22 campaign's metered total was \$51.08, reconciled against the settled provider billing ledger (Anthropic \$18.79, OpenAI \$14.54, OpenRouter \$17.75). That reconciled figure includes transient-transport retries and is not derivable by summing the per-model costs in Tables~\ref{tab:tracka}--\ref{tab:trackb}, which report only each model's accepted sample. Three later activities are excluded from it and reported separately: the Appendix~\ref{app:variance} variance study (2026-07-26, \$8.18), the 16{,}384-token Track A re-run whose per-model costs appear in Table~\ref{tab:tracka} (\$8.88 across all seven, of which Gemini's \$3.43 was incurred on 2026-07-29 and the remaining six on 2026-07-30), and pre-flight validation runs (\$0.01). Total program spend is \$68.15. Given the recorded container digest and a specific submission's RTL text, re-scoring that submission is byte-level reproducible; this reproducibility claim applies to the scoring pipeline, not to re-invoking the models themselves, whose sampling is not deterministic (Appendix~\ref{app:variance} quantifies the resulting run-to-run variance).
+On cost: the 2026-07-22 campaign's metered total was \$51.08, reconciled against the settled provider billing ledger (Anthropic \$18.79, OpenAI \$14.54, OpenRouter \$17.75). That reconciled figure includes transient-transport retries and is not derivable by summing the per-model costs in Tables~\ref{tab:tracka}--\ref{tab:trackb}, which report only each model's accepted sample. Four later activities are excluded from it and reported separately: the superseded 4096-token variance pilot (2026-07-26, \$8.18; Appendix~\ref{app:variance}), the 16{,}384-token Track A re-run whose per-model costs appear in Table~\ref{tab:tracka} (\$8.88 across all seven, of which Gemini's \$3.43 was incurred on 2026-07-29 and the remaining six on 2026-07-30), the reported-condition variance study of Appendix~\ref{app:variance} (2026-08-03, \$5.63), and pre-flight validation runs (\$0.01). Total program spend is \$73.78. Given the recorded container digest and a specific submission's RTL text, re-scoring that submission is byte-level reproducible; this reproducibility claim applies to the scoring pipeline, not to re-invoking the models themselves, whose sampling is not deterministic (Appendix~\ref{app:variance} quantifies the resulting run-to-run variance).
 
-For Track A (Table~\ref{tab:tracka}), the models are ranked by GateTruth Score, defined in Section~\ref{sec:design} as Pass@1 multiplied by normalized mean PPA; equivalently, because failed tasks contribute a task score of exactly zero, this is the mean capped-PPA task score across all 60 tasks on a 0--100 scale, where the maintainer-approved reference implementation is normalized to $100/1.5 = 66.\overline{6}$ (displayed as 66.7). The resulting hierarchy is: GPT-5 (48.83), Opus (46.99), Sonnet (42.09), GPT-5-mini (35.23), Haiku (33.78), Gemini 2.5 Pro (31.06), and Llama 4 Maverick (24.65), with corresponding pass@1 of 43/60, 42/60, 38/60, 32/60, 30/60, 28/60, and 22/60. These are single-run figures and the top two are within run-to-run variance of one another (Appendix~\ref{app:variance} measures $\sigma \approx 4$ for frontier models, against a GPT-5--Opus gap of 1.84), so we do not claim a resolved first place; what the data does support is that GPT-5, Opus, and Sonnet separate from the remaining four.
+For Track A (Table~\ref{tab:tracka}), the models are ranked by GateTruth Score, defined in Section~\ref{sec:design} as Pass@1 multiplied by normalized mean PPA; equivalently, because failed tasks contribute a task score of exactly zero, this is the mean capped-PPA task score across all 60 tasks on a 0--100 scale, where the maintainer-approved reference implementation is normalized to $100/1.5 = 66.\overline{6}$ (displayed as 66.7). The resulting hierarchy is: GPT-5 (48.83), Opus (46.99), Sonnet (42.09), GPT-5-mini (35.23), Haiku (33.78), Gemini 2.5 Pro (31.06), and Llama 4 Maverick (24.65), with corresponding pass@1 of 43/60, 42/60, 38/60, 32/60, 30/60, 28/60, and 22/60. These are single-run figures and the top two are close relative to Opus's own measured run-to-run spread (Appendix~\ref{app:variance}: $\sigma \approx 1.85$ for Opus at this condition; GPT-5 was not part of that repeated-run study and carries no variance estimate of its own), with a GPT-5--Opus gap of 1.84 --- almost exactly one Opus standard deviation --- so we do not claim a resolved first place, though this rests on extending Opus's measured variance to GPT-5 without direct evidence GPT-5 varies similarly; what the data does support is that GPT-5, Opus, and Sonnet separate from the remaining four.
 
 This ordering is not the one our first campaign produced. Plausibly this is a token-budget effect rather than a change in the models: that campaign applied a 4096-token output cap uniformly, which sounds fair and is not, and models that spend output budget on reasoning before emitting code exhaust it -- three of the seven did. GPT-5 returned no extractable submission at all on 22 of 60 tasks, GPT-5-mini on 11, and Gemini on 5. Re-running all seven at 16{,}384 tokens eight days later (Table~\ref{tab:budget}; Section~\ref{sec:limitations} discloses the response-parser change made in the interval and what it does and does not affect) moves GPT-5 from fifth place to first (31.64 to 48.83, pass@1 28 to 43, with its no-extraction count falling to zero and no task regressing), and Gemini from last to sixth (17.83 to 31.06). The four models that never exhausted the smaller cap move by $+0.08$, $+0.20$, $-0.87$, and $-2.94$ points --- all inside the measured noise. We report the 16{,}384-token condition as the leaderboard, because a budget that silently truncates a subset of models measures verbosity as much as capability regardless of what else moved between the two runs. But we stop short of calling the token budget the isolated cause of the reordering: the two campaigns are not a single-variable experiment (Section~\ref{sec:limitations}), so the honest claim is that raising the cap coincided with the reordering, not that it is proven to be its sole cause. The wider lesson is not specific to our suite and does not depend on resolving that attribution: an output-token cap is a plausible experimental variable that can reorder a leaderboard, and benchmarks that do not state theirs, and do not confirm nothing else moved between runs, are not comparable with those that do. We had not stated ours in an earlier draft of this paper.
 
@@ -527,8 +527,9 @@ reports both and Section~\ref{sec:results} explains why the higher cap is the de
 \caption{Output-token budget is a first-order experimental variable, not an implementation detail.
 Identical prompts, image, scoring, and seeds; only the per-call output cap differs. Models are
 ordered by the change. The three models that exhausted the 4096-token cap on some tasks (producing
-no extractable submission at all) gain substantially; the four that never exhausted it move within
-the run-to-run noise Appendix~\ref{app:variance} measures at $\sigma \approx 4$ for frontier models.
+no extractable submission at all) gain substantially; the four that never exhausted it move by amounts at or below their own measured run-to-run
+standard deviation (Appendix~\ref{app:variance}), except Sonnet's $-2.94$, slightly above its
+$\sigma \approx 2.53$.
 ``No-extract'' counts tasks where no parseable module reached the pipeline, for any reason. Gemini's
 rise to 13 is mostly not a parser effect and we decompose it rather than let the caption imply a
 single cause: 9 are provider-side retryable errors returned by OpenRouter, 3 are the hardened
@@ -588,7 +589,7 @@ Synthesizing the data across both tracks does not reveal a consistent ordinal ra
 
 \paragraph{The lint gate is doing more work than intended.} Inspecting the Stage-0 lint logs directly, 99 of the 132 lint failures (75.0\%, and 58.9\% of all submissions that failed any gate) contain no hard syntax or semantic error: Verilator's default policy escalates certain warning classes --- predominantly implicit bit-width truncation and expansion, \texttt{WIDTHTRUNC} and \texttt{WIDTHEXPAND} --- to a fatal exit, and our lint invocation (\texttt{verilator -{}-lint-only -{}-sv}, Verilator 5.051, \texttt{rev v5.050-40-g6c20fdb7b}) applies no waivers. The per-model split of these width-only failures is uneven: Llama 4 Maverick 19, Haiku 19, Opus 15, GPT-5-mini 14, Sonnet 13, Gemini 2.5 Pro 11, GPT-5 8. We take the defensible position that lint-clean RTL is a legitimate deliverable standard --- implicit width mismatches are a real and commonly-mandated defect class in industry sign-off flows, and Verilator flags them for that reason --- and therefore do not waive them. But we will not have it both ways: because this single gate accounts for roughly half of all zero scores in the campaign (99 of 185) and its firing rate varies 2.4-fold across models (19 for Llama 4 Maverick and Haiku against 8 for GPT-5), Table~\ref{tab:tracka}'s ranking is materially a joint ranking of RTL correctness \emph{and} width-declaration hygiene, and we do not claim it isolates the former. We have not re-simulated the width-only failures with the warning waived, so we cannot report how many would have passed Stage~1; that measurement, and a dual strict/waived leaderboard, are the correct way to settle what share of the ranking each factor contributes, and both are future work rather than results we can claim here. Note also that the escalate-to-fatal behavior is a version-dependent tool default, which is why the exact Verilator revision is pinned above.
 
-\paragraph{What the output-token budget experiment does and does not establish.} Section~\ref{sec:results} and Table~\ref{tab:budget} report both conditions; three caveats bound what they license. First, each condition is a single sample per model, so a per-model delta of a few points is not separable from run-to-run noise --- only two movements exceed the $\sigma \approx 4$ that Appendix~\ref{app:variance} measures --- GPT-5's $+17.19$ and Gemini's $+13.23$ --- and only those two do we treat as established. Every other change sits inside that band and we do not interpret any of them, in either direction: GPT-5-mini's $+1.79$ is no more meaningful than Sonnet's $-2.94$, notwithstanding that the first has the sign our hypothesis predicts and the second does not. Second, the two conditions differ in one respect besides the cap: the 16{,}384-token runs used the hardened response parser described below, while the 4096 runs predate it. That parser change is score-neutral by construction (an unterminated response scored zero under both the old and new code paths, for different reasons), so the score comparison remains attributable to the budget alone; what it does change is the \emph{classification} of some failures, which is why Gemini's no-extraction count rises even as its score rises. Third, we did not sweep intermediate budgets, so we cannot say where the effect saturates: 16{,}384 is sufficient to drive GPT-5's and GPT-5-mini's no-extraction counts to zero, but we have not established it is sufficient for every model on every task, and a still-higher cap might move the ranking again. The claim we defend is narrow and, we think, important: a shared output cap is not a neutral implementation detail, it interacts with how much of its budget a model spends on reasoning, and a benchmark that does not report its cap has not reported its experimental condition.
+\paragraph{What the output-token budget experiment does and does not establish.} Section~\ref{sec:results} and Table~\ref{tab:budget} report both conditions; three caveats bound what they license. First, each condition is a single sample per model, so a per-model delta of a few points is not separable from run-to-run noise --- only two movements are unambiguously established against any plausible noise floor --- GPT-5's $+17.19$ and Gemini's $+13.23$, both far larger than the frontier Anthropic models' measured standard deviations (Appendix~\ref{app:variance}: $\sigma \approx 1.85$--$2.53$) --- and only those two do we treat as established. The remaining movements are smaller than or comparable to that floor and we do not interpret any of them, in either direction: GPT-5-mini's $+1.79$ has no variance estimate to weigh it against (GPT-5-mini was not part of the repeated-run study), and Sonnet's $-2.94$ --- the one model here with a direct estimate --- is slightly above its own measured $\sigma \approx 2.53$, the closest call of the four, which we still treat as within noise rather than as evidence of an effect. Second, the two conditions differ in one respect besides the cap: the 16{,}384-token runs used the hardened response parser described below, while the 4096 runs predate it. That parser change is score-neutral by construction (an unterminated response scored zero under both the old and new code paths, for different reasons), so the score comparison remains attributable to the budget alone; what it does change is the \emph{classification} of some failures, which is why Gemini's no-extraction count rises even as its score rises. Third, we did not sweep intermediate budgets, so we cannot say where the effect saturates: 16{,}384 is sufficient to drive GPT-5's and GPT-5-mini's no-extraction counts to zero, but we have not established it is sufficient for every model on every task, and a still-higher cap might move the ranking again. The claim we defend is narrow and, we think, important: a shared output cap is not a neutral implementation detail, it interacts with how much of its budget a model spends on reasoning, and a benchmark that does not report its cap has not reported its experimental condition.
 
 \paragraph{An extraction defect we found, fixed, and confirmed does \emph{not} explain the above.} While assembling the taxonomy we found a real bug in our own response parser (\texttt{extract\_module\_source}): it stripped a Markdown code fence only when both an opening and a closing marker were present, so a response truncated before its closing fence fell through to a fallback that accepted the raw text --- stray fence marker included --- whenever a \texttt{module} keyword appeared anywhere in it. Verilator then rejected the marker as an undefined preprocessor directive. We hardened the parser to reject an unterminated fence outright. We report the correction here with two honest qualifications. First, the defect is far smaller than we initially assessed: it affects 7 saved submissions campaign-wide (5 Gemini 2.5 Pro, 1 Sonnet, 1 Llama 4 Maverick), not the much larger figure an early count suggested, and only 9 submissions in the whole campaign are truncated at all. Second, and more importantly, the fix is score-neutral by construction: under the old parser a truncated response became an unlintable file scoring zero, and under the new parser it is rejected as unextractable, also scoring zero. Fixing the parser therefore changes no model's score, and none of the improvement in the sensitivity run above is attributable to it --- that improvement comes from the raised token budget alone. We state this explicitly because the opposite inference (that a harness bug was suppressing a model's score, and that repairing it raised the score) is the natural reading and is wrong.
 
@@ -780,55 +781,56 @@ In summary, GateTruth is, to our knowledge, the first tool to apply mutation-tes
 The v1.0 leaderboard reports a single run per model. Because model generation is not
 deterministic (and the reasoning models do not accept a fixed temperature), we quantify
 run-to-run spread by re-running the three Anthropic models over all 60 Track A tasks three
-times each in a single fixed environment (pinned image, identical scoring). Table~\ref{tab:variance}
-is a robustness measurement alongside the single-run leaderboard, not a replacement for it. Two
-scope limits apply. These runs cover only the three Anthropic models, so the four non-Anthropic
+times each, at the identical 16{,}384-token, pinned-image condition Table~\ref{tab:tracka}
+itself reports: the already-committed single run stands as one of the three, and we ran two
+further official re-runs (2026-08-03, \$5.63) for exactly this purpose. Table~\ref{tab:variance}
+is a robustness measurement alongside the single-run leaderboard, not a replacement for it. One
+scope limit applies: these runs cover only the three Anthropic models, so the four non-Anthropic
 models --- including Gemini 2.5 Pro, whose score is the most condition-sensitive in the campaign
 (Section~\ref{sec:limitations}) --- carry no variance estimate at all, and the comparisons in
-Section~\ref{sec:results} that involve them are correspondingly weaker. They were also produced
-under the 4096-token output cap of the first campaign, whereas Table~\ref{tab:tracka} reports the
-16{,}384-token condition, so these figures characterize variance at the lower cap and we apply them
-to the reported leaderboard only as an order-of-magnitude guide to run-to-run spread. Re-running the
-variance study at the reported condition is outstanding work; where we invoke $\sigma \approx 4$ to
-argue that two models are not separated, that argument inherits this caveat.
+Section~\ref{sec:results} that involve them are correspondingly weaker. An earlier pilot of this
+study (2026-07-26, \$8.18) was run at the since-superseded 4096-token condition and measured a
+substantially larger spread ($\sigma \approx 4$); because it characterizes a condition this paper
+no longer reports as its leaderboard, we do not reproduce its table here, and every $\sigma$ cited
+elsewhere in this paper now refers to the measurement below, not that pilot.
 
-A further, more basic caveat applies to Table~\ref{tab:variance} itself: the nine individual per-run
-manifests this study is computed from are not currently committed to the repository alongside a
-generator that reproduces the table's mean, standard deviation, and range from them, unlike every
-other table in this paper (Section~\ref{sec:rigor}). The figures below are reported as
-recorded at run time, not as independently re-derivable from evidence a reader can check today.
-Committing the per-run manifests and a corresponding golden-tested generator is future work; until
-then, treat $\sigma \approx 4$ as a directional estimate reported in good faith rather than a
-committed, checkable measurement, and weight any conclusion that leans on it accordingly.
+Every figure in Table~\ref{tab:variance} is generated by
+\texttt{paper/data/generate\_variance\_appendix.py} from nine signed, committed per-run manifests
+--- three per model, all at the identical 16{,}384-token, pinned-image condition --- the same
+reproducibility bar every other table in this paper meets (Section~\ref{sec:rigor}). An earlier
+draft of this appendix could not make that claim: its nine per-run manifests were not committed
+alongside a generator, and its figures were reported as recorded at run time rather than
+independently re-derivable from evidence a reader can check today. That gap is now closed.
 
 \begin{table}[h]
 \centering
-\caption{Track A run-to-run variance over three runs per model (GateTruth Score, 0--100). Standard deviation is the sample standard deviation (Bessel-corrected, $n-1$ denominator).}
+\caption{Track A run-to-run variance over three runs per model at the reported 16{,}384-token
+condition (GateTruth Score, 0--100). Standard deviation is the sample standard deviation
+(Bessel-corrected, $n-1$ denominator). ``Single run'' is the same figure Table~\ref{tab:tracka}
+reports and is one of the three runs the mean is computed over, not a fourth, independent point.}
 \label{tab:variance}
 \small
-\begin{tabular}{lrrrr}
-\toprule
-Model & mean (n=3) & std & range & single run \\
-\midrule
-claude-opus-4-8   & 47.01 & 4.05 & 7.85 & 46.91 \\
-claude-sonnet-4-6 & 47.89 & 3.90 & 7.78 & 45.03 \\
-claude-haiku-4-5-20251001 & 35.05 & 0.98 & 1.89 & 33.58 \\
-\bottomrule
-\end{tabular}
+\input{data/build/variance_table.tex}
 \end{table}
 
-Two observations follow. First, run-to-run standard deviation is substantial for the frontier
-models --- roughly 4 points, with a spread approaching 8 points across three runs --- and much
-smaller for Haiku (0.98). A single-run leaderboard is therefore a noisy estimator at the top of the
-table; with only $n=3$ per model, these standard deviations are themselves imprecise, and we report
-them as a directional signal rather than a tight interval. Second, and as a direct consequence,
-Opus and Sonnet are statistically indistinguishable on Track A ($47.01 \pm 4.05$ vs $47.89 \pm
-3.90$): their v1.0 single-run ordering lies well inside the noise, and across three runs Sonnet's
-mean in fact edges ahead. The models' reliable separation appears in the agentic-repair track
-(Section~\ref{sec:trackb}), not in static generation. We therefore recommend that future versions
-report mean $\pm$ standard deviation over at least three runs as the default leaderboard cell, and
-publish the individual per-run scores alongside the summary statistics so readers are not dependent
-on our aggregation choices.
+Two observations follow, both real but more modest than the superseded 4096-token pilot's numbers
+suggested. First, run-to-run standard deviation at the reported condition is genuine for the
+frontier models --- 1.85 points for Opus, 2.53 for Sonnet --- and smaller still for Haiku (0.73);
+with only $n=3$ per model these remain imprecise estimates, and we report them as a directional
+signal rather than a tight interval, but they are now committed, checkable measurements at the
+condition this paper actually leaderboards, not a carried-over guess from a different cap. Second,
+Opus and Sonnet remain statistically indistinguishable on Track A ($46.18 \pm 1.85$ vs $45.01 \pm
+2.53$: heavily overlapping ranges, a mean gap of 1.17 against either model's own standard
+deviation), though the direction differs from the superseded pilot: there, Sonnet's three-run mean
+edged above Opus's; here, Opus leads on both the single reported run (46.99 vs 42.09) and the
+three-run mean (46.18 vs 45.01). We read this as a real but not decisive lead, well inside the
+overlap of the two ranges, not as a reversal of the underlying ``statistically tied'' finding, and
+the sign-flip between the two studies is itself a demonstration of exactly the run-to-run noise
+this appendix exists to quantify. The models' reliable separation appears in the agentic-repair
+track (Section~\ref{sec:trackb}), not in static generation. We therefore recommend that future
+versions report mean $\pm$ standard deviation over at least three runs as the default leaderboard
+cell, and publish the individual per-run scores alongside the summary statistics so readers are not
+dependent on our aggregation choices.
 
 \section{Per-Design RTLLM v2.0 Audit Results}
 \label{app:perdesign}

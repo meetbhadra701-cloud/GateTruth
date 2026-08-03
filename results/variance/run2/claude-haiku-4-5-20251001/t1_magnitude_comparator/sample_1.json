@@ -1,0 +1,65 @@
+{
+  "task_id": "t1_magnitude_comparator",
+  "suite_version": "v0.2",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
+  "platform": "linux/amd64",
+  "stages": [
+    {
+      "stage": 0,
+      "name": "lint",
+      "status": "pass",
+      "warnings": 0
+    },
+    {
+      "stage": 1,
+      "name": "sim",
+      "status": "pass",
+      "tests_run": 8,
+      "tests_passed": 8
+    },
+    {
+      "stage": 2,
+      "name": "formal",
+      "status": "pass"
+    },
+    {
+      "stage": 3,
+      "name": "synth",
+      "status": "pass",
+      "area_um2": 242.7328,
+      "cell_count": 32
+    },
+    {
+      "stage": 4,
+      "name": "sta",
+      "status": "pass",
+      "wns_ns": 6.927882019704461,
+      "tns_ns": 0.0,
+      "fmax_mhz": 325.5083321714746
+    },
+    {
+      "stage": 5,
+      "name": "power",
+      "status": "pass",
+      "power_mw": 0.00240719464
+    },
+    {
+      "stage": 6,
+      "name": "route",
+      "status": "skip"
+    }
+  ],
+  "sec": 1.0,
+  "ppa": 1.0769973187662312,
+  "task_score": 71.79982125108208,
+  "wall_clock_s": 1.544998,
+  "provider": "anthropic",
+  "model": "claude-haiku-4-5-20251001",
+  "temperature": 0.0,
+  "tokens_in": 1613,
+  "tokens_out": 466,
+  "cost_usd": 0.003943000000000002,
+  "prompt_version": "track-a-rtl-v1",
+  "timestamp": "2026-08-03T19:20:55.895720Z",
+  "signature": "c3bd30f42d34d021f56f5944f54e18b85f66a0ee9d38c5fe67d5272a457a5e2e"
+}
