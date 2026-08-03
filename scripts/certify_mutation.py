@@ -45,8 +45,9 @@ def main(argv: list[str] | None = None) -> int:
         raise ValueError(f"expected {EXPECTED_TASKS} Track A tasks, found {len(tasks)}")
     args.out.mkdir(parents=True, exist_ok=True)
 
-    task_summaries: dict[str, dict[str, int | float]] = {}
+    task_summaries: dict[str, dict[str, int | float | str | None]] = {}
     all_above_floor = True
+    any_unsupported = False
     for index, task_id in enumerate(tasks, start=1):
         report = run_mutation(
             task_id=task_id,
@@ -57,12 +58,25 @@ def main(argv: list[str] | None = None) -> int:
         )
         write_json(args.out / f"{task_id}.json", report)
         task_summaries[task_id] = {
+            "status": report["status"],
             "indeterminate": report["indeterminate"],
             "kill_rate": report["kill_rate"],
             "killed": report["killed"],
             "survived": report["survived"],
+            "stillborn": report["stillborn"],
+            "setup_errors": report["setup_errors"],
+            "formal_only_kills": report["formal_only_kills"],
             "total": report["total"],
         }
+        if report["status"] != "ok":
+            any_unsupported = True
+            all_above_floor = False
+            print(
+                f"[{index:02d}/{EXPECTED_TASKS}] "
+                f"BROKEN {task_id} status={report['status']} "
+                f"reason={report['status_reason']}"
+            )
+            continue
         passed = report["kill_rate"] >= args.min_kill
         all_above_floor = all_above_floor and passed
         print(
@@ -72,20 +86,32 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     summary = {
+        "schema_version": 2,
         "all_above_floor": all_above_floor,
+        "any_unsupported": any_unsupported,
         "docker_digest": runtime_docker_digest(),
         "jobs": 1,
+        "metric": "simulation_testbench_kill_rate",
         "min_kill": args.min_kill,
         "official": True,
         "seed": args.seed,
         "tasks": task_summaries,
     }
     write_json(args.out / "summary.json", summary)
+    ok_tasks = [item for item in task_summaries.values() if item["status"] == "ok"]
     print(
         f"mutation certification: "
-        f"{sum(item['kill_rate'] >= args.min_kill for item in task_summaries.values())}"
-        f"/{EXPECTED_TASKS} at or above {args.min_kill:.2f}%"
+        f"{sum(item['kill_rate'] >= args.min_kill for item in ok_tasks)}"
+        f"/{EXPECTED_TASKS} at or above {args.min_kill:.2f}% "
+        f"({len(task_summaries) - len(ok_tasks)} broken/unsupported)"
     )
+    if any_unsupported:
+        print(
+            "mutation certification: refusing to call this a clean run -- "
+            "at least one task's baseline or mutant set was broken, not just "
+            "below the floor",
+            file=sys.stderr,
+        )
     return 0 if all_above_floor else 1
 
 
