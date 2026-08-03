@@ -1,12 +1,10 @@
 % GateTruth v1.0 paper (renamed from SiliconBench per ADR-0008; pivot to an external
 % mutation-testing audit as the headline contribution, per the same ADR).
-% NOTE: This was assembled but NOT compiled locally (no TeX toolchain in the build
-% environment). Compile with:  latexmk -pdf main.tex   (runs bibtex automatically),
-% or on Overleaf. Requires the auto-generated table fragments under data/build/*.tex
-% (regenerate with: python paper/data/generate_tables.py).
-% STATUS: Full pivot (ADR-0008) complete. External Audit Findings (sec:audit-results) now
-% reports real, independently-reproduced numbers from vault tickets SB-109..SB-112
-% (Architect-verified from fresh, independent RTLLM clones -- see vault ticket evidence).
+% Compile with:  latexmk -pdf main.tex   (runs bibtex automatically), or on Overleaf.
+% Requires the auto-generated table fragments under data/build/*.tex, produced by three
+% separate generators (see paper/README.md) -- not one orchestrator yet, tracked as
+% future work. This file compiles cleanly in the pinned texlive/texlive image; it is
+% verified, not merely assembled.
 \documentclass[11pt]{article}
 
 \usepackage[utf8]{inputenc}
@@ -22,7 +20,15 @@
 
 \title{GateTruth: Auditing the Rigor of RTL Design Benchmarks via Mutation Testing}
 \author{Meet Bhadra \\ Independent Researcher}
-\date{\today}
+\date{August 3, 2026}
+
+\hypersetup{
+  pdftitle={GateTruth: Auditing the Rigor of RTL Design Benchmarks via Mutation Testing},
+  pdfauthor={Meet Bhadra},
+  pdfsubject={Mutation-testing audit methodology for LLM/agent RTL-generation benchmarks},
+  pdfkeywords={mutation testing, RTL, hardware design, large language models, benchmark evaluation, electronic design automation, power performance area, agentic evaluation},
+  pdflang={en-US}
+}
 
 \begin{document}
 \maketitle
@@ -129,8 +135,9 @@ This paper makes four contributions. First, a mutation-testing audit methodology
 benchmarks --- a deterministic, seeded, sequential-execution protocol for measuring testbench
 kill rates against external reference implementations, together with an explicit policy for
 designs whose testbenches cannot be run at all (reported, never silently dropped or scored as a
-misleading zero). Second, an openly published, dual-track reference implementation of that
-methodology: 60 specification-to-RTL tasks and 8 agentic-repair tasks, each scored through a
+misleading zero). Second, a permissively-licensed (Apache 2.0), dual-track reference implementation of that
+methodology, intended for open publication alongside this paper (Section~\ref{sec:limitations} states
+the repository's visibility as of this writing): 60 specification-to-RTL tasks and 8 agentic-repair tasks, each scored through a
 pinned, deterministic synthesis-to-timing flow, with 46 of the suite's 60 Track A
 testbenches certified above a 95\% mutation-kill floor under the audit protocol --- because a tool
 that audits other benchmarks' rigor must first demonstrate its own, we report the 14 that are not
@@ -453,7 +460,7 @@ independent runs, certifying the measurement. We repeated the check for the repo
 (\texttt{freq\_divbyodd}, \texttt{multi\_8bit}) and the widest mutant-count spread in the suite
 (\texttt{alu} 53, \texttt{float\_multi} 115, \texttt{edge\_detect} 10, \texttt{serial2parallel} 13,
 the last two chosen because they carry surviving and indeterminate verdicts respectively, which are
-the classes most at risk of nondeterminism); all six reproduced byte-identically. because the container
+the classes most at risk of nondeterminism); all six reproduced byte-identically, because the container
 digest recorded with each run pins the exact CPython build the sample was drawn under, this
 reproduces even though \texttt{random.Random.sample}'s output is not guaranteed stable across
 arbitrary Python versions in general. The 8 sampled designs were \texttt{multi\_16bit},
@@ -566,6 +573,8 @@ Synthesizing the data across both tracks does not reveal a consistent ordinal ra
 \label{sec:limitations}
 
 \paragraph{Audit scope.} The external audit (Sections~\ref{sec:audit-method}--\ref{sec:audit-results}) covers all 50 public designs of RTLLM v2.0 (46 audited, 4 reported \texttt{unsupported} with a stated reason each) and reports a structural finding, rather than a measurement, for CVDP given its withheld reference solutions. It does not cover every RTL-generation benchmark in current use. In particular, VerilogEval~\cite{liu2023verilogeval,pinckney2024revisiting} --- arguably the field's most-cited benchmark --- is not audited here; this is a scope decision made to keep the first application of this methodology focused on one primary target (RTLLM v2.0) and one structural finding (CVDP) rather than a principled exclusion, and we name it explicitly rather than let the omission pass silently. ChipBench, ArchXBench, SLDB, ProtocolLLM, ChipVerilog, and RTL-BenchLS are likewise out of scope for this round. Coverage of the Si2 LLM Benchmarking Coalition's evolving CVDP-derived leaderboard is necessarily a snapshot rather than a standing measurement. The audit measures testbench sensitivity to a fixed, generic operator set; a testbench could in principle be robust to our specific operators while remaining weak against fault classes we do not inject. The methodology and tooling are open specifically so others can extend the operator set or apply it to additional benchmarks. The build-convention normalization described in Section~\ref{sec:audit-method} is bounded strictly to what a target's own documented build recipe already specifies (e.g., a per-design makefile's stated candidate-module contract); it is not a search over renamings intended to maximize the reported compatibility count, and every applied alias is recorded per design so a third party can audit the boundary between ``ran as vendor-intended'' and ``ran after our own compatibility work'' for themselves. More broadly, ``rigor'' as measured here is specifically testbench sensitivity to injected mutants; it is not a claim about a benchmark's specification correctness, golden-reference correctness, task representativeness, contamination resistance, or scoring methodology, none of which this audit examines.
+
+\paragraph{Repository visibility.} As of this writing, the GitHub repository is private. It is Apache-2.0 licensed and structured for public release, gated on a maintainer-run pre-publication checklist (history scrub, image publication by digest, this paper's submission) rather than on any remaining technical work; every claim in this paper of the form ``published,'' ``open,'' or ``publicly available'' describes that intended end state, not current public accessibility. We call this out explicitly rather than let a reader assume public availability at submission time.
 
 \paragraph{Sensitivity is not the same as correctness.} A high kill rate establishes that a testbench is sensitive to the specific faults injected; it does not establish that the testbench's own oracle (the golden reference and the pass/fail check itself) is correct, nor that a testbench with a high kill rate would correctly accept every valid alternative implementation (specificity, or false-rejection rate, in the terminology of software mutation testing). RTLLM's \texttt{radix2\_div} illustrates the first point directly, and does so before mutation even begins: its unmodified golden reference already fails its own testbench, so the design never clears baseline validation and no mutant is ever injected into it (it is reported \texttt{unsupported}, with zero mutants generated). A testbench whose own reference fails it cannot be assigned a meaningful kill rate at all, which is a sharper version of the same point --- sensitivity is undefined when the oracle is already wrong. We do not attempt to measure false-rejection rate in this work, since it would require independently correct alternative implementations or a formal specification per design, neither of which is available for RTLLM's designs; this is future work, not a property this audit currently reports.
 
@@ -761,7 +770,7 @@ NVIDIA's CVDP~\cite{pinckney2025cvdp} takes a substantially broader approach, sp
 
 Research engaging with post-synthesis metrics has predominantly approached the problem from predictive modeling rather than generation scoring. MetRex~\cite{abdelatty2025metrex} compiled a comprehensive dataset of Verilog designs correlated with post-synthesis area, delay, and static power to evaluate whether models can infer these metrics from source code, while related frameworks like RocketPPA~\cite{abdollahi2025rocketppa} train models for code-level PPA prediction. Although these works advance metric estimation, they do not evaluate the physical viability of generated designs executed through an actual synthesis flow, nor do they address testbench rigor. GateTruth's own reference suite enforces a rigidly deterministic pipeline --- a single pinned container image identified by a maintainer-set build marker rather than a content hash (Section~\ref{sec:rigor}), uniform liberty and clock targets per task, a fixed Yosys-plus-OpenSTA path, and SHA-256 integrity checksums over canonical-JSON results --- so that PPA comparisons produced by it are reproducible directly from the recorded submission and pinned image.
 
-In summary, GateTruth is, to our knowledge, the first tool to apply mutation-testing certification to existing public RTL-generation benchmarks and report the result, and the first to combine that audit methodology with an openly published, mutation-certified reference implementation used to validate it before external application (self-certified under a published protocol by this paper's sole author, not independently reviewed; Section~\ref{sec:limitations}). It uniquely combines: (a) a deterministic, seeded mutation-audit protocol applicable to any RTL benchmark with a golden reference and a runnable testbench; (b) an explicit, non-silent policy for benchmarks or designs that cannot be audited (\texttt{unsupported} status, or a documented structural finding, rather than a misleading score); (c) an openly published 68-task, dual-track reference suite in which the same protocol is applied to every one of the suite's 60 Track A testbenches before external use, certifying 46 of them and reporting the remaining 14 as a genuine finding rather than omitting them; (d) a fully deterministic, reproducible RTL-to-PPA synthesis-and-timing flow underlying that reference suite's independent, secondary contribution as a model/agent benchmark; and (e) a temporal sensitivity rerun showing that the per-call output-token budget --- a parameter most RTL benchmarks neither vary nor report --- coincided with a leaderboard reordering, which we surfaced by applying the same scepticism to our own instrument that the audit applies to others', while disclosing the confounds (Section~\ref{sec:limitations}) that keep this from being a controlled, single-variable result.
+In summary, GateTruth is, to our knowledge, the first tool to apply mutation-testing certification to existing public RTL-generation benchmarks and report the result, and the first to combine that audit methodology with a mutation-certified reference implementation, permissively licensed and intended for open publication (Section~\ref{sec:limitations}), used to validate it before external application (self-certified under a published protocol by this paper's sole author, not independently reviewed; Section~\ref{sec:limitations}). It uniquely combines: (a) a deterministic, seeded mutation-audit protocol applicable to any RTL benchmark with a golden reference and a runnable testbench; (b) an explicit, non-silent policy for benchmarks or designs that cannot be audited (\texttt{unsupported} status, or a documented structural finding, rather than a misleading score); (c) a 68-task, dual-track reference suite, intended for open publication, in which the same protocol is applied to every one of the suite's 60 Track A testbenches before external use, certifying 46 of them and reporting the remaining 14 as a genuine finding rather than omitting them; (d) a fully deterministic, reproducible RTL-to-PPA synthesis-and-timing flow underlying that reference suite's independent, secondary contribution as a model/agent benchmark; and (e) a temporal sensitivity rerun showing that the per-call output-token budget --- a parameter most RTL benchmarks neither vary nor report --- coincided with a leaderboard reordering, which we surfaced by applying the same scepticism to our own instrument that the audit applies to others', while disclosing the confounds (Section~\ref{sec:limitations}) that keep this from being a controlled, single-variable result.
 
 \appendix
 
