@@ -1,8 +1,14 @@
 name: Deploy leaderboard to GitHub Pages
 
 # Builds the static leaderboard site from the committed official result manifests
-# and deploys it to GitHub Pages. A canary gate fails the build if any task canary
-# string appears in the generated site, so the answer-key GUIDs can never ship.
+# and deploys it to GitHub Pages. Runs inside the same pinned gatetruth:v1 image
+# as ci.yml (rather than a bare Ubuntu Python + `pip install pydantic`): the site
+# CLI is reached through harness.cli, which eagerly imports the full harness
+# dependency graph -- including cocotb, needed by nothing the site build touches
+# -- at module level, so anything short of the pinned image's full toolchain fails
+# before site generation runs at all. A canary gate then fails the build if any
+# task canary string appears in the generated site, so the answer-key GUIDs can
+# never ship, and a same-input rebuild must be byte-identical before publishing.
 
 on:
   push:
@@ -28,34 +34,70 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out public sources only
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install build dependency
-        run: pip install pydantic
-
-      - name: Build leaderboard site
+      - name: Build pinned gatetruth:v1
         run: |
-          python -m harness.cli site \
-            --results results/eval-16384 \
-            --agent-results results/evalB/official \
-            --out site/build
+          docker build --platform linux/amd64 \
+            --tag gatetruth:v1 \
+            --file flows/Dockerfile \
+            flows
+
+      - name: Stage immutable execution source
+        # Same discipline as ci.yml: /work is read-only, all writable output goes
+        # to /output, and nothing is shadow-mounted back under /work.
+        run: |
+          mkdir -p "$RUNNER_TEMP/gatetruth-source" "$RUNNER_TEMP/gatetruth-output"
+          git archive --format=tar HEAD | tar -xf - -C "$RUNNER_TEMP/gatetruth-source"
+          chmod -R a+rX "$RUNNER_TEMP/gatetruth-source"
+          chmod -R 0777 "$RUNNER_TEMP/gatetruth-output"
+          echo "SB_SOURCE=$RUNNER_TEMP/gatetruth-source" >> "$GITHUB_ENV"
+          echo "SB_OUTPUT=$RUNNER_TEMP/gatetruth-output" >> "$GITHUB_ENV"
+
+      - name: Verify pinned image identity
+        run: |
+          docker run --rm --network none --cap-drop=ALL \
+            --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
+            gatetruth:v1 sh -c '
+            test "$(uname -m)" = "x86_64"
+            test "$(id -u)" -ne 0
+            test "$(cat /etc/gatetruth-image-digest)" = \
+              "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4"
+          '
+
+      - name: Build the site twice (determinism check)
+        run: |
+          for rep in a b; do
+            docker run --rm --network none --cap-drop=ALL \
+              --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
+              --mount "type=bind,src=$SB_SOURCE,dst=/work,readonly" \
+              --mount "type=bind,src=$SB_OUTPUT,dst=/output" \
+              --workdir /work gatetruth:v1 \
+              python -m harness.cli site \
+                --results results/eval-16384 \
+                --agent-results results/evalB/official \
+                --out "/output/site-build-$rep"
+          done
+          if ! diff -rq "$SB_OUTPUT/site-build-a" "$SB_OUTPUT/site-build-b"; then
+            echo "::error::two identical-input site builds produced different output — not deterministic"
+            exit 1
+          fi
+          echo "determinism check: two builds byte-identical"
 
       - name: Canary gate (fail if any canary string reaches the site)
         run: |
-          if grep -rl "SILICONBENCH-CANARY" site/build; then
+          if grep -rl "SILICONBENCH-CANARY" "$SB_OUTPUT/site-build-a"; then
             echo "::error::canary string found in built site — refusing to publish"
             exit 1
           fi
           echo "canary gate clean"
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
-          path: site/build
+          path: ${{ env.SB_OUTPUT }}/site-build-a
 
   deploy:
     needs: build
@@ -65,4 +107,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
