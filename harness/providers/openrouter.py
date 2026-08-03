@@ -13,6 +13,7 @@ from harness.providers._http import (
     ProviderRetryableError,
     post_json,
 )
+from harness.providers.pricing import supports_temperature
 from harness.spend import DEFAULT_SPEND_PATH
 
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -36,12 +37,13 @@ class OpenRouterProvider(PricedProvider):
         payload: dict[str, Any] = {
             "model": self.model,
             "max_tokens": max_tokens,
-            "temperature": params.temperature,
             "messages": [
                 {"role": "system", "content": interface},
                 {"role": "user", "content": spec},
             ],
         }
+        if supports_temperature(self.name, self.model):
+            payload["temperature"] = params.temperature
         if params.seed is not None:
             payload["seed"] = params.seed
         try:

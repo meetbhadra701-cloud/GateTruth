@@ -35,6 +35,13 @@ def manifest_path(root: Path, model: str = "mock-eval") -> Path:
     return root / model / "toy_task" / "sample_1.json"
 
 
+class SpendCapExceededProvider(MockCompletionProvider):
+    """Simulates reserve_spend() raising mid-campaign, e.g. from a concurrent caller."""
+
+    def generate(self, spec, interface, params):
+        raise SpendCapExceeded("spend cap exceeded: 300.0001 > 300.0000")
+
+
 def test_extract_module_source_rejects_truncated_fence():
     response = """```systemverilog
 module truncated_example (
@@ -284,3 +291,15 @@ def test_estimate_only_threads_max_tokens_for_single_model_full_suite(
     assert captured["official"] is True
     assert captured["max_tokens"] == 16384
     assert "tasks_requested=60" in capsys.readouterr().out
+
+
+def test_spend_cap_exceeded_mid_call_propagates_instead_of_scoring_zero(tmp_path):
+    """A spend-cap hit during provider.generate() is a campaign-level event, not a
+    per-sample failure: it must not be folded into a generic "provider error" that
+    writes a zeroed manifest indistinguishable from an incorrect submission."""
+    provider = SpendCapExceededProvider(["irrelevant"])
+
+    with pytest.raises(SpendCapExceeded):
+        eval_model(["toy_task"], provider, out_dir=tmp_path)
+
+    assert not manifest_path(tmp_path, "mock-completion").exists()

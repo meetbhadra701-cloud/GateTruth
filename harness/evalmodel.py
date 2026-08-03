@@ -356,6 +356,12 @@ def _call_once(
     )
     try:
         response = provider.generate(prompt, system, params)
+    except SpendCapExceeded:
+        # A campaign-level event, not a per-sample failure: let it propagate to
+        # eval_model()'s caller (harness/cli.py already handles it cleanly at the
+        # top level) instead of being folded into a generic "provider error" that
+        # scores this sample 0.0 indistinguishably from an incorrect submission.
+        raise
     except Exception as exc:
         after = _provider_usage_or(provider, before)
         error = f"provider error: {type(exc).__name__}: {exc}"

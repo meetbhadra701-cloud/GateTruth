@@ -67,6 +67,10 @@ OMIT_TEMPERATURE_MODELS = frozenset(
         ("openai", "gpt-5-2025-08-07"),
         ("openai", "gpt-5-mini"),
         ("openai", "gpt-5-mini-2025-08-07"),
+        # OpenRouter-routed reasoning models must omit temperature identically to
+        # their native-provider counterparts above, or the request differs from
+        # what OpenAIProvider would send for the same underlying model.
+        ("openrouter", "openai/gpt-5-mini"),
     }
 )
 

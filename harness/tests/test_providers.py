@@ -212,6 +212,57 @@ def test_openai_reasoning_models_omit_temperature(
     assert provider.manifest_temperature == PROVIDER_DEFAULT_TEMPERATURE
 
 
+def test_openrouter_reasoning_model_omits_temperature_like_native_openai(
+    tmp_path,
+    monkeypatch,
+):
+    """An OpenRouter-routed reasoning model must send the identical request shape
+    as OpenAIProvider would for the same underlying model -- specifically, no
+    explicit temperature field."""
+    monkeypatch.setenv("OPENROUTER_API_KEY", "unit-test-key")
+    captured: dict[str, Any] = {}
+
+    def fake_post(url, *, headers, payload, timeout_s=60.0):
+        captured.update(payload)
+        return {
+            "choices": [{"message": {"content": "module x; endmodule"}}],
+            "usage": {"prompt_tokens": 1, "completion_tokens": 1},
+        }
+
+    monkeypatch.setattr(openrouter_module, "post_json", fake_post)
+    provider = OpenRouterProvider("openai/gpt-5-mini", spend_path=tmp_path / "spend.json")
+    params = GenParams(model="openai/gpt-5-mini", temperature=0.0, max_tokens=8, seed=0)
+
+    assert provider.generate("prompt", "system", params) == "module x; endmodule"
+    assert "temperature" not in captured
+    assert provider.manifest_temperature == PROVIDER_DEFAULT_TEMPERATURE
+
+
+def test_openrouter_non_reasoning_model_still_sends_temperature(
+    tmp_path,
+    monkeypatch,
+):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "unit-test-key")
+    captured: dict[str, Any] = {}
+
+    def fake_post(url, *, headers, payload, timeout_s=60.0):
+        captured.update(payload)
+        return {
+            "choices": [{"message": {"content": "module x; endmodule"}}],
+            "usage": {"prompt_tokens": 1, "completion_tokens": 1},
+        }
+
+    monkeypatch.setattr(openrouter_module, "post_json", fake_post)
+    provider = OpenRouterProvider(
+        "google/gemini-2.5-pro", temperature=0.0, spend_path=tmp_path / "spend.json"
+    )
+    params = GenParams(model="google/gemini-2.5-pro", temperature=0.0, max_tokens=8, seed=0)
+
+    assert provider.generate("prompt", "system", params) == "module x; endmodule"
+    assert captured["temperature"] == 0.0
+    assert provider.manifest_temperature == 0.0
+
+
 def test_http_error_does_not_echo_response_body(monkeypatch):
     secret = "unit-test-key-must-not-leak"
 
