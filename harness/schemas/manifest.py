@@ -34,6 +34,16 @@ METRIC_FIELDS = frozenset(
     }
 )
 
+CANONICAL_STAGE_NAMES: dict[int, str] = {
+    0: "lint",
+    1: "sim",
+    2: "formal",
+    3: "synth",
+    4: "sta",
+    5: "power",
+    6: "route",
+}
+
 
 class StageResult(BaseModel):
     """One manifest stage entry with stage-specific metrics."""
@@ -138,6 +148,19 @@ class ResultManifest(BaseModel):
         stage_ids = [stage.stage for stage in self.stages]
         if len(stage_ids) != len(set(stage_ids)):
             raise ValueError("stages must not repeat a stage number")
+
+        expected_ids = sorted(CANONICAL_STAGE_NAMES)
+        if stage_ids != expected_ids:
+            raise ValueError(
+                f"stages must be exactly {expected_ids} in order, got {stage_ids}"
+            )
+        for stage in self.stages:
+            expected_name = CANONICAL_STAGE_NAMES[stage.stage]
+            if stage.name != expected_name:
+                raise ValueError(
+                    f"stage {stage.stage} must be named {expected_name!r}, "
+                    f"got {stage.name!r}"
+                )
 
         correctness_failed = any(
             stage.stage in {0, 1, 2} and stage.status == "fail"
