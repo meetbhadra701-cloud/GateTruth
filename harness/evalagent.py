@@ -11,6 +11,7 @@ from statistics import median
 from typing import Any
 
 from harness.agentb import load_budget, provider_usage, run_agent_task
+from harness.atomic_write import atomic_write_text
 from harness.providers import GenParams, ProviderAdapter
 from harness.providers.pricing import price_for
 from harness.runner import SUITE_VERSION
@@ -191,10 +192,7 @@ def eval_agent(
         "signature": "0" * 64,
     }
     summary["signature"] = compute_manifest_signature(summary)
-    (model_root / "summary.json").write_text(
-        json.dumps(summary, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    atomic_write_text(model_root / "summary.json", json.dumps(summary, indent=2) + "\n")
     return summary
 
 

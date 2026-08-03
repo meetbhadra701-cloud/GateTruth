@@ -17,6 +17,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from xml.etree import ElementTree
 
+from harness.atomic_write import atomic_write_text
 from harness.flows import FlowError, run_power, run_sta, run_synth
 from harness.env_compat import read_env
 from harness.hidden import (
@@ -573,10 +574,9 @@ def run_task(
     data["signature"] = compute_manifest_signature(data)
     manifest = ResultManifest.model_validate(data)
     output_path = Path(out)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(
+    atomic_write_text(
+        output_path,
         json.dumps(manifest.model_dump(mode="json", exclude_none=True), indent=2) + "\n",
-        encoding="utf-8",
     )
     log_path = output_path.with_suffix(".log")
     log_path.write_text("\n\n".join(logs), encoding="utf-8")

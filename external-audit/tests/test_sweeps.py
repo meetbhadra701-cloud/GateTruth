@@ -3,6 +3,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 AUDIT_ROOT = Path(__file__).resolve().parents[1]
 if str(AUDIT_ROOT) not in sys.path:
     sys.path.insert(0, str(AUDIT_ROOT))
@@ -14,6 +16,7 @@ from sweep_rtllm import (  # noqa: E402
     VVP,
     _module_names,
     _reference_top_module,
+    _rewrite_module_declaration,
     _support_files,
     sweep_design,
 )
@@ -130,3 +133,37 @@ def test_rtllm_sweep_aliases_verified_module_in_temporary_copy(tmp_path):
     assert result["compatibility"] == "icarus-pass-with-module-alias"
     assert result["module_alias"] == {"from": "verified_foo", "to": "foo"}
     assert source.read_text(encoding="utf-8") == original_source
+
+
+def test_rewrite_module_declaration_renames_the_single_declaration(tmp_path):
+    source = tmp_path / "single.v"
+    source.write_text("module verified_foo(input a, output b);\nendmodule\n", encoding="utf-8")
+
+    rewritten = _rewrite_module_declaration(source, actual_module="verified_foo", expected_module="foo")
+
+    assert "module foo(" in rewritten
+    assert "verified_foo" not in rewritten
+
+
+def test_rewrite_module_declaration_rejects_a_missing_declaration(tmp_path):
+    source = tmp_path / "missing.v"
+    source.write_text("module something_else(input a);\nendmodule\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="found 0"):
+        _rewrite_module_declaration(source, actual_module="verified_foo", expected_module="foo")
+
+
+def test_rewrite_module_declaration_rejects_a_duplicate_declaration(tmp_path):
+    """Regression test: subn(..., count=1) can only ever report 0 or 1 replacements
+    no matter how many declarations actually exist, so a naive `replacements != 1`
+    check against that capped count can never catch this case -- it would silently
+    rewrite only the first declaration and report success."""
+    source = tmp_path / "duplicate.v"
+    source.write_text(
+        "module verified_foo(input a);\nendmodule\n"
+        "module verified_foo(input b);\nendmodule\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="found 2"):
+        _rewrite_module_declaration(source, actual_module="verified_foo", expected_module="foo")

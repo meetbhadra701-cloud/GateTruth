@@ -11,6 +11,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
+from harness.atomic_write import atomic_write_text
 from harness.flows import FlowError, YOSYS_BIN, run_power, run_sta, run_synth
 from harness.runner import (
     HIDDEN_FAILURE_PREFIX,
@@ -177,8 +178,7 @@ def run_track_b(
     data["signature"] = compute_manifest_signature(data)
     manifest = TrackBManifest.model_validate(data)
     out_path = Path(out)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(manifest.model_dump(mode="json"), indent=2) + "\n", encoding="utf-8")
+    atomic_write_text(out_path, json.dumps(manifest.model_dump(mode="json"), indent=2) + "\n")
     out_path.with_suffix(".log").write_text("\n\n".join(logs), encoding="utf-8")
     return manifest
 

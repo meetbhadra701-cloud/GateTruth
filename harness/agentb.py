@@ -12,6 +12,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Literal
 
+from harness.atomic_write import atomic_write_text
 from harness.flows import FlowError, run_sta, run_synth
 from harness.providers import GenParams, ProviderAdapter
 from harness.providers._http import ProviderRetryableError
@@ -182,13 +183,13 @@ def run_agent_task(
         )
         data["signature"] = compute_manifest_signature(data)
         manifest = AgentTrackBManifest.model_validate(data)
-        out_path.write_text(
+        atomic_write_text(
+            out_path,
             json.dumps(manifest.model_dump(mode="json"), indent=2) + "\n",
-            encoding="utf-8",
         )
-        out_path.with_suffix(".transcript.json").write_text(
+        atomic_write_text(
+            out_path.with_suffix(".transcript.json"),
             json.dumps(transcript, indent=2) + "\n",
-            encoding="utf-8",
         )
         return manifest
 

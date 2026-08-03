@@ -112,6 +112,16 @@ class RTLLMIcarusRunner:
             return TbResult(Verdict.NOT_RUNNABLE, None)
 
         work_dir.mkdir(parents=True, exist_ok=False)
+        # Two deliberately different error-handling tiers, not an oversight:
+        # _vendor_file()/_copy_support_files() below validate paths drawn from the
+        # catalog entry itself (testbench, support files, extra reference sources)
+        # -- a path escaping the vendor root there means the catalog is malformed
+        # or tampered, a structural problem affecting every mutant under this
+        # entry, not a per-mutant outcome, so it is left unguarded and propagates
+        # (see test_rtllm_runner_rejects_catalog_path_escape). Only
+        # _candidate_source, which processes the per-mutant candidate source text,
+        # degrades gracefully to a FAIL verdict -- that failure is specific to one
+        # mutant, not evidence the catalog itself is broken.
         testbench_source = self._vendor_file(str(entry["testbench"]))
         testbench = work_dir / "testbench.v"
         shutil.copy2(testbench_source, testbench)

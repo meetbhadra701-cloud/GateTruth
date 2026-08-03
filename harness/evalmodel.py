@@ -11,6 +11,7 @@ from pathlib import Path
 from statistics import fmean
 from typing import Any
 
+from harness.atomic_write import atomic_write_text
 from harness.providers import GenParams, ProviderAdapter
 from harness.providers.pricing import worst_case_cost
 from harness.runner import SUITE_VERSION, TaskPackage, resolve_task, run_task, runtime_docker_digest
@@ -282,10 +283,7 @@ def eval_model(
         "signature": "0" * 64,
     }
     summary["signature"] = compute_manifest_signature(summary)
-    (model_root / "summary.json").write_text(
-        json.dumps(summary, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    atomic_write_text(model_root / "summary.json", json.dumps(summary, indent=2) + "\n")
     return summary
 
 
@@ -509,10 +507,9 @@ def _zero_manifest(
 
 
 def _write_manifest(manifest: ResultManifest, path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
+    atomic_write_text(
+        path,
         json.dumps(manifest.model_dump(mode="json", exclude_none=True), indent=2) + "\n",
-        encoding="utf-8",
     )
 
 

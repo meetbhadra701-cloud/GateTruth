@@ -84,16 +84,18 @@ def _rewrite_module_declaration(
         rf"(?m)^([ \t]*module[ \t]+){re.escape(actual_module)}"
         rf"(?=\s*(?:#|\(|;))"
     )
-    rewritten, replacements = declaration.subn(
-        rf"\g<1>{expected_module}",
-        text,
-        count=1,
-    )
-    if replacements != 1:
+    # Count matches uncapped first: subn(..., count=1) can only ever report 0 or 1
+    # replacements regardless of how many declarations actually exist in the source,
+    # so checking `replacements != 1` against a count=1 call can catch a missing
+    # declaration but can never catch a duplicate one -- it silently rewrites the
+    # first match and reports success either way.
+    match_count = len(declaration.findall(text))
+    if match_count != 1:
         raise ValueError(
             f"{source}: expected one declaration for module {actual_module}, "
-            f"replaced {replacements}"
+            f"found {match_count}"
         )
+    rewritten = declaration.sub(rf"\g<1>{expected_module}", text, count=1)
     return rewritten
 
 
