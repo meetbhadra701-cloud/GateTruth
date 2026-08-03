@@ -148,21 +148,6 @@ endmodule
     assert any("out <= '1;" in mutant.source for mutant in mutants)
 
 
-def test_spi_shift_register_preload_equivalents_are_excluded():
-    source = """module spi_slave;
-logic [6:0] rx_shreg;
-always_ff @(posedge clk) begin
-  if (cs_fall) rx_shreg <= '0;
-end
-endmodule
-"""
-
-    mutants = generate_mutants("t2_spi_slave", source)
-
-    assert all("rx_shreg <= '1;" not in mutant.source for mutant in mutants)
-    assert all("rx_shreg <= rx_shreg;" not in mutant.source for mutant in mutants)
-
-
 def test_sim_timeout_is_detected_as_indeterminate_signal():
     assert _is_timeout("cocotb output\nTIMEOUT after 20 seconds\n")
     assert not _is_timeout("assertion failed")

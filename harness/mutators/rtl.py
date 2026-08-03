@@ -105,77 +105,7 @@ def generate_mutants(
                 source=mutated,
             )
         )
-    return [mutant for mutant in mutants if not _known_equivalent(task_id, mutant)]
-
-
-def _known_equivalent(task_id: str, mutant: Mutant) -> bool:
-    if task_id == "t2_spi_slave":
-        # rx_shreg is seven bits wide and rx_data is emitted only after eight
-        # incoming shifts, so its value at chip-select is fully overwritten.
-        return "rx_shreg <= '1;" in mutant.source or "rx_shreg <= rx_shreg;" in mutant.source
-    if task_id == "t2_priority_interrupt_controller":
-        # idx is overwritten for every valid interrupt and is unobservable when
-        # irq_valid is false, so its comb initializer cannot affect a port.
-        return "idx = ~('0);" in mutant.source
-    if task_id == "t2_round_robin_arbiter":
-        # gidx is consumed only when a grant exists; in that case the grant
-        # scan always overwrites this initializer before ptr uses it.
-        return "gidx = ~('0);" in mutant.source
-    if task_id == "t2_axi_lite_regfile":
-        # AXI OKAY responses are constant zero in every reachable state.
-        return "bresp <= bresp;" in mutant.source or "rresp <= rresp;" in mutant.source
-    if task_id == "t2_pulse_stretcher":
-        # These assignments merely restate the state invariant: out is already
-        # low while idle and already high while an active stretch remains.
-        return "out <= out;" in mutant.source
-    if task_id == "t2_stream_downsizer":
-        # count is zero whenever idle; the terminal clear is overwritten by the
-        # next accepted input before count can affect an output.
-        return "count <= count;" in mutant.source or "count <= '1;" in mutant.source
-    if task_id in {"t2_uart_rx", "t2_uart_tx"}:
-        # IDLE clears clk_cnt before accepting a frame, making the preceding
-        # state-boundary clear and its held value externally unobservable.
-        return "clk_cnt <= clk_cnt;" in mutant.source or "clk_cnt <= '1;" in mutant.source
-    if task_id == "t3_sequential_divider":
-        # The divide-by-zero branch is entered only from !busy, so retaining
-        # busy there is equivalent to assigning zero.
-        return "busy <= busy;" in mutant.source
-    if task_id == "t2_i2c_slave":
-        # shreg is seven bits and is fully overwritten by the eight incoming
-        # bits before either address matching or byte_data observes it.
-        # bit_cnt is redundantly cleared at every protocol boundary (the
-        # byte-completing branch, then again in both *_ACK_FALL states, and on
-        # every START) and is consumed only after one of those clears runs, so
-        # each individual clear is masked by the next before any use.
-        # matched is overwritten by is_match on the eighth address bit before
-        # its only use in ADDR_ACK_FALL.
-        return (
-            "shreg <= '1;" in mutant.source
-            or "shreg <= shreg;" in mutant.source
-            or "bit_cnt <= '1;" in mutant.source
-            or "bit_cnt <= bit_cnt;" in mutant.source
-            or "matched <= matched;" in mutant.source
-        )
-    if task_id == "t3_lru_tracker":
-        # age[] is a permutation of 0..NWAYS-1 in every reachable state (reset
-        # seeds one and the shift-up update preserves it - the bound formal
-        # properties check exactly this), so precisely one way matches
-        # NWAYS-1 and the readout loop always overwrites this initializer.
-        return "lru_way = ~('0);" in mutant.source
-    if task_id == "t2_spi_master":
-        # IDLE is only entered from reset or from the completion branch, both of
-        # which leave cs_n=1, sclk=0, busy=0 and half_cnt=0; the IDLE-state
-        # restatements and the start-branch half_cnt clear are therefore
-        # redundant in every reachable visit. The matches are anchored to their
-        # preceding source line so the behavior-changing ACTIVE-branch holds of
-        # the same signals stay in the mutant pool.
-        return (
-            "IDLE: begin\n                    cs_n <= cs_n;" in mutant.source
-            or "cs_n <= 1'b1;\n                    sclk <= sclk;" in mutant.source
-            or "sclk <= 1'b0;\n                    busy <= busy;" in mutant.source
-            or "busy     <= 1'b1;\n                        half_cnt <= half_cnt;" in mutant.source
-        )
-    return False
+    return mutants
 
 
 def _replace_once(source: str, old: str, new: str) -> str | None:

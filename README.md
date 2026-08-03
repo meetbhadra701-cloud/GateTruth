@@ -28,28 +28,31 @@ We certify the methodology against our own open reference suite first — 60
 specification-to-RTL generation tasks plus 8 agentic-repair tasks, each carried
 through a **real, pinned open-source ASIC flow** (synthesis + static timing/power
 on the sky130 technology) with correctness enforced as a **hard gate**, and every
-one of the suite's 68 testbenches certified above a 95% mutation-kill floor — and
-then point the same engine, unmodified, at external RTL benchmarks the field
-already relies on. See the [paper](#citation) for the audit methodology, the
-reference-suite design, and the resulting measurements.
+one of the 60 Track A testbenches certified above a 95% mutation-kill floor
+(Track B's 8 testbenches are not yet certified under this protocol — see the
+paper) — and then point the same engine, unmodified, at external RTL benchmarks
+the field already relies on. See the [paper](#citation) for the audit
+methodology, the reference-suite design, and the resulting measurements.
 
 ## Leaderboard (v1.0)
 
-Seven models, evaluated under the official pinned flow. The human reference scores
-**66.67 by construction**; every model trails it.
+Seven models, evaluated under the official pinned flow at a common 16,384-token
+output cap (an earlier 4096-token run materially reordered this table — see the
+paper for why the cap itself turned out to be an experimental variable). The
+human reference scores **66.67 by construction**; every model trails it.
 
 ### Track A — single-shot RTL generation (60 tasks)
 
-| Rank | Model | Score / 100 |
-|:---:|---|---:|
-| 🥇 | Claude Opus 4.8 | **46.91** |
-| 🥈 | Claude Sonnet 4.6 | 45.03 |
-| 🥉 | Claude Haiku 4.5 | 33.58 |
-| 4 | GPT-5-mini | 33.44 |
-| 5 | GPT-5 | 31.64 |
-| 6 | Llama 4 Maverick | 25.52 |
-| 7 | Gemini 2.5 Pro | 17.83 |
-| — | *human reference* | *66.67* |
+| Rank | Model | Score / 100 | Pass@1 |
+|:---:|---|---:|:---:|
+| 🥇 | GPT-5 | **48.83** | 43/60 |
+| 🥈 | Claude Opus 4.8 | 46.99 | 42/60 |
+| 🥉 | Claude Sonnet 4.6 | 42.09 | 38/60 |
+| 4 | GPT-5-mini | 35.23 | 32/60 |
+| 5 | Claude Haiku 4.5 | 33.78 | 30/60 |
+| 6 | Gemini 2.5 Pro | 31.06 | 28/60 |
+| 7 | Llama 4 Maverick | 24.65 | 22/60 |
+| — | *human reference* | *66.67* | — |
 
 ### Track B — agentic PPA repair (8 tasks)
 
@@ -60,9 +63,12 @@ Seven models, evaluated under the official pinned flow. The human reference scor
 | 🥉 | GPT-5 | 1 / 8 |
 | — | Haiku 4.5 · GPT-5-mini · Gemini 2.5 Pro · Llama 4 Maverick | 0 / 8 |
 
-Even the strongest model reaches ~70% of the human reference on generation, and
-four of seven make no progress at all on agentic optimization. Cost does not track
-quality. See the [paper](#citation) for full per-tier results and analysis.
+Most of the gap to 66.67 is a correctness-gate effect, not a physical-quality
+shortfall: on tasks a model actually passes, its PPA sits within ~2.3% of the
+human reference on average. Four of seven models make no progress at all on
+agentic optimization. Cost does not track quality. See the
+[paper](#citation) for full per-tier results, the token-budget sensitivity
+analysis, and the reasoning behind reporting one condition over the other.
 
 **Want your model on the board?** Open a [model request](.github/ISSUE_TEMPLATE/model_request.md) —
 the maintainer runs it through the official pinned flow and adds the result. Once public,

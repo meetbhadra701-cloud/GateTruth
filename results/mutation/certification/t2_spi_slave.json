@@ -1,18 +1,18 @@
 {
   "indeterminate": 0,
   "jobs": 1,
-  "kill_rate": 100.0,
-  "killed": 22,
+  "kill_rate": 92.0,
+  "killed": 23,
   "min_kill": 95.0,
   "official": true,
   "results": [
     {
-      "description": "combinational assignment is inverted",
-      "id": "t2_spi_slave-m024",
+      "description": "registered assignment holds its previous value",
+      "id": "t2_spi_slave-m013",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "assignment_hold"
     },
     {
       "description": "registered assignment holds its previous value",
@@ -39,12 +39,12 @@
       "operator": "comparator_boundary_flip"
     },
     {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_spi_slave-m017",
+      "description": "combinational assignment is inverted",
+      "id": "t2_spi_slave-m023",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_hold"
+      "operator": "blocking_output_inversion"
     },
     {
       "description": "registered assignment holds its previous value",
@@ -56,7 +56,15 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t2_spi_slave-m010",
+      "id": "t2_spi_slave-m007",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_spi_slave-m016",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -71,12 +79,12 @@
       "operator": "reset_polarity_flip"
     },
     {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_spi_slave-m016",
+      "description": "combinational assignment is inverted",
+      "id": "t2_spi_slave-m024",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_hold"
+      "operator": "blocking_output_inversion"
     },
     {
       "description": "zero assignment becomes all ones",
@@ -88,55 +96,7 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t2_spi_slave-m007",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "zero assignment becomes all ones",
-      "id": "t2_spi_slave-m005",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_deletion"
-    },
-    {
-      "description": "combinational assignment is inverted",
-      "id": "t2_spi_slave-m023",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "blocking_output_inversion"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_spi_slave-m018",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_spi_slave-m019",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_spi_slave-m013",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_spi_slave-m011",
+      "id": "t2_spi_slave-m015",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -149,6 +109,22 @@
       "killed": true,
       "killed_by": "sim",
       "operator": "output_inversion"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_spi_slave-m004",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_spi_slave-m014",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
     },
     {
       "description": "combinational assignment is inverted",
@@ -168,7 +144,39 @@
     },
     {
       "description": "registered assignment holds its previous value",
+      "id": "t2_spi_slave-m010",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_spi_slave-m005",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
       "id": "t2_spi_slave-m020",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_spi_slave-m018",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_spi_slave-m011",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -181,11 +189,44 @@
       "killed": true,
       "killed_by": "sim",
       "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_spi_slave-m017",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_spi_slave-m019",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
     }
   ],
   "seed": 1337,
-  "survived": 0,
-  "survivors": [],
+  "survived": 2,
+  "survivors": [
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_spi_slave-m004",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_spi_slave-m014",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    }
+  ],
   "task": "t2_spi_slave",
-  "total": 22
+  "total": 25
 }

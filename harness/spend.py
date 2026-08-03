@@ -5,14 +5,33 @@ from __future__ import annotations
 import json
 import math
 import os
+import sys
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
 
-import fcntl
-
 from harness.env_compat import read_env
+
+if sys.platform == "win32":
+    import msvcrt
+
+    def _lock_exclusive(fileno: int) -> None:
+        os.lseek(fileno, 0, os.SEEK_SET)
+        msvcrt.locking(fileno, msvcrt.LK_LOCK, 1)
+
+    def _unlock(fileno: int) -> None:
+        os.lseek(fileno, 0, os.SEEK_SET)
+        msvcrt.locking(fileno, msvcrt.LK_UNLCK, 1)
+
+else:
+    import fcntl
+
+    def _lock_exclusive(fileno: int) -> None:
+        fcntl.flock(fileno, fcntl.LOCK_EX)
+
+    def _unlock(fileno: int) -> None:
+        fcntl.flock(fileno, fcntl.LOCK_UN)
 
 DEFAULT_SPEND_PATH = Path("results/spend.json")
 DEFAULT_SPEND_CAP_USD = 300.0
@@ -31,12 +50,19 @@ def spend_cap_from_env() -> float:
 
 
 def load_spend(path: str | Path = DEFAULT_SPEND_PATH) -> dict[str, Any]:
+    """Read-only snapshot of the ledger. Do not pair with save_spend() to mutate
+    it -- each call takes and releases its own lock, so a load-then-save from two
+    concurrent callers can lose one side's update. reserve_spend()/
+    settle_spend_reservation() hold a single lock across their whole
+    read-modify-write and are safe for concurrent use; this pair is not."""
     spend_path = Path(path)
     with _spend_lock(spend_path):
         return _load_spend_unlocked(spend_path)
 
 
 def save_spend(data: dict[str, Any], path: str | Path = DEFAULT_SPEND_PATH) -> None:
+    """See load_spend()'s docstring: this and load_spend() are independently
+    locked, not a joint critical section."""
     spend_path = Path(path)
     with _spend_lock(spend_path):
         normalized = dict(data)
@@ -49,11 +75,11 @@ def _spend_lock(spend_path: Path) -> Iterator[None]:
     spend_path.parent.mkdir(parents=True, exist_ok=True)
     lock_path = spend_path.with_name(f"{spend_path.name}.lock")
     with lock_path.open("a+b") as lock_file:
-        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        _lock_exclusive(lock_file.fileno())
         try:
             yield
         finally:
-            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+            _unlock(lock_file.fileno())
 
 
 def _load_spend_unlocked(spend_path: Path) -> dict[str, Any]:

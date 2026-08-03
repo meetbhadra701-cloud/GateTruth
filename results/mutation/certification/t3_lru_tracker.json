@@ -1,7 +1,7 @@
 {
   "indeterminate": 0,
   "jobs": 1,
-  "kill_rate": 100.0,
+  "kill_rate": 90.0,
   "killed": 9,
   "min_kill": 95.0,
   "official": true,
@@ -72,6 +72,14 @@
     },
     {
       "description": "combinational assignment is inverted",
+      "id": "t3_lru_tracker-m008",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
       "id": "t3_lru_tracker-m009",
       "indeterminate": false,
       "killed": true,
@@ -80,8 +88,17 @@
     }
   ],
   "seed": 1337,
-  "survived": 0,
-  "survivors": [],
+  "survived": 1,
+  "survivors": [
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_lru_tracker-m008",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "blocking_output_inversion"
+    }
+  ],
   "task": "t3_lru_tracker",
-  "total": 9
+  "total": 10
 }

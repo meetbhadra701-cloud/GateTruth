@@ -1,14 +1,14 @@
 {
   "indeterminate": 0,
   "jobs": 1,
-  "kill_rate": 97.1429,
-  "killed": 34,
+  "kill_rate": 75.4386,
+  "killed": 43,
   "min_kill": 95.0,
   "official": true,
   "results": [
     {
       "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m046",
+      "id": "t2_i2c_slave-m042",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -16,11 +16,19 @@
     },
     {
       "description": "combinational assignment is inverted",
-      "id": "t2_i2c_slave-m054",
+      "id": "t2_i2c_slave-m051",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
       "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m047",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
     },
     {
       "description": "registered assignment holds its previous value",
@@ -32,7 +40,7 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m030",
+      "id": "t2_i2c_slave-m020",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -48,7 +56,15 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m015",
+      "id": "t2_i2c_slave-m029",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m018",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -56,23 +72,15 @@
     },
     {
       "description": "combinational assignment is inverted",
-      "id": "t2_i2c_slave-m051",
+      "id": "t2_i2c_slave-m056",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
       "operator": "blocking_output_inversion"
     },
     {
-      "description": "equality becomes inequality",
-      "id": "t2_i2c_slave-m001",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "comparator_boundary_flip"
-    },
-    {
       "description": "zero assignment becomes all ones",
-      "id": "t2_i2c_slave-m005",
+      "id": "t2_i2c_slave-m012",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -87,16 +95,16 @@
       "operator": "comparator_boundary_flip"
     },
     {
-      "description": "reset condition inverted",
-      "id": "t2_i2c_slave-m004",
+      "description": "zero assignment becomes all ones",
+      "id": "t2_i2c_slave-m009",
       "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "reset_polarity_flip"
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_deletion"
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m026",
+      "id": "t2_i2c_slave-m041",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -104,23 +112,7 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m035",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "combinational assignment is inverted",
-      "id": "t2_i2c_slave-m055",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "blocking_output_inversion"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m025",
+      "id": "t2_i2c_slave-m017",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -128,7 +120,7 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m042",
+      "id": "t2_i2c_slave-m015",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -136,10 +128,10 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m029",
+      "id": "t2_i2c_slave-m031",
       "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
+      "killed": false,
+      "killed_by": null,
       "operator": "assignment_hold"
     },
     {
@@ -159,11 +151,75 @@
       "operator": "blocking_output_inversion"
     },
     {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m024",
+      "description": "zero assignment becomes all ones",
+      "id": "t2_i2c_slave-m008",
       "indeterminate": false,
       "killed": false,
       "killed_by": null,
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m035",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m030",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m028",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m048",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m049",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_i2c_slave-m005",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_i2c_slave-m007",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m014",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
       "operator": "assignment_hold"
     },
     {
@@ -175,8 +231,136 @@
       "operator": "logic_inversion"
     },
     {
+      "description": "combinational assignment is inverted",
+      "id": "t2_i2c_slave-m052",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_i2c_slave-m011",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_deletion"
+    },
+    {
       "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m047",
+      "id": "t2_i2c_slave-m026",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "equality becomes inequality",
+      "id": "t2_i2c_slave-m001",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "comparator_boundary_flip"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m044",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t2_i2c_slave-m055",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m038",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m022",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m032",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "reset condition inverted",
+      "id": "t2_i2c_slave-m004",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "reset_polarity_flip"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m043",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m027",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_i2c_slave-m006",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t2_i2c_slave-m054",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_i2c_slave-m013",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m025",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m019",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -192,7 +376,7 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m014",
+      "id": "t2_i2c_slave-m040",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -200,55 +384,31 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m038",
+      "id": "t2_i2c_slave-m024",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m021",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
       "operator": "assignment_hold"
     },
     {
-      "description": "combinational assignment is inverted",
-      "id": "t2_i2c_slave-m052",
+      "description": "zero assignment becomes all ones",
+      "id": "t2_i2c_slave-m010",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "assignment_deletion"
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m017",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m019",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m043",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m036",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m020",
+      "id": "t2_i2c_slave-m046",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -264,7 +424,7 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m018",
+      "id": "t2_i2c_slave-m036",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -272,24 +432,120 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t2_i2c_slave-m041",
+      "id": "t2_i2c_slave-m023",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m045",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m034",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
       "operator": "assignment_hold"
     },
     {
-      "description": "combinational assignment is inverted",
-      "id": "t2_i2c_slave-m056",
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m039",
       "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
     }
   ],
   "seed": 1337,
-  "survived": 1,
+  "survived": 14,
   "survivors": [
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_i2c_slave-m009",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m031",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_i2c_slave-m008",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m048",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m049",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_i2c_slave-m007",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_i2c_slave-m011",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m044",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m022",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_i2c_slave-m013",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_deletion"
+    },
     {
       "description": "registered assignment holds its previous value",
       "id": "t2_i2c_slave-m024",
@@ -297,8 +553,32 @@
       "killed": false,
       "killed_by": null,
       "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m023",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m045",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_i2c_slave-m039",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
     }
   ],
   "task": "t2_i2c_slave",
-  "total": 35
+  "total": 57
 }

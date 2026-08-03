@@ -1,34 +1,34 @@
 {
   "indeterminate": 0,
   "jobs": 1,
-  "kill_rate": 100.0,
-  "killed": 17,
+  "kill_rate": 86.3636,
+  "killed": 19,
   "min_kill": 95.0,
   "official": true,
   "results": [
     {
-      "description": "reset condition inverted",
-      "id": "t2_stream_downsizer-m003",
+      "description": "combinational assignment is inverted",
+      "id": "t2_stream_downsizer-m021",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
-      "operator": "reset_polarity_flip"
+      "operator": "blocking_output_inversion"
     },
     {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_stream_downsizer-m011",
+      "description": "continuous output is inverted",
+      "id": "t2_stream_downsizer-m007",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_hold"
+      "operator": "output_inversion"
     },
     {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_stream_downsizer-m009",
+      "description": "and becomes or",
+      "id": "t2_stream_downsizer-m002",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_hold"
+      "operator": "logic_inversion"
     },
     {
       "description": "equality becomes inequality",
@@ -39,12 +39,28 @@
       "operator": "comparator_boundary_flip"
     },
     {
-      "description": "and becomes or",
-      "id": "t2_stream_downsizer-m002",
+      "description": "registered assignment holds its previous value",
+      "id": "t2_stream_downsizer-m014",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
-      "operator": "logic_inversion"
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "t2_stream_downsizer-m008",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_stream_downsizer-m009",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
     },
     {
       "description": "and becomes or",
@@ -63,12 +79,12 @@
       "operator": "assignment_hold"
     },
     {
-      "description": "combinational assignment is inverted",
-      "id": "t2_stream_downsizer-m021",
+      "description": "reset condition inverted",
+      "id": "t2_stream_downsizer-m003",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "reset_polarity_flip"
     },
     {
       "description": "continuous output is inverted",
@@ -79,8 +95,16 @@
       "operator": "output_inversion"
     },
     {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_stream_downsizer-m004",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_deletion"
+    },
+    {
       "description": "combinational assignment is inverted",
-      "id": "t2_stream_downsizer-m019",
+      "id": "t2_stream_downsizer-m020",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -95,20 +119,36 @@
       "operator": "blocking_output_inversion"
     },
     {
-      "description": "continuous output is inverted",
-      "id": "t2_stream_downsizer-m008",
+      "description": "combinational assignment is inverted",
+      "id": "t2_stream_downsizer-m016",
       "indeterminate": false,
       "killed": true,
-      "killed_by": "sim",
-      "operator": "output_inversion"
+      "killed_by": "lint",
+      "operator": "blocking_output_inversion"
     },
     {
-      "description": "combinational assignment is inverted",
-      "id": "t2_stream_downsizer-m020",
+      "description": "registered assignment holds its previous value",
+      "id": "t2_stream_downsizer-m012",
       "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_stream_downsizer-m010",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_stream_downsizer-m005",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_deletion"
     },
     {
       "description": "combinational assignment is inverted",
@@ -119,6 +159,14 @@
       "operator": "blocking_output_inversion"
     },
     {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_stream_downsizer-m011",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
       "description": "combinational assignment is inverted",
       "id": "t2_stream_downsizer-m017",
       "indeterminate": false,
@@ -127,25 +175,42 @@
       "operator": "blocking_output_inversion"
     },
     {
-      "description": "continuous output is inverted",
-      "id": "t2_stream_downsizer-m007",
+      "description": "combinational assignment is inverted",
+      "id": "t2_stream_downsizer-m019",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
-      "operator": "output_inversion"
-    },
-    {
-      "description": "combinational assignment is inverted",
-      "id": "t2_stream_downsizer-m016",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "lint",
       "operator": "blocking_output_inversion"
     }
   ],
   "seed": 1337,
-  "survived": 0,
-  "survivors": [],
+  "survived": 3,
+  "survivors": [
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_stream_downsizer-m012",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_stream_downsizer-m010",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "zero assignment becomes all ones",
+      "id": "t2_stream_downsizer-m005",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_deletion"
+    }
+  ],
   "task": "t2_stream_downsizer",
-  "total": 17
+  "total": 22
 }

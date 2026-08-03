@@ -122,6 +122,7 @@ def run_rtllm_audit(
     out_dir: Path,
     timeout_s: float,
     retry_timeout_s: float,
+    generation_flag: str = "-g2001",
 ) -> dict[str, Any]:
     raw_catalog = _load_catalog(catalog_path)
     expected_vendor_hash = str(raw_catalog["vendor_content_sha256"])
@@ -139,7 +140,7 @@ def run_rtllm_audit(
     }
     selected = _select_designs(designs, entries)
     tool_versions = _tool_versions()
-    runner = RTLLMIcarusRunner(vendor_root, entries)
+    runner = RTLLMIcarusRunner(vendor_root, entries, generation_flag=generation_flag)
     results: list[dict[str, Any]] = []
     for design_id in selected:
         entry = entries[design_id]
@@ -209,6 +210,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--vendor", type=Path, default=DEFAULT_VENDOR)
     parser.add_argument("--timeout-s", type=float, default=20.0)
     parser.add_argument("--retry-timeout-s", type=float, default=60.0)
+    parser.add_argument(
+        "--generation-flag",
+        default="-g2001",
+        help="iverilog language-generation flag (e.g. -g2001, -g2012); the paper's "
+        "reported primary condition is -g2012, see external-audit/results/rtllm/sweep-g2012.json",
+    )
     args = parser.parse_args(argv)
 
     run_rtllm_audit(
@@ -219,6 +226,7 @@ def main(argv: list[str] | None = None) -> int:
         out_dir=args.out,
         timeout_s=args.timeout_s,
         retry_timeout_s=args.retry_timeout_s,
+        generation_flag=args.generation_flag,
     )
     return 0
 

@@ -1,7 +1,7 @@
 {
   "indeterminate": 0,
   "jobs": 1,
-  "kill_rate": 100.0,
+  "kill_rate": 92.3077,
   "killed": 12,
   "min_kill": 95.0,
   "official": true,
@@ -40,10 +40,10 @@
     },
     {
       "description": "combinational assignment is inverted",
-      "id": "t2_round_robin_arbiter-m010",
+      "id": "t2_round_robin_arbiter-m011",
       "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
+      "killed": false,
+      "killed_by": null,
       "operator": "blocking_output_inversion"
     },
     {
@@ -64,7 +64,7 @@
     },
     {
       "description": "combinational assignment is inverted",
-      "id": "t2_round_robin_arbiter-m012",
+      "id": "t2_round_robin_arbiter-m010",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -77,6 +77,14 @@
       "killed": true,
       "killed_by": "sim",
       "operator": "output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t2_round_robin_arbiter-m012",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
     },
     {
       "description": "registered assignment holds its previous value",
@@ -104,8 +112,17 @@
     }
   ],
   "seed": 1337,
-  "survived": 0,
-  "survivors": [],
+  "survived": 1,
+  "survivors": [
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t2_round_robin_arbiter-m011",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "blocking_output_inversion"
+    }
+  ],
   "task": "t2_round_robin_arbiter",
-  "total": 12
+  "total": 13
 }

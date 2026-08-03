@@ -1,11 +1,19 @@
 {
   "indeterminate": 0,
   "jobs": 1,
-  "kill_rate": 100.0,
-  "killed": 10,
+  "kill_rate": 86.6667,
+  "killed": 13,
   "min_kill": 95.0,
   "official": true,
   "results": [
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_pulse_stretcher-m006",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
     {
       "description": "equality becomes inequality",
       "id": "t2_pulse_stretcher-m000",
@@ -13,6 +21,38 @@
       "killed": true,
       "killed_by": "sim",
       "operator": "comparator_boundary_flip"
+    },
+    {
+      "description": "decrement becomes increment",
+      "id": "t2_pulse_stretcher-m001",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "operator_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_pulse_stretcher-m004",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t2_pulse_stretcher-m013",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "lint",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_pulse_stretcher-m007",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
     },
     {
       "description": "registered assignment holds its previous value",
@@ -39,14 +79,6 @@
       "operator": "reset_polarity_flip"
     },
     {
-      "description": "decrement becomes increment",
-      "id": "t2_pulse_stretcher-m001",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "operator_inversion"
-    },
-    {
       "description": "registered assignment holds its previous value",
       "id": "t2_pulse_stretcher-m010",
       "indeterminate": false,
@@ -55,41 +87,66 @@
       "operator": "assignment_hold"
     },
     {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_pulse_stretcher-m006",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t2_pulse_stretcher-m007",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "combinational assignment is inverted",
-      "id": "t2_pulse_stretcher-m013",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "lint",
-      "operator": "blocking_output_inversion"
-    },
-    {
       "description": "combinational assignment is inverted",
       "id": "t2_pulse_stretcher-m014",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
       "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_pulse_stretcher-m005",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_pulse_stretcher-m011",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_pulse_stretcher-m008",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_pulse_stretcher-m009",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
     }
   ],
   "seed": 1337,
-  "survived": 0,
-  "survivors": [],
+  "survived": 2,
+  "survivors": [
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_pulse_stretcher-m011",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t2_pulse_stretcher-m008",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    }
+  ],
   "task": "t2_pulse_stretcher",
-  "total": 10
+  "total": 15
 }

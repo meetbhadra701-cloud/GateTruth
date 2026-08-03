@@ -1,14 +1,22 @@
 {
   "indeterminate": 0,
   "jobs": 1,
-  "kill_rate": 100.0,
-  "killed": 35,
+  "kill_rate": 97.4359,
+  "killed": 38,
   "min_kill": 95.0,
   "official": true,
   "results": [
     {
+      "description": "combinational assignment is inverted",
+      "id": "t3_sequential_divider-m032",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "lint",
+      "operator": "blocking_output_inversion"
+    },
+    {
       "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m030",
+      "id": "t3_sequential_divider-m014",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -16,35 +24,11 @@
     },
     {
       "description": "combinational assignment is inverted",
-      "id": "t3_sequential_divider-m036",
+      "id": "t3_sequential_divider-m031",
       "indeterminate": false,
       "killed": true,
-      "killed_by": "sim",
+      "killed_by": "lint",
       "operator": "blocking_output_inversion"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m021",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m020",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m009",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
     },
     {
       "description": "registered assignment holds its previous value",
@@ -55,12 +39,52 @@
       "operator": "assignment_hold"
     },
     {
-      "description": "combinational assignment is inverted",
-      "id": "t3_sequential_divider-m033",
+      "description": "zero assignment becomes all ones",
+      "id": "t3_sequential_divider-m004",
       "indeterminate": false,
       "killed": true,
-      "killed_by": "lint",
-      "operator": "blocking_output_inversion"
+      "killed_by": "sim",
+      "operator": "assignment_deletion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_sequential_divider-m018",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_sequential_divider-m028",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_sequential_divider-m029",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_sequential_divider-m027",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_sequential_divider-m007",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
     },
     {
       "description": "equality becomes inequality",
@@ -69,6 +93,14 @@
       "killed": true,
       "killed_by": "sim",
       "operator": "comparator_boundary_flip"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_sequential_divider-m015",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
     },
     {
       "description": "all-ones assignment becomes zero",
@@ -87,12 +119,20 @@
       "operator": "comparator_boundary_flip"
     },
     {
-      "description": "zero assignment becomes all ones",
-      "id": "t3_sequential_divider-m004",
+      "description": "combinational assignment is inverted",
+      "id": "t3_sequential_divider-m035",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_deletion"
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_sequential_divider-m009",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
     },
     {
       "description": "registered assignment holds its previous value",
@@ -104,39 +144,23 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m022",
+      "id": "t3_sequential_divider-m026",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
       "operator": "assignment_hold"
     },
     {
-      "description": "combinational assignment is inverted",
-      "id": "t3_sequential_divider-m037",
+      "description": "registered assignment holds its previous value",
+      "id": "t3_sequential_divider-m025",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
-      "operator": "blocking_output_inversion"
+      "operator": "assignment_hold"
     },
     {
       "description": "registered assignment holds its previous value",
       "id": "t3_sequential_divider-m016",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m028",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m019",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -151,19 +175,27 @@
       "operator": "reset_polarity_flip"
     },
     {
-      "description": "combinational assignment is inverted",
-      "id": "t3_sequential_divider-m032",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "lint",
-      "operator": "blocking_output_inversion"
-    },
-    {
       "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m015",
+      "id": "t3_sequential_divider-m030",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_sequential_divider-m020",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_sequential_divider-m013",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
       "operator": "assignment_hold"
     },
     {
@@ -175,19 +207,27 @@
       "operator": "assignment_deletion"
     },
     {
-      "description": "combinational assignment is inverted",
-      "id": "t3_sequential_divider-m031",
+      "description": "registered assignment holds its previous value",
+      "id": "t3_sequential_divider-m011",
       "indeterminate": false,
       "killed": true,
-      "killed_by": "lint",
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_sequential_divider-m038",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
       "operator": "blocking_output_inversion"
     },
     {
       "description": "combinational assignment is inverted",
-      "id": "t3_sequential_divider-m035",
+      "id": "t3_sequential_divider-m033",
       "indeterminate": false,
       "killed": true,
-      "killed_by": "sim",
+      "killed_by": "lint",
       "operator": "blocking_output_inversion"
     },
     {
@@ -200,23 +240,7 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m026",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "combinational assignment is inverted",
-      "id": "t3_sequential_divider-m034",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "blocking_output_inversion"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m010",
+      "id": "t3_sequential_divider-m022",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -232,27 +256,19 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m029",
+      "id": "t3_sequential_divider-m019",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
       "operator": "assignment_hold"
     },
     {
-      "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m023",
+      "description": "combinational assignment is inverted",
+      "id": "t3_sequential_divider-m037",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
-      "operator": "assignment_hold"
-    },
-    {
-      "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m014",
-      "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
-      "operator": "assignment_hold"
+      "operator": "blocking_output_inversion"
     },
     {
       "description": "registered assignment holds its previous value",
@@ -264,7 +280,7 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m011",
+      "id": "t3_sequential_divider-m021",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -272,7 +288,7 @@
     },
     {
       "description": "registered assignment holds its previous value",
-      "id": "t3_sequential_divider-m027",
+      "id": "t3_sequential_divider-m010",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -280,7 +296,23 @@
     },
     {
       "description": "combinational assignment is inverted",
-      "id": "t3_sequential_divider-m038",
+      "id": "t3_sequential_divider-m036",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_sequential_divider-m023",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "assignment_hold"
+    },
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t3_sequential_divider-m034",
       "indeterminate": false,
       "killed": true,
       "killed_by": "sim",
@@ -288,8 +320,17 @@
     }
   ],
   "seed": 1337,
-  "survived": 0,
-  "survivors": [],
+  "survived": 1,
+  "survivors": [
+    {
+      "description": "registered assignment holds its previous value",
+      "id": "t3_sequential_divider-m013",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "assignment_hold"
+    }
+  ],
   "task": "t3_sequential_divider",
-  "total": 35
+  "total": 39
 }

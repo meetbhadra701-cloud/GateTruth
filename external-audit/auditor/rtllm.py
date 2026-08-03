@@ -25,11 +25,13 @@ class RTLLMIcarusRunner:
         *,
         iverilog: str = IVERILOG,
         vvp: str = VVP,
+        generation_flag: str = "-g2001",
     ) -> None:
         self.vendor_root = vendor_root.resolve()
         self.catalog = catalog
         self.iverilog = iverilog
         self.vvp = vvp
+        self.generation_flag = generation_flag
 
     def _vendor_file(self, relative: str) -> Path:
         candidate = (self.vendor_root / relative).resolve()
@@ -136,7 +138,7 @@ class RTLLMIcarusRunner:
         executable = work_dir / "sim.out"
         compile_args = [
             self.iverilog,
-            "-g2001",
+            self.generation_flag,
             "-I",
             str(testbench_source.parent),
             "-o",

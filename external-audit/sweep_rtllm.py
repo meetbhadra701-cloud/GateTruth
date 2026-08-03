@@ -202,6 +202,7 @@ def sweep_design(
     iverilog: str,
     vvp: str,
     timeout_s: float,
+    generation_flag: str = "-g2001",
 ) -> dict[str, Any]:
     design_id = str(design["design_id"])
     directory = Path(design["directory"])
@@ -253,7 +254,7 @@ def sweep_design(
         compile_base = {**base, "module_alias": module_alias}
         compile_args = [
             iverilog,
-            "-g2001",
+            generation_flag,
             "-I",
             str(directory),
             "-o",
@@ -367,6 +368,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--iverilog", default=IVERILOG)
     parser.add_argument("--vvp", default=VVP)
     parser.add_argument("--timeout-s", type=float, default=30.0)
+    parser.add_argument(
+        "--generation-flag",
+        default="-g2001",
+        help="iverilog language-generation flag (e.g. -g2001, -g2012); the paper's "
+        "reported primary condition is -g2012, see external-audit/results/rtllm/sweep-g2012.json",
+    )
     args = parser.parse_args(argv)
 
     vendor = args.vendor.resolve()
@@ -385,6 +392,7 @@ def main(argv: list[str] | None = None) -> int:
             iverilog=args.iverilog,
             vvp=args.vvp,
             timeout_s=args.timeout_s,
+            generation_flag=args.generation_flag,
         )
         for design in discover_designs(vendor)
     ]

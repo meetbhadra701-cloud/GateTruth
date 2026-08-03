@@ -1,7 +1,7 @@
 {
   "indeterminate": 0,
   "jobs": 1,
-  "kill_rate": 100.0,
+  "kill_rate": 92.8571,
   "killed": 13,
   "min_kill": 95.0,
   "official": true,
@@ -64,10 +64,10 @@
     },
     {
       "description": "combinational assignment is inverted",
-      "id": "t2_priority_interrupt_controller-m011",
+      "id": "t2_priority_interrupt_controller-m010",
       "indeterminate": false,
-      "killed": true,
-      "killed_by": "sim",
+      "killed": false,
+      "killed_by": null,
       "operator": "blocking_output_inversion"
     },
     {
@@ -96,6 +96,14 @@
     },
     {
       "description": "combinational assignment is inverted",
+      "id": "t2_priority_interrupt_controller-m011",
+      "indeterminate": false,
+      "killed": true,
+      "killed_by": "sim",
+      "operator": "blocking_output_inversion"
+    },
+    {
+      "description": "combinational assignment is inverted",
       "id": "t2_priority_interrupt_controller-m008",
       "indeterminate": false,
       "killed": true,
@@ -112,8 +120,17 @@
     }
   ],
   "seed": 1337,
-  "survived": 0,
-  "survivors": [],
+  "survived": 1,
+  "survivors": [
+    {
+      "description": "combinational assignment is inverted",
+      "id": "t2_priority_interrupt_controller-m010",
+      "indeterminate": false,
+      "killed": false,
+      "killed_by": null,
+      "operator": "blocking_output_inversion"
+    }
+  ],
   "task": "t2_priority_interrupt_controller",
-  "total": 13
+  "total": 14
 }
