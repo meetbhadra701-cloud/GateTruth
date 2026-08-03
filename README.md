@@ -185,9 +185,11 @@ designs and hidden vectors require human sign-off; models never see them.
 - **Pinned flow.** Every score is computed inside one image with fully version-locked
   tools and standard-cell library, so a result is a function of the design, not the
   tool versions.
-- **Canonical manifests.** Each run emits a manifest with a SHA-256 content hash over
-  its canonical JSON; re-running a design reproduces it byte-for-byte (tamper-evidence
-  against accidental corruption, not a keyed authenticity signature).
+- **Canonical manifests.** Each run emits a manifest with a SHA-256 integrity checksum over
+  its canonical JSON; given the same pinned image, submission, and (for official runs) hidden
+  vectors, re-running a design reproduces it byte-for-byte (tamper-evidence against accidental
+  corruption, not a keyed authenticity signature) -- see "Reproducibility scope" below for
+  exactly what that does and does not cover from a public checkout.
 - **Mutation-gated tests.** Every task's test suite must kill ≥95% of injected RTL
   mutants before the task is admitted.
 - **Contamination controls.** Per-task canaries, a sign-off-gated hidden-vector
