@@ -1,6 +1,6 @@
 {
   "delay_definition": "clock_target_ns - wns_ns",
-  "docker_digest": "sha256:20a665db641ebf3c4dc260a30c22817611081b48a749842d38cdc38b10ad8f62",
+  "docker_digest": "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4",
   "generated_from": "signed results/refs/<task_id>.json manifests",
   "schema_version": "1",
   "suite_version": "v0.2",
@@ -10,7 +10,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.0476562136575422,
       "power_mw": 0.0026350289799999998,
-      "source_manifest_signature": "94afd576dcfb2709296707013c9731760c43c96fc056363104467dc870e0ae78",
+      "source_manifest_signature": "c67bb88515c904d9a491a84061037e1c07fb01f268eeeda630115e06d4d65568",
       "wns_ns": 6.952343786342458
     },
     "t1_binary_to_onehot_decoder": {
@@ -18,7 +18,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.349032812531399,
       "power_mw": 0.000151847786,
-      "source_manifest_signature": "4794b90dbd6e2abf69f95fe434d79619ce3ca543fe070f3fdbef58afb42a0985",
+      "source_manifest_signature": "1b7fd4e872d16de4a5554cad2bf02e3474638f5c6c964666acc452a97c5ce27c",
       "wns_ns": 7.650967187468601
     },
     "t1_bit_reverser": {
@@ -26,7 +26,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.2647997451816044,
       "power_mw": 0.00030360789099999997,
-      "source_manifest_signature": "95c0d0fdb7f3b9e5cb65ce513f4afb9e615856babd746a8e86fef7c53d10b7ea",
+      "source_manifest_signature": "e0f680b7ea114285e03dd4c37fb28a792d5eae410bf972e4103cb8e0ebb44d0c",
       "wns_ns": 7.735200254818396
     },
     "t1_byte_swap": {
@@ -34,7 +34,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.2647997451816044,
       "power_mw": 0.0012144315600000001,
-      "source_manifest_signature": "e2f5183744256ba141c81b7779cd3869a90d969397cbc9ce0297274644a63824",
+      "source_manifest_signature": "f3cae53db25145e438b0de1f420f0739e9f712a81e8efb54397afa3621a53e91",
       "wns_ns": 7.735200254818396
     },
     "t1_debouncer": {
@@ -42,7 +42,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.4368781016162737,
       "power_mw": 0.00116137198,
-      "source_manifest_signature": "b335d5fc24160dc5ab5b8cd05f2b39b3c745e8d1a8954fc72523640209e2abec",
+      "source_manifest_signature": "4a44451905ecb6c243d647dc42931787e268cd5e0d65848c2d266580878bfd3b",
       "wns_ns": 7.563121898383726
     },
     "t1_edge_detector": {
@@ -50,7 +50,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.2647997451816044,
       "power_mw": 0.000161876329,
-      "source_manifest_signature": "42b5cbb19841104eaf9b3ffeca20114bdd040a8eb3a742642fc624a14255b38c",
+      "source_manifest_signature": "2f59876c64f345f2dc36a590cefafe8c328530e0e49bc820abedcc3ef7d91702",
       "wns_ns": 7.735200254818396
     },
     "t1_gray_counter": {
@@ -58,7 +58,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.527570890795241,
       "power_mw": 0.00270921396,
-      "source_manifest_signature": "59ec8336b5adf3739303c42ca8bc6a375afcd8475ddfba451913a675a9b12527",
+      "source_manifest_signature": "6fbfd0d55fb73edc755178a5245b903eb534a0e689788fbcdb4ed6b653ae4ab2",
       "wns_ns": 7.472429109204759
     },
     "t1_gray_to_binary": {
@@ -66,7 +66,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.2778818365176567,
       "power_mw": 0.00216373155,
-      "source_manifest_signature": "dccf01ec0064392d2730274ee1a0b10ecddd230e5c3c45a30453a1c2b5ec8452",
+      "source_manifest_signature": "bba387e12ced1f08d2b9d6ded062509da08ce4dbfbe65b27a15287d14d0d7a83",
       "wns_ns": 6.722118163482343
     },
     "t1_leading_zero_counter": {
@@ -74,7 +74,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.6587971465935194,
       "power_mw": 0.000803344278,
-      "source_manifest_signature": "8ef0fe65d6eca2c3e191215ae8e0f995ef8c3e48a0fd77634e3279c8bee7380e",
+      "source_manifest_signature": "5d8c449fdd08706b411686b495944cda605b90d823642bb6f34f7835c6aae41c",
       "wns_ns": 6.341202853406481
     },
     "t1_lfsr": {
@@ -82,7 +82,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.630645775673436,
       "power_mw": 0.00333912635,
-      "source_manifest_signature": "d670f3058169ce9261fe78605cc05cac7f3a9be54a20388727a613a4cb706bcf",
+      "source_manifest_signature": "cfd0bc3e288bd97d3384e5c937a53320eb3c887d51c3415f41369b12ed61c7f0",
       "wns_ns": 7.369354224326564
     },
     "t1_magnitude_comparator": {
@@ -90,7 +90,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.1696155486294906,
       "power_mw": 0.00259377089,
-      "source_manifest_signature": "26fe27be34104ee72a2dc9b3d3a883c05ef7dfc0de5698fdec27498ef93fff53",
+      "source_manifest_signature": "0eeb63a3a29bcb082832a4d9cb9f73dd79521d13aeb70698d04caf30f83e60c5",
       "wns_ns": 6.830384451370509
     },
     "t1_mod_n_counter": {
@@ -98,7 +98,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.4686331455539063,
       "power_mw": 0.0012423062100000001,
-      "source_manifest_signature": "b3526ccfa24f0b9d5f5cbed0893fd4dbd61cbb6896602a1816be6073ef44edac",
+      "source_manifest_signature": "294848f945833b2a16d989f6be5fc6ee6921eb4a0cffde29b2fa14603d5a7557",
       "wns_ns": 7.531366854446094
     },
     "t1_onehot_fsm": {
@@ -106,7 +106,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.5314957513428977,
       "power_mw": 0.00226163183,
-      "source_manifest_signature": "467170f63d437cb230c5ddbc1522f949de76999b5a3991f102c90da1859a1af1",
+      "source_manifest_signature": "e4d28c1cf19a0b64c21a53d85fc4605f6735587120ec0ed0f5fa763500a5bf4a",
       "wns_ns": 7.468504248657102
     },
     "t1_parity_gen": {
@@ -114,7 +114,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.020509927670078,
       "power_mw": 0.00164895755,
-      "source_manifest_signature": "bc1c919f7c279a6cc01dd19a2e4ad52304eb5e897846eb704117660ccd4b008a",
+      "source_manifest_signature": "7032e574ecb1199f01e90178d5df5b7602736e343cb2ab7f60718aaa90027a90",
       "wns_ns": 6.979490072329922
     },
     "t1_popcount": {
@@ -122,7 +122,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.749982430720139,
       "power_mw": 0.00434792219,
-      "source_manifest_signature": "08b4a426b801c4f101a87523716418eab93ca5d8521df379edadd0e22ebf4eb9",
+      "source_manifest_signature": "9051597fed2f9ae52eb569420576cabd6b8ae1127a49989e7aa49cee98a67595",
       "wns_ns": 6.250017569279861
     },
     "t1_priority_encoder": {
@@ -130,7 +130,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.5779288322596186,
       "power_mw": 0.0007363486250000001,
-      "source_manifest_signature": "3e5397a5927908232096f1081912a67898b16759fb967dc1a51f27d712a0b654",
+      "source_manifest_signature": "53bd06fae786e471963377376f59d65ab29d84ebffa85da74a63f17edc9e34d0",
       "wns_ns": 7.4220711677403814
     },
     "t1_pwm": {
@@ -138,7 +138,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.0171961338924564,
       "power_mw": 0.00436361279,
-      "source_manifest_signature": "0b7c14c2fe33080f4d571b2fb14d8cf61e264c77e4092b82a60831f16dc2046d",
+      "source_manifest_signature": "1e621fcbf7943630a73d39af31ad3177b3b97256e2cf9500f6da902583fbb6db",
       "wns_ns": 6.9828038661075436
     },
     "t1_range_checker": {
@@ -146,7 +146,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.7879261910389674,
       "power_mw": 0.000359116456,
-      "source_manifest_signature": "9c9a69c546191940fc94d9d99b4e6d2bca6c88ff899a0628bc0fd758348300cc",
+      "source_manifest_signature": "2f241ab5c719018025e6e01a57c5084d3ff707f5bf4538db682dc69691667cee",
       "wns_ns": 7.212073808961033
     },
     "t1_saturating_adder": {
@@ -154,7 +154,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 4.837551163241758,
       "power_mw": 0.00596794325,
-      "source_manifest_signature": "c0ca414d0f45465bdbbe5151e7bb85bc9607bad44fc0b5130d1c8c044536735d",
+      "source_manifest_signature": "c63090733583da2ff27ee9e11ca06cdf09bddf43443d31b78113ceeb5d2b59ce",
       "wns_ns": 5.162448836758242
     },
     "t1_signed_abs": {
@@ -162,7 +162,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.343349469685304,
       "power_mw": 0.0013998266,
-      "source_manifest_signature": "d609187c5b243602a8df16adb57f82211392c6149094cddcc060f196b40eeaf9",
+      "source_manifest_signature": "af5983bcdcb8efbed64acb83890f58e49ee3e01a8f24d9bf3b8ccfac5aa08109",
       "wns_ns": 6.656650530314696
     },
     "t2_axi_lite_regfile": {
@@ -170,7 +170,7 @@
       "clock_target_ns": 20.0,
       "delay_ns": 13.493194055110806,
       "power_mw": 0.0501465402,
-      "source_manifest_signature": "0d4d5d176f58fd692f53f959b992c61fd99da0db32dc277843df14457ad5e367",
+      "source_manifest_signature": "9cd96bda3c70f838b56aa91127e65cee094c3824c4621e06b2dafb1cf4e65e0a",
       "wns_ns": 6.506805944889194
     },
     "t2_cdc_synchronizer": {
@@ -178,7 +178,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.2647997451816044,
       "power_mw": 9.28006187e-05,
-      "source_manifest_signature": "d268606aa5c53449f5ca45c7094c16e9498fb96fd1d00a90c09edd783af77ef3",
+      "source_manifest_signature": "1a0c098d4c369e551d68f85f2cd90a83ecad5a5e8a2af1e0810ac58d99b8c538",
       "wns_ns": 7.735200254818396
     },
     "t2_counter_compare": {
@@ -186,7 +186,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 4.304970501928513,
       "power_mw": 0.00406702657,
-      "source_manifest_signature": "0f6a1fa2cd9d8ac132c6d15c261a93e4af8b75de59118cac67de66cc25c85af5",
+      "source_manifest_signature": "35c2989b72df0f6915633efbe4ac74c949380c293e8ccabcd6147b02ddf9e57c",
       "wns_ns": 5.695029498071487
     },
     "t2_delay_trigger": {
@@ -194,7 +194,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.7497559452167097,
       "power_mw": 0.0131571551,
-      "source_manifest_signature": "b7bdc112d6bc88ca628eb64d99ad581a57c551d81117aa73203fdf8db06ab51a",
+      "source_manifest_signature": "28bcdaeaea94e8a38d8b04aae7c8ba40246f24d3728c2c26d3d393147d267903",
       "wns_ns": 6.25024405478329
     },
     "t2_i2c_slave": {
@@ -202,7 +202,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.0217880164521738,
       "power_mw": 0.0115772564,
-      "source_manifest_signature": "b67dd89c61bc078621dd646aab460909f7bc0367d5597f82cc38681ccc17c607",
+      "source_manifest_signature": "ddf9a997b3df42ab9cd5545e089287d0f3e3a00d58330251af49f9d367c7af28",
       "wns_ns": 6.978211983547826
     },
     "t2_majority_filter": {
@@ -210,7 +210,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.326347513805346,
       "power_mw": 0.013379562000000001,
-      "source_manifest_signature": "776be55e193e78e7268f302614a1bdbab32f0c2fdcc5051ba5c8795b98a1a5ce",
+      "source_manifest_signature": "9cb4fc5585477fb47acad59885b1d3861f3ae2f1f147a9f545d9410f2ea3a4f5",
       "wns_ns": 6.673652486194654
     },
     "t2_mm_timer": {
@@ -218,7 +218,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.6323018954061084,
       "power_mw": 0.021466828900000002,
-      "source_manifest_signature": "738b3210256dbb94b30152b2b16d697c2e2a20afad0c93e4b1bc7ea32ea88b36",
+      "source_manifest_signature": "6d1a75be952324657742f0a546c17139a701cc63ffc3fddb1bc666b3bffdcbd2",
       "wns_ns": 6.367698104593892
     },
     "t2_priority_interrupt_controller": {
@@ -226,7 +226,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.0005925260450006,
       "power_mw": 0.00493113384,
-      "source_manifest_signature": "a6c45d5597a749d7c57f2268ad85f403ad22ec326d9087212a011550611ad02f",
+      "source_manifest_signature": "b0bd846c97a311dcfff1fc383f676c10761dc8e2a90e3478da4b9d8b4b053ed2",
       "wns_ns": 6.999407473954999
     },
     "t2_pulse_stretcher": {
@@ -234,7 +234,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.505481892872579,
       "power_mw": 0.0023952536600000004,
-      "source_manifest_signature": "95104597c9ea778ed5edf11d6cdc89aac1235064453000fa09c3ca1469a795a9",
+      "source_manifest_signature": "1fa17cd6169e2e3df8b0f0227aed619975724543cdd4fa3f324df4606af0e880",
       "wns_ns": 7.494518107127421
     },
     "t2_pulse_synchronizer": {
@@ -242,7 +242,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.3054987460585696,
       "power_mw": 0.000437404822,
-      "source_manifest_signature": "46b203e4b7ceb5fc694a10ec98444f444d1a0e113c5b6a4b9969d6614fe78659",
+      "source_manifest_signature": "9c1c1cbc0e84eb54d43f297856339af0dc37d857b975a3291692695d3785a511",
       "wns_ns": 7.69450125394143
     },
     "t2_pulse_width_meter": {
@@ -250,7 +250,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.8729932579484476,
       "power_mw": 0.00747355261,
-      "source_manifest_signature": "aa9459afcb27a2b629638756dc8e0157f7c4163e0dbdc6bab9a7299a5c2de55e",
+      "source_manifest_signature": "fb5027926d26dabc48f76e3c30c99763835f18669e9766a92512f2ae62363b24",
       "wns_ns": 7.127006742051552
     },
     "t2_round_robin_arbiter": {
@@ -258,7 +258,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.802390177012854,
       "power_mw": 0.00254301426,
-      "source_manifest_signature": "ebba0ff7414d275a586561f2a34c0bafde71130d5d6ef653dd62942074743828",
+      "source_manifest_signature": "b6736b43fc8ab7525ce3918a39c0080eca7ed8f516392d1e199e51963870e407",
       "wns_ns": 7.197609822987146
     },
     "t2_running_min_max_tracker": {
@@ -266,7 +266,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.6151249683725206,
       "power_mw": 0.0131648185,
-      "source_manifest_signature": "62e6035dbbdb70e4e499d80ff0cbc7f9046873424dd8cb6be25840e438ff55d6",
+      "source_manifest_signature": "182794286bc0efa03e1da770b89c82a563d568b33e80ae88042f6889c2eb00c5",
       "wns_ns": 6.384875031627479
     },
     "t2_shift_register": {
@@ -274,7 +274,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.782161024753644,
       "power_mw": 0.00331024376,
-      "source_manifest_signature": "bc03f342ffc610b3cb6a74020a9e3b894317274b56e239d90b6597cba1132cf6",
+      "source_manifest_signature": "3df771f26d6f0af0717893e740b1bac8714d96179f1776f5fac0cf989f07d7d1",
       "wns_ns": 7.217838975246356
     },
     "t2_skid_buffer": {
@@ -282,7 +282,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.414495227650683,
       "power_mw": 0.0126646619,
-      "source_manifest_signature": "d661fef4e8bde0c82c2aba56f6faafc2a96ab779a980dce0c73f4da77abb3c53",
+      "source_manifest_signature": "f504040ad16b0f3b3fdeb73f37479ea9219ecd849b46adcd6bc09403e4829a4d",
       "wns_ns": 6.585504772349317
     },
     "t2_spi_master": {
@@ -290,7 +290,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.099755873052211,
       "power_mw": 0.0145664299,
-      "source_manifest_signature": "fb806f1b19755fb02e22c163da1ebeaa568879355f50c0648b3dcc7fdab311e3",
+      "source_manifest_signature": "11b558f0bdf2b1b0af67a97f323fad468cbdb4f980b63bc612c609162dd7f5da",
       "wns_ns": 6.900244126947789
     },
     "t2_spi_slave": {
@@ -298,7 +298,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.8264559270867666,
       "power_mw": 0.0128561487,
-      "source_manifest_signature": "77703f215f1cdf0fe279efb6c36dc41deacae15b3dd6d480f92cec996fd9d0b4",
+      "source_manifest_signature": "5a605fd0aa9ccd566ec93ff7de19a0a661f463cb20ee22ee578cf9f998b52ee1",
       "wns_ns": 6.173544072913233
     },
     "t2_stream_downsizer": {
@@ -306,7 +306,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.537439108428713,
       "power_mw": 0.015247899700000001,
-      "source_manifest_signature": "21b7f75a5bf43297271f9752e7cd97846918cf90481d835de9d89aac689a25c2",
+      "source_manifest_signature": "e5a684e384694923d3c2288581d64b883218db1ae197dc81a0bb17ac506d2c47",
       "wns_ns": 6.462560891571287
     },
     "t2_stream_upsizer": {
@@ -314,7 +314,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.730690750809436,
       "power_mw": 0.009473323189999999,
-      "source_manifest_signature": "e9df60b979f9cda4347fe323366f8a6e567e251c6829e236e43051c203230001",
+      "source_manifest_signature": "dcc12fd8ac9632bd3a8405cb0c69b1b45ce6549080ce32ae9cbc8953883dab9b",
       "wns_ns": 6.269309249190564
     },
     "t2_sync_fifo": {
@@ -322,7 +322,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.744826554847961,
       "power_mw": 0.022329803,
-      "source_manifest_signature": "a3bef82aa5e1962f204e4a5e8b1ed4e1f439b8da2fe44cfb062a22967e1e0554",
+      "source_manifest_signature": "08e01e44e289ef742aa4541c22c58c2fb09cc1a34886a6b2bf6fe8672ac25c2a",
       "wns_ns": 6.255173445152039
     },
     "t2_token_bucket_limiter": {
@@ -330,7 +330,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 5.938272486263488,
       "power_mw": 0.021820877,
-      "source_manifest_signature": "2586735163e143ceee4b7d17fd0a09f245d5f8364240e61ad46406e77a9250e3",
+      "source_manifest_signature": "e769b75549d7b24d4dd66d3881d0ab543fe0639fb9716e092356b4af8e8b2305",
       "wns_ns": 4.061727513736512
     },
     "t2_uart_rx": {
@@ -338,7 +338,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.5100870981089685,
       "power_mw": 0.0104961364,
-      "source_manifest_signature": "9dfe0b60ef85a40c4ad916726c4466067a945c72fcaff6c51ed60c4916b0bea6",
+      "source_manifest_signature": "bb6806ecbbc2011eff8051349cfdc2ff5b2a9b46bf3d55ab4a62fcf73c0f94ed",
       "wns_ns": 7.4899129018910315
     },
     "t2_uart_tx": {
@@ -346,7 +346,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.353502237488036,
       "power_mw": 0.007662129060000001,
-      "source_manifest_signature": "a31322e057e5c19d05edb494b37e56246bf6a9d7f434cbe38f132e699a8bf851",
+      "source_manifest_signature": "b94c50d5b0e37ff0297070216b8c8c2e2f6d22855a278b9d673036eaa93b1741",
       "wns_ns": 6.646497762511964
     },
     "t2_updown_saturating_counter": {
@@ -354,7 +354,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.65221085933596,
       "power_mw": 0.0141590717,
-      "source_manifest_signature": "a4d721e033c0f5ea05a0b267d73d1e766be91fb1fb874735ff3804e6a55de511",
+      "source_manifest_signature": "f8bee8329c84fed0192adda5534282880b88c721bf2f4e20e3d698f11ff773b4",
       "wns_ns": 6.34778914066404
     },
     "t2_watchdog_timer": {
@@ -362,7 +362,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 2.8357439421511614,
       "power_mw": 0.00135011135,
-      "source_manifest_signature": "97dc57148942b828d0a1decdfe557b84f001eebc1c0f7e2a338f2c3822234313",
+      "source_manifest_signature": "685c92da562af1155809ad94a3e76efb5f1dc31c0a37fbd90a5484b8fdd9a20b",
       "wns_ns": 7.164256057848839
     },
     "t3_aes_sbox_datapath": {
@@ -370,7 +370,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.847747340765981,
       "power_mw": 0.0491295323,
-      "source_manifest_signature": "74fcafc725a609143ab8d7dc481a6dd5ec5b7a507d0dd5e43f02f00cd726db30",
+      "source_manifest_signature": "675d13d5e22c5ddf8bb79aca0b73aadaf83ebd8e2e1ccca5d74b2cb2dca6e260",
       "wns_ns": 6.152252659234019
     },
     "t3_booth_multiplier": {
@@ -378,7 +378,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.233512882306697,
       "power_mw": 0.0297436527,
-      "source_manifest_signature": "cc3dadea4cba8f1afd3a662dc06557e408809892be866ff72034bdfd3a4f4bfb",
+      "source_manifest_signature": "7bf9826a9b9ee96ba5c67520c3c35567a0fcd4262e2166302cb491dccb4ec7e6",
       "wns_ns": 6.766487117693303
     },
     "t3_cache_tag_comparator": {
@@ -386,7 +386,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.5190515941748375,
       "power_mw": 0.006700340240000001,
-      "source_manifest_signature": "5882bd118528cf04ee65bf0aed2ae5ab5112fbd7e45d56fd6423c847be9f3b3c",
+      "source_manifest_signature": "b6bc6e5635bc4889558d21d9d4f341357f16498d88ec457e1f8b08bc2fb11dbc",
       "wns_ns": 6.4809484058251625
     },
     "t3_crc32": {
@@ -394,7 +394,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 4.041212590062682,
       "power_mw": 0.0504648342,
-      "source_manifest_signature": "11ab51e9021438051ef34457cf211f2b428b5f406f5581327248e69ef0257ae8",
+      "source_manifest_signature": "5e28d368748e3f57b872b7f318c60f97711642b4eee61fbe3b93e140472f8ab1",
       "wns_ns": 5.958787409937318
     },
     "t3_fir_filter_3tap": {
@@ -402,7 +402,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 5.298359012607582,
       "power_mw": 0.043035270199999996,
-      "source_manifest_signature": "c942d457314516fa8269f114de70b6ef402c14c48cfe575419303adeaa1e4266",
+      "source_manifest_signature": "49d004e1b2ac983f6d2a6808e3c2887d67ef63842f4627a1ad966ce48125d1ce",
       "wns_ns": 4.701640987392418
     },
     "t3_fir_filter_loadable": {
@@ -410,7 +410,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 7.918749213823299,
       "power_mw": 0.618029095,
-      "source_manifest_signature": "57747649e8cb90380528f6e0e0bb47c1ec160e225dfcfc595e03ee447ebe6aeb",
+      "source_manifest_signature": "2632e800acc83c8292a88ff91db488032ccc9b90750337040b5346f3fc0fd5a7",
       "wns_ns": 2.0812507861767013
     },
     "t3_fixed_point_mac": {
@@ -418,7 +418,7 @@
       "clock_target_ns": 20.0,
       "delay_ns": 14.106413769696884,
       "power_mw": 0.661387574,
-      "source_manifest_signature": "44d61810ba0290bdfdda9a4047f58f3d7c57455dee413b5ce450b7e6caa709ad",
+      "source_manifest_signature": "3abed8610390de57b86c705659bec97be1f9cc43e0820c848d403bae32c95fae",
       "wns_ns": 5.893586230303116
     },
     "t3_hamming74_codec": {
@@ -426,7 +426,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.032811199130829,
       "power_mw": 0.00595480196,
-      "source_manifest_signature": "520fc88729e136bd53b75c6e54880c58483fb988be039b7f21d4ec61f3ac5921",
+      "source_manifest_signature": "bbaf02289e1dabcffbebf366f1c1b5af4c8af538317fd0b34400a3056c0de115",
       "wns_ns": 6.967188800869171
     },
     "t3_iir_filter_1st_order": {
@@ -434,7 +434,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 6.214240631299475,
       "power_mw": 0.48635934900000005,
-      "source_manifest_signature": "9aed08972a812684eed0d79345b180aa0e3557ebd81770cd8fc3198d9de6f038",
+      "source_manifest_signature": "09d61536c039e9aa5c9aafb58bf30df33e29dda63d29f2cbd928d760213e4ed3",
       "wns_ns": 3.785759368700525
     },
     "t3_lru_tracker": {
@@ -442,7 +442,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 3.7086137432957793,
       "power_mw": 0.00919432023,
-      "source_manifest_signature": "267295e22fb5fc2c29d74e60daacb79d85af62854c019d0c7e967784518e38df",
+      "source_manifest_signature": "5208a1193434da7117ae3a3aaab089f46a4982a26e36e47614e2903fbaceb16e",
       "wns_ns": 6.291386256704221
     },
     "t3_moving_sum": {
@@ -450,7 +450,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 5.825095015664692,
       "power_mw": 0.0405479223,
-      "source_manifest_signature": "afc6419c0f656b19996c790448d3484c6e6d7b215a0834c68758665dfcccc08b",
+      "source_manifest_signature": "17b5d1472487cde5cba03a2f01c07122deb17b8953a313cd2ea1333d92c75903",
       "wns_ns": 4.174904984335308
     },
     "t3_pipelined_multiplier": {
@@ -458,7 +458,7 @@
       "clock_target_ns": 12.0,
       "delay_ns": 9.851186367704322,
       "power_mw": 0.398347533,
-      "source_manifest_signature": "97a04e87b3a725a7ffe5e93dbda7c63dc9f766bd3b9e83a50a0abdf9aef9333b",
+      "source_manifest_signature": "40bc4ba9731bbf951f60a6a912834416bb76d660b5f49b589232b4a0ffeb2f6d",
       "wns_ns": 2.1488136322956777
     },
     "t3_saturating_accumulator": {
@@ -466,7 +466,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 8.099025457303652,
       "power_mw": 0.0860472937,
-      "source_manifest_signature": "14a1b43f49d7cc757383b77b99bf8e67e26b1467b34a18f199516f22a0998753",
+      "source_manifest_signature": "9aa3994bd7b7a7d9704a08883cf7b236922037b2397e7baf3c421b7a512cb776",
       "wns_ns": 1.900974542696348
     },
     "t3_sequential_divider": {
@@ -474,7 +474,7 @@
       "clock_target_ns": 10.0,
       "delay_ns": 4.876412522916391,
       "power_mw": 0.0558097199,
-      "source_manifest_signature": "b1053e46495e65f2010baaaea483aa9eb6e1b13b2a6e8739d5fa048632d1c69d",
+      "source_manifest_signature": "613c11e669dfac515f2ff8b693fdbcc563d7004ab5ead8a8be2220ef972b0ce4",
       "wns_ns": 5.123587477083609
     },
     "t3_systolic_pe_tile": {
@@ -482,7 +482,7 @@
       "clock_target_ns": 15.0,
       "delay_ns": 10.713408352585526,
       "power_mw": 0.174696528,
-      "source_manifest_signature": "e91a6368406a8ca55028fa8da5814911a198fe50a606c62f9790d94d8ff8ac10",
+      "source_manifest_signature": "0e693a3ed9badb05fe3db36d7223f71fa4e47f58cf086d94aab0571e34623722",
       "wns_ns": 4.286591647414474
     }
   }
