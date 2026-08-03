@@ -135,6 +135,49 @@ def test_rtllm_sweep_aliases_verified_module_in_temporary_copy(tmp_path):
     assert source.read_text(encoding="utf-8") == original_source
 
 
+def test_rtllm_sweep_notes_record_the_actual_generation_flag_used(tmp_path):
+    """The recorded note previously always said "Icarus Verilog-2001" regardless
+    of which generation_flag was actually passed to the compiler -- wrong for
+    the paper's reported g2012 condition. The note must reflect reality."""
+
+    source = tmp_path / "example.v"
+    source.write_text(
+        "module example(output wire value);\n  assign value = 1'b1;\nendmodule\n",
+        encoding="utf-8",
+    )
+    testbench = tmp_path / "testbench.v"
+    testbench.write_text(
+        "module testbench;\n"
+        "  wire value;\n"
+        "  example uut(.value(value));\n"
+        "  initial begin\n"
+        "    #1;\n"
+        '    if (value) $display("Your Design Passed");\n'
+        "    $finish;\n"
+        "  end\n"
+        "endmodule\n",
+        encoding="utf-8",
+    )
+
+    result = sweep_design(
+        {
+            "design_id": "example",
+            "directory": tmp_path,
+            "sources": [source],
+            "testbench": testbench,
+        },
+        vendor=tmp_path,
+        iverilog=IVERILOG,
+        vvp=VVP,
+        timeout_s=5.0,
+        generation_flag="-g2012",
+    )
+
+    assert result["runnable"] is True
+    assert "-g2012" in result["notes"]
+    assert "2001" not in result["notes"]
+
+
 def test_rewrite_module_declaration_renames_the_single_declaration(tmp_path):
     source = tmp_path / "single.v"
     source.write_text("module verified_foo(input a, output b);\nendmodule\n", encoding="utf-8")

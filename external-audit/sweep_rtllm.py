@@ -341,10 +341,10 @@ def sweep_design(
             else "unmodified-icarus-pass"
         )
         notes = (
-            "baseline passed under Icarus Verilog-2001 after temporary "
+            f"baseline passed under Icarus {generation_flag} after temporary "
             f"module alias {module_alias['from']} -> {module_alias['to']}"
             if module_alias is not None
-            else "baseline passed under Icarus Verilog-2001"
+            else f"baseline passed under Icarus {generation_flag}"
         )
         return {
             **compile_base,
