@@ -46,7 +46,7 @@ module spi_slave (
             // rx_valid is a registered one-cycle pulse. It gets the value
             // calculated in the previous cycle's combinational logic.
             rx_valid <= rx_valid_next;
-            
+
             // By default, the next value of rx_valid is 0 unless a byte completes.
             rx_valid_next = 1'b0;
 
@@ -56,12 +56,12 @@ module spi_slave (
                 rx_sr     <= 8'h00; // Clear receive buffer for new data.
                 bit_count <= 3'd0;
             end else if (!cs_n_in) begin // Transfer is in progress (chip is selected).
-                
+
                 // On SCLK rising edge, sample MOSI (CPHA=0).
                 if (sclk_rising) begin
                     // Shift in the new bit from MOSI.
                     rx_sr <= {rx_sr[6:0], mosi_in};
-                    
+
                     if (bit_count == 3'd7) begin
                         // 8th bit is being sampled, the byte is now complete.
                         // Latch the complete byte into rx_data.
@@ -74,7 +74,7 @@ module spi_slave (
                         bit_count <= bit_count + 1;
                     end
                 end
-                
+
                 // On SCLK falling edge, change MISO (CPHA=0).
                 if (sclk_falling) begin
                     // Shift the transmit register. Per spec, shift in '0' so that

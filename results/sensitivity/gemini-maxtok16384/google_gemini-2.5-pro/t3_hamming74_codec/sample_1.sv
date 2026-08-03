@@ -59,7 +59,7 @@ module hamming74_codec (
     // Intermediate signals for the decode path
     logic [3:0] decode_data_next;
     logic       error_detected_next;
-    
+
     logic s1, s2, s3;
     logic [2:0] syndrome;
     logic [6:0] corrected_codeword;
