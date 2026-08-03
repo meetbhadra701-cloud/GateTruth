@@ -57,6 +57,8 @@ class EvalRecord:
     aggregate_score: float
     tokens: int
     cost_usd: float
+    pass_count: int
+    mean_ppa_passed: float | None
 
 
 @dataclass(frozen=True)
@@ -239,6 +241,13 @@ def load_evaluations(
         if len(complete) > 1:
             _raise_ambiguous_run("Track A", key, complete)
         path, raw = complete[0]
+        pass_count = 0
+        ppas: list[float] = []
+        for task_id in expected:
+            score = _number(raw["tasks"][task_id], "mean_score", path)
+            if score > 0:
+                pass_count += 1
+                ppas.append(score * 1.5 / 100.0)
         records.append(
             EvalRecord(
                 provider=_text(raw, "provider", path),
@@ -248,6 +257,8 @@ def load_evaluations(
                 tokens=_integer(raw, "tokens_in", path)
                 + _integer(raw, "tokens_out", path),
                 cost_usd=_number(raw, "cost_usd", path),
+                pass_count=pass_count,
+                mean_ppa_passed=(sum(ppas) / len(ppas)) if ppas else None,
             )
         )
     return sorted(records, key=lambda row: (-row.aggregate_score, row.model, row.provider))
