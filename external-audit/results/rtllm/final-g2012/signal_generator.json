@@ -7,7 +7,7 @@
   "kill_rate": 100.0,
   "killed": 8,
   "mutants_total": 8,
-  "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_signal_generator -> signal_generator",
+  "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_signal_generator -> signal_generator",
   "operator_counts": {
     "assignment_hold": 6,
     "comparator_boundary_flip": 2
@@ -79,7 +79,7 @@
   "task_id": "signal_generator",
   "testbench_sha256": "1f15877f6852b3709dc057153743fef5c29f29e1479fca6235568c15a3f35754",
   "tool_versions": {
-    "harness_git": "unavailable",
+    "harness_git": "564ac46d0d912711db799b07a42720b98588e9c1",
     "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
     "python": "3.11.2"
   },

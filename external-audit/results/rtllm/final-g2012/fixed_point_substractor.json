@@ -7,7 +7,7 @@
   "kill_rate": 5.0,
   "killed": 1,
   "mutants_total": 20,
-  "notes": "baseline passed under Icarus Verilog-2001",
+  "notes": "baseline passed under Icarus -g2012",
   "operator_counts": {
     "blocking_output_inversion": 13,
     "comparator_boundary_flip": 5,
@@ -165,7 +165,7 @@
   "task_id": "fixed_point_substractor",
   "testbench_sha256": "967d4b197101211e6c94b4024faceb3b2a3f24e5c43789fb065c13281108642e",
   "tool_versions": {
-    "harness_git": "unavailable",
+    "harness_git": "564ac46d0d912711db799b07a42720b98588e9c1",
     "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
     "python": "3.11.2"
   },

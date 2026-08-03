@@ -1,0 +1,200 @@
+{
+  "designs": [
+    {
+      "indeterminate": 0,
+      "kill_rate": 66.0377,
+      "killed": 35,
+      "mutants_total": 53,
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_alu -> alu",
+      "status": "audited",
+      "survived": 18,
+      "task_id": "alu"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 1,
+      "mutants_total": 1,
+      "notes": "baseline passed under Icarus -g2012",
+      "status": "audited",
+      "survived": 0,
+      "task_id": "barrel_shifter"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 83.3333,
+      "killed": 5,
+      "mutants_total": 6,
+      "notes": "baseline passed under Icarus -g2012",
+      "status": "audited",
+      "survived": 1,
+      "task_id": "comparator_4bit"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 0.0,
+      "killed": 0,
+      "mutants_total": 10,
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_edge_detect -> edge_detect",
+      "status": "audited",
+      "survived": 10,
+      "task_id": "edge_detect"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 90.0,
+      "killed": 18,
+      "mutants_total": 20,
+      "notes": "baseline passed under Icarus -g2012",
+      "status": "audited",
+      "survived": 2,
+      "task_id": "freq_divbyfrac"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 75.0,
+      "killed": 6,
+      "mutants_total": 8,
+      "notes": "baseline passed under Icarus -g2012",
+      "status": "audited",
+      "survived": 2,
+      "task_id": "instr_reg"
+    },
+    {
+      "indeterminate": 2,
+      "kill_rate": 81.8182,
+      "killed": 9,
+      "mutants_total": 11,
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_booth_8bit -> multi_booth_8bit",
+      "status": "audited",
+      "survived": 0,
+      "task_id": "multi_booth_8bit"
+    },
+    {
+      "indeterminate": 4,
+      "kill_rate": 30.7692,
+      "killed": 4,
+      "mutants_total": 13,
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_serial2parallel -> serial2parallel",
+      "status": "audited",
+      "survived": 5,
+      "task_id": "serial2parallel"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 55.0,
+      "killed": 22,
+      "mutants_total": 40,
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_traffic_light -> traffic_light",
+      "status": "audited",
+      "survived": 18,
+      "task_id": "traffic_light"
+    }
+  ],
+  "designs_requested": 9,
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "status_counts": {
+    "audited": 9
+  },
+  "suite": "rtllm",
+  "tasks": [
+    {
+      "indeterminate": 0,
+      "kill_rate": 66.0377,
+      "killed": 35,
+      "mutants_total": 53,
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_alu -> alu",
+      "status": "audited",
+      "survived": 18,
+      "task_id": "alu"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 100.0,
+      "killed": 1,
+      "mutants_total": 1,
+      "notes": "baseline passed under Icarus -g2012",
+      "status": "audited",
+      "survived": 0,
+      "task_id": "barrel_shifter"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 83.3333,
+      "killed": 5,
+      "mutants_total": 6,
+      "notes": "baseline passed under Icarus -g2012",
+      "status": "audited",
+      "survived": 1,
+      "task_id": "comparator_4bit"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 0.0,
+      "killed": 0,
+      "mutants_total": 10,
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_edge_detect -> edge_detect",
+      "status": "audited",
+      "survived": 10,
+      "task_id": "edge_detect"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 90.0,
+      "killed": 18,
+      "mutants_total": 20,
+      "notes": "baseline passed under Icarus -g2012",
+      "status": "audited",
+      "survived": 2,
+      "task_id": "freq_divbyfrac"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 75.0,
+      "killed": 6,
+      "mutants_total": 8,
+      "notes": "baseline passed under Icarus -g2012",
+      "status": "audited",
+      "survived": 2,
+      "task_id": "instr_reg"
+    },
+    {
+      "indeterminate": 2,
+      "kill_rate": 81.8182,
+      "killed": 9,
+      "mutants_total": 11,
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_booth_8bit -> multi_booth_8bit",
+      "status": "audited",
+      "survived": 0,
+      "task_id": "multi_booth_8bit"
+    },
+    {
+      "indeterminate": 4,
+      "kill_rate": 30.7692,
+      "killed": 4,
+      "mutants_total": 13,
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_serial2parallel -> serial2parallel",
+      "status": "audited",
+      "survived": 5,
+      "task_id": "serial2parallel"
+    },
+    {
+      "indeterminate": 0,
+      "kill_rate": 55.0,
+      "killed": 22,
+      "mutants_total": 40,
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_traffic_light -> traffic_light",
+      "status": "audited",
+      "survived": 18,
+      "task_id": "traffic_light"
+    }
+  ],
+  "tool_versions": {
+    "harness_git": "564ac46d0d912711db799b07a42720b98588e9c1",
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2"
+  },
+  "vendor_commit": "41b26896e33b536940116a975626455eed3de65e",
+  "vendor_content_sha256": "03c7354b51550210e0d28e6a6dcddf5e5361c68365403e007e9979d3ae6e6158"
+}

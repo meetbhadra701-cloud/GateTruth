@@ -19,7 +19,7 @@
   "task_id": "clkgenerator",
   "testbench_sha256": "3afff2a0f7006a3dcc544f381fa332db645834626d5709defd0ce59bec1a6b04",
   "tool_versions": {
-    "harness_git": "unavailable",
+    "harness_git": "564ac46d0d912711db799b07a42720b98588e9c1",
     "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
     "python": "3.11.2"
   },

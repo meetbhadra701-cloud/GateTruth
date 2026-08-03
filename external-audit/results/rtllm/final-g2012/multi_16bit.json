@@ -7,7 +7,7 @@
   "kill_rate": 66.6667,
   "killed": 14,
   "mutants_total": 21,
-  "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_16bit -> multi_16bit",
+  "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_16bit -> multi_16bit",
   "operator_counts": {
     "assignment_hold": 12,
     "comparator_boundary_flip": 3,
@@ -174,7 +174,7 @@
   "task_id": "multi_16bit",
   "testbench_sha256": "80b1fc3113cf6237aff2793083f5dec4a1704373903b4dc95f632d07a32226a3",
   "tool_versions": {
-    "harness_git": "unavailable",
+    "harness_git": "564ac46d0d912711db799b07a42720b98588e9c1",
     "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
     "python": "3.11.2"
   },

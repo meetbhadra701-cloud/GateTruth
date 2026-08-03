@@ -19,7 +19,7 @@
   "task_id": "asyn_fifo",
   "testbench_sha256": "e0e2ceae67c6c6bad98e51742c327c23fdd7f9f2da673236eeedecc294ea178a",
   "tool_versions": {
-    "harness_git": "unavailable",
+    "harness_git": "564ac46d0d912711db799b07a42720b98588e9c1",
     "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
     "python": "3.11.2"
   },

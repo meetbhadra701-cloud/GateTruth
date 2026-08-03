@@ -7,7 +7,7 @@
   "kill_rate": 51.6129,
   "killed": 32,
   "mutants_total": 62,
-  "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_64bit -> adder_pipe_64bit",
+  "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_adder_64bit -> adder_pipe_64bit",
   "operator_counts": {
     "assignment_hold": 52,
     "blocking_output_inversion": 1,
@@ -458,7 +458,7 @@
   "task_id": "adder_pipe_64bit",
   "testbench_sha256": "01c3ed8ef8b4a56c554fb6d0667cc385f1bf0b867e12f9bd79660705b4673405",
   "tool_versions": {
-    "harness_git": "unavailable",
+    "harness_git": "564ac46d0d912711db799b07a42720b98588e9c1",
     "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
     "python": "3.11.2"
   },

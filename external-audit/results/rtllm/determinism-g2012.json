@@ -1,0 +1,18 @@
+{
+  "byte_identical": true,
+  "eligible_count": 46,
+  "sample_size": 9,
+  "sampled_ids": [
+    "instr_reg",
+    "traffic_light",
+    "multi_booth_8bit",
+    "freq_divbyfrac",
+    "barrel_shifter",
+    "edge_detect",
+    "comparator_4bit",
+    "alu",
+    "serial2parallel"
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729
+}

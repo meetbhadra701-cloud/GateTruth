@@ -7,7 +7,7 @@
   "kill_rate": 100.0,
   "killed": 5,
   "mutants_total": 5,
-  "notes": "baseline passed under Icarus Verilog-2001",
+  "notes": "baseline passed under Icarus -g2012",
   "operator_counts": {
     "blocking_output_inversion": 5
   },
@@ -57,7 +57,7 @@
   "task_id": "ROM",
   "testbench_sha256": "99e7f7744ebbd996b98fc79d82582b28486bd6129aa9db30e927dff23ebf64cc",
   "tool_versions": {
-    "harness_git": "unavailable",
+    "harness_git": "564ac46d0d912711db799b07a42720b98588e9c1",
     "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
     "python": "3.11.2"
   },

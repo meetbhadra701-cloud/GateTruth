@@ -19,7 +19,7 @@
   "task_id": "radix2_div",
   "testbench_sha256": "58fb7a9c86474d9a4fcd83624d8646f47cec38c990f72f5741163313082ca726",
   "tool_versions": {
-    "harness_git": "unavailable",
+    "harness_git": "564ac46d0d912711db799b07a42720b98588e9c1",
     "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
     "python": "3.11.2"
   },

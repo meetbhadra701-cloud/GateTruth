@@ -16,7 +16,7 @@
         "from": "verified_JC_counter",
         "to": "JC_counter"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_JC_counter -> JC_counter",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_JC_counter -> JC_counter",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_JC_counter"
@@ -37,7 +37,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "LFSR"
@@ -58,7 +58,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "LIFObuffer"
@@ -82,7 +82,7 @@
         "from": "verified_RAM",
         "to": "RAM"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_RAM -> RAM",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_RAM -> RAM",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_RAM"
@@ -103,7 +103,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "ROM"
@@ -127,7 +127,7 @@
         "from": "verified_accu",
         "to": "accu"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_accu -> accu",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_accu -> accu",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_accu"
@@ -151,7 +151,7 @@
         "from": "verified_adder_16bit",
         "to": "adder_16bit"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_16bit -> adder_16bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_adder_16bit -> adder_16bit",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_adder_16bit",
@@ -179,7 +179,7 @@
         "from": "verified_adder_32bit",
         "to": "adder_32bit"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_32bit -> adder_32bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_adder_32bit -> adder_32bit",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_adder_32bit",
@@ -207,7 +207,7 @@
         "from": "verified_adder_8bit",
         "to": "adder_8bit"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_8bit -> adder_8bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_adder_8bit -> adder_8bit",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_adder_8bit",
@@ -229,7 +229,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "adder_bcd"
@@ -253,7 +253,7 @@
         "from": "verified_adder_64bit",
         "to": "adder_pipe_64bit"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_64bit -> adder_pipe_64bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_adder_64bit -> adder_pipe_64bit",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "verified_adder_64bit"
@@ -279,7 +279,7 @@
         "from": "verified_alu",
         "to": "alu"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_alu -> alu",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_alu -> alu",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_alu"
@@ -329,7 +329,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "barrel_shifter",
@@ -356,7 +356,7 @@
         "from": "verified_calendar",
         "to": "calendar"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_calendar -> calendar",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_calendar -> calendar",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_calendar"
@@ -398,7 +398,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "comparator_3bit"
@@ -419,7 +419,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "comparator_4bit"
@@ -443,7 +443,7 @@
         "from": "verified_counter_12",
         "to": "counter_12"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_counter_12 -> counter_12",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_counter_12 -> counter_12",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_counter_12"
@@ -467,7 +467,7 @@
         "from": "verified_div_16bit",
         "to": "div_16bit"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_div_16bit -> div_16bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_div_16bit -> div_16bit",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_div_16bit"
@@ -491,7 +491,7 @@
         "from": "verified_edge_detect",
         "to": "edge_detect"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_edge_detect -> edge_detect",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_edge_detect -> edge_detect",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_edge_detect"
@@ -512,7 +512,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "fixed_point_adder"
@@ -533,7 +533,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "fixed_point_subtractor"
@@ -554,7 +554,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "float_multi"
@@ -575,7 +575,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "freq_div"
@@ -596,7 +596,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "freq_divbyeven"
@@ -617,7 +617,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "freq_divbyfrac"
@@ -638,7 +638,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "freq_divbyodd"
@@ -662,7 +662,7 @@
         "from": "verified_fsm",
         "to": "fsm"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_fsm -> fsm",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_fsm -> fsm",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_fsm"
@@ -683,7 +683,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "instr_reg"
@@ -707,7 +707,7 @@
         "from": "verified_multi_16bit",
         "to": "multi_16bit"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_16bit -> multi_16bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_16bit -> multi_16bit",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_multi_16bit"
@@ -728,7 +728,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "multi_8bit"
@@ -754,7 +754,7 @@
         "from": "verified_multi_booth_8bit",
         "to": "multi_booth_8bit"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_booth_8bit -> multi_booth_8bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_booth_8bit -> multi_booth_8bit",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_multi_booth_8bit"
@@ -778,7 +778,7 @@
         "from": "verified_multi_pipe",
         "to": "multi_pipe_4bit"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_pipe -> multi_pipe_4bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_pipe -> multi_pipe_4bit",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_multi_pipe"
@@ -802,7 +802,7 @@
         "from": "verified_multi_pipe_8bit",
         "to": "multi_pipe_8bit"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_pipe_8bit -> multi_pipe_8bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_pipe_8bit -> multi_pipe_8bit",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_multi_pipe_8bit"
@@ -826,7 +826,7 @@
         "from": "verified_parallel2serial",
         "to": "parallel2serial"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_parallel2serial -> parallel2serial",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_parallel2serial -> parallel2serial",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_parallel2serial"
@@ -850,7 +850,7 @@
         "from": "verified_pe",
         "to": "pe"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_pe -> pe",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_pe -> pe",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_pe"
@@ -874,7 +874,7 @@
         "from": "verified_pulse_detect",
         "to": "pulse_detect"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_pulse_detect -> pulse_detect",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_pulse_detect -> pulse_detect",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_pulse_detect"
@@ -922,7 +922,7 @@
         "from": "verified_right_shifter",
         "to": "right_shifter"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_right_shifter -> right_shifter",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_right_shifter -> right_shifter",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_right_shifter"
@@ -964,7 +964,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "sequence_detector"
@@ -988,7 +988,7 @@
         "from": "verified_serial2parallel",
         "to": "serial2parallel"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_serial2parallel -> serial2parallel",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_serial2parallel -> serial2parallel",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_serial2parallel"
@@ -1014,7 +1014,7 @@
         "from": "verified_signal_generator",
         "to": "signal_generator"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_signal_generator -> signal_generator",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_signal_generator -> signal_generator",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_signal_generator"
@@ -1035,7 +1035,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "square_wave"
@@ -1056,7 +1056,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "sub_64bit"
@@ -1080,7 +1080,7 @@
         "from": "verified_synchronizer",
         "to": "synchronizer"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_synchronizer -> synchronizer",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_synchronizer -> synchronizer",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_synchronizer"
@@ -1104,7 +1104,7 @@
         "from": "verified_traffic_light",
         "to": "traffic_light"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_traffic_light -> traffic_light",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_traffic_light -> traffic_light",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_traffic_light"
@@ -1125,7 +1125,7 @@
       "expected_design_modules": [],
       "extra_sources_needed": [],
       "module_alias": null,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "pass_string": "=========== Your Design Passed ===========",
       "reference_modules": [
         "up_down_counter"
@@ -1149,7 +1149,7 @@
         "from": "verified_width_8to16",
         "to": "width_8to16"
       },
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_width_8to16 -> width_8to16",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_width_8to16 -> width_8to16",
       "pass_string": "===========Your Design Passed===========",
       "reference_modules": [
         "verified_width_8to16"

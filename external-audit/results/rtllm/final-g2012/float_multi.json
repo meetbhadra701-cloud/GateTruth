@@ -7,7 +7,7 @@
   "kill_rate": 28.6957,
   "killed": 33,
   "mutants_total": 115,
-  "notes": "baseline passed under Icarus Verilog-2001",
+  "notes": "baseline passed under Icarus -g2012",
   "operator_counts": {
     "assignment_hold": 65,
     "bitwise_inversion": 8,
@@ -832,7 +832,7 @@
   "task_id": "float_multi",
   "testbench_sha256": "93329fc0cdd3cdfa1cb71c37e38a0d09e0b1e3096d363cfd0d7826c04a9e0e46",
   "tool_versions": {
-    "harness_git": "unavailable",
+    "harness_git": "564ac46d0d912711db799b07a42720b98588e9c1",
     "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
     "python": "3.11.2"
   },

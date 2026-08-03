@@ -7,7 +7,7 @@
   "kill_rate": 53.8462,
   "killed": 7,
   "mutants_total": 13,
-  "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_parallel2serial -> parallel2serial",
+  "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_parallel2serial -> parallel2serial",
   "operator_counts": {
     "assignment_hold": 9,
     "blocking_output_inversion": 1,
@@ -116,7 +116,7 @@
   "task_id": "parallel2serial",
   "testbench_sha256": "fc1bc3caeefe23e9ef182cbe927de225842d9fe220c8d037d9cb287c71fab9b7",
   "tool_versions": {
-    "harness_git": "unavailable",
+    "harness_git": "564ac46d0d912711db799b07a42720b98588e9c1",
     "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
     "python": "3.11.2"
   },

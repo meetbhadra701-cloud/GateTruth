@@ -5,7 +5,7 @@
       "kill_rate": 100.0,
       "killed": 3,
       "mutants_total": 3,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_JC_counter -> JC_counter",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_JC_counter -> JC_counter",
       "status": "audited",
       "survived": 0,
       "task_id": "JC_counter"
@@ -15,7 +15,7 @@
       "kill_rate": 100.0,
       "killed": 5,
       "mutants_total": 5,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "LFSR"
@@ -25,7 +25,7 @@
       "kill_rate": 69.2308,
       "killed": 18,
       "mutants_total": 26,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 8,
       "task_id": "LIFObuffer"
@@ -35,7 +35,7 @@
       "kill_rate": 60.0,
       "killed": 3,
       "mutants_total": 5,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_RAM -> RAM",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_RAM -> RAM",
       "status": "audited",
       "survived": 2,
       "task_id": "RAM"
@@ -45,7 +45,7 @@
       "kill_rate": 100.0,
       "killed": 5,
       "mutants_total": 5,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "ROM"
@@ -55,7 +55,7 @@
       "kill_rate": 68.1818,
       "killed": 15,
       "mutants_total": 22,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_accu -> accu",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_accu -> accu",
       "status": "audited",
       "survived": 7,
       "task_id": "accu"
@@ -65,7 +65,7 @@
       "kill_rate": 25.0,
       "killed": 2,
       "mutants_total": 8,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_16bit -> adder_16bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_adder_16bit -> adder_16bit",
       "status": "audited",
       "survived": 6,
       "task_id": "adder_16bit"
@@ -75,7 +75,7 @@
       "kill_rate": 45.6522,
       "killed": 21,
       "mutants_total": 46,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_32bit -> adder_32bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_adder_32bit -> adder_32bit",
       "status": "audited",
       "survived": 25,
       "task_id": "adder_32bit"
@@ -85,7 +85,7 @@
       "kill_rate": 0.0,
       "killed": 0,
       "mutants_total": 1,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_8bit -> adder_8bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_adder_8bit -> adder_8bit",
       "status": "audited",
       "survived": 1,
       "task_id": "adder_8bit"
@@ -95,7 +95,7 @@
       "kill_rate": 100.0,
       "killed": 5,
       "mutants_total": 5,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "adder_bcd"
@@ -105,7 +105,7 @@
       "kill_rate": 51.6129,
       "killed": 32,
       "mutants_total": 62,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_64bit -> adder_pipe_64bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_adder_64bit -> adder_pipe_64bit",
       "status": "audited",
       "survived": 26,
       "task_id": "adder_pipe_64bit"
@@ -115,7 +115,7 @@
       "kill_rate": 66.0377,
       "killed": 35,
       "mutants_total": 53,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_alu -> alu",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_alu -> alu",
       "status": "audited",
       "survived": 18,
       "task_id": "alu"
@@ -135,7 +135,7 @@
       "kill_rate": 100.0,
       "killed": 1,
       "mutants_total": 1,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "barrel_shifter"
@@ -145,7 +145,7 @@
       "kill_rate": 91.6667,
       "killed": 11,
       "mutants_total": 12,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_calendar -> calendar",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_calendar -> calendar",
       "status": "audited",
       "survived": 1,
       "task_id": "calendar"
@@ -165,7 +165,7 @@
       "kill_rate": 100.0,
       "killed": 4,
       "mutants_total": 4,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "comparator_3bit"
@@ -175,7 +175,7 @@
       "kill_rate": 83.3333,
       "killed": 5,
       "mutants_total": 6,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 1,
       "task_id": "comparator_4bit"
@@ -185,7 +185,7 @@
       "kill_rate": 75.0,
       "killed": 3,
       "mutants_total": 4,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_counter_12 -> counter_12",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_counter_12 -> counter_12",
       "status": "audited",
       "survived": 1,
       "task_id": "counter_12"
@@ -195,7 +195,7 @@
       "kill_rate": 100.0,
       "killed": 10,
       "mutants_total": 10,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_div_16bit -> div_16bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_div_16bit -> div_16bit",
       "status": "audited",
       "survived": 0,
       "task_id": "div_16bit"
@@ -205,7 +205,7 @@
       "kill_rate": 0.0,
       "killed": 0,
       "mutants_total": 10,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_edge_detect -> edge_detect",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_edge_detect -> edge_detect",
       "status": "audited",
       "survived": 10,
       "task_id": "edge_detect"
@@ -215,7 +215,7 @@
       "kill_rate": 5.0,
       "killed": 1,
       "mutants_total": 20,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 19,
       "task_id": "fixed_point_adder"
@@ -225,7 +225,7 @@
       "kill_rate": 5.0,
       "killed": 1,
       "mutants_total": 20,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 19,
       "task_id": "fixed_point_substractor"
@@ -235,7 +235,7 @@
       "kill_rate": 28.6957,
       "killed": 33,
       "mutants_total": 115,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 82,
       "task_id": "float_multi"
@@ -245,7 +245,7 @@
       "kill_rate": 100.0,
       "killed": 12,
       "mutants_total": 12,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "freq_div"
@@ -255,7 +255,7 @@
       "kill_rate": 100.0,
       "killed": 7,
       "mutants_total": 7,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "freq_divbyeven"
@@ -265,7 +265,7 @@
       "kill_rate": 90.0,
       "killed": 18,
       "mutants_total": 20,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 2,
       "task_id": "freq_divbyfrac"
@@ -275,7 +275,7 @@
       "kill_rate": 88.2353,
       "killed": 15,
       "mutants_total": 17,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 2,
       "task_id": "freq_divbyodd"
@@ -285,7 +285,7 @@
       "kill_rate": 73.0769,
       "killed": 19,
       "mutants_total": 26,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_fsm -> fsm",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_fsm -> fsm",
       "status": "audited",
       "survived": 7,
       "task_id": "fsm"
@@ -295,7 +295,7 @@
       "kill_rate": 75.0,
       "killed": 6,
       "mutants_total": 8,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 2,
       "task_id": "instr_reg"
@@ -305,7 +305,7 @@
       "kill_rate": 66.6667,
       "killed": 14,
       "mutants_total": 21,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_16bit -> multi_16bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_16bit -> multi_16bit",
       "status": "audited",
       "survived": 7,
       "task_id": "multi_16bit"
@@ -315,7 +315,7 @@
       "kill_rate": 100.0,
       "killed": 7,
       "mutants_total": 7,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "multi_8bit"
@@ -325,7 +325,7 @@
       "kill_rate": 81.8182,
       "killed": 9,
       "mutants_total": 11,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_booth_8bit -> multi_booth_8bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_booth_8bit -> multi_booth_8bit",
       "status": "audited",
       "survived": 0,
       "task_id": "multi_booth_8bit"
@@ -335,7 +335,7 @@
       "kill_rate": 75.0,
       "killed": 9,
       "mutants_total": 12,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_pipe -> multi_pipe_4bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_pipe -> multi_pipe_4bit",
       "status": "audited",
       "survived": 3,
       "task_id": "multi_pipe_4bit"
@@ -345,7 +345,7 @@
       "kill_rate": 56.6667,
       "killed": 17,
       "mutants_total": 30,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_pipe_8bit -> multi_pipe_8bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_pipe_8bit -> multi_pipe_8bit",
       "status": "audited",
       "survived": 11,
       "task_id": "multi_pipe_8bit"
@@ -355,7 +355,7 @@
       "kill_rate": 53.8462,
       "killed": 7,
       "mutants_total": 13,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_parallel2serial -> parallel2serial",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_parallel2serial -> parallel2serial",
       "status": "audited",
       "survived": 3,
       "task_id": "parallel2serial"
@@ -365,7 +365,7 @@
       "kill_rate": 100.0,
       "killed": 3,
       "mutants_total": 3,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_pe -> pe",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_pe -> pe",
       "status": "audited",
       "survived": 0,
       "task_id": "pe"
@@ -375,7 +375,7 @@
       "kill_rate": 87.5,
       "killed": 21,
       "mutants_total": 24,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_pulse_detect -> pulse_detect",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_pulse_detect -> pulse_detect",
       "status": "audited",
       "survived": 3,
       "task_id": "pulse_detect"
@@ -395,7 +395,7 @@
       "kill_rate": 75.0,
       "killed": 3,
       "mutants_total": 4,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_right_shifter -> right_shifter",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_right_shifter -> right_shifter",
       "status": "audited",
       "survived": 1,
       "task_id": "right_shifter"
@@ -415,7 +415,7 @@
       "kill_rate": 46.6667,
       "killed": 7,
       "mutants_total": 15,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 8,
       "task_id": "sequence_detector"
@@ -425,7 +425,7 @@
       "kill_rate": 30.7692,
       "killed": 4,
       "mutants_total": 13,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_serial2parallel -> serial2parallel",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_serial2parallel -> serial2parallel",
       "status": "audited",
       "survived": 5,
       "task_id": "serial2parallel"
@@ -435,7 +435,7 @@
       "kill_rate": 100.0,
       "killed": 8,
       "mutants_total": 8,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_signal_generator -> signal_generator",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_signal_generator -> signal_generator",
       "status": "audited",
       "survived": 0,
       "task_id": "signal_generator"
@@ -445,7 +445,7 @@
       "kill_rate": 0.0,
       "killed": 0,
       "mutants_total": 6,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 6,
       "task_id": "square_wave"
@@ -455,7 +455,7 @@
       "kill_rate": 16.6667,
       "killed": 1,
       "mutants_total": 6,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 5,
       "task_id": "sub_64bit"
@@ -465,7 +465,7 @@
       "kill_rate": 50.0,
       "killed": 5,
       "mutants_total": 10,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_synchronizer -> synchronizer",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_synchronizer -> synchronizer",
       "status": "audited",
       "survived": 5,
       "task_id": "synchronizer"
@@ -475,7 +475,7 @@
       "kill_rate": 55.0,
       "killed": 22,
       "mutants_total": 40,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_traffic_light -> traffic_light",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_traffic_light -> traffic_light",
       "status": "audited",
       "survived": 18,
       "task_id": "traffic_light"
@@ -485,7 +485,7 @@
       "kill_rate": 100.0,
       "killed": 7,
       "mutants_total": 7,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "up_down_counter"
@@ -495,7 +495,7 @@
       "kill_rate": 50.0,
       "killed": 6,
       "mutants_total": 12,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_width_8to16 -> width_8to16",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_width_8to16 -> width_8to16",
       "status": "audited",
       "survived": 6,
       "task_id": "width_8to16"
@@ -515,7 +515,7 @@
       "kill_rate": 100.0,
       "killed": 3,
       "mutants_total": 3,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_JC_counter -> JC_counter",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_JC_counter -> JC_counter",
       "status": "audited",
       "survived": 0,
       "task_id": "JC_counter"
@@ -525,7 +525,7 @@
       "kill_rate": 100.0,
       "killed": 5,
       "mutants_total": 5,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "LFSR"
@@ -535,7 +535,7 @@
       "kill_rate": 69.2308,
       "killed": 18,
       "mutants_total": 26,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 8,
       "task_id": "LIFObuffer"
@@ -545,7 +545,7 @@
       "kill_rate": 60.0,
       "killed": 3,
       "mutants_total": 5,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_RAM -> RAM",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_RAM -> RAM",
       "status": "audited",
       "survived": 2,
       "task_id": "RAM"
@@ -555,7 +555,7 @@
       "kill_rate": 100.0,
       "killed": 5,
       "mutants_total": 5,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "ROM"
@@ -565,7 +565,7 @@
       "kill_rate": 68.1818,
       "killed": 15,
       "mutants_total": 22,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_accu -> accu",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_accu -> accu",
       "status": "audited",
       "survived": 7,
       "task_id": "accu"
@@ -575,7 +575,7 @@
       "kill_rate": 25.0,
       "killed": 2,
       "mutants_total": 8,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_16bit -> adder_16bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_adder_16bit -> adder_16bit",
       "status": "audited",
       "survived": 6,
       "task_id": "adder_16bit"
@@ -585,7 +585,7 @@
       "kill_rate": 45.6522,
       "killed": 21,
       "mutants_total": 46,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_32bit -> adder_32bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_adder_32bit -> adder_32bit",
       "status": "audited",
       "survived": 25,
       "task_id": "adder_32bit"
@@ -595,7 +595,7 @@
       "kill_rate": 0.0,
       "killed": 0,
       "mutants_total": 1,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_8bit -> adder_8bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_adder_8bit -> adder_8bit",
       "status": "audited",
       "survived": 1,
       "task_id": "adder_8bit"
@@ -605,7 +605,7 @@
       "kill_rate": 100.0,
       "killed": 5,
       "mutants_total": 5,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "adder_bcd"
@@ -615,7 +615,7 @@
       "kill_rate": 51.6129,
       "killed": 32,
       "mutants_total": 62,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_adder_64bit -> adder_pipe_64bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_adder_64bit -> adder_pipe_64bit",
       "status": "audited",
       "survived": 26,
       "task_id": "adder_pipe_64bit"
@@ -625,7 +625,7 @@
       "kill_rate": 66.0377,
       "killed": 35,
       "mutants_total": 53,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_alu -> alu",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_alu -> alu",
       "status": "audited",
       "survived": 18,
       "task_id": "alu"
@@ -645,7 +645,7 @@
       "kill_rate": 100.0,
       "killed": 1,
       "mutants_total": 1,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "barrel_shifter"
@@ -655,7 +655,7 @@
       "kill_rate": 91.6667,
       "killed": 11,
       "mutants_total": 12,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_calendar -> calendar",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_calendar -> calendar",
       "status": "audited",
       "survived": 1,
       "task_id": "calendar"
@@ -675,7 +675,7 @@
       "kill_rate": 100.0,
       "killed": 4,
       "mutants_total": 4,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "comparator_3bit"
@@ -685,7 +685,7 @@
       "kill_rate": 83.3333,
       "killed": 5,
       "mutants_total": 6,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 1,
       "task_id": "comparator_4bit"
@@ -695,7 +695,7 @@
       "kill_rate": 75.0,
       "killed": 3,
       "mutants_total": 4,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_counter_12 -> counter_12",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_counter_12 -> counter_12",
       "status": "audited",
       "survived": 1,
       "task_id": "counter_12"
@@ -705,7 +705,7 @@
       "kill_rate": 100.0,
       "killed": 10,
       "mutants_total": 10,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_div_16bit -> div_16bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_div_16bit -> div_16bit",
       "status": "audited",
       "survived": 0,
       "task_id": "div_16bit"
@@ -715,7 +715,7 @@
       "kill_rate": 0.0,
       "killed": 0,
       "mutants_total": 10,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_edge_detect -> edge_detect",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_edge_detect -> edge_detect",
       "status": "audited",
       "survived": 10,
       "task_id": "edge_detect"
@@ -725,7 +725,7 @@
       "kill_rate": 5.0,
       "killed": 1,
       "mutants_total": 20,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 19,
       "task_id": "fixed_point_adder"
@@ -735,7 +735,7 @@
       "kill_rate": 5.0,
       "killed": 1,
       "mutants_total": 20,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 19,
       "task_id": "fixed_point_substractor"
@@ -745,7 +745,7 @@
       "kill_rate": 28.6957,
       "killed": 33,
       "mutants_total": 115,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 82,
       "task_id": "float_multi"
@@ -755,7 +755,7 @@
       "kill_rate": 100.0,
       "killed": 12,
       "mutants_total": 12,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "freq_div"
@@ -765,7 +765,7 @@
       "kill_rate": 100.0,
       "killed": 7,
       "mutants_total": 7,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "freq_divbyeven"
@@ -775,7 +775,7 @@
       "kill_rate": 90.0,
       "killed": 18,
       "mutants_total": 20,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 2,
       "task_id": "freq_divbyfrac"
@@ -785,7 +785,7 @@
       "kill_rate": 88.2353,
       "killed": 15,
       "mutants_total": 17,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 2,
       "task_id": "freq_divbyodd"
@@ -795,7 +795,7 @@
       "kill_rate": 73.0769,
       "killed": 19,
       "mutants_total": 26,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_fsm -> fsm",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_fsm -> fsm",
       "status": "audited",
       "survived": 7,
       "task_id": "fsm"
@@ -805,7 +805,7 @@
       "kill_rate": 75.0,
       "killed": 6,
       "mutants_total": 8,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 2,
       "task_id": "instr_reg"
@@ -815,7 +815,7 @@
       "kill_rate": 66.6667,
       "killed": 14,
       "mutants_total": 21,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_16bit -> multi_16bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_16bit -> multi_16bit",
       "status": "audited",
       "survived": 7,
       "task_id": "multi_16bit"
@@ -825,7 +825,7 @@
       "kill_rate": 100.0,
       "killed": 7,
       "mutants_total": 7,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "multi_8bit"
@@ -835,7 +835,7 @@
       "kill_rate": 81.8182,
       "killed": 9,
       "mutants_total": 11,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_booth_8bit -> multi_booth_8bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_booth_8bit -> multi_booth_8bit",
       "status": "audited",
       "survived": 0,
       "task_id": "multi_booth_8bit"
@@ -845,7 +845,7 @@
       "kill_rate": 75.0,
       "killed": 9,
       "mutants_total": 12,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_pipe -> multi_pipe_4bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_pipe -> multi_pipe_4bit",
       "status": "audited",
       "survived": 3,
       "task_id": "multi_pipe_4bit"
@@ -855,7 +855,7 @@
       "kill_rate": 56.6667,
       "killed": 17,
       "mutants_total": 30,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_multi_pipe_8bit -> multi_pipe_8bit",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_multi_pipe_8bit -> multi_pipe_8bit",
       "status": "audited",
       "survived": 11,
       "task_id": "multi_pipe_8bit"
@@ -865,7 +865,7 @@
       "kill_rate": 53.8462,
       "killed": 7,
       "mutants_total": 13,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_parallel2serial -> parallel2serial",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_parallel2serial -> parallel2serial",
       "status": "audited",
       "survived": 3,
       "task_id": "parallel2serial"
@@ -875,7 +875,7 @@
       "kill_rate": 100.0,
       "killed": 3,
       "mutants_total": 3,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_pe -> pe",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_pe -> pe",
       "status": "audited",
       "survived": 0,
       "task_id": "pe"
@@ -885,7 +885,7 @@
       "kill_rate": 87.5,
       "killed": 21,
       "mutants_total": 24,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_pulse_detect -> pulse_detect",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_pulse_detect -> pulse_detect",
       "status": "audited",
       "survived": 3,
       "task_id": "pulse_detect"
@@ -905,7 +905,7 @@
       "kill_rate": 75.0,
       "killed": 3,
       "mutants_total": 4,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_right_shifter -> right_shifter",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_right_shifter -> right_shifter",
       "status": "audited",
       "survived": 1,
       "task_id": "right_shifter"
@@ -925,7 +925,7 @@
       "kill_rate": 46.6667,
       "killed": 7,
       "mutants_total": 15,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 8,
       "task_id": "sequence_detector"
@@ -935,7 +935,7 @@
       "kill_rate": 30.7692,
       "killed": 4,
       "mutants_total": 13,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_serial2parallel -> serial2parallel",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_serial2parallel -> serial2parallel",
       "status": "audited",
       "survived": 5,
       "task_id": "serial2parallel"
@@ -945,7 +945,7 @@
       "kill_rate": 100.0,
       "killed": 8,
       "mutants_total": 8,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_signal_generator -> signal_generator",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_signal_generator -> signal_generator",
       "status": "audited",
       "survived": 0,
       "task_id": "signal_generator"
@@ -955,7 +955,7 @@
       "kill_rate": 0.0,
       "killed": 0,
       "mutants_total": 6,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 6,
       "task_id": "square_wave"
@@ -965,7 +965,7 @@
       "kill_rate": 16.6667,
       "killed": 1,
       "mutants_total": 6,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 5,
       "task_id": "sub_64bit"
@@ -975,7 +975,7 @@
       "kill_rate": 50.0,
       "killed": 5,
       "mutants_total": 10,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_synchronizer -> synchronizer",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_synchronizer -> synchronizer",
       "status": "audited",
       "survived": 5,
       "task_id": "synchronizer"
@@ -985,7 +985,7 @@
       "kill_rate": 55.0,
       "killed": 22,
       "mutants_total": 40,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_traffic_light -> traffic_light",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_traffic_light -> traffic_light",
       "status": "audited",
       "survived": 18,
       "task_id": "traffic_light"
@@ -995,7 +995,7 @@
       "kill_rate": 100.0,
       "killed": 7,
       "mutants_total": 7,
-      "notes": "baseline passed under Icarus Verilog-2001",
+      "notes": "baseline passed under Icarus -g2012",
       "status": "audited",
       "survived": 0,
       "task_id": "up_down_counter"
@@ -1005,14 +1005,14 @@
       "kill_rate": 50.0,
       "killed": 6,
       "mutants_total": 12,
-      "notes": "baseline passed under Icarus Verilog-2001 after temporary module alias verified_width_8to16 -> width_8to16",
+      "notes": "baseline passed under Icarus -g2012 after temporary module alias verified_width_8to16 -> width_8to16",
       "status": "audited",
       "survived": 6,
       "task_id": "width_8to16"
     }
   ],
   "tool_versions": {
-    "harness_git": "unavailable",
+    "harness_git": "564ac46d0d912711db799b07a42720b98588e9c1",
     "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
     "python": "3.11.2"
   },

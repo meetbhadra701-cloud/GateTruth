@@ -6,7 +6,10 @@ Do not cite it publicly or use it in outreach without Architect approval.
 ## Frozen Inputs
 
 - GateTruth artifact commit: `6cd91ce`
-- GateTruth audit implementation recorded in every result: `5ea85d0`
+- GateTruth audit implementation recorded in every g2001-condition result: `5ea85d0`
+- GateTruth audit implementation recorded in every g2012-condition result
+  (`results/rtllm/final-g2012/`, `results/rtllm/redo-g2012/`; this is the paper's reported
+  condition): `564ac46d0d912711db799b07a42720b98588e9c1`
 - Seed: `20260729`
 - RTLLM revision: `41b26896e33b536940116a975626455eed3de65e`
 - RTLLM content SHA-256:
@@ -159,6 +162,42 @@ The generated per-design table, including zero and 100 percent kill rates, is
 [`results/summary.md`](results/summary.md). The deterministic sample is stored
 in `results/rtllm/determinism.json`.
 
+## Measured Run (g2012, reported condition)
+
+The run above uses Icarus's `-g2001` language mode. The paper's headline RTLLM audit numbers
+use `-g2012` instead (`--generation-flag=-g2012`; note the `=` -- `run_audit.py`'s argparse
+otherwise reads a `-g...` value as another flag), because that is the newer, better-supported
+language generation and the condition this audit reports as primary. It was re-run in full
+against the same catalog, seed, and vendor tree:
+
+- 50 designs reported
+- 46 audited
+- 4 unsupported
+- 775 mutants
+- 440 killed
+- 335 not killed (320 survived, 15 indeterminate)
+- Aggregate kill fraction: `440/775`
+- Determinism sample (9, derived the same way as the g2001 sample above): `instr_reg`,
+  `traffic_light`, `multi_booth_8bit`, `freq_divbyfrac`, `barrel_shifter`, `edge_detect`,
+  `comparator_4bit`, `alu`, `serial2parallel`
+- Determinism result: byte-identical per-design JSON (`results/rtllm/determinism-g2012.json`)
+
+Two designs change eligibility between language modes: `freq_divbyodd` and `multi_8bit` are
+`unsupported` under `-g2001` (Icarus rejects their syntax) but `audited` under `-g2012`, which
+is why g2012 has fewer unsupported designs (4, not 6) and more total mutants (775, not 751)
+despite auditing the same 50-design catalog. The four designs unsupported under both modes are
+`asyn_fifo`, `clkgenerator`, `radix2_div`, and `ring_counter`, for the reasons given below.
+Per-design g2012 results live in `results/rtllm/final-g2012/` and
+[`results/summary-g2012.md`](results/summary-g2012.md).
+
+Every `notes` field in `results/rtllm/final-g2012/*.json` and `results/rtllm/sweep-g2012.json`
+now correctly records the generation flag actually used. An earlier committed version of this
+audit hardcoded the string ``Icarus Verilog-2001`` into every design's notes regardless of which
+flag ran, including the g2012 runs; that was a provenance-recording bug in
+`external-audit/sweep_rtllm.py`, not a scoring error; the kill rates, mutant counts, and verdicts
+above are unaffected and were verified byte-identical against the pre-fix numbers before this fix
+was committed.
+
 ## Eligibility and Verdicts
 
 A design is `audited` only when its unmodified golden source passes its shipped
@@ -189,8 +228,9 @@ The six unsupported designs are:
   inversion, shift inversion, reset-polarity flip, dropped-enable, assignment
   deletion, output inversion, assignment hold, and blocking-output inversion.
   No GateTruth task-specific mutation specification is used.
-- Results measure the shipped testbenches under Icarus Verilog-2001. They do
-  not claim compatibility with, or equivalence to, RTLLM's VCS environment.
+- Results measure the shipped testbenches under two Icarus language modes,
+  `-g2001` and `-g2012` (see "Measured Run (g2012, reported condition)" above); neither claims
+  compatibility with, or equivalence to, RTLLM's VCS environment.
 - The six unsupported baselines are reported but are not assigned mutation
   kill rates.
 - Double timeouts are conservatively indeterminate and count against the kill
