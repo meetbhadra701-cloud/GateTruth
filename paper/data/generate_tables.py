@@ -600,7 +600,7 @@ def _tasks_latex(rows: list[TaskRecord], metadata: str) -> str:
     lines.extend(
         f"{_tex(row.task_id)} & {row.tier} & {'yes' if row.formal else 'no'} & "
         f"{row.clock_ns:.2f} & {_value(row.area_um2, 2)} & {_value(row.wns_ns, 3)} & "
-        f"{_value(row.power_mw, 6)} \\\\" 
+        f"{_value(row.power_mw, 6)} \\\\"
         for row in rows
     )
     lines.extend([r"\bottomrule", r"\end{tabular}"])
@@ -635,7 +635,7 @@ def _mutation_latex(rows: list[MutationRecord], metadata: str) -> str:
         r"\midrule",
     ]
     lines.extend(
-        f"{_tex(row.task_id)} & {row.mutants} & {row.killed} & {row.kill_rate:.2f} \\\\" 
+        f"{_tex(row.task_id)} & {row.mutants} & {row.killed} & {row.kill_rate:.2f} \\\\"
         for row in rows
     )
     lines.extend([r"\bottomrule", r"\end{tabular}"])
@@ -666,7 +666,7 @@ def _eval_latex(rows: list[EvalRecord], metadata: str) -> str:
     ]
     lines.extend(
         f"{_tex(row.provider)} & {_tex(row.model)} & {row.tasks} & "
-        f"{row.aggregate_score:.2f} & {row.tokens} & {row.cost_usd:.6f} \\\\" 
+        f"{row.aggregate_score:.2f} & {row.tokens} & {row.cost_usd:.6f} \\\\"
         for row in rows
     )
     lines.extend([r"\bottomrule", r"\end{tabular}"])
