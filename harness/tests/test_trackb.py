@@ -77,6 +77,16 @@ def test_trackb_objective_pass_path(tmp_path):
     assert manifest.submission_sha256 == hashlib.sha256(solution.read_bytes()).hexdigest()
 
 
+def test_trackb_records_which_digest_source_actually_scored_it(tmp_path, monkeypatch):
+    submission = copy_fixture(tmp_path)
+    monkeypatch.setenv("GATETRUTH_DOCKER_DIGEST", "sha256:" + "dd" * 32)
+
+    manifest = run_track_b("toy_taskB", submission, tmp_path / "env.json")
+
+    assert manifest.docker_digest == "sha256:" + "dd" * 32
+    assert manifest.docker_digest_source == "env"
+
+
 def test_trackb_deterministic_signature(tmp_path):
     submission = copy_fixture(tmp_path)
     shutil.copy2(Path("harness/tests/fixtures/toy_taskB_solution/toy_trackb.sv"), submission / "design" / "toy_trackb.sv")

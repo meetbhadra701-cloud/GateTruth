@@ -112,6 +112,17 @@ RUN groupadd --gid 10001 gatetruth \
     && mkdir -p /work /output \
     && chown 10001:10001 /work /output
 
+# /etc/gatetruth-image-digest is NOT a verified pin: an image cannot correctly
+# predeclare its own post-build content digest, since any byte of this Dockerfile --
+# including the ARG line below -- changes that digest once built. This default was
+# discovered stale against a real `docker inspect` of an image built from this exact
+# file (P0-7). It exists only as an unverified local/dev fallback for
+# harness.runner.runtime_docker_digest(); anything that needs a trustworthy image
+# identity (official runs, CI-produced manifests) must instead pass the real digest
+# via GATETRUTH_DOCKER_DIGEST at `docker run` time, captured from the host with
+# `docker inspect --format='{{.Id}}' gatetruth:v1` right after building -- see
+# .github/workflows/ci.yml's "Verify pinned image identity" step. Every manifest
+# records which of these actually supplied its digest via docker_digest_source.
 ARG GATETRUTH_IMAGE_DIGEST=sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4
 RUN printf '%s\n' "$GATETRUTH_IMAGE_DIGEST" > /etc/gatetruth-image-digest
 

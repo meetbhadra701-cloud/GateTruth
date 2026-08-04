@@ -17,7 +17,13 @@ from harness.git_provenance import harness_git
 from harness.providers import GenParams, ProviderAdapter
 from harness.providers.pricing import worst_case_cost
 from harness.providers.retry import generate_with_transport_retry
-from harness.runner import SUITE_VERSION, TaskPackage, resolve_task, run_task, runtime_docker_digest
+from harness.runner import (
+    SUITE_VERSION,
+    TaskPackage,
+    resolve_task,
+    run_task,
+    runtime_docker_digest_info,
+)
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import ResultManifest, TemperatureSetting
 from harness.schemas.pending import PendingGeneration, load_pending_generation
@@ -909,10 +915,12 @@ def _zero_manifest(
         }
         for index, name in enumerate(STAGE_NAMES)
     ]
+    docker_digest, docker_digest_source = runtime_docker_digest_info()
     data: dict[str, Any] = {
         "task_id": task.task_id,
         "suite_version": SUITE_VERSION,
-        "docker_digest": runtime_docker_digest(),
+        "docker_digest": docker_digest,
+        "docker_digest_source": docker_digest_source,
         "platform": "linux/amd64",
         "stages": stages,
         "sec": 0.0,

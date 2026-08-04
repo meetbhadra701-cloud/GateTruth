@@ -24,7 +24,7 @@ from harness.runner import (
     official_hidden_preflight,
     run_lint,
     run_sim,
-    runtime_docker_digest,
+    runtime_docker_digest_info,
 )
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest_b import TrackBManifest
@@ -187,11 +187,13 @@ def run_track_b(
 
     task_score = 100.0 if (not disqualified and objective_pass) else 0.0
     stages = [_full_stage(stage) for stage in stages]
+    docker_digest, docker_digest_source = runtime_docker_digest_info()
     data = {
         "task_id": package.task_id,
         "suite_version": SUITE_VERSION,
         "track": "B",
-        "docker_digest": runtime_docker_digest(),
+        "docker_digest": docker_digest,
+        "docker_digest_source": docker_digest_source,
         "platform": "linux/amd64",
         "submission_dir": str(submission_root),
         "submission_sha256": submission_sha256,

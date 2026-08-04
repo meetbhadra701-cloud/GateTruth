@@ -125,6 +125,7 @@ class ResultManifest(BaseModel):
     task_id: str = Field(min_length=1)
     suite_version: str = Field(min_length=1)
     docker_digest: str = Field(pattern=DOCKER_DIGEST_RE)
+    docker_digest_source: Literal["env", "file", "default"] | None = None
     platform: Platform
     stages: list[StageResult] = Field(min_length=1)
     sec: float = Field(ge=0)

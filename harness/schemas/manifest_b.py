@@ -88,6 +88,7 @@ class TrackBManifest(BaseModel):
     suite_version: str = Field(min_length=1)
     track: Literal["B"]
     docker_digest: str = Field(pattern=DOCKER_DIGEST_RE)
+    docker_digest_source: Literal["env", "file", "default"] | None = None
     platform: Platform
     submission_dir: str = Field(min_length=1)
     submission_sha256: str | None = Field(default=None, pattern=SHA256_HEX_RE)

@@ -3,12 +3,22 @@ import sys
 import shutil
 import time
 
+from pathlib import Path
+
 from harness import flows
 from harness.flows import PowerResult, StaResult, SynthResult
 from harness import runner
-from harness.runner import TaskPackage, run_ppa_flows, runtime_docker_digest
+from harness.runner import (
+    TaskPackage,
+    run_ppa_flows,
+    run_task,
+    runtime_docker_digest,
+    runtime_docker_digest_info,
+)
 from harness.schemas.manifest import load_manifest
 from harness.schemas.task_yaml import load_task_yaml
+
+TOY_REF = Path("harness/tests/fixtures/toy_task/ref/ref.sv")
 
 
 def test_toy_flow_determinism(tmp_path):
@@ -173,6 +183,66 @@ def test_runtime_docker_digest_checks_primary_then_legacy_default_files(
 
     primary_file.write_text(primary_digest + "\n", encoding="utf-8")
     assert runtime_docker_digest() == primary_digest
+
+
+def test_runtime_docker_digest_info_reports_env_as_the_source(monkeypatch):
+    monkeypatch.setenv("GATETRUTH_DOCKER_DIGEST", "sha256:" + "aa" * 32)
+
+    digest, source = runtime_docker_digest_info()
+
+    assert digest == "sha256:" + "aa" * 32
+    assert source == "env"
+
+
+def test_runtime_docker_digest_info_reports_file_as_the_source(tmp_path, monkeypatch):
+    digest_file = tmp_path / "image-digest"
+    digest_file.write_text("sha256:" + "bb" * 32 + "\n", encoding="utf-8")
+    monkeypatch.delenv("GATETRUTH_DOCKER_DIGEST", raising=False)
+    monkeypatch.delenv("SILICONBENCH_DOCKER_DIGEST", raising=False)
+    monkeypatch.setenv("GATETRUTH_DOCKER_DIGEST_FILE", str(digest_file))
+
+    digest, source = runtime_docker_digest_info()
+
+    assert digest == "sha256:" + "bb" * 32
+    assert source == "file"
+
+
+def test_runtime_docker_digest_info_reports_default_as_the_source(tmp_path, monkeypatch):
+    monkeypatch.delenv("GATETRUTH_DOCKER_DIGEST", raising=False)
+    monkeypatch.delenv("SILICONBENCH_DOCKER_DIGEST", raising=False)
+    monkeypatch.delenv("GATETRUTH_DOCKER_DIGEST_FILE", raising=False)
+    monkeypatch.delenv("SILICONBENCH_DOCKER_DIGEST_FILE", raising=False)
+    monkeypatch.setattr(runner, "DEFAULT_DOCKER_DIGEST_FILE", tmp_path / "absent-primary")
+    monkeypatch.setattr(runner, "LEGACY_DOCKER_DIGEST_FILE", tmp_path / "absent-legacy")
+
+    digest, source = runtime_docker_digest_info()
+
+    assert digest == runner.DEFAULT_DOCKER_DIGEST
+    assert source == "default"
+
+
+def test_run_task_manifest_records_which_digest_source_actually_scored_it(
+    tmp_path, monkeypatch
+):
+    """P0-7: a manifest's docker_digest is meaningless without knowing whether it came
+    from an operator-verified `docker inspect` (env) or a self-declared, unverifiable
+    fallback (file/default) -- see runtime_docker_digest_info()'s docstring for why
+    those are not equivalent claims."""
+
+    monkeypatch.setenv("GATETRUTH_DOCKER_DIGEST", "sha256:" + "cc" * 32)
+    manifest = run_task("toy_task", TOY_REF, tmp_path / "env.json")
+    assert manifest.docker_digest == "sha256:" + "cc" * 32
+    assert manifest.docker_digest_source == "env"
+
+    monkeypatch.delenv("GATETRUTH_DOCKER_DIGEST", raising=False)
+    monkeypatch.delenv("SILICONBENCH_DOCKER_DIGEST", raising=False)
+    monkeypatch.delenv("GATETRUTH_DOCKER_DIGEST_FILE", raising=False)
+    monkeypatch.delenv("SILICONBENCH_DOCKER_DIGEST_FILE", raising=False)
+    monkeypatch.setattr(runner, "DEFAULT_DOCKER_DIGEST_FILE", tmp_path / "absent-primary")
+    monkeypatch.setattr(runner, "LEGACY_DOCKER_DIGEST_FILE", tmp_path / "absent-legacy")
+    manifest = run_task("toy_task", TOY_REF, tmp_path / "default.json")
+    assert manifest.docker_digest == runner.DEFAULT_DOCKER_DIGEST
+    assert manifest.docker_digest_source == "default"
 
 
 def test_flow_subprocess_timeout_is_bounded_and_reported():

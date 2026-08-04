@@ -13,7 +13,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from harness.mutate import run_mutation  # noqa: E402
-from harness.runner import runtime_docker_digest  # noqa: E402
+from harness.runner import runtime_docker_digest_info  # noqa: E402
 
 EXPECTED_TASKS = 60
 
@@ -86,11 +86,13 @@ def main(argv: list[str] | None = None) -> int:
             f"kill_rate={report['kill_rate']:.4f}%"
         )
 
+    docker_digest, docker_digest_source = runtime_docker_digest_info()
     summary = {
-        "schema_version": 2,
+        "schema_version": 3,
         "all_above_floor": all_above_floor,
         "any_unsupported": any_unsupported,
-        "docker_digest": runtime_docker_digest(),
+        "docker_digest": docker_digest,
+        "docker_digest_source": docker_digest_source,
         "jobs": 1,
         "metric": "simulation_testbench_kill_rate",
         "min_kill": args.min_kill,

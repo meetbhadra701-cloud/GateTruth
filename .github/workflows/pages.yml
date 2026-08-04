@@ -58,14 +58,19 @@ jobs:
           echo "SB_OUTPUT=$RUNNER_TEMP/gatetruth-output" >> "$GITHUB_ENV"
 
       - name: Verify pinned image identity
+        # See ci.yml's identical step for why /etc/gatetruth-image-digest is not
+        # compared against a hardcoded string here: that would be tautological, since
+        # a Dockerfile cannot correctly predeclare its own post-build content digest.
+        # `docker inspect` asks the engine that just built the image instead.
         run: |
+          REAL_DIGEST="$(docker inspect --format='{{.Id}}' gatetruth:v1)"
+          echo "GATETRUTH_DOCKER_DIGEST=$REAL_DIGEST" >> "$GITHUB_ENV"
+          echo "real image digest (docker inspect, host-verified): $REAL_DIGEST"
           docker run --rm --network none --cap-drop=ALL \
             --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
             gatetruth:v1 sh -c '
             test "$(uname -m)" = "x86_64"
             test "$(id -u)" -ne 0
-            test "$(cat /etc/gatetruth-image-digest)" = \
-              "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4"
           '
 
       - name: Build the site twice (determinism check)

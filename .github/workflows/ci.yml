@@ -49,14 +49,24 @@ jobs:
           echo "SB_OUTPUT=$RUNNER_TEMP/gatetruth-output" >> "$GITHUB_ENV"
 
       - name: Verify pinned image identity
+        # /etc/gatetruth-image-digest is baked in by the Dockerfile's own ARG default
+        # -- an image cannot correctly predeclare its own post-build content digest,
+        # since any byte of the Dockerfile (including that declaration) changes it.
+        # Comparing that file's content to a second hardcoded copy of the same string
+        # (formerly here) is tautological: it can never catch drift between what the
+        # Dockerfile claims and what was actually built, only a typo between two
+        # copies of the same literal. `docker inspect` asks the engine that just built
+        # the image, not the image's own self-report, so it is the only source here
+        # that is actually independent of what the Dockerfile says about itself.
         run: |
+          REAL_DIGEST="$(docker inspect --format='{{.Id}}' gatetruth:v1)"
+          echo "GATETRUTH_DOCKER_DIGEST=$REAL_DIGEST" >> "$GITHUB_ENV"
+          echo "real image digest (docker inspect, host-verified): $REAL_DIGEST"
           docker run --rm --network none --cap-drop=ALL \
             --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
             gatetruth:v1 sh -c '
             test "$(uname -m)" = "x86_64"
             test "$(id -u)" -ne 0
-            test "$(cat /etc/gatetruth-image-digest)" = \
-              "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4"
           '
 
       - name: Ruff
@@ -89,9 +99,14 @@ jobs:
       - name: T1 reference smoke (non-official)
         # Fork PRs receive no hidden-test mount or provider secret. Official scoring
         # remains fail-closed in the nightly/manual path with GATETRUTH_HIDDEN_ROOT.
+        # -e GATETRUTH_DOCKER_DIGEST carries forward the host-verified `docker inspect`
+        # value from the identity-verification step above, so the manifests this run
+        # produces record docker_digest_source="env" -- an operator-verified image
+        # identity, not the self-declared /etc/gatetruth-image-digest fallback.
         run: |
           docker run --rm --network none --cap-drop=ALL \
             --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
+            -e GATETRUTH_DOCKER_DIGEST \
             --mount "type=bind,src=$SB_SOURCE,dst=/work,readonly" \
             --mount "type=bind,src=$SB_OUTPUT,dst=/output" \
             --workdir /work gatetruth:v1 \

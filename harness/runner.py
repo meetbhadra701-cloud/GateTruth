@@ -43,6 +43,7 @@ from harness.scoring import (
 from harness.validation import SubmissionValidationError, validate_source_file
 
 SUITE_VERSION = "v0.2"
+# Unverified last resort, not a pin: see runtime_docker_digest_info()'s docstring.
 DEFAULT_DOCKER_DIGEST = "sha256:bdfe90181574e18c9dfad51bac26c5d27f5685f03e03b68adb7b49f34ff5e2f4"
 DEFAULT_DOCKER_DIGEST_FILE = Path("/etc/gatetruth-image-digest")
 LEGACY_DOCKER_DIGEST_FILE = Path("/etc/siliconbench-image-digest")
@@ -87,10 +88,26 @@ def resolve_task(task_id: str) -> TaskPackage:
     raise FileNotFoundError(f"unknown task: {task_id}")
 
 
-def runtime_docker_digest() -> str:
+def runtime_docker_digest_info() -> tuple[str, str]:
+    """Return (digest, source). "env" is the only source an operator has actually
+    verified against the real image: it means whoever launched this container ran
+    `docker inspect --format='{{.Id}}' <image>` on the host, where Docker computes the
+    digest from the real built layers, and passed that value in explicitly. "file" and
+    "default" are both self-declared -- baked into the image (or hardcoded in this
+    module) at Dockerfile-write time, before the image described by that very value
+    could possibly be built. That is circular by construction: a Dockerfile cannot
+    correctly predeclare the content digest of the image it produces, since any byte of
+    the Dockerfile -- including the declaration itself -- changes that digest. Verified
+    directly against a real build: the digest baked into flows/Dockerfile's
+    GATETRUTH_IMAGE_DIGEST default did not match `docker inspect`'s actual answer for
+    the image built from that same Dockerfile. "file"/"default" remain useful for
+    local/dev convenience, but nothing scored under them should be treated as having an
+    independently verified image identity -- see docker_digest_source on the manifest.
+    """
+
     explicit = read_env("DOCKER_DIGEST")
     if explicit:
-        return explicit
+        return explicit, "env"
     configured_path = read_env("DOCKER_DIGEST_FILE")
     paths = (
         (Path(configured_path),)
@@ -99,8 +116,12 @@ def runtime_docker_digest() -> str:
     )
     for path in paths:
         if path.is_file():
-            return path.read_text(encoding="utf-8").strip()
-    return DEFAULT_DOCKER_DIGEST
+            return path.read_text(encoding="utf-8").strip(), "file"
+    return DEFAULT_DOCKER_DIGEST, "default"
+
+
+def runtime_docker_digest() -> str:
+    return runtime_docker_digest_info()[0]
 
 
 def _find_top_module(path: Path, fallback: str) -> str:
@@ -580,10 +601,12 @@ def run_task(
         ppa = 0.0
         task_score = 0.0
     stages.append({"stage": 6, "name": "route", "status": "skip"})
+    docker_digest, docker_digest_source = runtime_docker_digest_info()
     data = {
         "task_id": task.task_id,
         "suite_version": SUITE_VERSION,
-        "docker_digest": runtime_docker_digest(),
+        "docker_digest": docker_digest,
+        "docker_digest_source": docker_digest_source,
         "platform": "linux/amd64",
         "stages": stages,
         "sec": 1.0,
