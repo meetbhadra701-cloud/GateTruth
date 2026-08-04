@@ -18,6 +18,7 @@ from harness.providers.mock import MockCompletionProvider
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import load_manifest
 from harness.spend import SpendCapExceeded
+from harness.tree_hash import tree_hash
 
 TOY_REF = Path("harness/tests/fixtures/toy_task/ref/ref.sv")
 
@@ -175,6 +176,7 @@ def test_fenced_rtl_scores_end_to_end_and_records_prompt(tmp_path):
     assert manifest.max_output_tokens == 128
     assert manifest.provider_finish_reason == "stop"
     assert manifest.submission_sha256 == hashlib.sha256(source.encode("utf-8")).hexdigest()
+    assert manifest.task_package_sha256 == tree_hash(evalmodel.resolve_task("toy_task").root)
     assert (tmp_path / "mock-eval/toy_task/sample_1.sv").read_text(encoding="utf-8") == source
     task = evalmodel.resolve_task("toy_task")
     prompt, system = build_generation_prompt(task)

@@ -22,6 +22,7 @@ from harness.atomic_write import atomic_write_text
 from harness.flows import FlowError, run_power, run_sta, run_synth
 from harness.env_compat import read_env
 from harness.git_provenance import harness_git
+from harness.tree_hash import tree_hash
 from harness.hidden import (
     HIDDEN_ROOT_ENV,
     LEGACY_HIDDEN_ROOT_ENV,
@@ -481,6 +482,10 @@ def run_task(
     except OSError:
         submission_sha256 = None
     try:
+        task_package_sha256 = tree_hash(task.root)
+    except OSError:
+        task_package_sha256 = None
+    try:
         validate_source_file(submission_path)
     except (OSError, SubmissionValidationError) as exc:
         stages = [
@@ -580,6 +585,8 @@ def run_task(
     }
     if submission_sha256 is not None:
         data["submission_sha256"] = submission_sha256
+    if task_package_sha256 is not None:
+        data["task_package_sha256"] = task_package_sha256
     data["signature"] = compute_manifest_signature(data)
     manifest = ResultManifest.model_validate(data)
     output_path = Path(out)
