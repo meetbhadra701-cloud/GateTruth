@@ -101,11 +101,10 @@ RUN ln -sf /usr/bin/python3.11 /usr/local/bin/python \
     && python --version \
     && python3 --version
 
+COPY requirements.txt /tmp/requirements.txt
 RUN python3.11 -m pip install --no-cache-dir --break-system-packages \
-      cocotb==1.9.2 \
-      pytest==8.3.4 \
-      ruff==0.8.4 \
-      pydantic==2.10.4
+      --require-hashes -r /tmp/requirements.txt \
+    && rm /tmp/requirements.txt
 
 RUN groupadd --gid 10001 gatetruth \
     && useradd --uid 10001 --gid 10001 --create-home --shell /bin/bash gatetruth \
