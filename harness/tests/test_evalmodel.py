@@ -169,6 +169,7 @@ def test_fenced_rtl_scores_end_to_end_and_records_prompt(tmp_path):
     assert manifest.model == "mock-eval"
     assert manifest.prompt_version == PROMPT_VERSION
     assert (manifest.tokens_in, manifest.tokens_out, manifest.cost_usd) == (101, 37, 0.00125)
+    assert manifest.harness_git == evalmodel.harness_git()
     assert (tmp_path / "mock-eval/toy_task/sample_1.sv").read_text(encoding="utf-8") == source
     task = evalmodel.resolve_task("toy_task")
     prompt, system = build_generation_prompt(task)
@@ -194,6 +195,7 @@ def test_non_code_generation_emits_valid_score_zero_manifest(tmp_path):
     assert manifest.generation_error == (
         "ValueError: generation contained no SystemVerilog module declaration"
     )
+    assert manifest.harness_git == evalmodel.harness_git()
     assert not (tmp_path / "mock-garbage/toy_task/sample_1.sv").exists()
     assert summary["tasks"]["toy_task"]["scores"] == [0.0]
 

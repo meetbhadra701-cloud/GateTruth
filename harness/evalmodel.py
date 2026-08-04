@@ -12,6 +12,7 @@ from statistics import fmean
 from typing import Any
 
 from harness.atomic_write import atomic_write_text
+from harness.git_provenance import harness_git
 from harness.providers import GenParams, ProviderAdapter
 from harness.providers.pricing import worst_case_cost
 from harness.runner import SUITE_VERSION, TaskPackage, resolve_task, run_task, runtime_docker_digest
@@ -537,6 +538,7 @@ def _zero_manifest(
         "cost_usd": float(usage["cost_usd"]),
         "prompt_version": PROMPT_VERSION,
         "timestamp": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        "harness_git": harness_git(),
         "signature": "0" * 64,
     }
     if generation_error is not None:

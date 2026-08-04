@@ -20,6 +20,7 @@ from xml.etree import ElementTree
 from harness.atomic_write import atomic_write_text
 from harness.flows import FlowError, run_power, run_sta, run_synth
 from harness.env_compat import read_env
+from harness.git_provenance import harness_git
 from harness.hidden import (
     HIDDEN_ROOT_ENV,
     LEGACY_HIDDEN_ROOT_ENV,
@@ -569,6 +570,7 @@ def run_task(
         "tokens_out": 0,
         "cost_usd": 0.0,
         "timestamp": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        "harness_git": harness_git(),
         "signature": "0" * 64,
     }
     data["signature"] = compute_manifest_signature(data)
