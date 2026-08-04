@@ -15,6 +15,8 @@ from harness.evalmodel import (
     DEFAULT_MAX_TOKENS,
     estimate_model_cost,
     eval_model,
+    generate_model_samples,
+    score_pending_samples,
     task_ids_for_tier,
 )
 from harness.providers.anthropic import AnthropicProvider
@@ -89,6 +91,54 @@ def build_parser() -> argparse.ArgumentParser:
         help="print worst-case cost without provider calls or output files",
     )
     eval_model_parser.add_argument("--script", help="JSON list of raw completions for mock")
+
+    generate_model_parser = sub.add_parser(
+        "generate-model",
+        help=(
+            "Track A phase 1: call a provider and persist pending generations only -- "
+            "never executes a submission. Run in a network-enabled environment."
+        ),
+    )
+    gen_selection = generate_model_parser.add_mutually_exclusive_group(required=True)
+    gen_selection.add_argument("--tasks", help="comma-separated Track A task ids")
+    gen_selection.add_argument("--tier", choices=["T1", "T2", "T3", "all"])
+    generate_model_parser.add_argument(
+        "--provider",
+        choices=["mock", "anthropic", "openai", "openrouter"],
+        required=True,
+    )
+    generate_model_parser.add_argument("--model", required=True)
+    generate_model_parser.add_argument("--out", required=True)
+    generate_model_parser.add_argument("--samples", type=int, default=1)
+    generate_model_parser.add_argument("--temperature", type=float, default=0.0)
+    generate_model_parser.add_argument(
+        "--max-tokens",
+        type=int,
+        default=DEFAULT_MAX_TOKENS,
+        help="maximum output tokens per model generation",
+    )
+    generate_model_parser.add_argument("--official", action="store_true")
+    generate_model_parser.add_argument(
+        "--estimate-only",
+        action="store_true",
+        help="print worst-case cost without provider calls or output files",
+    )
+    generate_model_parser.add_argument("--script", help="JSON list of raw completions for mock")
+
+    score_model_parser = sub.add_parser(
+        "score-model",
+        help=(
+            "Track A phase 2: score generate-model's pending output through run_task() -- "
+            "never constructs a provider or touches the network. Run with --network none."
+        ),
+    )
+    score_selection = score_model_parser.add_mutually_exclusive_group(required=True)
+    score_selection.add_argument("--tasks", help="comma-separated Track A task ids")
+    score_selection.add_argument("--tier", choices=["T1", "T2", "T3", "all"])
+    score_model_parser.add_argument("--model", required=True)
+    score_model_parser.add_argument("--out", required=True, help="same --out directory generate-model wrote to")
+    score_model_parser.add_argument("--samples", type=int, default=1)
+    score_model_parser.add_argument("--official", action="store_true")
 
     eval_agent_parser = sub.add_parser("eval-agent", help="run Track B agent evaluation")
     agent_selection = eval_agent_parser.add_mutually_exclusive_group(required=True)
@@ -260,6 +310,99 @@ def main(argv: list[str] | None = None) -> int:
         print(f"summary_signature={summary['signature']}")
         print(f"aggregate_mean={summary['aggregate_mean']}")
         print(f"cost_usd={summary['cost_usd']}")
+        return 0
+    if args.command == "generate-model":
+        if args.samples < 1:
+            print("--samples must be at least 1", file=sys.stderr)
+            return 2
+        if args.temperature < 0:
+            print("--temperature must be nonnegative", file=sys.stderr)
+            return 2
+        if args.max_tokens < 1:
+            print("--max-tokens must be at least 1", file=sys.stderr)
+            return 2
+        if args.tasks:
+            task_ids = [task.strip() for task in args.tasks.split(",") if task.strip()]
+            if not task_ids:
+                print("--tasks must contain at least one task id", file=sys.stderr)
+                return 2
+        else:
+            task_ids = task_ids_for_tier(args.tier)
+        try:
+            if args.estimate_only:
+                estimate = estimate_model_cost(
+                    task_ids,
+                    args.provider,
+                    args.model,
+                    samples=args.samples,
+                    official=args.official,
+                    max_tokens=args.max_tokens,
+                )
+                print("estimate_only=true")
+                print(f"tasks_requested={len(task_ids)}")
+                print(f"projected_total_usd={estimate:.6f}")
+                return 0
+            if args.provider == "mock":
+                if not args.script:
+                    print("--script is required for provider mock", file=sys.stderr)
+                    return 2
+                responses = json.loads(Path(args.script).read_text(encoding="utf-8"))
+                if not isinstance(responses, list):
+                    print("mock completion script must be a JSON list", file=sys.stderr)
+                    return 2
+                provider = MockCompletionProvider(
+                    responses,
+                    model=args.model,
+                    temperature=args.temperature,
+                )
+            else:
+                providers = {
+                    "anthropic": AnthropicProvider,
+                    "openai": OpenAIProvider,
+                    "openrouter": OpenRouterProvider,
+                }
+                provider = providers[args.provider](
+                    args.model,
+                    temperature=args.temperature,
+                )
+            result = generate_model_samples(
+                task_ids,
+                provider,
+                out_dir=args.out,
+                samples=args.samples,
+                official=args.official,
+                max_tokens=args.max_tokens,
+            )
+        except (OSError, ValueError, SpendCapExceeded) as exc:
+            print(f"generate-model refused: {exc}", file=sys.stderr)
+            return 2
+        print(result["model_root"])
+        print(f"tasks_generated={len(result['task_ids'])}")
+        return 0
+    if args.command == "score-model":
+        if args.samples < 1:
+            print("--samples must be at least 1", file=sys.stderr)
+            return 2
+        if args.tasks:
+            task_ids = [task.strip() for task in args.tasks.split(",") if task.strip()]
+            if not task_ids:
+                print("--tasks must contain at least one task id", file=sys.stderr)
+                return 2
+        else:
+            task_ids = task_ids_for_tier(args.tier)
+        try:
+            summary = score_pending_samples(
+                task_ids,
+                out_dir=args.out,
+                model=args.model,
+                samples=args.samples,
+                official=args.official,
+            )
+        except (OSError, ValueError) as exc:
+            print(f"score-model refused: {exc}", file=sys.stderr)
+            return 2
+        print(f"summary_signature={summary['signature']}")
+        print(f"aggregate_mean={summary['aggregate_mean']}")
         return 0
     if args.command == "eval-agent":
         if args.tasks:

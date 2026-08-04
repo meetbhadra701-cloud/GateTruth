@@ -20,6 +20,7 @@ from harness.providers.retry import generate_with_transport_retry
 from harness.runner import SUITE_VERSION, TaskPackage, resolve_task, run_task, runtime_docker_digest
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import ResultManifest, TemperatureSetting
+from harness.schemas.pending import PendingGeneration, load_pending_generation
 from harness.schemas.task_yaml import load_task_yaml
 from harness.spend import DEFAULT_SPEND_PATH, SpendCapExceeded, load_spend, spend_cap_from_env
 from harness.sv_mask import mask_code
@@ -345,6 +346,351 @@ def eval_model(
     summary["signature"] = compute_manifest_signature(summary)
     atomic_write_text(model_root / "summary.json", json.dumps(summary, indent=2) + "\n")
     return summary
+
+
+def generate_model_samples(
+    task_ids: list[str],
+    provider: ProviderAdapter,
+    *,
+    out_dir: str | Path,
+    samples: int = 1,
+    official: bool = False,
+    max_tokens: int = DEFAULT_MAX_TOKENS,
+) -> dict[str, Any]:
+    """Phase 1 of the generate/score security split: call the provider and persist
+    each sample's extracted submission plus a signed PendingGeneration record, without
+    ever executing the submission through lint/sim/formal. Neither this repo's pinned
+    sandbox flags nor this host's kernel let an unprivileged process drop its own
+    network mid-run (unshare --net and unshare --user --net both fail under
+    --cap-drop=ALL), so isolating untrusted-code execution from network access means
+    running this phase and score_pending_samples() as genuinely separate processes:
+    this one in a network-enabled environment, the other with --network none and no
+    provider credentials at all. eval_model()'s combined single-process flow is
+    unchanged and remains available for local/dev use where that isolation adds
+    nothing but overhead.
+    """
+
+    if not task_ids:
+        raise ValueError("at least one task is required")
+    if len(task_ids) != len(set(task_ids)):
+        raise ValueError("task ids must be unique")
+    if samples < 1:
+        raise ValueError("samples must be at least 1")
+    if max_tokens < 1:
+        raise ValueError("max_tokens must be at least 1")
+    model = str(getattr(provider, "model", "unknown-model"))
+    provider_name = str(getattr(provider, "name", provider.__class__.__name__.lower()))
+    temperature = _recorded_temperature(provider)
+    if not model or not provider_name:
+        raise ValueError("provider and model names must be nonempty")
+
+    plans = [_plan_task(task_id, official=official) for task_id in task_ids]
+    estimate, remaining = _preflight_cost(plans, provider, samples, max_tokens)
+    print(f"pre_run_estimate_usd={estimate:.6f}")
+    print(f"remaining_spend_cap_usd={remaining:.6f}")
+    if estimate > remaining + 1e-12:
+        raise SpendCapExceeded(
+            f"pre-run estimate {estimate:.6f} exceeds remaining cap {remaining:.6f}"
+        )
+
+    model_root = Path(out_dir) / _safe_component(model)
+    model_root.mkdir(parents=True, exist_ok=True)
+
+    for plan in plans:
+        task_dir = model_root / plan.task.task_id
+        task_dir.mkdir(parents=True, exist_ok=True)
+        for sample_number in range(1, samples + 1):
+            pending_path = task_dir / f"sample_{sample_number}.pending.json"
+            source_path = task_dir / f"sample_{sample_number}.sv"
+            started = time.perf_counter()
+            if plan.skip_reason is not None:
+                pending = _pending_record(
+                    plan.task.task_id,
+                    provider_name=provider_name,
+                    model=model,
+                    temperature=temperature,
+                    usage=_empty_usage(),
+                    wall_clock_s=time.perf_counter() - started,
+                    max_output_tokens=max_tokens,
+                    official_skip_reason=plan.skip_reason,
+                )
+                _write_pending(pending, pending_path)
+                continue
+
+            prompt, system = build_generation_prompt(plan.task)
+            response, call_error, usage, finish_reason = _call_once(
+                provider, prompt, system, max_tokens=max_tokens
+            )
+            if call_error is not None:
+                # See eval_model()'s identical comment: a stale sidecar from a prior
+                # campaign into this same (gitignored, reused) directory must not be
+                # left looking like this attempt's output.
+                source_path.unlink(missing_ok=True)
+                pending = _pending_record(
+                    plan.task.task_id,
+                    provider_name=provider_name,
+                    model=model,
+                    temperature=temperature,
+                    usage=usage,
+                    wall_clock_s=time.perf_counter() - started,
+                    max_output_tokens=max_tokens,
+                    provider_finish_reason=finish_reason,
+                    generation_error=call_error,
+                )
+                _write_pending(pending, pending_path)
+                continue
+
+            try:
+                source = extract_module_source(
+                    response or "", expected_module=plan.task.top_module
+                )
+            except Exception as exc:
+                source_path.unlink(missing_ok=True)
+                pending = _pending_record(
+                    plan.task.task_id,
+                    provider_name=provider_name,
+                    model=model,
+                    temperature=temperature,
+                    usage=usage,
+                    wall_clock_s=time.perf_counter() - started,
+                    max_output_tokens=max_tokens,
+                    provider_finish_reason=finish_reason,
+                    generation_error=f"{type(exc).__name__}: {exc}",
+                )
+                _write_pending(pending, pending_path)
+                continue
+
+            atomic_write_text(source_path, source)
+            pending = _pending_record(
+                plan.task.task_id,
+                provider_name=provider_name,
+                model=model,
+                temperature=temperature,
+                usage=usage,
+                wall_clock_s=time.perf_counter() - started,
+                max_output_tokens=max_tokens,
+                provider_finish_reason=finish_reason,
+                submission_sha256=hashlib.sha256(source.encode("utf-8")).hexdigest(),
+            )
+            _write_pending(pending, pending_path)
+
+    return {"model_root": str(model_root), "model": model, "task_ids": task_ids, "samples_per_task": samples}
+
+
+def score_pending_samples(
+    task_ids: list[str],
+    *,
+    out_dir: str | Path,
+    model: str,
+    samples: int = 1,
+    official: bool = False,
+) -> dict[str, Any]:
+    """Phase 2 of the generate/score security split: read the PendingGeneration
+    records and sidecars generate_model_samples() wrote, score every real submission
+    through run_task(), and emit the same signed ResultManifest + summary.json
+    eval_model() would have produced directly. Never calls a provider -- run this
+    phase with --network none and no provider credentials in the environment at all.
+    """
+
+    if not task_ids:
+        raise ValueError("at least one task is required")
+    if len(task_ids) != len(set(task_ids)):
+        raise ValueError("task ids must be unique")
+    if samples < 1:
+        raise ValueError("samples must be at least 1")
+
+    model_root = Path(out_dir) / _safe_component(model)
+    if not model_root.is_dir():
+        raise ValueError(f"no pending generations found under {model_root}")
+
+    summary_tasks: dict[str, Any] = {}
+    all_scores: list[float] = []
+    total_tokens_in = 0
+    total_tokens_out = 0
+    total_cost_usd = 0.0
+    provider_name: str | None = None
+    temperature: TemperatureSetting | None = None
+
+    for task_id in task_ids:
+        task = resolve_task(task_id)
+        task_dir = model_root / task_id
+        sample_records: list[dict[str, Any]] = []
+        scores: list[float] = []
+        task_skip_reason: str | None = None
+        for sample_number in range(1, samples + 1):
+            pending_path = task_dir / f"sample_{sample_number}.pending.json"
+            manifest_path = task_dir / f"sample_{sample_number}.json"
+            if not pending_path.is_file():
+                raise ValueError(f"no pending generation found: {pending_path}")
+            pending = load_pending_generation(pending_path)
+            if pending.task_id != task_id:
+                raise ValueError(
+                    f"{pending_path}: pending task_id {pending.task_id!r} != {task_id!r}"
+                )
+            if sample_number == 1:
+                task_skip_reason = pending.official_skip_reason
+            elif pending.official_skip_reason != task_skip_reason:
+                raise ValueError(
+                    f"{pending_path}: official_skip_reason {pending.official_skip_reason!r} "
+                    f"differs from sample 1's {task_skip_reason!r} for the same task -- "
+                    "the generate phase must have skipped every sample of a task identically"
+                )
+            provider_name = pending.provider
+            temperature = pending.temperature
+            usage: dict[str, int | float] = {
+                "tokens_in": pending.tokens_in,
+                "tokens_out": pending.tokens_out,
+                "cost_usd": pending.cost_usd,
+            }
+
+            if pending.official_skip_reason is not None:
+                manifest = _zero_manifest(
+                    task,
+                    provider_name=pending.provider,
+                    model=pending.model,
+                    temperature=pending.temperature,
+                    usage=usage,
+                    wall_clock_s=pending.wall_clock_s,
+                    max_output_tokens=pending.max_output_tokens,
+                    official_skip_reason=pending.official_skip_reason,
+                )
+            elif pending.generation_error is not None:
+                manifest = _zero_manifest(
+                    task,
+                    provider_name=pending.provider,
+                    model=pending.model,
+                    temperature=pending.temperature,
+                    usage=usage,
+                    wall_clock_s=pending.wall_clock_s,
+                    max_output_tokens=pending.max_output_tokens,
+                    provider_finish_reason=pending.provider_finish_reason,
+                    generation_error=pending.generation_error,
+                )
+            else:
+                source_path = task_dir / f"sample_{sample_number}.sv"
+                if not source_path.is_file():
+                    raise ValueError(f"pending generation has no sidecar: {source_path}")
+                actual_sha256 = hashlib.sha256(source_path.read_bytes()).hexdigest()
+                if (
+                    pending.submission_sha256 is not None
+                    and actual_sha256 != pending.submission_sha256
+                ):
+                    raise ValueError(
+                        f"{source_path}: submission does not match the generate phase's "
+                        "recorded submission_sha256 -- tampered between phases?\n"
+                        f"  recorded: {pending.submission_sha256}\n"
+                        f"  actual:   {actual_sha256}"
+                    )
+                scored = run_task(task_id, source_path, manifest_path, official=official)
+                manifest = _merge_generation_fields(
+                    scored,
+                    provider_name=pending.provider,
+                    model=pending.model,
+                    temperature=pending.temperature,
+                    usage=usage,
+                    max_output_tokens=pending.max_output_tokens,
+                    provider_finish_reason=pending.provider_finish_reason,
+                )
+            _write_manifest(manifest, manifest_path)
+
+            total_tokens_in += manifest.tokens_in
+            total_tokens_out += manifest.tokens_out
+            total_cost_usd += manifest.cost_usd
+            scores.append(manifest.task_score)
+            if pending.official_skip_reason is None:
+                all_scores.append(manifest.task_score)
+            sample_records.append(
+                {
+                    "sample": sample_number,
+                    "score": manifest.task_score,
+                    "manifest": f"{task_id}/sample_{sample_number}.json",
+                    "manifest_signature": manifest.signature,
+                }
+            )
+
+        task_entry: dict[str, Any] = {
+            "scores": scores,
+            "mean_score": float(fmean(scores)),
+            "samples": sample_records,
+            "skipped": task_skip_reason is not None,
+        }
+        if task_skip_reason is not None:
+            task_entry["skip_reason"] = task_skip_reason
+        summary_tasks[task_id] = task_entry
+
+    if provider_name is None or temperature is None:
+        raise ValueError("no samples were scored")
+
+    summary: dict[str, Any] = {
+        "suite_version": SUITE_VERSION,
+        "prompt_version": PROMPT_VERSION,
+        "provider": provider_name,
+        "model": model,
+        "temperature": temperature,
+        "official": official,
+        "samples_per_task": samples,
+        "task_ids": task_ids,
+        "tasks": summary_tasks,
+        "aggregate_mean": float(fmean(all_scores)) if all_scores else 0.0,
+        "tokens_in": total_tokens_in,
+        "tokens_out": total_tokens_out,
+        "cost_usd": round(total_cost_usd, 12),
+        "pre_run_estimate_usd": 0.0,
+        "timestamp": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        "signature": "0" * 64,
+    }
+    summary["signature"] = compute_manifest_signature(summary)
+    atomic_write_text(model_root / "summary.json", json.dumps(summary, indent=2) + "\n")
+    return summary
+
+
+def _pending_record(
+    task_id: str,
+    *,
+    provider_name: str,
+    model: str,
+    temperature: TemperatureSetting,
+    usage: dict[str, int | float],
+    wall_clock_s: float,
+    max_output_tokens: int,
+    provider_finish_reason: str | None = None,
+    submission_sha256: str | None = None,
+    generation_error: str | None = None,
+    official_skip_reason: str | None = None,
+) -> PendingGeneration:
+    data: dict[str, Any] = {
+        "task_id": task_id,
+        "suite_version": SUITE_VERSION,
+        "prompt_version": PROMPT_VERSION,
+        "provider": provider_name,
+        "model": model,
+        "temperature": temperature,
+        "tokens_in": int(usage["tokens_in"]),
+        "tokens_out": int(usage["tokens_out"]),
+        "cost_usd": float(usage["cost_usd"]),
+        "max_output_tokens": max_output_tokens,
+        "wall_clock_s": round(max(0.0, wall_clock_s), 6),
+        "harness_git": harness_git(),
+        "timestamp": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        "signature": "0" * 64,
+    }
+    if provider_finish_reason is not None:
+        data["provider_finish_reason"] = provider_finish_reason
+    if submission_sha256 is not None:
+        data["submission_sha256"] = submission_sha256
+    if generation_error is not None:
+        data["generation_error"] = generation_error
+    if official_skip_reason is not None:
+        data["official_skip_reason"] = official_skip_reason
+    data["signature"] = compute_manifest_signature(data)
+    return PendingGeneration.model_validate(data)
+
+
+def _write_pending(pending: PendingGeneration, path: Path) -> None:
+    atomic_write_text(
+        path,
+        json.dumps(pending.model_dump(mode="json", exclude_none=True), indent=2) + "\n",
+    )
 
 
 def _plan_task(task_id: str, *, official: bool) -> EvalPlan:
