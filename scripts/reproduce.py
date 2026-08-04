@@ -25,6 +25,10 @@ from harness.schemas.canonical_json import (  # noqa: E402
 from harness.schemas.manifest import ResultManifest  # noqa: E402
 
 GENERATION_FIELDS = (
+    # Facts about how the submission was *generated*, not how it was *scored*. run_task()
+    # (what this script reruns) only scores an already-given submission file -- it has no way
+    # to independently re-derive what a model call originally requested or which provider
+    # answered, so these are trusted from the recorded manifest rather than compared.
     "provider",
     "model",
     "temperature",
@@ -32,6 +36,13 @@ GENERATION_FIELDS = (
     "tokens_out",
     "cost_usd",
     "prompt_version",
+    "max_output_tokens",
+    "provider_finish_reason",
+    # Which harness commit produced the *original* run. A legitimate reproduction on a later
+    # harness commit (unrelated fixes elsewhere, e.g. doc or comment changes) should still be
+    # able to confirm a MATCH on the scoring math -- this field records provenance of the code
+    # that ran, not a property of the score itself, so it is not part of what must match.
+    "harness_git",
 )
 
 
@@ -122,19 +133,17 @@ def reproduce_manifest(
     manifest_path: str | Path,
     *,
     submission: str | Path | None = None,
-    official: bool = False,
+    official: bool | None = None,
 ) -> tuple[bool, str]:
     """Re-run one signed manifest and return whether its canonical payload matches.
 
-    A per-sample manifest does not itself record whether it was scored under
-    --official (only the aggregate summary.json does), so this cannot be
-    detected automatically. Pass official=True when reproducing a manifest
-    that was originally scored officially -- against public tests only
-    (official=False, the default) it cannot reproduce a hidden-gated
-    verdict, and will most likely report a spurious MISMATCH rather than
-    confirm or refute the recorded result. official=True additionally
-    requires GATETRUTH_HIDDEN_ROOT to be mounted; without it, reproduction
-    fails closed rather than silently falling back to public tests.
+    official=None (the default) infers the original scoring mode from the manifest itself:
+    hidden_module_sha256 is only ever recorded when a real hidden-vector mount was resolved
+    and merged during an official run (harness/runner.py's _prepare_sim_tests()), so its
+    presence is direct evidence official scoring happened, not an assumption. Pass an explicit
+    True/False to override this inference. Reproducing under official=True additionally
+    requires GATETRUTH_HIDDEN_ROOT to be mounted; without it, reproduction fails closed rather
+    than silently falling back to public tests.
     """
 
     path = Path(manifest_path).resolve()
@@ -147,10 +156,13 @@ def reproduce_manifest(
         original,
         Path(submission) if submission is not None else None,
     )
+    resolved_official = (
+        official if official is not None else original.hidden_module_sha256 is not None
+    )
 
     with tempfile.TemporaryDirectory(prefix="gatetruth-reproduce-") as temp:
         rerun = run_task(
-            original.task_id, source, Path(temp) / "manifest.json", official=official
+            original.task_id, source, Path(temp) / "manifest.json", official=resolved_official
         )
 
     recorded_payload = manifest_signature_payload(raw)
@@ -159,11 +171,13 @@ def reproduce_manifest(
     if rerun_signature == original.signature:
         return True, (
             f"MATCH task={original.task_id} submission={source} "
-            f"signature={original.signature}"
+            f"official={resolved_official} signature={original.signature}"
         )
     diff = _payload_diff(recorded_payload, rerun_payload)
     return False, (
         "MISMATCH: reproduced canonical manifest differs\n"
+        f"  official mode used: {resolved_official}"
+        f"{' (inferred from hidden_module_sha256)' if official is None else ' (explicit)'}\n"
         f"  recorded signature:   {original.signature}\n"
         f"  reproduced signature: {rerun_signature}\n"
         f"{diff}"
@@ -181,14 +195,16 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--official",
-        action="store_true",
+        dest="official",
+        action=argparse.BooleanOptionalAction,
+        default=None,
         help=(
-            "reproduce a manifest that was originally scored with --official "
-            "(requires GATETRUTH_HIDDEN_ROOT). Without this flag, reproduction "
-            "only covers non-official, public-test-only manifests -- passing "
-            "an official manifest without it will not reproduce the "
-            "hidden-gated verdict and will most likely report a spurious "
-            "MISMATCH rather than confirm or refute the recorded result."
+            "force official/non-official reproduction mode. Default: infer from the "
+            "manifest itself (hidden_module_sha256 present means the original run was "
+            "official; requires GATETRUTH_HIDDEN_ROOT to be mounted to reproduce it). "
+            "Older manifests predating that field fall back to non-official, matching "
+            "the previous default -- pass --official explicitly to reproduce those "
+            "under official mode."
         ),
     )
     args = parser.parse_args(argv)

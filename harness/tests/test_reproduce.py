@@ -71,15 +71,13 @@ def test_resigned_tampered_score_is_detected(
     assert '"task_score": 66.66666666666667' in result.stderr
 
 
-def test_official_flag_is_required_to_reproduce_an_official_manifest(
+def test_forced_official_flag_without_hidden_root_fails_closed(
     fresh_reference_manifest: Path,
 ) -> None:
-    """The per-sample manifest schema has no field recording whether it was
-    scored under --official (see reproduce_manifest's docstring), so the
-    caller must say so explicitly. Reproducing an official-mode result
-    without --official, or with it but no hidden root mounted, must not
-    silently report a false MATCH -- it must fail closed as a MISMATCH
-    (or a refusal), never a false positive."""
+    """fresh_reference_manifest was produced non-officially, so auto-inference alone
+    would already choose official=False here -- this test specifically forces
+    --official to prove the explicit-override path also fails closed rather than
+    silently reporting a false MATCH when no hidden root is mounted."""
 
     import os
 
@@ -88,6 +86,59 @@ def test_official_flag_is_required_to_reproduce_an_official_manifest(
     env.pop("SILICONBENCH_HIDDEN_ROOT", None)
 
     result = _run_reproducer(fresh_reference_manifest, official=True, env=env)
+
+    assert result.returncode != 0
+    assert "MATCH task=" not in result.stdout
+
+
+def test_official_mode_is_inferred_from_hidden_module_sha256_without_the_flag(
+    tmp_path_factory: pytest.TempPathFactory,
+) -> None:
+    """The manifest schema now records hidden_module_sha256 whenever a real
+    hidden-vector mount was resolved during an official run -- reproduce.py should
+    use that to infer official mode automatically, not require the caller to
+    separately remember and pass --official."""
+
+    import os
+
+    hidden_root = REPO_ROOT.parent / "codex-SB-101" / "build" / "hidden-staging"
+    if not hidden_root.is_dir():
+        pytest.skip("real hidden-staging tree not present on this machine")
+
+    env = dict(os.environ)
+    env["GATETRUTH_HIDDEN_ROOT"] = str(hidden_root)
+
+    official_path = tmp_path_factory.mktemp("reproduce-official") / "official.json"
+    subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "from harness.runner import run_task; import sys; "
+            f"run_task({TASK_ID!r}, {str(REFERENCE)!r}, {str(official_path)!r}, official=True)",
+        ],
+        cwd=REPO_ROOT,
+        env=env,
+        check=True,
+        timeout=120,
+    )
+    recorded = json.loads(official_path.read_text(encoding="utf-8"))
+    assert recorded["hidden_module_sha256"], "fixture setup did not actually score officially"
+
+    # No --official flag passed; auto-inference must still choose official=True and
+    # therefore still require (and here, receive) the hidden root to reproduce correctly.
+    result = _run_reproducer(official_path, env=env)
+
+    assert result.returncode == 0, result.stderr
+    assert f"MATCH task={TASK_ID}" in result.stdout
+    assert "official=True" in result.stdout
+
+    # Same manifest, no hidden root this time, still no --official flag: auto-inference
+    # must still choose official=True from hidden_module_sha256 alone and therefore still
+    # fail closed, not silently fall back to a non-official (and therefore vacuous) match.
+    env_without_root = dict(os.environ)
+    env_without_root.pop("GATETRUTH_HIDDEN_ROOT", None)
+    env_without_root.pop("SILICONBENCH_HIDDEN_ROOT", None)
+    result = _run_reproducer(official_path, env=env_without_root)
 
     assert result.returncode != 0
     assert "MATCH task=" not in result.stdout
