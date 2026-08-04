@@ -26,14 +26,14 @@
       "stage": 3,
       "name": "synth",
       "status": "pass",
-      "area_um2": 10.0,
+      "area_um2": 128.8736,
       "cell_count": 12
     },
     {
       "stage": 4,
       "name": "sta",
       "status": "pass",
-      "wns_ns": 0.1,
+      "wns_ns": 7.551421035551674,
       "tns_ns": 0.0,
       "fmax_mhz": 100.0
     },
@@ -41,7 +41,7 @@
       "stage": 5,
       "name": "power",
       "status": "pass",
-      "power_mw": 1.0
+      "power_mw": 0.0004911468070000001
     },
     {
       "stage": 6,
@@ -60,5 +60,5 @@
   "tokens_out": 0,
   "cost_usd": 0.0,
   "timestamp": "2026-07-08T00:00:00Z",
-  "signature": "f5ae0029d6fbf014e81220f79b4ce3203fbf724982e3e46b0970f126f9b5c480"
+  "signature": "09406b44ddb1db09b0189795cfb253fb8a4ac995a31545e5c4722cf86f8bb71f"
 }

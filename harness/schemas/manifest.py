@@ -98,8 +98,15 @@ class StageResult(BaseModel):
 
         if self.stage == 1 and self.status == "pass":
             if self.tests_passed is not None and self.tests_run is not None:
-                if self.tests_passed > self.tests_run:
-                    raise ValueError("tests_passed cannot exceed tests_run")
+                if self.tests_run < 1:
+                    raise ValueError(
+                        "a passing simulation stage must have run at least one test"
+                    )
+                if self.tests_passed != self.tests_run:
+                    raise ValueError(
+                        "a passing simulation stage must have every run test pass "
+                        "(tests_passed must equal tests_run)"
+                    )
 
         return self
 

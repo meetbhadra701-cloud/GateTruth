@@ -111,12 +111,22 @@ def task_score_from_ppa(ppa: float) -> float:
 
 
 def correctness_gates_passed(manifest: ResultManifest) -> bool:
-    required = {0, 1, 2}
+    """Lint (0) and simulation (1) must have actually run and passed; only formal
+    (2) may legitimately be skip -- it is the one gate task.yaml can opt a task out
+    of. Treating an unexecuted lint or sim stage as equivalent to a passing one
+    would let a manifest score nonzero without either gate ever having run."""
+
     stages = {stage.stage: stage for stage in manifest.stages}
+    mandatory_pass = {0, 1}
+    optional_skip = {2}
+    if any(
+        stages.get(stage) is None or stages[stage].status != "pass"
+        for stage in mandatory_pass
+    ):
+        return False
     return all(
-        stages.get(stage) is not None
-        and stages[stage].status in {"pass", "skip"}
-        for stage in required
+        stages.get(stage) is not None and stages[stage].status in {"pass", "skip"}
+        for stage in optional_skip
     )
 
 
@@ -130,14 +140,39 @@ def ppa_gates_passed(manifest: ResultManifest) -> bool:
 
 
 def score_manifest(path: str | Path) -> float:
+    """Recompute PPA from the manifest's own recorded stage metrics against the
+    task's committed reference denominator, and reject the manifest if the stored
+    `ppa`/`task_score` fields disagree -- trusting those fields directly (as this
+    function used to) means a manifest with untouched stage metrics but a hand-edited
+    ppa/task_score validates cleanly, since the canonical-JSON signature is
+    tamper-evident, not tamper-preventing: recomputing it changes nothing about
+    whether a forged pair of numbers is internally self-consistent."""
+
     manifest = load_manifest(path)
     if not correctness_gates_passed(manifest) or not ppa_gates_passed(manifest):
-        expected = 0.0
+        expected_ppa = 0.0
+        expected_score = 0.0
     else:
-        expected = task_score_from_ppa(manifest.ppa)
-    if not math.isclose(manifest.task_score, expected, abs_tol=1e-9):
+        stages = {stage.stage: stage for stage in manifest.stages}
+        synth, sta, power = stages[3], stages[4], stages[5]
+        reference = load_reference_metrics(manifest.task_id)
+        measured = PpaMetrics(
+            area_um2=float(synth.area_um2),
+            delay_ns=delay_from_wns(reference.clock_target_ns, float(sta.wns_ns)),
+            power_mw=float(power.power_mw),
+            clock_target_ns=reference.clock_target_ns,
+        )
+        expected_ppa = ppa_from_metrics(reference, measured)
+        expected_score = task_score_from_ppa(expected_ppa)
+
+    if not math.isclose(manifest.ppa, expected_ppa, rel_tol=1e-6, abs_tol=1e-9):
+        raise ValueError(
+            f"stored ppa {manifest.ppa} does not match metrics-derived ppa "
+            f"{expected_ppa}"
+        )
+    if not math.isclose(manifest.task_score, expected_score, abs_tol=1e-9):
         raise ValueError(
             f"stored task_score {manifest.task_score} does not match "
-            f"ppa-derived score {expected}"
+            f"ppa-derived score {expected_score}"
         )
     return manifest.task_score
