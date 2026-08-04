@@ -209,6 +209,7 @@ def eval_model(
                 )
                 _write_manifest(manifest, manifest_path)
             else:
+                source_path = task_dir / f"sample_{sample_number}.sv"
                 prompt, system = build_generation_prompt(plan.task)
                 response, call_error, usage = _call_once(
                     provider,
@@ -217,6 +218,10 @@ def eval_model(
                     max_tokens=max_tokens,
                 )
                 if call_error is not None:
+                    # A prior run into this same (gitignored, reused-across-campaigns) directory
+                    # may have left a real .sv sidecar; a genuine transport failure this run must
+                    # not leave that stale artifact looking like this attempt's output.
+                    source_path.unlink(missing_ok=True)
                     manifest = _zero_manifest(
                         plan.task,
                         provider_name=provider_name,
@@ -228,11 +233,11 @@ def eval_model(
                     )
                     _write_manifest(manifest, manifest_path)
                 else:
+                    source = None
                     try:
                         source = extract_module_source(
                             response or "", expected_module=plan.task.top_module
                         )
-                        source_path = task_dir / f"sample_{sample_number}.sv"
                         source_path.write_text(source, encoding="utf-8")
                         if official:
                             scored = run_task(
@@ -256,6 +261,14 @@ def eval_model(
                         )
                         _write_manifest(manifest, manifest_path)
                     except Exception as exc:
+                        # extract_module_source() can throw before source is ever assigned this
+                        # run (e.g. no matching module in the response at all); in that case a
+                        # stale sidecar from a prior campaign into this same directory must not
+                        # be left looking like this attempt's output. If run_task() threw instead,
+                        # source is not None -- this run's real (if unscored) extraction is
+                        # already on disk, and we deliberately leave it rather than delete it.
+                        if source is None:
+                            source_path.unlink(missing_ok=True)
                         manifest = _zero_manifest(
                             plan.task,
                             provider_name=provider_name,

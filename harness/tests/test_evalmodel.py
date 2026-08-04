@@ -198,6 +198,51 @@ def test_non_code_generation_emits_valid_score_zero_manifest(tmp_path):
     assert summary["tasks"]["toy_task"]["scores"] == [0.0]
 
 
+class TransportFailureProvider(MockCompletionProvider):
+    """Simulates a provider-side transport error (TLS EOF, HTTP 5xx, etc.), distinct from a
+    completion that is present but not valid code."""
+
+    def generate(self, spec, interface, params):
+        raise RuntimeError("simulated transport failure")
+
+
+def test_transport_failure_removes_a_stale_sidecar_from_a_prior_campaign(tmp_path):
+    """Regression test: results/eval-16384's Gemini rows found 11 generation-error samples
+    whose .sv sidecar was byte-identical to the earlier 4096-token campaign's output into the
+    same (gitignored, reused-across-campaigns) directory -- the write path never cleared a
+    stale sidecar on a transport failure, so it looked like this run's output. A genuine
+    provider-call failure must tombstone any pre-existing sidecar, not leave it in place."""
+
+    stale_dir = tmp_path / "mock-flaky" / "toy_task"
+    stale_dir.mkdir(parents=True)
+    stale_sidecar = stale_dir / "sample_1.sv"
+    stale_sidecar.write_text("module toy_task(); /* leftover from a prior campaign */ endmodule\n")
+
+    provider = TransportFailureProvider(["unused"], model="mock-flaky")
+    provider.spend_path = tmp_path / "spend.json"
+
+    eval_model(["toy_task"], provider, out_dir=tmp_path)
+    manifest = load_manifest(manifest_path(tmp_path, "mock-flaky"))
+
+    assert manifest.generation_error is not None
+    assert manifest.task_score == 0.0
+    assert not stale_sidecar.exists()
+
+
+def test_extraction_failure_removes_a_stale_sidecar(tmp_path):
+    stale_dir = tmp_path / "mock-garbage" / "toy_task"
+    stale_dir.mkdir(parents=True)
+    stale_sidecar = stale_dir / "sample_1.sv"
+    stale_sidecar.write_text("module toy_task(); /* leftover from a prior campaign */ endmodule\n")
+
+    provider = RecordingProvider(["I cannot provide an implementation."], model="mock-garbage")
+    provider.spend_path = tmp_path / "spend.json"
+
+    eval_model(["toy_task"], provider, out_dir=tmp_path)
+
+    assert not stale_sidecar.exists()
+
+
 def test_provider_default_temperature_is_recorded_in_signed_outputs(tmp_path):
     provider = RecordingProvider(["not code"], model="claude-opus-4-8")
     provider.name = "anthropic"
