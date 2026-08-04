@@ -162,6 +162,102 @@ The generated per-design table, including zero and 100 percent kill rates, is
 [`results/summary.md`](results/summary.md). The deterministic sample is stored
 in `results/rtllm/determinism.json`.
 
+## Exact Reproduction (g2012, reported condition)
+
+Everything through "Prepare an empty writable output directory" above is shared setup --
+checkout, image build, and vendor fetch do not depend on the language-generation mode. This
+section replaces only the two `run_audit.py` invocations and the final packaging/diff step with
+their `-g2012` equivalents; `--generation-flag` defaults to `-g2001` when omitted, which is why
+the section above never passes it.
+
+```bash
+mkdir -p "$OUT/final-g2012" "$OUT/redo-g2012"
+
+docker run --rm \
+  --network none \
+  --cap-drop=ALL \
+  --security-opt no-new-privileges \
+  --memory=4g \
+  --pids-limit=512 \
+  -e GATETRUTH_GIT_COMMIT=564ac46d0d912711db799b07a42720b98588e9c1 \
+  --mount "type=bind,src=$PWD,dst=/work,readonly" \
+  --mount "type=bind,src=$OUT,dst=/output" \
+  --workdir /work \
+  gatetruth:v1 \
+  python external-audit/run_audit.py \
+    --suite rtllm \
+    --designs all \
+    --seed 20260729 \
+    --generation-flag=-g2012 \
+    --out /output/final-g2012
+```
+
+Derive the real 20% sample from the completed g2012 reports, then rerun only those designs with
+the same seed and generation flag:
+
+```bash
+SAMPLED_G2012="$(
+  docker run --rm \
+    --network none \
+    --mount "type=bind,src=$PWD,dst=/work,readonly" \
+    --mount "type=bind,src=$OUT,dst=/output" \
+    --workdir /work \
+    gatetruth:v1 \
+    python external-audit/package_results.py \
+      --final-dir /output/final-g2012 \
+      --seed 20260729 \
+      --print-sample
+)"
+
+docker run --rm \
+  --network none \
+  --cap-drop=ALL \
+  --security-opt no-new-privileges \
+  --memory=4g \
+  --pids-limit=512 \
+  -e GATETRUTH_GIT_COMMIT=564ac46d0d912711db799b07a42720b98588e9c1 \
+  --mount "type=bind,src=$PWD,dst=/work,readonly" \
+  --mount "type=bind,src=$OUT,dst=/output" \
+  --workdir /work \
+  gatetruth:v1 \
+  python external-audit/run_audit.py \
+    --suite rtllm \
+    --designs "$SAMPLED_G2012" \
+    --seed 20260729 \
+    --generation-flag=-g2012 \
+    --out /output/redo-g2012
+```
+
+Generate the summary from the raw JSON and verify every sampled report. `package_results.py`
+takes no `--generation-flag` of its own -- it reads each raw report's already-recorded `notes`
+field, written by `run_audit.py` above, rather than being told the flag a second time:
+
+```bash
+docker run --rm \
+  --network none \
+  --mount "type=bind,src=$PWD,dst=/work,readonly" \
+  --mount "type=bind,src=$OUT,dst=/output" \
+  --workdir /work \
+  gatetruth:v1 \
+  python external-audit/package_results.py \
+    --final-dir /output/final-g2012 \
+    --redo-dir /output/redo-g2012 \
+    --seed 20260729 \
+    --metadata /output/determinism-g2012.json \
+    --summary /output/summary-g2012.md
+
+diff -r external-audit/results/rtllm/final-g2012 "$OUT/final-g2012"
+diff -r external-audit/results/rtllm/redo-g2012 "$OUT/redo-g2012"
+diff external-audit/results/rtllm/determinism-g2012.json "$OUT/determinism-g2012.json"
+diff external-audit/results/summary-g2012.md "$OUT/summary-g2012.md"
+git -C external-audit/vendor/RTLLM status --porcelain
+```
+
+All five comparison/status commands must produce no output. Note the different
+`GATETRUTH_GIT_COMMIT` above (`564ac46d...`, not `5ea85d0`): every g2012-condition result records
+that longer commit as the implementation that produced it (see "Frozen Inputs"), and reproducing
+against a different harness commit is a different experiment, not a verification of this one.
+
 ## Measured Run (g2012, reported condition)
 
 The run above uses Icarus's `-g2001` language mode. The paper's headline RTLLM audit numbers
