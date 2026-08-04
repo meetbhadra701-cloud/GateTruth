@@ -13,6 +13,11 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from harness.git_provenance import harness_git  # noqa: E402
+
 RESULTS_ROOT = REPO_ROOT / "results" / "nightly"
 REFERENCE_SCORE = 66.67
 ROTATION_SIZE = 6
@@ -101,7 +106,7 @@ def run_nightly(
         "date": run_date.isoformat(),
         "duration_s": duration,
         "failures": failures,
-        "git_sha": _git_sha(root),
+        "git_sha": harness_git(repo_root=root),
         "mutation": mutation,
         "mutation_seed": 1337,
         "site": site,
@@ -214,20 +219,6 @@ def _run(command: list[str], root: Path, *, timeout_s: int) -> subprocess.Comple
     except subprocess.TimeoutExpired as exc:
         output = exc.stdout or ""
         return subprocess.CompletedProcess(command, 124, f"{output}\nTIMEOUT after {timeout_s}s")
-
-
-def _git_sha(root: Path) -> str:
-    # -c safe.directory=<root>: see paper/data/generate_tables.py's _git_sha() for why
-    # plain `git rev-parse` silently returns "unknown" here -- the same dubious-
-    # ownership refusal fires whenever this runs against a bind-mounted checkout owned
-    # by a different user than the container's, which is exactly how ci.yml stages
-    # source for every sandboxed docker run in this project.
-    result = _run(
-        ["git", "-c", f"safe.directory={root}", "rev-parse", "HEAD"],
-        root,
-        timeout_s=10,
-    )
-    return result.stdout.strip() if result.returncode == 0 else "unknown"
 
 
 def _tail(text: str, limit: int = 1000) -> str:

@@ -15,7 +15,6 @@ import pytest
 from harness.schemas.canonical_json import compute_manifest_signature
 from paper.data.generate_tables import (
     TableDataError,
-    _git_sha,
     generate_tables,
     load_agent_evaluations,
     load_evaluations,
@@ -721,27 +720,48 @@ def test_script_entrypoint_bootstraps_repo_imports(tmp_path: Path) -> None:
     ).read_text(encoding="utf-8")
 
 
-def test_git_sha_resolves_the_real_commit_even_under_dubious_ownership():
-    """_git_sha() used to shell out to plain `git rev-parse`, which refuses to run at
-    all ("detected dubious ownership") whenever the repo is owned by a different user
-    than the one running it -- exactly the situation every sandboxed docker run in
-    this project is in (the bind mount is owned by the host user, not the container's
-    uid 10001). That made every table generated inside the actual pinned sandbox this
-    project mandates silently carry "git-sha: unknown", while a plain host run (owner
-    matches, no dubious-ownership refusal) looked fine -- backwards for a provenance
-    field, since the sandboxed run is the one whose output should be trusted. Verified
-    the bug directly against a real sandboxed docker run before fixing this."""
+def test_git_sha_delegates_to_harness_git_not_its_own_implementation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """generate_tables.py used to shell out to plain `git rev-parse` itself, which
+    refuses to run at all ("detected dubious ownership") whenever the repo is owned by
+    a different user than the one running it -- exactly every sandboxed docker run in
+    this project. That made every real table generated inside the pinned sandbox this
+    project mandates silently carry "git-sha: unknown". Fixed by deleting that
+    duplicate, inferior implementation entirely and delegating to
+    harness.git_provenance.harness_git(), which already has its own dedicated test
+    suite (harness/tests/test_git_provenance.py) covering the dubious-ownership case
+    directly. This test only proves the delegation actually happened -- an env var
+    harness_git() honors changes what generate_tables() writes, which a leftover local
+    reimplementation would not react to.
 
-    sha = _git_sha(REPO_ROOT)
+    This also documents a real, separate limitation surfaced while verifying this fix
+    by hand: a `git archive` snapshot (docs/SECURE_EXECUTION.md's own staging
+    convention, used by ci.yml/pages.yml/nightly.yml) has no .git/ at all, so no git
+    invocation -- dubious-ownership-safe or not -- can recover a real sha there. Real
+    provenance in that environment requires GATETRUTH_GIT_COMMIT or GITHUB_SHA to be
+    passed through to the container, which harness_git() already checks first."""
 
-    assert sha != "unknown"
-    assert len(sha) == 12
-    assert all(c in "0123456789abcdef" for c in sha)
-    expected = subprocess.run(
-        ["git", "-c", f"safe.directory={REPO_ROOT}", "rev-parse", "--short=12", "HEAD"],
-        cwd=REPO_ROOT,
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout.strip()
-    assert sha == expected
+    monkeypatch.delenv("GATETRUTH_GIT_COMMIT", raising=False)
+    monkeypatch.delenv("SILICONBENCH_GIT_COMMIT", raising=False)
+    monkeypatch.delenv("GITHUB_SHA", raising=False)
+    monkeypatch.setenv("GATETRUTH_GIT_COMMIT", "abc123def456abc123def456abc123def456abc")
+
+    tasks, refs, mutations, evaluations, agent_evaluations, agent_tasks = _build_fixture(
+        tmp_path
+    )
+    output = tmp_path / "out"
+    generate_tables(
+        out_dir=output,
+        tasks_root=tasks,
+        refs_dir=refs,
+        mutation_dir=mutations,
+        eval_dir=evaluations,
+        agent_eval_dir=agent_evaluations,
+        agent_tasks_root=agent_tasks,
+        generated_date=date(2026, 1, 2),
+    )
+
+    assert "git-sha: abc123def456abc123def456abc123def456abc" in (
+        output / "eval_table.tex"
+    ).read_text(encoding="utf-8")

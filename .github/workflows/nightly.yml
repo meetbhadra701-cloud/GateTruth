@@ -59,10 +59,19 @@ jobs:
         # -e GATETRUTH_DOCKER_DIGEST carries the host-verified value from the identity
         # step above; scripts/nightly.py's own manifests/reports inherit it exactly
         # like ci.yml's T1 smoke step does.
+        # -e GITHUB_SHA (set automatically by every GitHub Actions runner): unlike
+        # ci.yml/pages.yml, this workflow's checkout keeps .git/ (actions/checkout, not
+        # a git-archive re-stage), so harness_git()'s subprocess fallback could resolve
+        # a real sha here on its own -- but only once it stops hitting git's dubious-
+        # ownership refusal (bind mount owned by the runner user, not the container's
+        # uid 10001), which is exactly what P1-5's -c safe.directory= fix addresses.
+        # Passing GITHUB_SHA anyway is strictly more robust: it succeeds even if that
+        # subprocess fallback ever breaks for an unrelated reason.
         run: |
           docker run --rm --network none --cap-drop=ALL \
             --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
             -e GATETRUTH_DOCKER_DIGEST \
+            -e GITHUB_SHA \
             --mount "type=bind,src=$GITHUB_WORKSPACE,dst=/repo" \
             --workdir /repo gatetruth:v1 \
             python scripts/nightly.py \

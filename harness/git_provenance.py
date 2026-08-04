@@ -29,8 +29,19 @@ def harness_git(repo_root: Path = REPO_ROOT) -> str:
         if GIT_SHA_RE.fullmatch(value):
             return value
 
+    # -c safe.directory=<repo_root>: plain `git rev-parse` refuses to run at all
+    # ("detected dubious ownership") whenever the repo is owned by a different user
+    # than the one invoking it -- exactly the situation every sandboxed docker run in
+    # this project is in (bind mounts are owned by the host user, not the container's
+    # uid 10001). This still returns "unavailable" against a .git-free `git archive`
+    # snapshot (docs/SECURE_EXECUTION.md's own staging convention, used by
+    # ci.yml/pages.yml/nightly.yml) -- there is genuinely no repository metadata left
+    # to query there. That is exactly why GATETRUTH_GIT_COMMIT/GITHUB_SHA are checked
+    # first above: GITHUB_SHA in particular is set automatically by every GitHub
+    # Actions runner, so passing it through to the container (`-e GITHUB_SHA`) is
+    # enough to recover real provenance even from a .git-free tree.
     result = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
+        ["git", "-c", f"safe.directory={repo_root}", "rev-parse", "HEAD"],
         cwd=repo_root,
         text=True,
         stdout=subprocess.PIPE,

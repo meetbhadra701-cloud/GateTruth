@@ -27,7 +27,7 @@ All evaluation runs inside the pinned image so results are reproducible. Build i
 from the repository root:
 
 ```bash
-docker build --platform linux/amd64 -t gatetruth:v1 -f flows/Dockerfile .
+docker build --platform linux/amd64 -t gatetruth:v1 -f flows/Dockerfile flows
 ```
 
 Run the tests and linter inside the image before opening a PR:

@@ -125,7 +125,7 @@ cannot win by removing functionality.
 Build the pinned image from the repository root:
 
 ```bash
-docker build --platform linux/amd64 -t gatetruth:v1 -f flows/Dockerfile .
+docker build --platform linux/amd64 -t gatetruth:v1 -f flows/Dockerfile flows
 ```
 
 Score a reference design through the Track A pipeline:

@@ -4,9 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import platform
-import re
 import subprocess
 import sys
 from collections import Counter
@@ -22,10 +20,10 @@ for import_root in (REPO_ROOT, AUDIT_ROOT):
 from auditor import RTLLMIcarusRunner, audit_design  # noqa: E402
 from auditor.rtllm import IVERILOG  # noqa: E402
 from fetch_vendor import tree_hash  # noqa: E402
+from harness.git_provenance import harness_git  # noqa: E402
 
 DEFAULT_CATALOG = AUDIT_ROOT / "results" / "rtllm" / "sweep_report.json"
 DEFAULT_VENDOR = AUDIT_ROOT / "vendor" / "RTLLM"
-GIT_SHA_RE = re.compile(r"^[0-9a-f]{7,40}$")
 
 
 def _write_json(path: Path, value: dict[str, Any]) -> None:
@@ -41,23 +39,6 @@ def _load_catalog(path: Path) -> dict[str, Any]:
     if raw.get("benchmark") != "rtllm" or not isinstance(raw.get("designs"), list):
         raise ValueError(f"{path}: not an RTLLM compatibility catalog")
     return raw
-
-
-def _harness_git() -> str:
-    for name in ("GATETRUTH_GIT_COMMIT", "SILICONBENCH_GIT_COMMIT", "GITHUB_SHA"):
-        value = os.environ.get(name, "").lower()
-        if GIT_SHA_RE.fullmatch(value):
-            return value
-    result = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=REPO_ROOT,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
-        check=False,
-    )
-    value = result.stdout.strip().lower()
-    return value if result.returncode == 0 and GIT_SHA_RE.fullmatch(value) else "unavailable"
 
 
 def _iverilog_version() -> str:
@@ -77,7 +58,7 @@ def _iverilog_version() -> str:
 
 def _tool_versions() -> dict[str, str]:
     return {
-        "harness_git": _harness_git(),
+        "harness_git": harness_git(repo_root=REPO_ROOT),
         "iverilog": _iverilog_version(),
         "python": platform.python_version(),
     }

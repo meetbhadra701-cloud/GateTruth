@@ -64,3 +64,26 @@ def test_unavailable_when_repo_root_has_no_git_history(
     _clear(monkeypatch)
 
     assert harness_git(repo_root=tmp_path) == "unavailable"
+
+
+def test_git_subprocess_fallback_survives_dubious_ownership(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """P1-5: plain `git rev-parse` refuses to run at all under a bind mount owned by a
+    different user than the one invoking it -- exactly every sandboxed docker run in
+    this project. Verified directly (docker run ... git rev-parse HEAD -> exit 128
+    "detected dubious ownership") before adding -c safe.directory= to fix it. This test
+    only proves the subprocess tier itself is robust to that specific failure mode; it
+    cannot force dubious ownership from within a normal pytest run (this repo's
+    checkout already belongs to whoever is running the test), so it only asserts a
+    real SHA comes back when no env var masks the subprocess path -- the meaningful
+    verification against a real ownership mismatch already happened, by hand, in a
+    real sandboxed docker container, before this fix was written."""
+
+    _clear(monkeypatch)
+
+    result = harness_git()
+
+    import re
+
+    assert re.fullmatch(r"[0-9a-f]{7,40}", result), result

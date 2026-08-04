@@ -109,10 +109,16 @@ jobs:
         # value from the identity-verification step above, so the manifests this run
         # produces record docker_digest_source="env" -- an operator-verified image
         # identity, not the self-declared /etc/gatetruth-image-digest fallback.
+        # -e GITHUB_SHA (set automatically by every GitHub Actions runner, no
+        # computation needed) is the only way harness_git() can recover a real
+        # provenance commit here: $SB_SOURCE was staged via `git archive` above, which
+        # never includes .git/, so no git invocation -- however run -- can derive a sha
+        # from that tree alone (verified directly: P1-5).
         run: |
           docker run --rm --network none --cap-drop=ALL \
             --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
             -e GATETRUTH_DOCKER_DIGEST \
+            -e GITHUB_SHA \
             --mount "type=bind,src=$SB_SOURCE,dst=/work,readonly" \
             --mount "type=bind,src=$SB_OUTPUT,dst=/output" \
             --workdir /work gatetruth:v1 \

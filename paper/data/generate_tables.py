@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 import json
 import math
-import subprocess
 import sys
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
@@ -16,6 +15,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from harness.git_provenance import harness_git  # noqa: E402
 from harness.schemas.canonical_json import compute_manifest_signature  # noqa: E402
 from harness.schemas.manifest import load_manifest  # noqa: E402
 from harness.schemas.manifest_b import load_agent_manifest_b  # noqa: E402
@@ -95,7 +95,7 @@ def generate_tables(
     """Load live data and write all eight Markdown/LaTeX table artifacts."""
 
     run_date = generated_date or datetime.now(UTC).date()
-    sha = git_sha or _git_sha(REPO_ROOT)
+    sha = git_sha or harness_git(repo_root=REPO_ROOT)
     tasks = load_tasks(Path(tasks_root), Path(refs_dir))
     mutations = load_mutations(Path(mutation_dir))
     track_a_ids = frozenset(row.task_id for row in tasks)
@@ -771,23 +771,6 @@ def _optional_number(
         qualifier = "nonnegative " if nonnegative else ""
         raise TableDataError(f"{key} must be finite {qualifier}numeric or null in {path}")
     return result
-
-
-def _git_sha(root: Path) -> str:
-    # -c safe.directory=<root> (not a global `git config`) sidesteps git's dubious-
-    # ownership refusal, which fires every time this runs inside the pinned sandbox:
-    # the bind-mounted repo is owned by the host user, not the container's uid 10001.
-    # Without it this silently degraded to "unknown" on every correctly-sandboxed run
-    # -- the one this project actually mandates -- while still looking like a real
-    # value on an unsandboxed host run, which is backwards for a provenance field.
-    result = subprocess.run(
-        ["git", "-c", f"safe.directory={root}", "rev-parse", "--short=12", "HEAD"],
-        cwd=root,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    return result.stdout.strip() if result.returncode == 0 else "unknown"
 
 
 def main(argv: list[str] | None = None) -> int:
