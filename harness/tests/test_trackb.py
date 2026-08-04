@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 from pathlib import Path
@@ -37,6 +38,17 @@ def test_trackb_disqualifies_multiple_design_files(tmp_path):
     assert manifest.task_score == 0.0
     assert manifest.objective_pass is False
     assert manifest.disqualification_reason == "malformed submission: expected exactly one .sv file in design, found 2"
+    assert manifest.submission_sha256 is None
+
+
+def test_trackb_disqualified_for_other_reasons_still_hashes_the_design(tmp_path):
+    submission = copy_fixture(tmp_path)
+    tb = submission / "tb" / "test_toy_taskB.py"
+    tb.write_text(tb.read_text(encoding="utf-8") + "\n# changed by agent\n", encoding="utf-8")
+    design_bytes = (submission / "design" / "toy_trackb.sv").read_bytes()
+    manifest = run_track_b("toy_taskB", submission, tmp_path / "disq_hashed.json")
+    assert manifest.disqualified is True
+    assert manifest.submission_sha256 == hashlib.sha256(design_bytes).hexdigest()
 
 
 def test_trackb_sec_has_teeth(tmp_path):
@@ -53,7 +65,8 @@ def test_trackb_sec_has_teeth(tmp_path):
 
 def test_trackb_objective_pass_path(tmp_path):
     submission = copy_fixture(tmp_path)
-    shutil.copy2(Path("harness/tests/fixtures/toy_taskB_solution/toy_trackb.sv"), submission / "design" / "toy_trackb.sv")
+    solution = Path("harness/tests/fixtures/toy_taskB_solution/toy_trackb.sv")
+    shutil.copy2(solution, submission / "design" / "toy_trackb.sv")
     manifest = run_track_b("toy_taskB", submission, tmp_path / "solution.json")
     assert manifest.disqualified is False
     assert manifest.sec.status == "pass"
@@ -61,6 +74,7 @@ def test_trackb_objective_pass_path(tmp_path):
     assert manifest.task_score == 100.0
     assert manifest.ppa_delta.area_ratio is not None
     assert manifest.ppa_delta.area_ratio is not None
+    assert manifest.submission_sha256 == hashlib.sha256(solution.read_bytes()).hexdigest()
 
 
 def test_trackb_deterministic_signature(tmp_path):

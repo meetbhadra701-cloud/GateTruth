@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 import time
@@ -95,6 +96,12 @@ def run_track_b(
 ) -> TrackBManifest:
     package = resolve_track_b_task(task_id)
     submission_root = Path(submission_dir).resolve()
+    try:
+        submission_sha256 = hashlib.sha256(
+            single_sv_file(submission_root / "design").read_bytes()
+        ).hexdigest()
+    except (OSError, ValueError):
+        submission_sha256 = None
     start = time.perf_counter()
     logs: list[str] = []
     stages: list[dict[str, object]] = []
@@ -185,6 +192,7 @@ def run_track_b(
         "docker_digest": runtime_docker_digest(),
         "platform": "linux/amd64",
         "submission_dir": str(submission_root),
+        "submission_sha256": submission_sha256,
         "disqualified": disqualified,
         "disqualification_reason": disqualification_reason,
         "objective_type": package.objective.objective_type,

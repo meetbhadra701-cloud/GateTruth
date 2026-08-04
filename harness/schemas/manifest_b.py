@@ -90,6 +90,7 @@ class TrackBManifest(BaseModel):
     docker_digest: str = Field(pattern=DOCKER_DIGEST_RE)
     platform: Platform
     submission_dir: str = Field(min_length=1)
+    submission_sha256: str | None = Field(default=None, pattern=SHA256_HEX_RE)
     disqualified: bool
     disqualification_reason: str | None = None
     objective_type: ObjectiveType
