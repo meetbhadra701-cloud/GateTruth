@@ -4,10 +4,16 @@ from __future__ import annotations
 
 import argparse
 import re
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from harness.atomic_write import atomic_write_text  # noqa: E402
+
 HIDDEN_MARKER = "# --- HIDDEN ---"
 LOADER_IMPORT = "from harness.hidden import load_hidden"
 EXPECTED_TESTBENCHES = 68
@@ -86,7 +92,7 @@ def apply_extraction(item: Extraction) -> bool:
         repaired = _preserve_review_markers(text, hidden_text)
         if repaired == hidden_text:
             return False
-        item.hidden_path.write_text(repaired, encoding="utf-8", newline="\n")
+        atomic_write_text(item.hidden_path, repaired)
         return True
     if len(MARKER_RE.findall(text)) != 1:
         raise ValueError(f"expected one hidden marker: {item.public_path}")
@@ -98,9 +104,15 @@ def apply_extraction(item: Extraction) -> bool:
         smoke,
         _hidden_source(item, hidden),
     )
-    item.hidden_path.parent.mkdir(parents=True, exist_ok=True)
-    item.public_path.write_text(public_text, encoding="utf-8", newline="\n")
-    item.hidden_path.write_text(hidden_text, encoding="utf-8", newline="\n")
+    # Write the hidden module first and the public (git-tracked, recoverable) file
+    # second. If this process is killed between the two writes, the public source
+    # still holds its original marked content -- a re-run re-detects marker_count==1
+    # and safely redoes the whole extraction. Writing public first would instead risk
+    # stripping the only copy of the hidden section with no staged module to recover
+    # it from. Each write is itself crash-safe (temp file + fsync + rename), so neither
+    # file can end up truncated or half-written.
+    atomic_write_text(item.hidden_path, hidden_text)
+    atomic_write_text(item.public_path, public_text)
     return True
 
 
