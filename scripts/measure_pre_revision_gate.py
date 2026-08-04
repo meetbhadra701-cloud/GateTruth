@@ -21,9 +21,16 @@ Method, and why it is constructed this way:
   * Mutation runs are sequential (jobs=1), matching the certification protocol: mutation verdicts
     are not invariant to execution concurrency, so a parallel sweep could silently inflate them.
 
-Run inside the pinned image, from a scratch copy of the repo (never the working tree):
+Run inside the pinned image:
 
     python scripts/measure_pre_revision_gate.py --out pre_revision_results.json
+
+This script never writes into the checkout it is invoked from (GTFS-032): every
+restore below runs inside a disposable `git worktree` checked out fresh from HEAD,
+by re-executing this same script inside that worktree. `--restore-only` leaves the
+worktree alive and prints its path so the extraction step and a later re-run can
+continue in the same copy (pass `--worktree <path>` to reuse it); a full run always
+removes the worktree when it finishes, success or failure.
 
 Requires GATETRUTH_HIDDEN_ROOT to point at the staging tree produced by the extraction step.
 """
@@ -32,8 +39,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -87,6 +96,34 @@ def restore_pre_revision_testbench(task_id: str) -> None:
     (REPO_ROOT / tb).write_bytes(blob)
 
 
+def _create_isolated_worktree() -> Path:
+    """Check out a disposable, detached copy of HEAD.
+
+    Every destructive write in this module goes through this worktree instead of
+    the canonical checkout (GTFS-032): the caller's tree is never touched because
+    this process never resolves REPO_ROOT to it in the first place.
+    """
+    scratch_parent = Path(tempfile.mkdtemp(prefix="gatetruth-pre-revision-"))
+    worktree_dir = scratch_parent / "worktree"
+    subprocess.run(
+        ["git", "worktree", "add", "--detach", str(worktree_dir), "HEAD"],
+        cwd=REPO_ROOT,
+        check=True,
+        capture_output=True,
+    )
+    return worktree_dir
+
+
+def _remove_isolated_worktree(worktree_dir: Path) -> None:
+    subprocess.run(
+        ["git", "worktree", "remove", "--force", str(worktree_dir)],
+        cwd=REPO_ROOT,
+        check=False,
+        capture_output=True,
+    )
+    shutil.rmtree(worktree_dir.parent, ignore_errors=True)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, default=Path("pre_revision_results.json"))
@@ -96,8 +133,51 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="restore testbenches and exit, so the extraction step can run before measuring",
     )
+    parser.add_argument(
+        "--worktree",
+        type=Path,
+        default=None,
+        help="reuse an existing isolated worktree (path printed by a prior "
+        "--restore-only run) instead of creating a fresh one",
+    )
+    parser.add_argument(
+        "--allow-live-tree",
+        action="store_true",
+        help=argparse.SUPPRESS,  # internal: set only when this script re-execs itself
+    )
     args = parser.parse_args(argv)
 
+    if not args.allow_live_tree:
+        reusing = args.worktree is not None
+        worktree = args.worktree if reusing else _create_isolated_worktree()
+        child_argv = [
+            sys.executable,
+            str(worktree / "scripts" / "measure_pre_revision_gate.py"),
+            "--out",
+            str(args.out),
+            "--seed",
+            str(args.seed),
+            "--allow-live-tree",
+        ]
+        if args.restore_only:
+            child_argv.append("--restore-only")
+        result = subprocess.run(child_argv, cwd=worktree)
+
+        if reusing:
+            # Not ours to delete: the caller owns this worktree's lifecycle.
+            return result.returncode
+        if args.restore_only and result.returncode == 0:
+            print(f"pre-revision testbenches restored in isolated worktree: {worktree}")
+            print("inside that worktree, run: python scripts/freeze_extract_hidden.py --apply")
+            print(f"then continue with: --worktree {worktree}")
+            print(f"or discard it with: git worktree remove --force {worktree}")
+            return 0
+        _remove_isolated_worktree(worktree)
+        return result.returncode
+
+    # From here on, this process IS the isolated worktree: REPO_ROOT above resolved
+    # to it, computed fresh from this file's own on-disk location, so every write
+    # below is confined to the disposable copy.
     drifted = [t for t in REVISED_TASKS if not verify_reference_unchanged(t)]
     if drifted:
         print(
