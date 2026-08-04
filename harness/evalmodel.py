@@ -243,7 +243,7 @@ def eval_model(
                         source = extract_module_source(
                             response or "", expected_module=plan.task.top_module
                         )
-                        source_path.write_text(source, encoding="utf-8")
+                        atomic_write_text(source_path, source)
                         if official:
                             scored = run_task(
                                 plan.task.task_id,
