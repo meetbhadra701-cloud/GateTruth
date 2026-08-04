@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from http.client import IncompleteRead
 from io import BytesIO
 import json
@@ -88,6 +89,29 @@ def test_agentb_mock_solution_passes_objective(tmp_path):
         "sb_sim",
         "done",
     ]
+    written_design = out.with_suffix(".sv").read_text(encoding="utf-8")
+    submitted_content = load_script()[1]["content"]
+    assert written_design == submitted_content
+    assert manifest.submission_sha256 == hashlib.sha256(submitted_content.encode("utf-8")).hexdigest()
+
+
+def test_agentb_design_sidecar_preserves_crlf_bytes_exactly(tmp_path):
+    """The sidecar must be a byte-exact copy of what was hashed, not a text
+    round-trip: read_text()'s universal-newline handling silently rewrites CRLF to
+    LF, which would make the persisted .sv permanently disagree with its own
+    recorded submission_sha256 for any design containing Windows line endings."""
+
+    crlf_content = SOLUTION.read_text(encoding="utf-8").replace("\n", "\r\n")
+    script = [
+        {"tool": "write_design", "content": crlf_content},
+        {"tool": "done"},
+    ]
+    out = tmp_path / "crlf.json"
+    manifest = run_agent_task("toy_taskB", MockProvider(script), out=out)
+
+    sidecar_bytes = out.with_suffix(".sv").read_bytes()
+    assert sidecar_bytes == crlf_content.encode("utf-8")
+    assert manifest.submission_sha256 == hashlib.sha256(sidecar_bytes).hexdigest()
 
 
 def test_agentb_tool_call_budget_scores_as_is(tmp_path, monkeypatch):

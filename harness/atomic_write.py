@@ -32,3 +32,29 @@ def atomic_write_text(path: Path, content: str) -> None:
         os.replace(temp_path, path)
     finally:
         temp_path.unlink(missing_ok=True)
+
+
+def atomic_write_bytes(path: Path, content: bytes) -> None:
+    """Byte-exact counterpart to atomic_write_text.
+
+    Text mode's universal-newline handling silently rewrites CRLF to LF on read,
+    which breaks any later byte-for-byte hash comparison against the original file
+    (e.g. a submission's recorded sha256). Callers persisting a copy of a file whose
+    bytes must match a content hash need this, not atomic_write_text.
+    """
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temp_name = tempfile.mkstemp(
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        dir=path.parent,
+    )
+    temp_path = Path(temp_name)
+    try:
+        with os.fdopen(descriptor, "wb") as temp_file:
+            temp_file.write(content)
+            temp_file.flush()
+            os.fsync(temp_file.fileno())
+        os.replace(temp_path, path)
+    finally:
+        temp_path.unlink(missing_ok=True)

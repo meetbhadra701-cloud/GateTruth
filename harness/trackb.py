@@ -110,6 +110,8 @@ def run_track_b(
     disqualified = False
     disqualification_reason = None
     objective_pass = False
+    hidden_module_sha256: str | None = None
+    hidden_test_count: int | None = None
     sim_task = TaskPackage(
         task_id=package.task_id,
         root=package.root,
@@ -150,7 +152,7 @@ def run_track_b(
             stages.append(stage)
             logs.append(log)
             if stage["status"] == "pass":
-                stage, log, _hidden_sha256, _hidden_test_count = run_sim(
+                stage, log, hidden_module_sha256, hidden_test_count = run_sim(
                     sim_task,
                     design,
                     work_root,
@@ -193,6 +195,8 @@ def run_track_b(
         "platform": "linux/amd64",
         "submission_dir": str(submission_root),
         "submission_sha256": submission_sha256,
+        "hidden_module_sha256": hidden_module_sha256,
+        "hidden_test_count": hidden_test_count,
         "disqualified": disqualified,
         "disqualification_reason": disqualification_reason,
         "objective_type": package.objective.objective_type,

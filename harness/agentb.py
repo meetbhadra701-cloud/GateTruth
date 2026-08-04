@@ -12,7 +12,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Literal
 
-from harness.atomic_write import atomic_write_text
+from harness.atomic_write import atomic_write_bytes, atomic_write_text
 from harness.flows import FlowError, run_sta, run_synth
 from harness.providers import GenParams, ProviderAdapter
 from harness.providers._http import ProviderRetryableError
@@ -165,6 +165,9 @@ def run_agent_task(
             )
         else:
             evaluator_manifest = run_track_b(task_id, sandbox, out_path)
+        design_source: bytes | None = None
+        if evaluator_manifest.submission_sha256 is not None:
+            design_source = single_sv_file(sandbox / "design").read_bytes()
         usage = provider_usage(provider)
         data = evaluator_manifest.model_dump(mode="json")
         data.update(
@@ -191,6 +194,8 @@ def run_agent_task(
             out_path.with_suffix(".transcript.json"),
             json.dumps(transcript, indent=2) + "\n",
         )
+        if design_source is not None:
+            atomic_write_bytes(out_path.with_suffix(".sv"), design_source)
         return manifest
 
 
