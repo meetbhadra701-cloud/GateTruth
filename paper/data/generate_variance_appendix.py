@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import statistics
 import sys
 from pathlib import Path
@@ -23,7 +24,13 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from harness.schemas.canonical_json import compute_manifest_signature  # noqa: E402
-from paper.data.generate_tables import TableDataError  # noqa: E402
+from harness.schemas.manifest import load_manifest  # noqa: E402
+from paper.data.generate_tables import (  # noqa: E402
+    TableDataError,
+    _referenced_manifest,
+    _track_a_incomplete_reason,
+    _track_a_validated_scores,
+)
 
 RUN1_ROOT = REPO_ROOT / "results" / "eval-16384"
 RUN2_ROOT = REPO_ROOT / "results" / "variance" / "run2"
@@ -38,7 +45,16 @@ def _canonical_task_ids() -> frozenset[str]:
     return frozenset(path.parent.name for path in TASKS_ROOT.glob("*/task.yaml"))
 
 
-def _load_summary(path: Path, *, model: str) -> dict:
+def _load_summary(path: Path, *, model: str) -> tuple[dict, float, bool]:
+    """Validate one run's summary and independently recompute its aggregate from
+    its own signed child manifests -- a summary whose children are absent or
+    untouched-but-forged (GTFS-042's exact reproduction: nine summary.json files
+    copied into otherwise-empty run directories, no per-task manifests at all)
+    used to be accepted purely on its own internal signature. Also checks
+    whether every child manifest actually records the claimed 16,384-token
+    condition; returns whether it does, since the historical variance-study
+    manifests were captured before that field existed and may not."""
+
     if not path.is_file():
         raise TableDataError(f"missing variance-study run: {path}")
     raw = json.loads(path.read_text(encoding="utf-8"))
@@ -51,31 +67,66 @@ def _load_summary(path: Path, *, model: str) -> dict:
         raise TableDataError(f"{path}: model {raw.get('model')!r} != expected {model!r}")
     if raw.get("official") is not True:
         raise TableDataError(f"{path}: official must be true for the variance study")
+    expected = _canonical_task_ids()
     task_ids = raw.get("task_ids")
-    if not isinstance(task_ids, list) or set(task_ids) != _canonical_task_ids():
+    if not isinstance(task_ids, list) or set(task_ids) != expected:
         raise TableDataError(f"{path}: task_ids do not match the canonical 60-task suite")
     aggregate = raw.get("aggregate_mean")
     if not isinstance(aggregate, (int, float)):
         raise TableDataError(f"{path}: aggregate_mean missing or non-numeric")
-    return raw
+
+    reason = _track_a_incomplete_reason(raw, path, expected)
+    if reason is not None:
+        raise TableDataError(f"{path}: {reason}")
+    per_task = _track_a_validated_scores(raw, path, expected)
+    real_aggregate = statistics.fmean(score for score, _tokens, _cost in per_task.values())
+    if not math.isclose(float(aggregate), real_aggregate, abs_tol=1e-6):
+        raise TableDataError(
+            f"{path}: aggregate_mean {aggregate} does not match the mean of "
+            f"{len(per_task)} recomputed child task scores ({real_aggregate})"
+        )
+
+    condition_bound = True
+    for task_id in expected:
+        manifest_path = _referenced_manifest(
+            path, raw["tasks"][task_id]["samples"][0].get("manifest")
+        )
+        max_output_tokens = load_manifest(manifest_path).max_output_tokens
+        if max_output_tokens is None:
+            condition_bound = False
+        elif max_output_tokens != 16384:
+            raise TableDataError(
+                f"{path}: {task_id} manifest records max_output_tokens="
+                f"{max_output_tokens}, not the claimed 16384"
+            )
+
+    return raw, real_aggregate, condition_bound
 
 
 def collect(
     run1_root: Path = RUN1_ROOT, run2_root: Path = RUN2_ROOT, run3_root: Path = RUN3_ROOT
-) -> dict[str, dict]:
+) -> tuple[dict[str, dict], bool]:
+    """Returns (per-model results, whether every child manifest across all nine
+    runs actually records the claimed 16,384-token condition). The second value
+    is a real, checked fact, not an assumption -- see _load_summary."""
+
     results: dict[str, dict] = {}
     seen_signatures: set[str] = set()
+    condition_bound = True
     for model in MODELS:
         runs = []
         for root in (run1_root, run2_root, run3_root):
-            summary = _load_summary(root / model / "summary.json", model=model)
+            summary, real_aggregate, run_condition_bound = _load_summary(
+                root / model / "summary.json", model=model
+            )
+            condition_bound = condition_bound and run_condition_bound
             if summary["signature"] in seen_signatures:
                 raise TableDataError(
                     f"the same signed run appears twice in the variance study: "
                     f"{summary['signature']}"
                 )
             seen_signatures.add(summary["signature"])
-            runs.append(float(summary["aggregate_mean"]))
+            runs.append(real_aggregate)
         mean = statistics.fmean(runs)
         std = statistics.stdev(runs)  # Bessel-corrected, n-1, matching the paper's caption
         results[model] = {
@@ -85,7 +136,7 @@ def collect(
             "range": max(runs) - min(runs),
             "single_run": runs[0],  # run 1 is the already-reported Table 1 figure
         }
-    return results
+    return results, condition_bound
 
 
 def render(results: dict[str, dict]) -> str:
@@ -115,7 +166,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        results = collect(args.run1_root, args.run2_root, args.run3_root)
+        results, condition_bound = collect(args.run1_root, args.run2_root, args.run3_root)
     except TableDataError as exc:
         parser.exit(2, f"variance appendix generation refused: {exc}\n")
 
@@ -128,6 +179,14 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"  {model:30s} mean={r['mean']:.4f} std={r['std']:.4f} "
             f"range={r['range']:.4f} runs={[round(x, 4) for x in r['runs']]}"
+        )
+    if condition_bound:
+        print("  16384-token condition: bound to every child manifest's max_output_tokens")
+    else:
+        print(
+            "  16384-token condition: NOT cryptographically bound -- at least one child "
+            "manifest predates the max_output_tokens field and records it as null; the "
+            "condition holds only by directory-name/prose convention for those runs"
         )
     return 0
 
