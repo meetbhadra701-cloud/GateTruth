@@ -20,6 +20,7 @@ from harness.env_compat import read_env  # noqa: E402
 from harness.runner import DEFAULT_DOCKER_DIGEST_FILE, run_task  # noqa: E402
 from harness.schemas.canonical_json import compute_manifest_signature  # noqa: E402
 from harness.schemas.manifest import load_manifest  # noqa: E402
+from harness.schemas.manifest_b import load_agent_manifest_b  # noqa: E402
 from harness.trackb import run_track_b  # noqa: E402
 from harness.validation import MAX_SOURCE_BYTES  # noqa: E402
 
@@ -92,14 +93,19 @@ def check_track_b(eval_root: Path) -> tuple[int, set[str]]:
     digests: set[str] = set()
     for task_id in TRACK_B_SEC_TASKS:
         path = root / summary["tasks"][task_id]["manifest"]
-        manifest = _load_signed_json(path)
-        if manifest.get("task_id") != task_id:
+        # load_agent_manifest_b applies the same schema + semantic-rule
+        # validation (field types, patterns, disqualified-must-score-zero,
+        # ...) that check_track_a's load_manifest already applies to Track A
+        # -- a raw signature-only dict read would let a malformed field slip
+        # through this release gate on the Track B side alone.
+        manifest = load_agent_manifest_b(path)
+        if manifest.task_id != task_id:
             raise AcceptanceError(f"Track B task id mismatch: {path}")
-        if manifest.get("sec", {}).get("status") != "pass":
+        if manifest.sec.status != "pass":
             raise AcceptanceError(f"Track B SEC is not pass: {task_id}")
-        if manifest.get("disqualified"):
+        if manifest.disqualified:
             raise AcceptanceError(f"Track B run is disqualified: {task_id}")
-        digests.add(str(manifest["docker_digest"]))
+        digests.add(manifest.docker_digest)
     print("CHECK4 PASS agent=claude-haiku-4-5 tasks=3 sec=3/3 signed=true")
     return len(TRACK_B_SEC_TASKS), digests
 
