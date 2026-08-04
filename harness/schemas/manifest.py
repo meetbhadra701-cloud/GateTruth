@@ -145,6 +145,7 @@ class ResultManifest(BaseModel):
     provider_finish_reason: str | None = Field(default=None, min_length=1)
     submission_sha256: str | None = Field(default=None, pattern=SHA256_HEX_RE)
     task_package_sha256: str | None = Field(default=None, pattern=SHA256_HEX_RE)
+    reference_metrics_sha256: str | None = Field(default=None, pattern=SHA256_HEX_RE)
     timestamp: str = Field(min_length=1)
     signature: str = Field(pattern=SHA256_HEX_RE)
 

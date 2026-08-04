@@ -37,6 +37,7 @@ from harness.scoring import (
     delay_from_wns,
     load_reference_metrics,
     ppa_from_metrics,
+    reference_metrics_path,
     task_score_from_ppa,
 )
 from harness.validation import SubmissionValidationError, validate_source_file
@@ -545,6 +546,7 @@ def run_task(
 
     correctness_pass = all(stage["status"] in {"pass", "skip"} for stage in stages if stage["stage"] in {0, 1, 2})
     ppa_pass = all(stage["status"] == "pass" for stage in stages if stage["stage"] in {3, 4, 5})
+    reference_metrics_sha256: str | None = None
     if correctness_pass and ppa_pass:
         by_stage = {stage["stage"]: stage for stage in stages}
         measured = PpaMetrics(
@@ -559,6 +561,12 @@ def run_task(
         reference = load_reference_metrics(task.task_id)
         ppa = ppa_from_metrics(reference, measured)
         task_score = task_score_from_ppa(ppa)
+        try:
+            reference_metrics_sha256 = hashlib.sha256(
+                reference_metrics_path(task.task_id).read_bytes()
+            ).hexdigest()
+        except OSError:
+            reference_metrics_sha256 = None
     else:
         ppa = 0.0
         task_score = 0.0
@@ -587,6 +595,8 @@ def run_task(
         data["submission_sha256"] = submission_sha256
     if task_package_sha256 is not None:
         data["task_package_sha256"] = task_package_sha256
+    if reference_metrics_sha256 is not None:
+        data["reference_metrics_sha256"] = reference_metrics_sha256
     data["signature"] = compute_manifest_signature(data)
     manifest = ResultManifest.model_validate(data)
     output_path = Path(out)
