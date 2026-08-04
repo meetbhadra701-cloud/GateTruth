@@ -30,6 +30,8 @@
   pdflang={en-US}
 }
 
+\input{data/build/paper_facts.tex}
+
 \begin{document}
 \maketitle
 
@@ -67,7 +69,7 @@ against its own reference implementations: of the 46 designs whose reference (as
 a documented compile-time build-convention alias) passes baseline validation, 72\% fall below the
 95\% floor our own suite is held to, and three score a 0\% kill rate outright --- in two of those
 three, the undetected faults include an inverted primary output, which we confirmed by inspecting
-the individual surviving mutants rather than inferring it from the percentage. One of the six designs excluded from this count is excluded for a different
+the individual surviving mutants rather than inferring it from the percentage. One of the four designs excluded from this count is excluded for a different
 reason entirely: its own shipped golden reference fails its own shipped testbench outright,
 independent of mutation.
 
@@ -81,7 +83,9 @@ generally. Our reference suite's leaderboard was initially produced under a 4096
 applied uniformly to all seven evaluated models. Uniform is not fair: three models exhausted that
 cap and returned no parseable code on up to 22 of 60 tasks. Re-running all seven at 16{,}384 tokens
 eight days later moved one model from fifth place to first (pass@1 28 to 43) while leaving models
-that never hit the cap within run-to-run noise. We report this as a temporal sensitivity rerun, not
+that never hit the cap largely unchanged, within or near the measured run-to-run noise for the three
+of those four models we have a variance estimate for (the fourth, Llama 4 Maverick, was not part of
+that repeated-run study). We report this as a temporal sensitivity rerun, not
 a controlled single-variable experiment: the two runs address models by hosted aliases that are not
 pinned to an immutable snapshot, ran against different scoring-image build markers, and used a
 response parser hardened in between (Section~\ref{sec:limitations} discloses all three confounds and
@@ -144,10 +148,10 @@ that audits other benchmarks' rigor must first demonstrate its own, we report th
 certified as a genuine finding rather than omit them (Track B's 8 testbenches are not yet certified
 under this protocol either; see Section~\ref{sec:limitations}).
 Third, the audit results
-themselves (Section~\ref{sec:audit-results}): of RTLLM v2.0's 50 public designs, 44 pass baseline
-validation and are audited, and 73\% of those fall below the 95\% mutation-kill floor our own
-suite is certified against, with three of the audited designs at a 0\% kill rate. Among the six
-designs that do not pass baseline validation and are therefore excluded from the 44, one is
+themselves (Section~\ref{sec:audit-results}): of RTLLM v2.0's 50 public designs, 46 pass baseline
+validation and are audited under the reported \texttt{-g2012} condition, and 72\% of those fall below the 95\% mutation-kill floor our own
+suite is certified against, with three of the audited designs at a 0\% kill rate. Among the four
+designs that do not pass baseline validation and are therefore excluded from the 46, one is
 excluded for a notable reason distinct from the rest: its own shipped golden reference fails its
 own shipped testbench outright --- plus a documented structural finding,
 rather than a silent gap, for why an equivalent measurement against NVIDIA's CVDP benchmark is
@@ -212,7 +216,7 @@ Three foundational properties of GateTruth's architecture warrant explicit artic
 
 \paragraph{A second correction: what the kill rate actually counted, and a fail-open bug in the official gate.} Independently of the exclusion-table defect above, an external adversarial review of this codebase found that the mutation engine's ``kill rate'' blended three different signals into one number: a mutant was counted as ``killed'' if it failed to compile (a lint failure), if simulation caught it, or if a declared formal property caught it --- while this paper's own methodology section describes mutation certification as measuring the \emph{simulation testbench} specifically. Counting a non-compiling mutant as a testbench kill is not a small rounding difference: it means a task with many mutants that simply fail to parse can clear the floor without its testbench ever being exercised against a single behavioral fault, which is precisely the failure mode Section~\ref{sec:audit-method} calls a vacuous gate when found in someone else's benchmark. The same review found a second, more serious defect: the harness never validated the unmodified reference under official (hidden-test) mode before generating or scoring mutants, so if the hidden-vector mount was ever missing, every mutant would fail the identical harness-setup error and that shared failure would be misclassified as a testbench kill --- a fail-open bug capable of reporting a false 100\% kill rate with a zero exit code. We reproduced this exactly (\texttt{python -m harness.mutate --task t1\_gray\_counter --seed 1337 --official} with no hidden root mounted reported 11/11, 100\%, exit 0) before fixing it.
 
-We rewrote the engine to close both gaps: it now runs the unmodified reference through the full pipeline first and refuses to generate or score any mutant if that baseline does not pass cleanly (the reproduction above now reports \texttt{status=setup\_error} and exits nonzero before a single mutant runs); a mutant that fails to compile is \texttt{stillborn} and excluded from the denominator entirely rather than counted as a kill; a mutant caught only by a declared formal property is recorded separately as a \texttt{formal\_only} kill and does \emph{not} count toward the simulation-testbench rate; and a double-timeout is \texttt{indeterminate}, counted against the rate without being double-counted as a survivor. We then re-certified all 60 tasks under this corrected engine, sequentially, twice, at the same seed (1337), and the two runs are byte-identical. Pooled across all 60 tasks: 1{,}245 mutants were generated, 96 failed to compile and are excluded, 1{,}149 remain as the simulation-testbench denominator, of which 1{,}105 are killed by simulation, 4 are caught only by a declared formal property, and 44 survive --- a pooled simulation kill rate of 96.17\%, and these four counts are exactly what an independent adversarial review predicted from inspecting the code before any of them were re-run. The honest result: \textbf{46 of the 60 Track A testbenches clear the 95\% floor, not 49}. Of those 46, 44 achieve a 100\% kill rate, and 2 (a Booth multiplier at 96.30\%, 26/27, and a sequential divider at 97.22\%, 35/36) retain a single genuine survivor above the floor. The remaining 14 --- an I2C slave (75.00\%, 42/56), a stream downsizer (83.33\%, 15/18), a pulse stretcher (84.62\%, 11/13), a running min/max tracker (86.67\%, 13/15), an LRU tracker (87.50\%, 7/8), a UART receiver (90.70\%, 39/43), a round-robin arbiter (90.91\%, 10/11), an SPI master (91.11\%, 41/45), a priority interrupt controller (91.67\%, 11/12), an SPI slave (92.00\%, 23/25), an AXI4-Lite register file (93.33\%, 42/45), a saturating accumulator (93.33\%, 14/15), a UART transmitter (93.48\%, 43/46), and a pulse-width meter (94.44\%, 17/18) --- do not currently clear the floor this paper's own headline claim rests on. Three of these 14 --- the running min/max tracker, the saturating accumulator, and the pulse-width meter --- were not below the floor under the previous (49/60) accounting at all: each had exactly one formal-only kill (two, for the tracker) that the old blended metric counted toward its rate, putting it at an apparent 100\%; recomputed as simulation-only, each falls between 86.7\% and 94.4\%. We report this as a real finding about our own suite, not as a caveat to soften it: it is exactly the failure mode this paper's methodology exists to catch, discovered here by turning the methodology on ourselves rather than left for a future auditor to find. Strengthening these 14 testbenches to genuinely kill their now-known survivors is unstarted work as of this writing; we did not attempt it under the time pressure of this revision, since a rushed testbench fix carries its own risk of a new, undisclosed error. Section~\ref{sec:limitations} details every survivor and the exact per-task exclusion counts.
+We rewrote the engine to close both gaps: it now runs the unmodified reference through the full pipeline first and refuses to generate or score any mutant if that baseline does not pass cleanly (the reproduction above now reports \texttt{status=setup\_error} and exits nonzero before a single mutant runs); a mutant that fails to compile is \texttt{stillborn} and excluded from the denominator entirely rather than counted as a kill; a mutant caught only by a declared formal property is recorded separately as a \texttt{formal\_only} kill and does \emph{not} count toward the simulation-testbench rate; and a double-timeout is \texttt{indeterminate}, counted against the rate without being double-counted as a survivor. We then re-certified all 60 tasks under this corrected engine, sequentially, twice, at the same seed (1337), and the two runs are byte-identical. Pooled across all 60 tasks: 1{,}245 mutants were generated, 96 failed to compile and are excluded, and 1{,}149 remain as the simulation-testbench denominator. Of those 1{,}149, 1{,}105 are killed by simulation and 44 survive simulation --- a pooled simulation kill rate of 96.17\%. Of those 44 simulation survivors, 4 are subsequently caught by a declared formal property (recorded separately as \texttt{formal\_only} kills, per the corrected engine described above) and 40 survive both; these counts are exactly what an independent adversarial review predicted from inspecting the code before any of them were re-run. The honest result: \textbf{46 of the 60 Track A testbenches clear the 95\% floor, not 49}. Of those 46, 44 achieve a 100\% kill rate, and 2 (a Booth multiplier at 96.30\%, 26/27, and a sequential divider at 97.22\%, 35/36) retain a single genuine survivor above the floor. The remaining 14 --- an I2C slave (75.00\%, 42/56), a stream downsizer (83.33\%, 15/18), a pulse stretcher (84.62\%, 11/13), a running min/max tracker (86.67\%, 13/15), an LRU tracker (87.50\%, 7/8), a UART receiver (90.70\%, 39/43), a round-robin arbiter (90.91\%, 10/11), an SPI master (91.11\%, 41/45), a priority interrupt controller (91.67\%, 11/12), an SPI slave (92.00\%, 23/25), an AXI4-Lite register file (93.33\%, 42/45), a saturating accumulator (93.33\%, 14/15), a UART transmitter (93.48\%, 43/46), and a pulse-width meter (94.44\%, 17/18) --- do not currently clear the floor this paper's own headline claim rests on. Three of these 14 --- the running min/max tracker, the saturating accumulator, and the pulse-width meter --- were not below the floor under the previous (49/60) accounting at all: each had exactly one formal-only kill (two, for the tracker) that the old blended metric counted toward its rate, putting it at an apparent 100\%; recomputed as simulation-only, each falls between 86.7\% and 94.4\%. We report this as a real finding about our own suite, not as a caveat to soften it: it is exactly the failure mode this paper's methodology exists to catch, discovered here by turning the methodology on ourselves rather than left for a future auditor to find. Strengthening these 14 testbenches to genuinely kill their now-known survivors is unstarted work as of this writing; we did not attempt it under the time pressure of this revision, since a rushed testbench fix carries its own risk of a new, undisclosed error. Section~\ref{sec:limitations} details every survivor and the exact per-task exclusion counts.
 
 One methodological observation from this certification process warrants reporting, as it represents a vulnerability applicable to any mutation-gated benchmark, external or our own: mutation verdicts are not invariant to execution concurrency. A mutant whose simulation straddles the per-run time budget may be classified as ``killed by timeout'' under heavy parallel load, yet ``survived'' when executed sequentially, allowing parallel sweeps to silently inflate kill rates. Therefore, GateTruth certifies verdicts exclusively from sequential runs and classifies simulation timeouts as indeterminate --- penalizing the kill rate rather than incrementing it --- with a single extended-budget retry utilized for disambiguation. This sequential-execution discipline is enforced identically whether the mutation engine is measuring our own suite (this section) or an external benchmark (Section~\ref{sec:audit-method}).
 
@@ -429,9 +433,11 @@ killed provides no signal about testbench quality, yet those 13 are included in 
 kill counts. The effect is small and runs \emph{in RTLLM's favor} --- excluding them from both numerator and denominator, as stillborn mutants, lowers the
 pooled kill rate from 56.8\% to 56.0\% and strengthens rather than weakens our finding --- so we
 report the measured numbers as produced and state the policy gap explicitly. The symmetric
-measurement for our own 60-task suite (the compile-versus-behavioral split across all tasks, not
-just the three M1 pilots for which Section~\ref{sec:rigor} reports it) has not been produced, so
-we do not claim the distinction has been verified identically on both sides.
+measurement for our own 60-task suite is reported in Section~\ref{sec:rigor}: pooled across all 60
+tasks, 96 of 1{,}245 generated mutants failed to compile and are excluded from the denominator
+entirely, leaving 1{,}149 as the simulation-testbench denominator --- so unlike RTLLM's 13
+non-compiling mutants counted toward its reported kill rate, our own non-compiling mutants are held
+to the same exclude-from-both-numerator-and-denominator policy we apply to RTLLM above.
 Three designs (\texttt{adder\_8bit}, \texttt{edge\_detect}, \texttt{square\_wave}) score a 0\%
 kill rate: none of the generic mutants injected into their reference implementations were caught
 by RTLLM's own shipped testbench. Their mutant counts are small (1, 10, and 6 respectively, versus a median of 10.5 mutants per
@@ -446,7 +452,7 @@ not that a broad class of faults does. Full per-design
 mutant counts, operator breakdowns, and pass/fail logs for all 46 audited and 4 unsupported designs
 are committed at \texttt{external-audit/results/rtllm/final-g2012/*.json} (the reported condition;
 the superseded \texttt{-g2001} run is retained alongside it at \texttt{.../final/*.json}) and summarized in
-\texttt{external-audit/results/summary.md} in the GateTruth repository
+\texttt{external-audit/results/summary-g2012.md} (the superseded g2001 condition is summarized separately at \texttt{.../summary.md}) in the GateTruth repository
 (\url{https://github.com/meetbhadra701-cloud/GateTruth}, currently private during review and made
 public upon submission), so every number in this section can be checked against the raw evidence.
 At the other extreme, 13 of the 46 designs do
@@ -456,16 +462,22 @@ floor would require. A deterministic re-run of a fixed sample of the eligible
 designs (8 of the 44 eligible under \texttt{-g2001}, 18.2\%, selected via
 \texttt{random.Random(20260729).sample}) reproduced byte-identical per-design results across two
 independent runs, certifying the measurement. We repeated the check for the reported
-\texttt{-g2012} condition over a six-design sample chosen to include both newly-admitted designs
-(\texttt{freq\_divbyodd}, \texttt{multi\_8bit}) and the widest mutant-count spread in the suite
-(\texttt{alu} 53, \texttt{float\_multi} 115, \texttt{edge\_detect} 10, \texttt{serial2parallel} 13,
-the last two chosen because they carry surviving and indeterminate verdicts respectively, which are
-the classes most at risk of nondeterminism); all six reproduced byte-identically, because the container
-digest recorded with each run pins the exact CPython build the sample was drawn under, this
-reproduces even though \texttt{random.Random.sample}'s output is not guaranteed stable across
-arbitrary Python versions in general. The 8 sampled designs were \texttt{multi\_16bit},
-\texttt{multi\_pipe\_8bit}, \texttt{freq\_divbyfrac}, \texttt{barrel\_shifter}, \texttt{edge\_detect},
-\texttt{comparator\_4bit}, \texttt{alu}, and \texttt{signal\_generator}.
+\texttt{-g2012} condition the same way, not by hand-curating designs: the same seed applied to
+\texttt{random.Random(20260729).sample} over the 46 eligible \texttt{-g2012} designs (19.6\%, since
+the larger eligible pool draws a proportionally different sample size than the g2001 run) drew a
+nine-design sample --- \texttt{instr\_reg}, \texttt{traffic\_light},
+\texttt{multi\_booth\_8bit}, \texttt{freq\_divbyfrac}, \texttt{barrel\_shifter}, \texttt{edge\_detect},
+\texttt{comparator\_4bit}, \texttt{alu}, and \texttt{serial2parallel}, none of which happen to be the
+two designs newly eligible only under \texttt{-g2012} (\texttt{freq\_divbyodd}, \texttt{multi\_8bit});
+all nine reproduced byte-identically. This reproduces
+because each per-design record's \texttt{tool\_versions.python} field pins the exact CPython build
+the sample was drawn under, not because of a container image digest, which the current per-design
+schema does not record (Section~\ref{sec:rigor}'s image-marker discussion applies to Track A
+manifests, not to these external-audit records); \texttt{random.Random.sample}'s output is not
+guaranteed stable across arbitrary Python versions in general, so recording the interpreter version
+is what makes this claim checkable rather than assumed. The 8 g2001-sampled designs were
+\texttt{multi\_16bit}, \texttt{multi\_pipe\_8bit}, \texttt{freq\_divbyfrac}, \texttt{barrel\_shifter},
+\texttt{edge\_detect}, \texttt{comparator\_4bit}, \texttt{alu}, and \texttt{signal\_generator}.
 
 For CVDP, the Day-1 feasibility sweep (Section~\ref{sec:audit-method}) found 0 usable golden
 designs out of the 302 rows inspected in the public non-agentic, no-commercial-tooling subset:
@@ -506,7 +518,7 @@ This ordering is not the one our first campaign produced. Plausibly this is a to
 
 Broken out by tier at the reported condition, pass@1 aggregated across all seven models is 103/140 (73.6\%) on Tier~1, 73/175 (41.7\%) on Tier~2, and 59/105 (56.2\%) on Tier~3 --- Tier~2's protocol and datapath components are, in aggregate, harder for these models than the ostensibly more complex Tier~3 arithmetic and pipeline designs, a non-monotonicity we report rather than smooth over (Section~\ref{sec:limitations} shows it narrows but survives once extraction failures are excluded). Six tasks were passed by no model at all: \texttt{t1\_mod\_n\_counter}, \texttt{t2\_majority\_filter}, \texttt{t2\_pulse\_stretcher}, \texttt{t2\_round\_robin\_arbiter}, \texttt{t2\_stream\_upsizer}, and \texttt{t2\_uart\_rx}.
 
-A critical observation from this data concerns what actually drives the 18-point gap between the top score (48.83) and the human-reference normalization point (66.7): it is overwhelmingly a correctness-gate effect, not a physical-quality shortfall. Computing mean PPA only over each model's \emph{passed} tasks --- the same quantity Table~\ref{tab:tracka}'s composite score already weights by pass@1 --- gives GPT-5 1.022, Opus 1.007, Sonnet 0.997, GPT-5-mini 0.991, Haiku 1.013, Gemini 2.5 Pro 0.998, and Llama 4 Maverick 1.008: a total spread of 3.1\% across all seven models. On the tasks a model actually passes, its RTL is on average numerically within 2.3\% of --- and for four of the seven (GPT-5, Opus, Haiku, Llama 4 Maverick) nominally \emph{above} --- the human reference on the PPA axis. We deliberately do not call this a statistical equivalence: we have no per-task variance estimate for the PPA ratio, so ``within 2.5\%'' is an observed numerical spread, not a test result. This comparison also carries a selection effect we do not correct for: each model's mean is taken over a different subset of tasks --- the ones it passed --- so a weak model's mean is computed over easier designs than a strong model's, and the columns are not strictly comparable across models. The clean version of this comparison would restrict to tasks passed by all seven models; we report the per-model means as measured and flag the confound rather than presenting the spread as a controlled result. We traced the degeneracy further: of the 54 Track~A tasks passed by at least one model, 17 (concentrated in Tier~1, plus a handful of narrow Tier~2/3 designs) were passed by every passing model at an identical PPA ratio of exactly 1.000, and 142 of the 235 total passing (model, task) pairs across the whole suite --- 60.4\% --- landed at that same exact 1.000. The most plausible explanation is that for a large share of Track~A, especially simple combinational Tier~1 tasks, any functionally correct RTL synthesizes to a near-identical netlist under our flow, so the PPA axis contributes little or no discriminating signal there; PPA becomes informative mainly on the minority of tasks where correct implementations can differ physically, and decisively so only in the agentic-repair track (Section~\ref{sec:trackb}), where the task is explicitly to improve PPA rather than merely reproduce it. We do not claim state-of-the-art models forfeit physical quality relative to a human implementation --- our own data says the opposite on the tasks where a comparison is even possible. Furthermore, two structural insights emerge regarding the evaluation paradigm. First, inference cost and physical quality are decoupled in specific, checkable ways rather than uniformly: Gemini 2.5 Pro is the most expensive model evaluated (\$3.43, more than double Opus's \$1.60) while placing sixth of seven, the sharpest cost--quality inversion in the table; Llama 4 Maverick is the cheapest by two orders of magnitude (\$0.027 against Gemini's \$3.43) and places last, a case where cost and quality move together rather than decouple; and GPT-5-mini reaches 32/60 for \$0.35, within three points of Haiku's score at comparable cost but at roughly one-seventh the price of GPT-5, which buys 11 additional passing tasks for an extra \$1.97. Notably the cost ranking and the score ranking agree only at the extremes: the three cheapest models occupy three of the bottom four positions, but the most expensive model is sixth, not first. Such inversions remain entirely opaque to conventional pass@k benchmarks. Second, on Track A the aggregate ranking is governed primarily by the correctness gate --- how many tasks each model passes --- with post-synthesis PPA contributing a small, signed adjustment rather than a reordering: measured only over the tasks a model passes, the capped geometric mean neither reorders the table nor reliably separates the two frontier models, which are statistically indistinguishable on Track A across repeated runs (Appendix~\ref{app:variance}). Single-shot generation therefore separates current models mainly by correctness; the physical-quality axis, while genuinely measured here, becomes a decisive differentiator only in the agentic-repair track (Section~\ref{sec:trackb}), where optimizing a design against an explicit PPA objective is the task itself.
+A critical observation from this data concerns what actually drives the 18-point gap between the top score (48.83) and the human-reference normalization point (66.7): it is overwhelmingly a correctness-gate effect, not a physical-quality shortfall. Computing mean PPA only over each model's \emph{passed} tasks --- the same quantity Table~\ref{tab:tracka}'s composite score already weights by pass@1 --- gives GPT-5 1.022, Opus 1.007, Sonnet 0.997, GPT-5-mini 0.991, Haiku 1.013, Gemini 2.5 Pro 0.998, and Llama 4 Maverick 1.008: a total spread of 3.1\% across all seven models. On the tasks a model actually passes, its RTL is on average numerically within 2.3\% of --- and for four of the seven (GPT-5, Opus, Haiku, Llama 4 Maverick) nominally \emph{above} --- the human reference on the PPA axis. We deliberately do not call this a statistical equivalence: we have no per-task variance estimate for the PPA ratio, so ``within 2.5\%'' is an observed numerical spread, not a test result. This comparison also carries a selection effect we do not correct for: each model's mean is taken over a different subset of tasks --- the ones it passed --- so a weak model's mean is computed over easier designs than a strong model's, and the columns are not strictly comparable across models. The clean version of this comparison would restrict to tasks passed by all seven models; we report the per-model means as measured and flag the confound rather than presenting the spread as a controlled result. We traced the degeneracy further: of the 54 Track~A tasks passed by at least one model, 17 (concentrated in Tier~1, plus a handful of narrow Tier~2/3 designs) were passed by every passing model at an identical PPA ratio of exactly 1.000, and 142 of the 235 total passing (model, task) pairs across the whole suite --- 60.4\% --- landed at that same exact 1.000. The most plausible explanation is that for a large share of Track~A, especially simple combinational Tier~1 tasks, any functionally correct RTL synthesizes to a near-identical netlist under our flow, so the PPA axis contributes little or no discriminating signal there; PPA becomes informative mainly on the minority of tasks where correct implementations can differ physically, and decisively so only in the agentic-repair track (Section~\ref{sec:trackb}), where the task is explicitly to improve PPA rather than merely reproduce it. We do not claim state-of-the-art models forfeit physical quality relative to a human implementation --- our own data says the opposite on the tasks where a comparison is even possible. Furthermore, two structural insights emerge regarding the evaluation paradigm. First, inference cost and physical quality are decoupled in specific, checkable ways rather than uniformly: Gemini 2.5 Pro is the most expensive model evaluated (\$3.43, more than double Opus's \$1.60) while placing sixth of seven, the sharpest cost--quality inversion in the table; Llama 4 Maverick is the cheapest by two orders of magnitude (\$0.027 against Gemini's \$3.43) and places last, a case where cost and quality move together rather than decouple; and GPT-5-mini reaches 32/60 for \$0.35, within three points of Haiku's score at comparable cost but at roughly one-seventh the price of GPT-5, which buys 11 additional passing tasks for an extra \$1.97. Notably the cost ranking and the score ranking agree only at the extremes: the three cheapest models occupy three of the bottom four positions, but the most expensive model is sixth, not first. Such inversions remain entirely opaque to conventional pass@k benchmarks. Second, on Track A the aggregate ranking is governed primarily by the correctness gate --- how many tasks each model passes --- with post-synthesis PPA contributing a small, signed adjustment rather than a reordering: measured only over the tasks a model passes, the capped geometric mean neither reorders the table nor reliably separates the two frontier models, whose Track A scores are not decisively separated across repeated runs at $n=3$ --- heavily overlapping ranges, not a formal equivalence test with a preregistered margin (Appendix~\ref{app:variance}). Single-shot generation therefore separates current models mainly by correctness; the physical-quality axis, while genuinely measured here, becomes a decisive differentiator only in the agentic-repair track (Section~\ref{sec:trackb}), where optimizing a design against an explicit PPA objective is the task itself.
 
 \begin{table}[t]
 \centering
@@ -620,18 +632,18 @@ Five other audited designs are similarly single-operator, and their outcomes spa
 
 The aggregate operator mix bears on this directly, and we report it rather than leave the reader to
 infer it: of 775 generated mutants, 367 (47\%) are \texttt{assignment\_hold}, 154
-\texttt{blocking\_output\_inversion}, 91 \texttt{comparator\_boundary\_flip}, 59
-\texttt{output\_inversion}, 48 \texttt{bitwise\_inversion}, 29 \texttt{logic\_inversion}, 13
-\texttt{shift\_inversion}, and only 4 each of \texttt{reset\_polarity\_flip} and
-\texttt{operator\_inversion}. Survival rates differ sharply by operator --- 81\% of
+\texttt{blocking\_output\_inversion}, 92 \texttt{comparator\_boundary\_flip}, 60
+\texttt{output\_inversion}, 49 \texttt{bitwise\_inversion}, 29 \texttt{logic\_inversion}, 14
+\texttt{shift\_inversion}, 6 \texttt{operator\_inversion}, and 4 \texttt{reset\_polarity\_flip}.
+Survival rates differ sharply by operator --- 80\% of
 \texttt{bitwise\_inversion} and 69\% of \texttt{logic\_inversion} mutants survive, against 12\% of
 \texttt{output\_inversion} and none of the four \texttt{reset\_polarity\_flip} --- so the pooled
 figure is partly a function of which operators our generator happens to place most often on this
 corpus. This is a real limitation on the precision of cross-design comparison, and it means our
 kill rates should be read as sensitivity to \emph{this} operator distribution rather than as a
-benchmark-independent quality score. We did not manually triage survivors for the remaining 41
-audited designs, and we do not claim the 318 aggregate survivors have been individually confirmed as
-genuine misses.
+benchmark-independent quality score. Beyond the specific designs named above, we did not manually
+triage the remaining survivors, and we do not claim all 320 aggregate survivors have been
+individually confirmed as genuine misses.
 
 \paragraph{Our own suite was gated on the metric it is measured by; RTLLM's was not.} The most
 serious objection to this paper's central comparison is that it is not like-for-like. Our 60
@@ -819,12 +831,13 @@ frontier models --- 1.85 points for Opus, 2.53 for Sonnet --- and smaller still 
 with only $n=3$ per model these remain imprecise estimates, and we report them as a directional
 signal rather than a tight interval, but they are now committed, checkable measurements at the
 condition this paper actually leaderboards, not a carried-over guess from a different cap. Second,
-Opus and Sonnet remain statistically indistinguishable on Track A ($46.18 \pm 1.85$ vs $45.01 \pm
+Opus and Sonnet remain not decisively separated on Track A ($46.18 \pm 1.85$ vs $45.01 \pm
 2.53$: heavily overlapping ranges, a mean gap of 1.17 against either model's own standard
-deviation), though the direction differs from the superseded pilot: there, Sonnet's three-run mean
+deviation; this is a descriptive read of overlapping intervals at $n=3$, not a formal equivalence
+test with a preregistered margin), though the direction differs from the superseded pilot: there, Sonnet's three-run mean
 edged above Opus's; here, Opus leads on both the single reported run (46.99 vs 42.09) and the
 three-run mean (46.18 vs 45.01). We read this as a real but not decisive lead, well inside the
-overlap of the two ranges, not as a reversal of the underlying ``statistically tied'' finding, and
+overlap of the two ranges, not as a reversal of the underlying no-decisive-separation finding, and
 the sign-flip between the two studies is itself a demonstration of exactly the run-to-run noise
 this appendix exists to quantify. The models' reliable separation appears in the agentic-repair
 track (Section~\ref{sec:trackb}), not in static generation. We therefore recommend that future

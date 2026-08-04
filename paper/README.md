@@ -16,7 +16,7 @@ or upload `main.tex`, `references.bib`, and the `data/build/*.tex` fragments to 
 - `references.bib` — bibliography (arXiv IDs verified).
 - `data/build/*.tex` — auto-generated result tables, `\input` by `main.tex` and
   committed so the paper compiles from a clean checkout. Regenerating all of them
-  currently requires running five separate scripts, not one orchestrator (that
+  currently requires running six separate scripts, not one orchestrator (that
   consolidation is tracked as future work):
 
   ```bash
@@ -25,6 +25,7 @@ or upload `main.tex`, `references.bib`, and the `data/build/*.tex` fragments to 
   python data/generate_audit_appendix.py           # audit_per_design (the external RTLLM audit)
   python data/generate_failure_taxonomy.py         # failure_taxonomy_table (Appendix, per-model breakdown)
   python data/generate_variance_appendix.py        # variance_table (Appendix, run-to-run spread)
+  python data/generate_paper_facts.py              # paper_facts (prose-cited counts: terciles, operator mix, etc.)
   ```
 
   `generate_failure_taxonomy.py` additionally depends on `data/lint_diagnostics_ledger.json`, a
