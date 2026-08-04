@@ -1,6 +1,6 @@
 import pytest
 
-from harness.git_provenance import harness_git
+from harness.git_provenance import REPO_ROOT, harness_git
 
 REAL_SHA = "0123456789abcdef0123456789abcdef01234567"
 SHORT_SHA = "0123abc"
@@ -72,13 +72,22 @@ def test_git_subprocess_fallback_survives_dubious_ownership(
     """P1-5: plain `git rev-parse` refuses to run at all under a bind mount owned by a
     different user than the one invoking it -- exactly every sandboxed docker run in
     this project. Verified directly (docker run ... git rev-parse HEAD -> exit 128
-    "detected dubious ownership") before adding -c safe.directory= to fix it. This test
-    only proves the subprocess tier itself is robust to that specific failure mode; it
-    cannot force dubious ownership from within a normal pytest run (this repo's
-    checkout already belongs to whoever is running the test), so it only asserts a
-    real SHA comes back when no env var masks the subprocess path -- the meaningful
+    "detected dubious ownership") before adding -c safe.directory= to fix it.
+
+    This test only proves the subprocess tier itself is robust to that specific
+    failure mode; it cannot force dubious ownership from within a normal pytest run
+    (the checkout already belongs to whoever is running the test), so it only asserts
+    a real SHA comes back when no env var masks the subprocess path -- the meaningful
     verification against a real ownership mismatch already happened, by hand, in a
-    real sandboxed docker container, before this fix was written."""
+    real sandboxed docker container, before this fix was written.
+
+    That real-sha assertion only holds when .git/ is actually present. It correctly
+    does not hold under docs/SECURE_EXECUTION.md's own `git archive`-based staging
+    (used by ci.yml/pages.yml/CONTRIBUTING.md alike), which never includes .git/ at
+    all -- there is genuinely no repository metadata left to query there, regardless
+    of ownership, and "unavailable" is the correct answer in that case, not a bug.
+    Caught by hand running CONTRIBUTING.md's own documented test command verbatim
+    against a git-archive snapshot before this distinction was added here."""
 
     _clear(monkeypatch)
 
@@ -86,4 +95,7 @@ def test_git_subprocess_fallback_survives_dubious_ownership(
 
     import re
 
-    assert re.fullmatch(r"[0-9a-f]{7,40}", result), result
+    if (REPO_ROOT / ".git").exists():
+        assert re.fullmatch(r"[0-9a-f]{7,40}", result), result
+    else:
+        assert result == "unavailable"
