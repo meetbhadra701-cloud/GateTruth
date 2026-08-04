@@ -14,7 +14,7 @@ from harness.providers.mock import MockProvider
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest_b import AgentTrackBManifest, TrackBManifest
 from harness.spend import SpendCapExceeded
-from harness.trackb import resolve_track_b_task
+from harness.trackb import _track_b_review_fields, resolve_track_b_task
 
 ROOT = Path(__file__).resolve().parents[2]
 AGENT_FIXTURE = (
@@ -62,6 +62,7 @@ def _fake_runner(task_id: str, provider, *, out: str | Path) -> AgentTrackBManif
             "wall_clock_s": 1.0,
             "timestamp": "2026-07-13T12:00:00Z",
             "signature": "0" * 64,
+            **_track_b_review_fields(package.root),
         }
     )
     raw["stages"][-1]["status"] = "pass" if objective_pass else "fail"

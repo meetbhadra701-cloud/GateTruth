@@ -27,6 +27,7 @@ from harness.runner import (
 )
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest_b import TrackBManifest
+from harness.schemas.task_yaml import parse_task_yaml_text
 from harness.validation import (
     SubmissionValidationError,
     validate_identifier,
@@ -55,6 +56,34 @@ class TrackBPackage:
     objective: Objective
     top_module: str
     clock_target_ns: float
+
+
+def _track_b_review_fields(task_root: Path) -> dict[str, str | None]:
+    """Read this task's baseline_review/tb_review sign-off markers at the moment a run
+    actually happens, so the manifest freezes what was true then. site/generate.py's
+    OFFICIAL badge used to re-read task.yaml live at site-build time instead -- editing
+    a task's sign-off fields after a run retroactively changed that run's own badge,
+    which is exactly backwards for an audit trail.
+
+    Always returns both keys, explicit None when a value is missing or not a string --
+    matching _full_stage()'s existing convention of baking every optional field into the
+    signed payload explicitly rather than omitting it, so a plain model_dump(mode="json")
+    (no exclude_none) at write time reproduces exactly what was signed. Track A's
+    generators use the opposite convention (omit-when-absent, exclude_none=True at dump
+    time); Track B's stage objects already committed to explicit-null-always before this
+    function existed, so this follows the convention already in use here, not Track A's."""
+
+    task_yaml = task_root / "task.yaml"
+    values: dict[str, Any] = {}
+    if task_yaml.is_file():
+        try:
+            values = parse_task_yaml_text(task_yaml.read_text(encoding="utf-8"))
+        except Exception:
+            values = {}
+    return {
+        key: values[key] if isinstance(values.get(key), str) else None
+        for key in ("baseline_review", "tb_review")
+    }
 
 
 def run_track_b(
@@ -175,6 +204,7 @@ def run_track_b(
         "timestamp": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
         "signature": "0" * 64,
     }
+    data.update(_track_b_review_fields(package.root))
     data["signature"] = compute_manifest_signature(data)
     manifest = TrackBManifest.model_validate(data)
     out_path = Path(out)

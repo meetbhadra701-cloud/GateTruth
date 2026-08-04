@@ -308,6 +308,44 @@ def test_tampered_track_b_manifest_refuses_without_output(tmp_path: Path) -> Non
     assert not output.exists()
 
 
+_track_b_official_from_manifest = NAMESPACE["_track_b_official_from_manifest"]
+
+
+def test_track_b_official_prefers_frozen_manifest_fields_over_live_yaml(
+    tmp_path: Path,
+) -> None:
+    """Regression test for the exact bug this function exists to fix: editing a task's
+    sign-off fields in task.yaml after a run must not retroactively flip that run's own
+    OFFICIAL badge. A manifest carrying frozen baseline_review/tb_review values is the
+    source of truth once it has them; the live task.yaml is only consulted as a fallback
+    for manifests old enough to predate this field (covered separately below)."""
+
+    signed = "SIGNED-OFF-BY-MEET-2026-07-13"
+    assert _track_b_official_from_manifest(signed, signed) is True
+    # One signed, one since reverted to PENDING in task.yaml -- irrelevant, the manifest
+    # itself recorded PENDING at run time, so this run was correctly never official.
+    assert _track_b_official_from_manifest(signed, "PENDING") is False
+    assert _track_b_official_from_manifest("PENDING", "PENDING") is False
+
+
+def test_track_b_official_falls_back_to_live_yaml_when_manifest_predates_the_fields(
+    tmp_path: Path,
+) -> None:
+    eval_root, agent_root, tasks_root = _all_fixture_copy(tmp_path)
+    agent_manifest = next((agent_root).rglob("*.json"))
+    raw = json.loads(agent_manifest.read_text(encoding="utf-8"))
+    assert "baseline_review" not in raw or raw["baseline_review"] is None, (
+        "fixture manifest must predate the frozen review fields for this test to be "
+        "exercising the fallback path, not the new one"
+    )
+    assert _track_b_official_from_manifest(raw.get("baseline_review"), raw.get("tb_review")) is None
+
+
+def test_track_b_official_rejects_a_manifest_with_only_one_review_field() -> None:
+    with pytest.raises(SiteGenerationError, match="baseline_review and tb_review"):
+        _track_b_official_from_manifest("SIGNED-OFF-BY-MEET-2026-07-13", None)
+
+
 def test_track_b_official_requires_both_signed_reviews(tmp_path: Path) -> None:
     eval_root, agent_root, tasks_root = _all_fixture_copy(tmp_path)
     task_yaml = tasks_root / "toy_taskB" / "task.yaml"

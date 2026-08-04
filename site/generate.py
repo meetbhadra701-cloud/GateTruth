@@ -397,7 +397,11 @@ def _load_agent(path: Path, agent_root: Path, tasks_root: Path) -> AgentRow:
     if model_component != _safe_component(manifest.model):
         raise SiteGenerationError(f"agent manifest directory does not match model: {path}")
     _validate_timestamp(manifest.timestamp, path)
-    official = _track_b_official(manifest.task_id, tasks_root)
+    official = _track_b_official_from_manifest(manifest.baseline_review, manifest.tb_review)
+    if official is None:
+        # This manifest predates baseline_review/tb_review being frozen at run time;
+        # fall back to the same live task.yaml lookup used before that field existed.
+        official = _track_b_official(manifest.task_id, tasks_root)
     detail_page = f"agents/{_slug(manifest.model)}--{_slug(run_id)}.html"
     return AgentRow(
         run_id=run_id,
@@ -470,6 +474,27 @@ def _validate_agent_summary(path: Path, agent_root: Path) -> None:
         expected = f"{_safe_component(task_id)}.json"
         if entry.get("manifest") != expected or not (path.parent / expected).is_file():
             raise SiteGenerationError(f"agent summary manifest missing for {task_id}: {path}")
+
+
+def _track_b_official_from_manifest(
+    baseline_review: str | None, tb_review: str | None
+) -> bool | None:
+    """Prefer the review sign-off state a manifest froze at run time over re-reading
+    task.yaml live at site-build time -- editing a task's sign-off fields after a run
+    must not retroactively change that run's own OFFICIAL badge. Returns None (not a
+    bool) when a manifest predates these fields, so the caller falls back to the old
+    live-lookup behavior only for manifests that genuinely have no frozen record."""
+
+    if baseline_review is None and tb_review is None:
+        return None
+    if baseline_review is None or tb_review is None:
+        raise SiteGenerationError(
+            "manifest has one review field but not the other -- "
+            "baseline_review and tb_review must be recorded together"
+        )
+    return bool(
+        SIGNED_REVIEW_RE.fullmatch(baseline_review) and SIGNED_REVIEW_RE.fullmatch(tb_review)
+    )
 
 
 def _track_b_official(task_id: str, tasks_root: Path) -> bool:

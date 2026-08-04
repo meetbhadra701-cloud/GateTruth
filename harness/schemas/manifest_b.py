@@ -106,6 +106,8 @@ class TrackBManifest(BaseModel):
     tokens_out: int = Field(ge=0)
     cost_usd: float = Field(ge=0)
     tool_calls: int = Field(ge=0)
+    baseline_review: str | None = Field(default=None, min_length=1)
+    tb_review: str | None = Field(default=None, min_length=1)
     timestamp: str = Field(min_length=1)
     signature: str = Field(pattern=SHA256_HEX_RE)
 
