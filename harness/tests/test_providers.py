@@ -40,6 +40,7 @@ def test_anthropic_adapter_records_usage_and_settles_reservation(tmp_path, monke
         return {
             "content": [{"type": "text", "text": '{"tool":"done"}'}],
             "usage": {"input_tokens": 100, "output_tokens": 20},
+            "stop_reason": "end_turn",
         }
 
     monkeypatch.setattr(anthropic_module, "post_json", fake_post)
@@ -52,9 +53,34 @@ def test_anthropic_adapter_records_usage_and_settles_reservation(tmp_path, monke
     assert captured["payload"]["temperature"] == 0.0
     assert captured["timeout_s"] == PROVIDER_READ_TIMEOUT_S
     assert provider.usage == {"tokens_in": 100, "tokens_out": 20, "cost_usd": 0.0002}
+    assert provider.last_finish_reason == "end_turn"
     recorded = load_spend(spend)
     assert recorded["total_usd"] == pytest.approx(0.0002)
     assert "reservation" not in recorded["runs"][0]
+
+
+def test_anthropic_max_tokens_stop_reason_is_recorded(tmp_path, monkeypatch):
+    """The paper's token-budget claims (Section 5, Table budget) currently infer truncation
+    from an absent or malformed extraction alone; stop_reason="max_tokens" is the provider's
+    own direct confirmation that the cap, not something else, ended generation. Regression
+    test: this must actually reach provider.last_finish_reason, not just be present in the
+    raw HTTP response and then discarded."""
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "unit-test-key")
+
+    def fake_post(url, *, headers, payload, timeout_s=60.0):
+        return {
+            "content": [{"type": "text", "text": "```systemverilog\nmodule x; // truncated"}],
+            "usage": {"input_tokens": 500, "output_tokens": 4096},
+            "stop_reason": "max_tokens",
+        }
+
+    monkeypatch.setattr(anthropic_module, "post_json", fake_post)
+    provider = AnthropicProvider(PARAMS_ANTHROPIC.model, spend_path=tmp_path / "spend.json")
+
+    provider.generate("prompt", "system", PARAMS_ANTHROPIC)
+
+    assert provider.last_finish_reason == "max_tokens"
 
 
 def test_anthropic_empty_billed_response_settles_real_cost_not_zero(tmp_path, monkeypatch):
@@ -178,6 +204,7 @@ def test_openai_empty_choices_list_still_settles_usage(tmp_path, monkeypatch):
     with pytest.raises(openai_module.ProviderRetryableError, match="empty"):
         provider.generate("prompt", "system", PARAMS_OPENAI)
     assert provider.usage == {"tokens_in": 50, "tokens_out": 0, "cost_usd": pytest.approx(0.0000125)}
+    assert provider.last_finish_reason is None
 
 
 def test_openai_adapter_parses_recorded_chat_response(tmp_path, monkeypatch):
@@ -191,7 +218,7 @@ def test_openai_adapter_parses_recorded_chat_response(tmp_path, monkeypatch):
         assert "temperature" not in payload
         assert timeout_s == PROVIDER_READ_TIMEOUT_S
         return {
-            "choices": [{"message": {"content": '{"tool":"sb_lint"}'}}],
+            "choices": [{"message": {"content": '{"tool":"sb_lint"}'}, "finish_reason": "stop"}],
             "usage": {"prompt_tokens": 80, "completion_tokens": 10},
         }
 
@@ -202,6 +229,30 @@ def test_openai_adapter_parses_recorded_chat_response(tmp_path, monkeypatch):
     assert provider.usage["tokens_in"] == 80
     assert provider.usage["tokens_out"] == 10
     assert provider.usage["cost_usd"] == pytest.approx(0.00004)
+    assert provider.last_finish_reason == "stop"
+
+
+def test_openai_length_finish_reason_is_recorded(tmp_path, monkeypatch):
+    """Same regression concern as the Anthropic max_tokens test: GPT-5's 22-of-60 no-extraction
+    count (Section 5) is currently inferred, not directly confirmed by the provider's own
+    finish_reason="length"."""
+
+    monkeypatch.setenv("OPENAI_API_KEY", "unit-test-key")
+
+    def fake_post(url, *, headers, payload, timeout_s=60.0):
+        return {
+            "choices": [
+                {"message": {"content": "```systemverilog\nmodule x;"}, "finish_reason": "length"}
+            ],
+            "usage": {"prompt_tokens": 500, "completion_tokens": 4096},
+        }
+
+    monkeypatch.setattr(openai_module, "post_json", fake_post)
+    provider = OpenAIProvider(PARAMS_OPENAI.model, spend_path=tmp_path / "spend.json")
+
+    provider.generate("prompt", "system", PARAMS_OPENAI)
+
+    assert provider.last_finish_reason == "length"
 
 
 def test_openrouter_adapter_parses_recorded_chat_response(tmp_path, monkeypatch):
@@ -214,7 +265,12 @@ def test_openrouter_adapter_parses_recorded_chat_response(tmp_path, monkeypatch)
         assert payload["temperature"] == 0.0
         assert timeout_s == PROVIDER_READ_TIMEOUT_S
         return {
-            "choices": [{"message": {"content": '{"tool":"read_file","path":"spec.md"}'}}],
+            "choices": [
+                {
+                    "message": {"content": '{"tool":"read_file","path":"spec.md"}'},
+                    "finish_reason": "stop",
+                }
+            ],
             "usage": {"prompt_tokens": 90, "completion_tokens": 12},
         }
 
@@ -226,6 +282,7 @@ def test_openrouter_adapter_parses_recorded_chat_response(tmp_path, monkeypatch)
     assert provider.usage["tokens_in"] == 90
     assert provider.usage["tokens_out"] == 12
     assert provider.usage["cost_usd"] == pytest.approx(0.00015)
+    assert provider.last_finish_reason == "stop"
 
 
 def test_unknown_pricing_refuses_before_network():

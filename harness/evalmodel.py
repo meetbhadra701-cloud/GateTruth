@@ -213,7 +213,7 @@ def eval_model(
             else:
                 source_path = task_dir / f"sample_{sample_number}.sv"
                 prompt, system = build_generation_prompt(plan.task)
-                response, call_error, usage = _call_once(
+                response, call_error, usage, finish_reason = _call_once(
                     provider,
                     prompt,
                     system,
@@ -232,6 +232,7 @@ def eval_model(
                         usage=usage,
                         wall_clock_s=time.perf_counter() - started,
                         max_output_tokens=max_tokens,
+                        provider_finish_reason=finish_reason,
                         generation_error=call_error,
                     )
                     _write_manifest(manifest, manifest_path)
@@ -262,6 +263,7 @@ def eval_model(
                             temperature=temperature,
                             usage=usage,
                             max_output_tokens=max_tokens,
+                            provider_finish_reason=finish_reason,
                         )
                         _write_manifest(manifest, manifest_path)
                     except Exception as exc:
@@ -281,6 +283,7 @@ def eval_model(
                             usage=usage,
                             wall_clock_s=time.perf_counter() - started,
                             max_output_tokens=max_tokens,
+                            provider_finish_reason=finish_reason,
                             generation_error=f"{type(exc).__name__}: {exc}",
                         )
                         _write_manifest(manifest, manifest_path)
@@ -387,11 +390,11 @@ def _call_once(
     system: str,
     *,
     max_tokens: int,
-) -> tuple[str | None, str | None, dict[str, int | float]]:
+) -> tuple[str | None, str | None, dict[str, int | float], str | None]:
     try:
         before = _provider_usage(provider)
     except Exception as exc:
-        return None, f"provider usage error: {type(exc).__name__}: {exc}", _empty_usage()
+        return None, f"provider usage error: {type(exc).__name__}: {exc}", _empty_usage(), None
     params = GenParams(
         model=str(getattr(provider, "model", "unknown-model")),
         temperature=float(getattr(provider, "temperature", 0.0)),
@@ -414,13 +417,13 @@ def _call_once(
         except Exception as usage_exc:
             error += f"; usage error: {type(usage_exc).__name__}: {usage_exc}"
             usage = _empty_usage()
-        return None, error, usage
+        return None, error, usage, _provider_finish_reason(provider)
     try:
         after = _provider_usage(provider)
         usage = _usage_delta(before, after)
     except Exception as exc:
-        return None, f"provider usage error: {type(exc).__name__}: {exc}", _empty_usage()
-    return response, None, usage
+        return None, f"provider usage error: {type(exc).__name__}: {exc}", _empty_usage(), None
+    return response, None, usage, _provider_finish_reason(provider)
 
 
 def _recorded_temperature(provider: ProviderAdapter) -> TemperatureSetting:
@@ -447,6 +450,16 @@ def _provider_usage(provider: ProviderAdapter) -> dict[str, int | float]:
             raise ValueError(f"provider usage {name} must be nonnegative")
         values[name] = value
     return values
+
+
+def _provider_finish_reason(provider: ProviderAdapter) -> str | None:
+    """Best-effort read of the provider's most recent finish/stop reason. Unlike
+    _provider_usage() this is not load-bearing for spend accounting, so a provider
+    that doesn't expose it (or an unexpected type) degrades to None rather than
+    raising."""
+
+    value = getattr(provider, "last_finish_reason", None)
+    return value if isinstance(value, str) else None
 
 
 def _provider_usage_or(
@@ -487,6 +500,7 @@ def _merge_generation_fields(
     temperature: TemperatureSetting,
     usage: dict[str, int | float],
     max_output_tokens: int,
+    provider_finish_reason: str | None = None,
 ) -> ResultManifest:
     data = scored.model_dump(mode="json", exclude_none=True)
     data.update(
@@ -502,6 +516,8 @@ def _merge_generation_fields(
             "signature": "0" * 64,
         }
     )
+    if provider_finish_reason is not None:
+        data["provider_finish_reason"] = provider_finish_reason
     data["signature"] = compute_manifest_signature(data)
     return ResultManifest.model_validate(data)
 
@@ -517,6 +533,7 @@ def _zero_manifest(
     max_output_tokens: int,
     generation_error: str | None = None,
     official_skip_reason: str | None = None,
+    provider_finish_reason: str | None = None,
 ) -> ResultManifest:
     skipped = official_skip_reason is not None
     stages = [
@@ -553,6 +570,8 @@ def _zero_manifest(
         data["generation_error"] = generation_error
     if official_skip_reason is not None:
         data["official_skip_reason"] = official_skip_reason
+    if provider_finish_reason is not None:
+        data["provider_finish_reason"] = provider_finish_reason
     data["signature"] = compute_manifest_signature(data)
     return ResultManifest.model_validate(data)
 

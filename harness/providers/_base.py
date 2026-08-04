@@ -40,6 +40,7 @@ class PricedProvider:
         self._tokens_in = 0
         self._tokens_out = 0
         self._cost_usd = 0.0
+        self.last_finish_reason: str | None = None
 
     @property
     def usage(self) -> dict[str, int | float]:

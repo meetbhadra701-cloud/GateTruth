@@ -157,6 +157,7 @@ def test_fenced_rtl_scores_end_to_end_and_records_prompt(tmp_path):
         tokens_in_per_call=101,
         tokens_out_per_call=37,
         cost_usd_per_call=0.00125,
+        finish_reasons=["stop"],
     )
     provider.spend_path = tmp_path / "spend.json"
 
@@ -171,6 +172,7 @@ def test_fenced_rtl_scores_end_to_end_and_records_prompt(tmp_path):
     assert (manifest.tokens_in, manifest.tokens_out, manifest.cost_usd) == (101, 37, 0.00125)
     assert manifest.harness_git == evalmodel.harness_git()
     assert manifest.max_output_tokens == 128
+    assert manifest.provider_finish_reason == "stop"
     assert (tmp_path / "mock-eval/toy_task/sample_1.sv").read_text(encoding="utf-8") == source
     task = evalmodel.resolve_task("toy_task")
     prompt, system = build_generation_prompt(task)
@@ -245,6 +247,29 @@ def test_extraction_failure_removes_a_stale_sidecar(tmp_path):
     eval_model(["toy_task"], provider, out_dir=tmp_path)
 
     assert not stale_sidecar.exists()
+
+
+def test_truncated_response_records_the_providers_own_max_tokens_confirmation(tmp_path):
+    """The paper's whole token-budget narrative (Section 5) currently infers truncation from an
+    unterminated code fence alone. This proves the manifest also carries the provider's own
+    direct confirmation (finish_reason="length") for exactly that failure mode, not just our
+    inference from the malformed response."""
+
+    provider = RecordingProvider(
+        ["```systemverilog\nmodule x; // response cut off mid-module"],
+        model="mock-truncated",
+        finish_reasons=["length"],
+    )
+    provider.spend_path = tmp_path / "spend.json"
+
+    eval_model(["toy_task"], provider, out_dir=tmp_path, max_tokens=16)
+    manifest = load_manifest(manifest_path(tmp_path, "mock-truncated"))
+
+    assert manifest.generation_error == (
+        "ValueError: generation contained an unterminated code fence"
+    )
+    assert manifest.provider_finish_reason == "length"
+    assert manifest.max_output_tokens == 16
 
 
 def test_provider_default_temperature_is_recorded_in_signed_outputs(tmp_path):

@@ -63,8 +63,11 @@ class OpenRouterProvider(PricedProvider):
             text = ""
             if not choices:
                 no_text_reason = "OpenRouter response choices were empty"
+                self.last_finish_reason = None
             else:
                 choice = require_mapping(choices[0], "choices[0]")
+                finish_reason = choice.get("finish_reason")
+                self.last_finish_reason = finish_reason if isinstance(finish_reason, str) else None
                 message = require_mapping(choice.get("message"), "choices[0].message")
                 raw_text = message.get("content")
                 if raw_text is None:

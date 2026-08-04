@@ -78,6 +78,8 @@ class AnthropicProvider(PricedProvider):
                 usage.get("output_tokens"),
                 "usage.output_tokens",
             )
+            stop_reason = response.get("stop_reason")
+            self.last_finish_reason = stop_reason if isinstance(stop_reason, str) else None
         except (ProviderHTTPError, ValueError):
             self.release_call(reserved_usd=reserved)
             raise
