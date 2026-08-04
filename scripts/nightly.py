@@ -217,7 +217,16 @@ def _run(command: list[str], root: Path, *, timeout_s: int) -> subprocess.Comple
 
 
 def _git_sha(root: Path) -> str:
-    result = _run(["git", "rev-parse", "HEAD"], root, timeout_s=10)
+    # -c safe.directory=<root>: see paper/data/generate_tables.py's _git_sha() for why
+    # plain `git rev-parse` silently returns "unknown" here -- the same dubious-
+    # ownership refusal fires whenever this runs against a bind-mounted checkout owned
+    # by a different user than the container's, which is exactly how ci.yml stages
+    # source for every sandboxed docker run in this project.
+    result = _run(
+        ["git", "-c", f"safe.directory={root}", "rev-parse", "HEAD"],
+        root,
+        timeout_s=10,
+    )
     return result.stdout.strip() if result.returncode == 0 else "unknown"
 
 

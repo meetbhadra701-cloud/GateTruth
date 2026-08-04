@@ -1,0 +1,94 @@
+name: Nightly regression
+
+# Wires up scripts/nightly.py, which was already written to be "schedule-ready" (its
+# own docstring says so) but had no workflow actually registering it -- its --dry-run
+# output even prints scheduling_registration=false as a literal, self-documented flag
+# for exactly this gap. Re-scores the frozen reference solution for all 60 Track A
+# tasks (must match 66.67 exactly), runs a sequential mutation gate (>=95% kill rate)
+# against a 6-task/day rotation that covers the full suite every 10 nights, and rebuilds
+# the static site. No provider is ever constructed and no API key is ever read: this is
+# a harness-regression check against this repo's own already-committed reference
+# solutions, not an LLM campaign, so it costs nothing beyond GitHub Actions minutes.
+
+on:
+  schedule:
+    - cron: "0 7 * * *" # 07:00 UTC daily; adjust freely, not load-bearing
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly
+  cancel-in-progress: false
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out public sources only
+        uses: actions/checkout@v4
+
+      - name: Build pinned gatetruth:v1
+        run: |
+          docker build --platform linux/amd64 \
+            --tag gatetruth:v1 \
+            --file flows/Dockerfile \
+            flows
+
+      - name: Verify pinned image identity
+        # See ci.yml's identical step for why this asks `docker inspect`, not the
+        # image's own self-declared /etc/gatetruth-image-digest.
+        run: |
+          REAL_DIGEST="$(docker inspect --format='{{.Id}}' gatetruth:v1)"
+          echo "GATETRUTH_DOCKER_DIGEST=$REAL_DIGEST" >> "$GITHUB_ENV"
+          echo "real image digest (docker inspect, host-verified): $REAL_DIGEST"
+
+      - name: Make the checkout writable for the container's own uid
+        # Unlike ci.yml's read-only /work + separate /output split -- there to defend
+        # against untrusted PR-submitted code under test -- this workflow only ever
+        # scores this repo's own already-committed reference solutions against its own
+        # harness on main, so a writable checkout carries the same risk profile as
+        # running scripts/nightly.py locally. nightly.py writes its own results
+        # (results/nightly/, gitignored) relative to its own location in the tree, not
+        # to a separate output mount, so read-only isn't an option here regardless.
+        run: chmod -R a+rwX "$GITHUB_WORKSPACE"
+
+      - name: Nightly regression (acceptance + mutation rotation + site)
+        # -e GATETRUTH_DOCKER_DIGEST carries the host-verified value from the identity
+        # step above; scripts/nightly.py's own manifests/reports inherit it exactly
+        # like ci.yml's T1 smoke step does.
+        run: |
+          docker run --rm --network none --cap-drop=ALL \
+            --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
+            -e GATETRUTH_DOCKER_DIGEST \
+            --mount "type=bind,src=$GITHUB_WORKSPACE,dst=/repo" \
+            --workdir /repo gatetruth:v1 \
+            python scripts/nightly.py \
+            | tee nightly-result.txt
+          grep -Eq '^[0-9-]+ status=PASS' nightly-result.txt \
+            || { echo "::error::nightly regression did not report status=PASS"; exit 1; }
+
+      - name: Upload nightly results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-results
+          path: results/nightly/
+          retention-days: 30
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "## Nightly regression"
+            echo
+            if [ -f nightly-result.txt ]; then
+              echo '```'
+              cat nightly-result.txt
+              echo '```'
+            else
+              echo "did not run to completion"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
