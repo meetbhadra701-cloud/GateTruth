@@ -97,8 +97,14 @@ jobs:
             || { echo "::error::pytest did not report an all-passed summary line"; exit 1; }
 
       - name: T1 reference smoke (non-official)
-        # Fork PRs receive no hidden-test mount or provider secret. Official scoring
-        # remains fail-closed in the nightly/manual path with GATETRUTH_HIDDEN_ROOT.
+        # Fork PRs receive no hidden-test mount or provider secret, so this stays
+        # non-official here; official_hidden_preflight() fails closed without
+        # GATETRUTH_HIDDEN_ROOT rather than silently falling back to public tests.
+        # nightly.yml now covers non-official regression on a schedule (P1-3). There is
+        # still no official/hidden-vector CI or scheduled path at all: the hidden-vector
+        # tree must never reach a public GitHub-hosted runner, so that would need a
+        # self-hosted runner and real provider secrets -- a genuine, larger
+        # infrastructure decision, not something to wire up silently in passing here.
         # -e GATETRUTH_DOCKER_DIGEST carries forward the host-verified `docker inspect`
         # value from the identity-verification step above, so the manifests this run
         # produces record docker_digest_source="env" -- an operator-verified image
