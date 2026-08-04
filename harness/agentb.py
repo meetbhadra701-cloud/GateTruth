@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 import shutil
 import tempfile
@@ -373,8 +374,16 @@ def provider_usage(provider: ProviderAdapter) -> dict[str, int | float]:
         "tokens_out": raw.get("tokens_out", 0),
         "cost_usd": raw.get("cost_usd", 0.0),
     }
-    if any(not isinstance(value, (int, float)) or value < 0 for value in usage.values()):
-        raise ValueError("provider usage values must be nonnegative numbers")
+    # `value < 0` alone does not reject NaN (every ordered comparison against NaN is
+    # false in IEEE 754); math.isfinite() is required to actually exclude it. A NaN
+    # tokens_in/tokens_out/cost_usd would otherwise poison every downstream spend total
+    # and, worse, make the spend cap's own `> cap` check silently fail-open. See
+    # harness/spend.py's identical fix for the full reasoning.
+    if any(
+        not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0
+        for value in usage.values()
+    ):
+        raise ValueError("provider usage values must be finite, nonnegative numbers")
     return usage
 
 

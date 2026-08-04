@@ -12,6 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from harness.atomic_write import atomic_write_text  # noqa: E402
 from harness.mutate import run_mutation  # noqa: E402
 from harness.runner import runtime_docker_digest_info  # noqa: E402
 
@@ -23,10 +24,7 @@ def task_ids(root: Path = REPO_ROOT) -> list[str]:
 
 
 def write_json(path: Path, value: dict[str, Any]) -> None:
-    path.write_text(
-        json.dumps(value, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    atomic_write_text(path, json.dumps(value, indent=2, sort_keys=True) + "\n")
 
 
 def main(argv: list[str] | None = None) -> int:

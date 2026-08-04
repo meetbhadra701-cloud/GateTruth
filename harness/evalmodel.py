@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 import time
 from dataclasses import dataclass
@@ -816,8 +817,18 @@ def _provider_usage(provider: ProviderAdapter) -> dict[str, int | float]:
     values: dict[str, int | float] = {}
     for name in ("tokens_in", "tokens_out", "cost_usd"):
         value = raw.get(name)
-        if isinstance(value, bool) or not isinstance(value, int | float) or value < 0:
-            raise ValueError(f"provider usage {name} must be nonnegative")
+        # `value < 0` alone does not reject NaN (every ordered comparison against NaN
+        # is false in IEEE 754); math.isfinite() is required to actually exclude it.
+        # See harness/spend.py's identical fix for the full reasoning -- a NaN here
+        # would poison every downstream spend total and make the spend cap's own
+        # `> cap` check silently fail-open.
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, int | float)
+            or not math.isfinite(value)
+            or value < 0
+        ):
+            raise ValueError(f"provider usage {name} must be a finite nonnegative number")
         values[name] = value
     return values
 

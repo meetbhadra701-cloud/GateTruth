@@ -16,6 +16,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from harness.atomic_write import atomic_write_text  # noqa: E402
 from harness.git_provenance import harness_git  # noqa: E402
 
 RESULTS_ROOT = REPO_ROOT / "results" / "nightly"
@@ -115,10 +116,7 @@ def run_nightly(
     output_root = root / "results" / "nightly"
     output_root.mkdir(parents=True, exist_ok=True)
     output_path = output_root / f"{run_date.isoformat()}.json"
-    output_path.write_text(
-        json.dumps(summary, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    atomic_write_text(output_path, json.dumps(summary, indent=2, sort_keys=True) + "\n")
     acceptance_passed = sum(item["status"] == "pass" for item in acceptance)
     mutation_passed = sum(item["status"] == "pass" for item in mutation)
     line = (

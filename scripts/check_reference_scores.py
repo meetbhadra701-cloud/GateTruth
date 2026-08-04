@@ -13,6 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from harness.atomic_write import atomic_write_text  # noqa: E402
 from harness.runner import run_task  # noqa: E402
 
 REFERENCE_PPA = 1.0
@@ -87,9 +88,8 @@ def main(argv: list[str] | None = None) -> int:
         "passed": len(results) - len(failures),
         "total": len(results),
     }
-    (args.out / "summary.json").write_text(
-        json.dumps(summary, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
+    atomic_write_text(
+        args.out / "summary.json", json.dumps(summary, indent=2, sort_keys=True) + "\n"
     )
     print(
         f"reference score check: {summary['passed']}/{summary['total']} "

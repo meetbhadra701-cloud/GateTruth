@@ -24,6 +24,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from harness.atomic_write import atomic_write_text  # noqa: E402
 from harness.schemas.manifest import load_manifest  # noqa: E402
 
 DIAG_CODE_RE = re.compile(r"%(?:Warning|Error)-([A-Z0-9]+)")
@@ -101,8 +102,7 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         print("lint diagnostics ledger check: PASS")
         return 0
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(rendered, encoding="utf-8", newline="\n")
+    atomic_write_text(output, rendered)
     print(f"wrote {len(json.loads(rendered)['pairs'])} lint-failure diagnostics to {output}")
     return 0
 

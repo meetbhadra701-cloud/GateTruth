@@ -170,3 +170,59 @@ def test_reconciliation_cli_drops_only_orphaned_reservations(tmp_path):
     assert json.loads(result.stdout) == {"mode": "write", **audit}
     reconciled = json.loads(path.read_text(encoding="utf-8"))
     assert reconciled == {"total_usd": 3.5, "runs": settled}
+
+
+def test_reserve_spend_rejects_nan_and_infinite_cost(tmp_path):
+    path = tmp_path / "spend.json"
+    for bad in (float("nan"), float("inf"), float("-inf")):
+        with pytest.raises(ValueError, match="finite and non-negative"):
+            reserve_spend(bad, provider="test", model="m", path=path, cap_usd=10.0)
+    assert not path.exists()
+
+
+def test_settle_spend_reservation_rejects_nan_and_infinite_values(tmp_path):
+    path = tmp_path / "spend.json"
+    reserve_spend(1.0, provider="test", model="m", path=path, cap_usd=10.0, reservation=True)
+    for bad in (float("nan"), float("inf")):
+        with pytest.raises(ValueError, match="finite and non-negative"):
+            settle_spend_reservation(
+                bad, 0.5, provider="test", model="m", path=path, cap_usd=10.0
+            )
+        with pytest.raises(ValueError, match="finite and non-negative"):
+            settle_spend_reservation(
+                1.0, bad, provider="test", model="m", path=path, cap_usd=10.0
+            )
+
+
+def test_spend_cap_from_env_rejects_non_finite_value(monkeypatch):
+    monkeypatch.setenv("GATETRUTH_SPEND_CAP_USD", "nan")
+    with pytest.raises(ValueError, match="finite and non-negative"):
+        spend_cap_from_env()
+
+    monkeypatch.setenv("GATETRUTH_SPEND_CAP_USD", "inf")
+    with pytest.raises(ValueError, match="finite and non-negative"):
+        spend_cap_from_env()
+
+
+def test_a_nan_cost_already_in_the_ledger_is_rejected_on_load_not_silently_trusted(
+    tmp_path,
+):
+    """A NaN cost_usd surviving into the ledger (e.g. hand-edited, or written by a
+    version of the harness that predates this check) must not be silently summed --
+    `nan < 0` is false, so a naive non-negativity check alone would let it through and
+    poison every downstream total, and worse, make the cap's own `> cap` comparison
+    silently false (fail-open) for every run after it."""
+
+    path = tmp_path / "spend.json"
+    path.write_text(
+        json.dumps(
+            {
+                "total_usd": 0.0,
+                "runs": [{"provider": "test", "model": "m", "cost_usd": float("nan")}],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="finite and non-negative"):
+        load_spend(path)

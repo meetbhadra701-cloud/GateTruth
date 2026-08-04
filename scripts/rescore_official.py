@@ -17,6 +17,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from harness.atomic_write import atomic_write_text  # noqa: E402
 from harness.schemas.canonical_json import compute_manifest_signature  # noqa: E402
 from harness.schemas.manifest import ResultManifest  # noqa: E402
 from harness.scoring import (  # noqa: E402
@@ -294,7 +295,7 @@ def main(argv: list[str] | None = None) -> int:
             )
         else:
             for path in stale:
-                path.write_text(updates[path], encoding="utf-8", newline="\n")
+                atomic_write_text(path, updates[path])
             _generate_paper_tables(
                 summaries=summaries,
                 eval_dir=eval_dir,

@@ -46,7 +46,15 @@ def spend_cap_from_env() -> float:
         "SPEND_CAP_USD",
         str(DEFAULT_SPEND_CAP_USD),
     )
-    return float(value)
+    cap = float(value)
+    # A non-finite cap (nan, inf, -inf from a malformed env var) would make every
+    # `committed > cap` check fail-open: `x > nan` and `x > inf` are always false,
+    # `x > -inf` is always true even at zero spend. Fail closed on a malformed cap
+    # instead of silently running with no effective limit (nan/inf) or refusing all
+    # spend outright (-inf) without saying why.
+    if not math.isfinite(cap) or cap < 0:
+        raise ValueError(f"spend cap must be finite and non-negative, got {value!r}")
+    return cap
 
 
 def load_spend(path: str | Path = DEFAULT_SPEND_PATH) -> dict[str, Any]:
@@ -101,8 +109,14 @@ def _ledger_runs(data: dict[str, Any]) -> list[dict[str, Any]]:
 
 def _run_cost(run: dict[str, Any]) -> float:
     cost = float(run.get("cost_usd", -1.0))
-    if cost < 0:
-        raise ValueError("spend ledger run costs must be non-negative")
+    # `cost < 0` alone does not reject NaN: IEEE 754 makes every ordered comparison
+    # against NaN false, so a NaN cost_usd (e.g. from a malformed provider response --
+    # json.loads accepts a literal NaN token by default, it is not standard JSON but
+    # Python's parser allows it) would silently pass this guard, poison math.fsum()'s
+    # total to NaN, and -- worse -- make every later `total > cap` cap check also
+    # false, fail-open, since NaN compares false against everything.
+    if not math.isfinite(cost) or cost < 0:
+        raise ValueError("spend ledger run costs must be finite and non-negative")
     return cost
 
 
@@ -149,8 +163,8 @@ def reserve_spend(
     cap_usd: float | None = None,
     reservation: bool = False,
 ) -> dict[str, Any]:
-    if cost_usd < 0:
-        raise ValueError("cost_usd must be non-negative")
+    if not math.isfinite(cost_usd) or cost_usd < 0:
+        raise ValueError("cost_usd must be finite and non-negative")
     cap = spend_cap_from_env() if cap_usd is None else cap_usd
     spend_path = Path(path)
     with _spend_lock(spend_path):
@@ -181,8 +195,8 @@ def settle_spend_reservation(
 ) -> dict[str, Any]:
     """Replace the latest matching reservation with the API-reported actual cost."""
 
-    if reserved_usd < 0 or actual_usd < 0:
-        raise ValueError("spend values must be non-negative")
+    if not math.isfinite(reserved_usd) or not math.isfinite(actual_usd) or reserved_usd < 0 or actual_usd < 0:
+        raise ValueError("spend values must be finite and non-negative")
     spend_path = Path(path)
     with _spend_lock(spend_path):
         data = _load_spend_unlocked(spend_path)

@@ -12,6 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from harness.atomic_write import atomic_write_text  # noqa: E402
 from harness.schemas.manifest import ResultManifest, load_manifest  # noqa: E402
 from harness.schemas.task_yaml import load_task_yaml  # noqa: E402
 from harness.scoring import (  # noqa: E402
@@ -141,8 +142,7 @@ def main(argv: list[str] | None = None) -> int:
         if output.is_file() and output.read_text(encoding="utf-8") == rendered:
             print(f"reference metrics unchanged: {output}")
             return 0
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(rendered, encoding="utf-8", newline="\n")
+        atomic_write_text(output, rendered)
         print(f"wrote {len(json.loads(rendered)['tasks'])} tasks to {output}")
         return 0
     except (OSError, ValueError) as exc:
