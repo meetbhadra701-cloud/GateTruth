@@ -16,6 +16,7 @@ from harness.atomic_write import atomic_write_text
 from harness.git_provenance import harness_git
 from harness.providers import GenParams, ProviderAdapter
 from harness.providers.pricing import worst_case_cost
+from harness.providers.retry import generate_with_transport_retry
 from harness.runner import SUITE_VERSION, TaskPackage, resolve_task, run_task, runtime_docker_digest
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import ResultManifest, TemperatureSetting
@@ -36,6 +37,11 @@ FENCE_RE = re.compile(
     flags=re.IGNORECASE | re.DOTALL,
 )
 STAGE_NAMES = ("lint", "sim", "formal", "synth", "sta", "power", "route")
+TRANSPORT_RETRY_DELAYS_S = (0.25, 0.5)
+
+
+def _retry_sleep(delay_s: float) -> None:
+    time.sleep(delay_s)
 
 
 @dataclass(frozen=True)
@@ -407,7 +413,14 @@ def _call_once(
         seed=0,
     )
     try:
-        response = provider.generate(prompt, system, params)
+        response = generate_with_transport_retry(
+            provider,
+            prompt,
+            system,
+            params,
+            delays_s=TRANSPORT_RETRY_DELAYS_S,
+            sleep=_retry_sleep,
+        )
     except SpendCapExceeded:
         # A campaign-level event, not a per-sample failure: let it propagate to
         # eval_model()'s caller (harness/cli.py already handles it cleanly at the

@@ -15,7 +15,7 @@ from typing import Any, Literal
 from harness.atomic_write import atomic_write_bytes, atomic_write_text
 from harness.flows import FlowError, run_sta, run_synth
 from harness.providers import GenParams, ProviderAdapter
-from harness.providers._http import ProviderRetryableError
+from harness.providers.retry import generate_with_transport_retry
 from harness.runner import TaskPackage, run_lint, run_sim
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import TemperatureSetting
@@ -204,14 +204,14 @@ def _generate_with_transport_retry(
     prompt: str,
     params: GenParams,
 ) -> str:
-    for attempt in range(len(TRANSPORT_RETRY_DELAYS_S) + 1):
-        try:
-            return provider.generate(prompt, ACTION_PROTOCOL, params)
-        except ProviderRetryableError:
-            if attempt == len(TRANSPORT_RETRY_DELAYS_S):
-                raise
-            _retry_sleep(TRANSPORT_RETRY_DELAYS_S[attempt])
-    raise AssertionError("transport retry loop did not return or raise")
+    return generate_with_transport_retry(
+        provider,
+        prompt,
+        ACTION_PROTOCOL,
+        params,
+        delays_s=TRANSPORT_RETRY_DELAYS_S,
+        sleep=_retry_sleep,
+    )
 
 
 def _retry_sleep(delay_s: float) -> None:

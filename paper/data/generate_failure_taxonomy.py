@@ -14,9 +14,13 @@ Classification of a failing (model, task) pair:
   (``no_extraction``).
 - ``generation_error`` starting with ``"provider error"`` -- the API call itself failed
   (transport error, non-2xx status, empty response) before any generation was produced
-  (``provider_error``). This is infrastructure flakiness, not a model-capability signal,
-  and the harness does not currently retry it -- see the Limitations paragraph this
-  script backs.
+  (``provider_error``). This is infrastructure flakiness, not a model-capability signal.
+  The 16,384-token campaign this script reads predates harness/providers/retry.py, which
+  now retries transient failures (HTTP 408/429/5xx, dropped connections, truncated
+  reads) up to twice with a bounded backoff before giving up -- so this dataset's
+  provider_error counts include transient blips a rerun would no longer record as
+  failures at all, not just ones a rerun would still classify the same way. See the
+  Limitations paragraph this script backs.
 - ``generation_error`` is ``None`` -- a module was extracted and scored for real; the
   first stage (in pipeline order) with status ``"fail"`` among lint/sim/formal is the
   failing stage. A ``lint`` failure is further split into ``width_only`` (every

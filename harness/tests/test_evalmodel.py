@@ -14,6 +14,7 @@ from harness.evalmodel import (
     extract_module_source,
     task_ids_for_tier,
 )
+from harness.providers._http import ProviderHTTPError, ProviderRetryableError
 from harness.providers.mock import MockCompletionProvider
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest import load_manifest
@@ -241,6 +242,93 @@ def test_transport_failure_removes_a_stale_sidecar_from_a_prior_campaign(tmp_pat
     assert manifest.generation_error is not None
     assert manifest.task_score == 0.0
     assert not stale_sidecar.exists()
+
+
+class RetryableThenSucceedsProvider(MockCompletionProvider):
+    """Raises ProviderRetryableError a fixed number of times before delegating to the
+    real MockCompletionProvider.generate() -- lets a test verify the transport-retry
+    wrapper actually retries a transient failure rather than scoring it 0 on the first
+    hiccup, the exact gap results/eval-16384's own Gemini row already documents in the
+    paper (Table~\\ref{tab:budget}'s caption: 9 of Gemini's 13 no-extract failures were
+    provider-side retryable errors on a shared endpoint, not the model)."""
+
+    def __init__(self, *args, failures_before_success: int, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self._failures_before_success = failures_before_success
+        self.attempts = 0
+
+    def generate(self, spec, interface, params):
+        self.attempts += 1
+        if self.attempts <= self._failures_before_success:
+            raise ProviderRetryableError("simulated transient provider error")
+        return super().generate(spec, interface, params)
+
+
+class NonRetryableErrorProvider(MockCompletionProvider):
+    """Raises a non-retryable ProviderHTTPError (e.g. a 400) every call -- the retry
+    wrapper must not retry this, only ProviderRetryableError."""
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.attempts = 0
+
+    def generate(self, spec, interface, params):
+        self.attempts += 1
+        raise ProviderHTTPError("provider HTTP 400")
+
+
+def test_transient_provider_error_is_retried_and_recovers(tmp_path, monkeypatch):
+    delays: list[float] = []
+    monkeypatch.setattr(evalmodel, "_retry_sleep", delays.append)
+    source = TOY_REF.read_text(encoding="utf-8")
+    provider = RetryableThenSucceedsProvider(
+        [f"```systemverilog\n{source}```"],
+        model="mock-retry-recovers",
+        failures_before_success=1,
+    )
+    provider.spend_path = tmp_path / "spend.json"
+
+    eval_model(["toy_task"], provider, out_dir=tmp_path)
+    manifest = load_manifest(manifest_path(tmp_path, "mock-retry-recovers"))
+
+    assert provider.attempts == 2
+    assert delays == [evalmodel.TRANSPORT_RETRY_DELAYS_S[0]]
+    assert manifest.generation_error is None
+    assert manifest.task_score == pytest.approx(66.6666666667)
+
+
+def test_transient_provider_error_exhausts_retries_and_scores_zero(tmp_path, monkeypatch):
+    delays: list[float] = []
+    monkeypatch.setattr(evalmodel, "_retry_sleep", delays.append)
+    provider = RetryableThenSucceedsProvider(
+        ["unused"], model="mock-retry-exhausted", failures_before_success=999
+    )
+    provider.spend_path = tmp_path / "spend.json"
+
+    eval_model(["toy_task"], provider, out_dir=tmp_path)
+    manifest = load_manifest(manifest_path(tmp_path, "mock-retry-exhausted"))
+
+    assert provider.attempts == len(evalmodel.TRANSPORT_RETRY_DELAYS_S) + 1
+    assert delays == list(evalmodel.TRANSPORT_RETRY_DELAYS_S)
+    assert manifest.task_score == 0.0
+    assert manifest.generation_error is not None
+    assert manifest.generation_error.startswith("provider error: ProviderRetryableError")
+
+
+def test_non_retryable_provider_error_is_not_retried(tmp_path, monkeypatch):
+    delays: list[float] = []
+    monkeypatch.setattr(evalmodel, "_retry_sleep", delays.append)
+    provider = NonRetryableErrorProvider(["unused"], model="mock-nonretryable")
+    provider.spend_path = tmp_path / "spend.json"
+
+    eval_model(["toy_task"], provider, out_dir=tmp_path)
+    manifest = load_manifest(manifest_path(tmp_path, "mock-nonretryable"))
+
+    assert provider.attempts == 1
+    assert delays == []
+    assert manifest.task_score == 0.0
+    assert manifest.generation_error is not None
+    assert manifest.generation_error.startswith("provider error: ProviderHTTPError")
 
 
 def test_extraction_failure_removes_a_stale_sidecar(tmp_path):
