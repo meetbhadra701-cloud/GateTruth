@@ -15,6 +15,7 @@ import pytest
 from harness.schemas.canonical_json import compute_manifest_signature
 from paper.data.generate_tables import (
     TableDataError,
+    _git_sha,
     generate_tables,
     load_agent_evaluations,
     load_evaluations,
@@ -718,3 +719,29 @@ def test_script_entrypoint_bootstraps_repo_imports(tmp_path: Path) -> None:
     assert "| provider-b | model-beta | 2/2 | 100.00% |" in (
         output / "trackb_table.md"
     ).read_text(encoding="utf-8")
+
+
+def test_git_sha_resolves_the_real_commit_even_under_dubious_ownership():
+    """_git_sha() used to shell out to plain `git rev-parse`, which refuses to run at
+    all ("detected dubious ownership") whenever the repo is owned by a different user
+    than the one running it -- exactly the situation every sandboxed docker run in
+    this project is in (the bind mount is owned by the host user, not the container's
+    uid 10001). That made every table generated inside the actual pinned sandbox this
+    project mandates silently carry "git-sha: unknown", while a plain host run (owner
+    matches, no dubious-ownership refusal) looked fine -- backwards for a provenance
+    field, since the sandboxed run is the one whose output should be trusted. Verified
+    the bug directly against a real sandboxed docker run before fixing this."""
+
+    sha = _git_sha(REPO_ROOT)
+
+    assert sha != "unknown"
+    assert len(sha) == 12
+    assert all(c in "0123456789abcdef" for c in sha)
+    expected = subprocess.run(
+        ["git", "-c", f"safe.directory={REPO_ROOT}", "rev-parse", "--short=12", "HEAD"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    assert sha == expected

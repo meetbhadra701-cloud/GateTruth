@@ -774,8 +774,14 @@ def _optional_number(
 
 
 def _git_sha(root: Path) -> str:
+    # -c safe.directory=<root> (not a global `git config`) sidesteps git's dubious-
+    # ownership refusal, which fires every time this runs inside the pinned sandbox:
+    # the bind-mounted repo is owned by the host user, not the container's uid 10001.
+    # Without it this silently degraded to "unknown" on every correctly-sandboxed run
+    # -- the one this project actually mandates -- while still looking like a real
+    # value on an unsandboxed host run, which is backwards for a provenance field.
     result = subprocess.run(
-        ["git", "rev-parse", "--short=12", "HEAD"],
+        ["git", "-c", f"safe.directory={root}", "rev-parse", "--short=12", "HEAD"],
         cwd=root,
         capture_output=True,
         text=True,
