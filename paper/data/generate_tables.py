@@ -9,6 +9,8 @@ import sys
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from pathlib import Path
+from statistics import fmean
+from statistics import median as statistics_median
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -20,7 +22,8 @@ from harness.schemas.canonical_json import compute_manifest_signature  # noqa: E
 from harness.schemas.manifest import load_manifest  # noqa: E402
 from harness.schemas.manifest_b import load_agent_manifest_b  # noqa: E402
 from harness.schemas.task_yaml import load_task_yaml  # noqa: E402
-from harness.scoring import load_reference_metrics  # noqa: E402
+from harness.scoring import load_reference_metrics, score_manifest  # noqa: E402
+from harness.trackb import validate_track_b_semantics  # noqa: E402
 
 TRACK_A_SUITE_SIZE = 60
 TRACK_B_SUITE_SIZE = 8
@@ -241,27 +244,90 @@ def load_evaluations(
         if len(complete) > 1:
             _raise_ambiguous_run("Track A", key, complete)
         path, raw = complete[0]
+        per_task = _track_a_validated_scores(raw, path, expected)
         pass_count = 0
         ppas: list[float] = []
+        total_tokens = 0
+        total_cost = 0.0
+        task_scores: list[float] = []
         for task_id in expected:
-            score = _number(raw["tasks"][task_id], "mean_score", path)
+            score, tokens, cost = per_task[task_id]
+            task_scores.append(score)
+            total_tokens += tokens
+            total_cost += cost
             if score > 0:
                 pass_count += 1
                 ppas.append(score * 1.5 / 100.0)
+
+        real_aggregate = fmean(task_scores)
+        claimed_aggregate = _number(raw, "aggregate_mean", path)
+        if not math.isclose(claimed_aggregate, real_aggregate, abs_tol=1e-6):
+            raise TableDataError(
+                f"aggregate_mean {claimed_aggregate} does not match the mean of "
+                f"{len(task_scores)} recomputed child task scores "
+                f"({real_aggregate}) in {path}"
+            )
+        claimed_tokens = _integer(raw, "tokens_in", path) + _integer(
+            raw, "tokens_out", path
+        )
+        if claimed_tokens != total_tokens:
+            raise TableDataError(
+                f"tokens_in+tokens_out ({claimed_tokens}) does not match the sum "
+                f"of child manifest tokens ({total_tokens}) in {path}"
+            )
+        claimed_cost = _number(raw, "cost_usd", path)
+        if not math.isclose(claimed_cost, total_cost, abs_tol=1e-6):
+            raise TableDataError(
+                f"cost_usd {claimed_cost} does not match the sum of child "
+                f"manifest costs ({total_cost}) in {path}"
+            )
+
         records.append(
             EvalRecord(
                 provider=_text(raw, "provider", path),
                 model=_text(raw, "model", path),
                 tasks=len(expected),
-                aggregate_score=_number(raw, "aggregate_mean", path),
-                tokens=_integer(raw, "tokens_in", path)
-                + _integer(raw, "tokens_out", path),
-                cost_usd=_number(raw, "cost_usd", path),
+                aggregate_score=real_aggregate,
+                tokens=total_tokens,
+                cost_usd=total_cost,
                 pass_count=pass_count,
                 mean_ppa_passed=(sum(ppas) / len(ppas)) if ppas else None,
             )
         )
     return sorted(records, key=lambda row: (-row.aggregate_score, row.model, row.provider))
+
+
+def _track_a_validated_scores(
+    raw: dict[str, Any],
+    summary_path: Path,
+    expected: frozenset[str],
+) -> dict[str, tuple[float, int, float]]:
+    """For every task, independently recompute its real task_score via
+    score_manifest() -- which re-derives PPA from the manifest's own recorded
+    stage metrics rather than trusting its ppa/task_score fields (GTFS-007) -- on
+    every sample manifest that _track_a_incomplete_reason already proved exists
+    and matches its signed summary entry. A tampered summary whose child
+    manifests are untouched (GTFS-034's exact reproduction) is caught here: the
+    summary's own aggregate/tokens/cost claims are never trusted, only these
+    recomputed values are. Returns task_id -> (mean_score, tokens, cost_usd).
+    """
+
+    result: dict[str, tuple[float, int, float]] = {}
+    for task_id in expected:
+        samples = raw["tasks"][task_id]["samples"]
+        scores: list[float] = []
+        tokens = 0
+        cost = 0.0
+        for sample in samples:
+            manifest_path = _referenced_manifest(summary_path, sample.get("manifest"))
+            if manifest_path is None:
+                raise TableDataError(f"{task_id} has an invalid manifest reference")
+            scores.append(score_manifest(manifest_path))
+            manifest = load_manifest(manifest_path)
+            tokens += manifest.tokens_in + manifest.tokens_out
+            cost += manifest.cost_usd
+        result[task_id] = (fmean(scores), tokens, cost)
+    return result
 
 
 def load_agent_evaluations(
@@ -299,53 +365,143 @@ def load_agent_evaluations(
             _raise_ambiguous_run("Track B", key, complete)
 
         path, raw = complete[0]
-        attempted = _integer(raw, "tasks_attempted", path)
-        objective_met = _integer(raw, "tasks_objective_met", path)
-        rate = _number(raw, "objective_met_rate", path)
-        if objective_met > attempted or rate > 1:
-            raise TableDataError(f"invalid agent objective counts in {path}")
-        expected_rate = objective_met / attempted if attempted else 0.0
-        if not math.isclose(rate, expected_rate, abs_tol=1e-12):
-            raise TableDataError(f"agent objective-met rate mismatch in {path}")
+        validated = _track_b_validated_results(raw, path, expected)
 
-        median = raw.get("median_ppa_delta")
-        if not isinstance(median, dict):
+        objective_met = sum(1 for v in validated.values() if v.objective_pass)
+        attempted = len(expected)
+        real_rate = objective_met / attempted if attempted else 0.0
+        claimed_attempted = _integer(raw, "tasks_attempted", path)
+        claimed_objective_met = _integer(raw, "tasks_objective_met", path)
+        claimed_rate = _number(raw, "objective_met_rate", path)
+        if claimed_attempted != attempted:
+            raise TableDataError(
+                f"tasks_attempted {claimed_attempted} does not match the "
+                f"canonical suite size {attempted} in {path}"
+            )
+        if claimed_objective_met != objective_met:
+            raise TableDataError(
+                f"tasks_objective_met {claimed_objective_met} does not match "
+                f"{objective_met} recomputed from child manifests in {path}"
+            )
+        if not math.isclose(claimed_rate, real_rate, abs_tol=1e-12):
+            raise TableDataError(
+                f"objective_met_rate {claimed_rate} does not match "
+                f"{real_rate} recomputed from child manifests in {path}"
+            )
+
+        area_ratios = [
+            v.area_ratio for v in validated.values() if v.area_ratio is not None
+        ]
+        power_ratios = [
+            v.power_ratio for v in validated.values() if v.power_ratio is not None
+        ]
+        wns_deltas = [
+            v.wns_delta_ns for v in validated.values() if v.wns_delta_ns is not None
+        ]
+        real_median = PPADeltaRecord(
+            area_ratio=statistics_median(area_ratios) if area_ratios else None,
+            power_ratio=statistics_median(power_ratios) if power_ratios else None,
+            wns_delta_ns=statistics_median(wns_deltas) if wns_deltas else None,
+        )
+        claimed_median_raw = raw.get("median_ppa_delta")
+        if not isinstance(claimed_median_raw, dict):
             raise TableDataError(f"median_ppa_delta must be an object in {path}")
+        for field in ("area_ratio", "power_ratio", "wns_delta_ns"):
+            claimed_value = _optional_number(
+                claimed_median_raw, field, path, nonnegative=field != "wns_delta_ns"
+            )
+            real_value = getattr(real_median, field)
+            if (claimed_value is None) != (real_value is None):
+                raise TableDataError(
+                    f"median_ppa_delta.{field} presence does not match recomputed "
+                    f"child manifests in {path}"
+                )
+            if (
+                claimed_value is not None
+                and real_value is not None
+                and not math.isclose(claimed_value, real_value, rel_tol=1e-6, abs_tol=1e-9)
+            ):
+                raise TableDataError(
+                    f"median_ppa_delta.{field} {claimed_value} does not match "
+                    f"{real_value} recomputed from child manifests in {path}"
+                )
+
+        total_tokens = sum(v.tokens for v in validated.values())
+        total_cost = sum(v.cost_usd for v in validated.values())
+        claimed_tokens = _integer(raw, "tokens_in", path) + _integer(
+            raw, "tokens_out", path
+        )
+        if claimed_tokens != total_tokens:
+            raise TableDataError(
+                f"tokens_in+tokens_out ({claimed_tokens}) does not match the sum "
+                f"of child manifest tokens ({total_tokens}) in {path}"
+            )
+        claimed_cost = _number(raw, "cost_usd", path)
+        if not math.isclose(claimed_cost, total_cost, abs_tol=1e-6):
+            raise TableDataError(
+                f"cost_usd {claimed_cost} does not match the sum of child "
+                f"manifest costs ({total_cost}) in {path}"
+            )
+
         records.append(
             AgentEvalRecord(
                 provider=_text(raw, "provider", path),
                 model=_text(raw, "model", path),
                 tasks_attempted=attempted,
                 tasks_objective_met=objective_met,
-                objective_met_rate=rate,
-                median_ppa_delta=PPADeltaRecord(
-                    area_ratio=_optional_number(
-                        median,
-                        "area_ratio",
-                        path,
-                        nonnegative=True,
-                    ),
-                    power_ratio=_optional_number(
-                        median,
-                        "power_ratio",
-                        path,
-                        nonnegative=True,
-                    ),
-                    wns_delta_ns=_optional_number(
-                        median,
-                        "wns_delta_ns",
-                        path,
-                    ),
-                ),
-                cost_usd=_number(raw, "cost_usd", path),
-                tokens=_integer(raw, "tokens_in", path)
-                + _integer(raw, "tokens_out", path),
+                objective_met_rate=real_rate,
+                median_ppa_delta=real_median,
+                cost_usd=total_cost,
+                tokens=total_tokens,
             )
         )
     return sorted(
         records,
         key=lambda row: (-row.objective_met_rate, row.model, row.provider),
     )
+
+
+@dataclass(frozen=True)
+class _TrackBTaskResult:
+    objective_pass: bool
+    area_ratio: float | None
+    power_ratio: float | None
+    wns_delta_ns: float | None
+    tokens: int
+    cost_usd: float
+
+
+def _track_b_validated_results(
+    raw: dict[str, Any],
+    summary_path: Path,
+    expected: frozenset[str],
+) -> dict[str, _TrackBTaskResult]:
+    """For every task, load its real child manifest and run
+    validate_track_b_semantics() -- which re-derives correctness/objective truth
+    from the manifest's own stages exactly as run_track_b() computes it (GTFS-014)
+    -- rather than trusting the summary's tasks_objective_met/objective_met_rate/
+    median_ppa_delta fields directly.
+    """
+
+    result: dict[str, _TrackBTaskResult] = {}
+    for task_id in expected:
+        manifest_path = _referenced_manifest(
+            summary_path, raw["tasks"][task_id].get("manifest")
+        )
+        if manifest_path is None:
+            raise TableDataError(f"{task_id} has an invalid manifest reference")
+        manifest = load_agent_manifest_b(manifest_path)
+        validate_track_b_semantics(manifest)
+        delta = manifest.ppa_delta
+        result[task_id] = _TrackBTaskResult(
+            objective_pass=manifest.objective_pass,
+            area_ratio=delta.area_ratio,
+            power_ratio=delta.power_ratio,
+            wns_delta_ns=delta.wns_delta_ns,
+            tokens=manifest.tokens_in + manifest.tokens_out,
+            cost_usd=manifest.cost_usd,
+        )
+    return result
 
 
 def _signed_summary_candidates(

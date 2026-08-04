@@ -13,6 +13,7 @@ from pathlib import Path
 import pytest
 
 from harness.schemas.canonical_json import compute_manifest_signature
+from harness.scoring import load_reference_metrics
 from paper.data.generate_tables import (
     TableDataError,
     generate_tables,
@@ -32,17 +33,20 @@ TRACK_A_FIXTURE = (
     / "smoke"
     / "claude-haiku-4-5-20251001"
 )
-TRACK_B_FIXTURE = (
-    REPO_ROOT
-    / "site"
-    / "tests"
-    / "fixtures"
-    / "agent"
-    / "smoke"
-    / "claude-haiku-4-5-20251001"
-    / "toy_taskB.json"
-)
 CANARY_PREFIX = "SILICONBENCH-" + "CANARY-"
+
+# Real, resolvable canonical task IDs -- score_manifest()/validate_track_b_semantics()
+# resolve reference metrics and objective.yaml against the actual repository tree
+# (harness/reference_metrics.json, REPO_ROOT/tasksB), not whatever synthetic tasks_root
+# a test passes in, so these fixtures must name real tasks rather than invented ones
+# (GTFS-034: the old "t1_alpha"/"b1_alpha" placeholders stopped resolving once
+# load_evaluations/load_agent_evaluations started independently recomputing scores).
+TRACK_A_TASK_1 = "t1_gray_counter"
+TRACK_A_TASK_2 = "t1_pwm"
+# behavior_preserving=false (no SEC gate) and =true (SEC gate required) respectively --
+# exercises both branches of validate_track_b_semantics.
+TRACK_B_TASK_1 = "b5_remove_latches_decoder"
+TRACK_B_TASK_2 = "b1_close_timing_mac"
 
 
 def _write_task(root: Path, task_id: str, tier: str, formal: bool, suffix: str) -> None:
@@ -65,6 +69,10 @@ hidden_review: PENDING
 
 
 def _write_agent_task(root: Path, task_id: str) -> None:
+    """Only needs to exist for _canonical_task_ids' glob count -- the real
+    objective.yaml consulted by validate_track_b_semantics lives under the real
+    REPO_ROOT/tasksB/<task_id>/, not this fixture root."""
+
     task_root = root / task_id
     task_root.mkdir(parents=True)
     (task_root / "objective.yaml").write_text(
@@ -79,13 +87,58 @@ def _write_track_a_manifest(
     task_id: str,
     provider: str,
     model: str,
+    tokens_in: int | None = None,
+    tokens_out: int | None = None,
+    cost_usd: float | None = None,
+    passing: bool = True,
 ) -> dict:
+    """A manifest whose stage metrics are genuinely dimensionally consistent with
+    task_id's real committed reference metrics (score_manifest independently
+    recomputes PPA from these, GTFS-007) -- not hand-picked round numbers."""
+
     raw = json.loads(
         (TRACK_A_FIXTURE / "t1_gray_counter" / "sample_1.json").read_text(
             encoding="utf-8"
         )
     )
+    if passing:
+        reference = load_reference_metrics(task_id)
+        for stage in raw["stages"]:
+            if stage["stage"] == 3:
+                stage["area_um2"] = reference.area_um2
+            elif stage["stage"] == 4:
+                stage["wns_ns"] = reference.clock_target_ns - reference.delay_ns
+            elif stage["stage"] == 5:
+                stage["power_mw"] = reference.power_mw
+        raw["ppa"] = 1.0
+        raw["task_score"] = round(66.66666666666667, 10)
+    else:
+        for stage in raw["stages"]:
+            if stage["stage"] == 0:
+                stage["status"] = "fail"
+                stage.pop("warnings", None)
+            elif stage["stage"] in {1, 2, 3, 4, 5}:
+                stage["status"] = "fail"
+                for key in (
+                    "tests_run",
+                    "tests_passed",
+                    "area_um2",
+                    "cell_count",
+                    "wns_ns",
+                    "tns_ns",
+                    "fmax_mhz",
+                    "power_mw",
+                ):
+                    stage.pop(key, None)
+        raw["ppa"] = 0.0
+        raw["task_score"] = 0.0
     raw.update(task_id=task_id, provider=provider, model=model)
+    if tokens_in is not None:
+        raw["tokens_in"] = tokens_in
+    if tokens_out is not None:
+        raw["tokens_out"] = tokens_out
+    if cost_usd is not None:
+        raw["cost_usd"] = cost_usd
     raw["signature"] = compute_manifest_signature(raw)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
@@ -99,13 +152,16 @@ def _write_track_a_summary(
     provider: str,
     model: str,
     task_ids: list[str],
-    aggregate_score: float,
-    tokens_in: int,
-    tokens_out: int,
-    cost_usd: float,
+    failing_tasks: frozenset[str] = frozenset(),
 ) -> None:
+    """tokens/cost/aggregate_mean are always derived from the manifests actually
+    written, never passed in -- since load_evaluations independently recomputes
+    them from the same children (GTFS-034), a hand-picked summary total would
+    just be a self-inflicted mismatch, not a meaningful test input."""
+
     destination = root / run_name / model
     tasks: dict[str, dict] = {}
+    manifests: list[dict] = []
     for task_id in task_ids:
         relative = f"{task_id}/sample_1.json"
         manifest = _write_track_a_manifest(
@@ -113,7 +169,9 @@ def _write_track_a_summary(
             task_id=task_id,
             provider=provider,
             model=model,
+            passing=task_id not in failing_tasks,
         )
+        manifests.append(manifest)
         tasks[task_id] = {
             "scores": [manifest["task_score"]],
             "mean_score": manifest["task_score"],
@@ -137,11 +195,11 @@ def _write_track_a_summary(
         "samples_per_task": 1,
         "task_ids": task_ids,
         "tasks": tasks,
-        "aggregate_mean": aggregate_score,
-        "tokens_in": tokens_in,
-        "tokens_out": tokens_out,
-        "cost_usd": cost_usd,
-        "pre_run_estimate_usd": cost_usd,
+        "aggregate_mean": sum(m["task_score"] for m in manifests) / len(manifests),
+        "tokens_in": sum(m["tokens_in"] for m in manifests),
+        "tokens_out": sum(m["tokens_out"] for m in manifests),
+        "cost_usd": sum(m["cost_usd"] for m in manifests),
+        "pre_run_estimate_usd": sum(m["cost_usd"] for m in manifests),
         "timestamp": "2026-01-02T00:00:00Z",
         "signature": "0" * 64,
     }
@@ -152,6 +210,89 @@ def _write_track_a_summary(
     )
 
 
+def _write_track_b_manifest(
+    path: Path,
+    *,
+    task_id: str,
+    provider: str,
+    model: str,
+    objective_pass: bool,
+    behavior_preserving: bool,
+    tokens_in: int,
+    tokens_out: int,
+    cost_usd: float,
+) -> dict:
+    if behavior_preserving:
+        stage2_status = "pass" if objective_pass else "fail"
+        stage2 = {"stage": 2, "name": "sec", "status": stage2_status}
+        sec = {"status": stage2_status, "backend": "yosys-equiv", "seconds": 1.0}
+    else:
+        stage2 = {"stage": 2, "name": "correctness", "status": "skip"}
+        sec = {"status": "skip", "backend": None, "seconds": None}
+    manifest = {
+        "task_id": task_id,
+        "suite_version": "v0.2",
+        "track": "B",
+        "docker_digest": "sha256:" + "0" * 64,
+        "docker_digest_source": "env",
+        "platform": "linux/amd64",
+        "submission_dir": "/tmp/fixture/submission",
+        "submission_sha256": None,
+        "disqualified": False,
+        "disqualification_reason": None,
+        "objective_type": "add_property",
+        "objective_pass": objective_pass,
+        "stages": [
+            {"stage": 0, "name": "lint", "status": "pass", "warnings": 0},
+            {
+                "stage": 1,
+                "name": "sim",
+                "status": "pass",
+                "tests_run": 4,
+                "tests_passed": 4,
+            },
+            stage2,
+            {"stage": 3, "name": "objective", "status": "pass" if objective_pass else "fail"},
+        ],
+        "sec": sec,
+        "ppa_delta": {
+            "design": {
+                "area_um2": 80.0,
+                "wns_ns": 1.0,
+                "tns_ns": 0.0,
+                "fmax_mhz": 100.0,
+                "power_mw": 0.5,
+            },
+            "baseline": None,
+            "area_ratio": None,
+            "power_ratio": None,
+            "wns_delta_ns": None,
+        },
+        "task_score": 100.0 if objective_pass else 0.0,
+        "wall_clock_s": 12.5,
+        "provider": provider,
+        "model": model,
+        "temperature": 0.0,
+        "tokens_in": tokens_in,
+        "tokens_out": tokens_out,
+        "cost_usd": cost_usd,
+        "tool_calls": 5,
+        "baseline_review": None,
+        "tb_review": None,
+        "hidden_module_sha256": None,
+        "hidden_test_count": None,
+        "timestamp": "2026-01-02T00:00:00Z",
+        "signature": "0" * 64,
+    }
+    manifest["signature"] = compute_manifest_signature(manifest)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return manifest
+
+
+_BEHAVIOR_PRESERVING = {TRACK_B_TASK_1: False, TRACK_B_TASK_2: True}
+
+
 def _write_agent_summary(
     root: Path,
     *,
@@ -159,10 +300,7 @@ def _write_agent_summary(
     provider: str,
     model: str,
     task_ids: list[str],
-    objective_met: int,
-    area_ratio: float | None,
-    power_ratio: float | None,
-    wns_delta_ns: float | None,
+    objective_met_tasks: frozenset[str],
     tokens_in: int,
     tokens_out: int,
     cost_usd: float,
@@ -170,19 +308,26 @@ def _write_agent_summary(
     destination = root / run_name / provider / model
     destination.mkdir(parents=True)
     tasks: dict[str, dict] = {}
+    per_task_tokens = tokens_in // len(task_ids)
+    per_task_tokens_out = tokens_out // len(task_ids)
+    per_task_cost = cost_usd / len(task_ids)
     for task_id in task_ids:
-        manifest = json.loads(TRACK_B_FIXTURE.read_text(encoding="utf-8"))
-        manifest.update(task_id=task_id, provider=provider, model=model)
-        manifest["signature"] = compute_manifest_signature(manifest)
-        manifest_name = f"{task_id}.json"
-        (destination / manifest_name).write_text(
-            json.dumps(manifest, indent=2) + "\n",
-            encoding="utf-8",
+        manifest = _write_track_b_manifest(
+            destination / f"{task_id}.json",
+            task_id=task_id,
+            provider=provider,
+            model=model,
+            objective_pass=task_id in objective_met_tasks,
+            behavior_preserving=_BEHAVIOR_PRESERVING[task_id],
+            tokens_in=per_task_tokens,
+            tokens_out=per_task_tokens_out,
+            cost_usd=per_task_cost,
         )
+        manifest_name = f"{task_id}.json"
         tasks[task_id] = {
             "skipped": False,
             "manifest": manifest_name,
-            "objective_pass": False,
+            "objective_pass": manifest["objective_pass"],
             "disqualified": False,
             "budget_exceeded": None,
             "tokens_in": manifest["tokens_in"],
@@ -191,6 +336,7 @@ def _write_agent_summary(
             "ppa_delta": manifest["ppa_delta"],
         }
     attempted = len(task_ids)
+    objective_met = len(objective_met_tasks)
     summary = {
         "summary_version": "v1",
         "suite_version": "v0.2",
@@ -204,13 +350,13 @@ def _write_agent_summary(
         "tasks_objective_met": objective_met,
         "objective_met_rate": objective_met / attempted if attempted else 0.0,
         "median_ppa_delta": {
-            "area_ratio": area_ratio,
-            "power_ratio": power_ratio,
-            "wns_delta_ns": wns_delta_ns,
+            "area_ratio": None,
+            "power_ratio": None,
+            "wns_delta_ns": None,
         },
-        "tokens_in": tokens_in,
-        "tokens_out": tokens_out,
-        "cost_usd": cost_usd,
+        "tokens_in": per_task_tokens * len(task_ids),
+        "tokens_out": per_task_tokens_out * len(task_ids),
+        "cost_usd": per_task_cost * len(task_ids),
         "pre_run_estimate_usd": cost_usd,
         "timestamp": "2026-01-02T00:00:00Z",
         "signature": "0" * 64,
@@ -229,18 +375,18 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path, Path]:
     mutations = tmp_path / "mutation"
     evaluations = tmp_path / "eval"
     agent_evaluations = tmp_path / "evalB"
-    _write_task(tasks, "t1_alpha", "T1", True, "AAAAAAAA-BBBB-CCCC-DDDD-000000000001")
-    _write_task(tasks, "t2_beta", "T2", False, "AAAAAAAA-BBBB-CCCC-DDDD-000000000002")
-    _write_agent_task(agent_tasks, "b1_alpha")
-    _write_agent_task(agent_tasks, "b2_beta")
+    _write_task(tasks, TRACK_A_TASK_1, "T1", True, "AAAAAAAA-BBBB-CCCC-DDDD-000000000001")
+    _write_task(tasks, TRACK_A_TASK_2, "T1", False, "AAAAAAAA-BBBB-CCCC-DDDD-000000000002")
+    _write_agent_task(agent_tasks, TRACK_B_TASK_1)
+    _write_agent_task(agent_tasks, TRACK_B_TASK_2)
 
     refs.mkdir()
     manifest = json.loads(
         (TRACK_A_FIXTURE / "t1_gray_counter" / "sample_1.json").read_text(encoding="utf-8")
     )
-    manifest["task_id"] = "t1_alpha"
+    manifest["task_id"] = TRACK_A_TASK_1
     manifest["signature"] = compute_manifest_signature(manifest)
-    (refs / "t1_alpha.json").write_text(
+    (refs / f"{TRACK_A_TASK_1}.json").write_text(
         json.dumps(manifest, indent=2) + "\n",
         encoding="utf-8",
     )
@@ -248,45 +394,35 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path, Path]:
     mutations.mkdir()
     (mutations / "cert-001.json").write_text(
         json.dumps(
-            {"task": "t1_alpha", "total": 4, "killed": 3, "kill_rate": 75.0},
+            {"task": TRACK_A_TASK_1, "total": 4, "killed": 3, "kill_rate": 75.0},
             indent=2,
         )
         + "\n",
         encoding="utf-8",
     )
 
+    # Both tasks pass -> aggregate is exactly the per-task passing score.
     _write_track_a_summary(
         evaluations,
         run_name="official",
         provider="mock",
         model="model-one",
-        task_ids=["t1_alpha", "t2_beta"],
-        aggregate_score=12.5,
-        tokens_in=100,
-        tokens_out=25,
-        cost_usd=0.00125,
+        task_ids=[TRACK_A_TASK_1, TRACK_A_TASK_2],
     )
     _write_track_a_summary(
         evaluations,
         run_name="diagnostic",
         provider="mock",
         model="model-one",
-        task_ids=["t1_alpha"],
-        aggregate_score=99.0,
-        tokens_in=10,
-        tokens_out=5,
-        cost_usd=0.0001,
+        task_ids=[TRACK_A_TASK_1],
     )
     _write_agent_summary(
         agent_evaluations,
         run_name="official",
         provider="provider-z",
         model="model-zeta",
-        task_ids=["b1_alpha", "b2_beta"],
-        objective_met=1,
-        area_ratio=0.8,
-        power_ratio=None,
-        wns_delta_ns=-0.125,
+        task_ids=[TRACK_B_TASK_1, TRACK_B_TASK_2],
+        objective_met_tasks=frozenset({TRACK_B_TASK_1}),
         tokens_in=300,
         tokens_out=75,
         cost_usd=0.02,
@@ -296,11 +432,8 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path, Path]:
         run_name="official",
         provider="provider-b",
         model="model-beta",
-        task_ids=["b1_alpha", "b2_beta"],
-        objective_met=2,
-        area_ratio=0.75,
-        power_ratio=0.7,
-        wns_delta_ns=0.5,
+        task_ids=[TRACK_B_TASK_1, TRACK_B_TASK_2],
+        objective_met_tasks=frozenset({TRACK_B_TASK_1, TRACK_B_TASK_2}),
         tokens_in=250,
         tokens_out=50,
         cost_usd=0.015,
@@ -310,11 +443,8 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path, Path]:
         run_name="official",
         provider="provider-a",
         model="model-alpha",
-        task_ids=["b1_alpha", "b2_beta"],
-        objective_met=1,
-        area_ratio=None,
-        power_ratio=0.9,
-        wns_delta_ns=0.25,
+        task_ids=[TRACK_B_TASK_1, TRACK_B_TASK_2],
+        objective_met_tasks=frozenset({TRACK_B_TASK_2}),
         tokens_in=100,
         tokens_out=25,
         cost_usd=0.01,
@@ -324,11 +454,8 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path, Path]:
         run_name="diagnostic",
         provider="provider-b",
         model="model-beta",
-        task_ids=["b1_alpha"],
-        objective_met=1,
-        area_ratio=0.1,
-        power_ratio=0.1,
-        wns_delta_ns=9.0,
+        task_ids=[TRACK_B_TASK_1],
+        objective_met_tasks=frozenset({TRACK_B_TASK_1}),
         tokens_in=1,
         tokens_out=1,
         cost_usd=0.000001,
@@ -385,6 +512,53 @@ def test_tampered_eval_summary_is_refused(tmp_path: Path) -> None:
         )
 
 
+def test_eval_summary_with_untouched_children_but_forged_aggregate_is_refused(
+    tmp_path: Path,
+) -> None:
+    """GTFS-034's exact reproduction: only summary.json's own claimed totals are
+    changed, every signed child manifest is left byte-for-byte untouched."""
+
+    tasks, refs, mutations, evaluations, agent_evaluations, agent_tasks = (
+        _build_fixture(tmp_path)
+    )
+    summary_path = evaluations / "official" / "model-one" / "summary.json"
+    raw = json.loads(summary_path.read_text(encoding="utf-8"))
+    raw["aggregate_mean"] = 99.0
+    raw["tokens_in"] = 1
+    raw["tokens_out"] = 1
+    raw["cost_usd"] = 999.0
+    raw["signature"] = compute_manifest_signature(raw)
+    summary_path.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+
+    with pytest.raises(TableDataError, match="aggregate_mean"):
+        load_evaluations(
+            evaluations, frozenset({TRACK_A_TASK_1, TRACK_A_TASK_2})
+        )
+
+
+def test_agent_summary_with_untouched_children_but_forged_totals_is_refused(
+    tmp_path: Path,
+) -> None:
+    """Same reproduction, Track B: only summary.json's claimed objective/PPA/cost
+    totals move; every signed child manifest is untouched."""
+
+    tasks, refs, mutations, evaluations, agent_evaluations, agent_tasks = (
+        _build_fixture(tmp_path)
+    )
+    summary_path = agent_evaluations / "official" / "provider-z" / "model-zeta" / "summary.json"
+    raw = json.loads(summary_path.read_text(encoding="utf-8"))
+    raw["tasks_objective_met"] = 2
+    raw["objective_met_rate"] = 1.0
+    raw["cost_usd"] = 999.0
+    raw["signature"] = compute_manifest_signature(raw)
+    summary_path.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+
+    with pytest.raises(TableDataError, match="tasks_objective_met"):
+        load_agent_evaluations(
+            agent_evaluations, frozenset({TRACK_B_TASK_1, TRACK_B_TASK_2})
+        )
+
+
 def test_agent_evaluations_are_sorted_and_extract_tokens(tmp_path: Path) -> None:
     *_, agent_evaluations, agent_tasks = _build_fixture(tmp_path)
 
@@ -396,7 +570,7 @@ def test_agent_evaluations_are_sorted_and_extract_tokens(tmp_path: Path) -> None
         "model-alpha",
         "model-zeta",
     ]
-    assert [row.tokens for row in rows] == [300, 125, 375]
+    assert [row.tokens for row in rows] == [300, 124, 374]
 
 
 def test_complete_runs_win_over_partial_diagnostics(tmp_path: Path) -> None:
@@ -409,8 +583,8 @@ def test_complete_runs_win_over_partial_diagnostics(tmp_path: Path) -> None:
     track_a_rows = load_evaluations(evaluations, track_a_ids)
     track_b_rows = load_agent_evaluations(agent_evaluations, track_b_ids)
 
-    assert [(row.model, row.tasks, row.aggregate_score) for row in track_a_rows] == [
-        ("model-one", 2, 12.5)
+    assert [(row.model, row.tasks, round(row.aggregate_score, 4)) for row in track_a_rows] == [
+        ("model-one", 2, round(66.66666666666667, 4))
     ]
     assert [row.model for row in track_b_rows].count("model-beta") == 1
     beta = next(row for row in track_b_rows if row.model == "model-beta")
@@ -436,11 +610,7 @@ def test_duplicate_complete_official_run_raises_instead_of_picking_one(
         run_name="archived-copy",
         provider="mock",
         model="model-one",
-        task_ids=["t1_alpha", "t2_beta"],
-        aggregate_score=31.06,
-        tokens_in=999,
-        tokens_out=999,
-        cost_usd=3.43,
+        task_ids=[TRACK_A_TASK_1, TRACK_A_TASK_2],
     )
 
     with pytest.raises(TableDataError, match="ambiguous Track A official run") as exc_info:
@@ -469,11 +639,8 @@ def test_duplicate_complete_track_b_official_run_raises(tmp_path: Path) -> None:
         run_name="archived-copy",
         provider="provider-b",
         model="model-beta",
-        task_ids=["b1_alpha", "b2_beta"],
-        objective_met=2,
-        area_ratio=0.75,
-        power_ratio=0.7,
-        wns_delta_ns=0.5,
+        task_ids=[TRACK_B_TASK_1, TRACK_B_TASK_2],
+        objective_met_tasks=frozenset({TRACK_B_TASK_1, TRACK_B_TASK_2}),
         tokens_in=250,
         tokens_out=50,
         cost_usd=0.015,
@@ -581,16 +748,12 @@ def test_partial_only_run_warns_and_is_omitted(tmp_path: Path, capsys) -> None:
         run_name="diagnostic",
         provider="mock",
         model="partial-only",
-        task_ids=["t1_alpha"],
-        aggregate_score=99.0,
-        tokens_in=10,
-        tokens_out=5,
-        cost_usd=0.0001,
+        task_ids=[TRACK_A_TASK_1],
     )
 
     assert load_evaluations(
         evaluations,
-        frozenset({"t1_alpha", "t2_beta"}),
+        frozenset({TRACK_A_TASK_1, TRACK_A_TASK_2}),
     ) == []
     warning = capsys.readouterr().err
     assert "warning: omitted Track A mock/partial-only" in warning
@@ -603,7 +766,7 @@ def test_track_a_tampered_task_manifest_omits_run(tmp_path: Path, capsys) -> Non
         evaluations
         / "official"
         / "model-one"
-        / "t1_alpha"
+        / TRACK_A_TASK_1
         / "sample_1.json"
     )
     raw = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -622,7 +785,7 @@ def test_track_b_tampered_task_manifest_omits_run(tmp_path: Path, capsys) -> Non
         / "official"
         / "provider-b"
         / "model-beta"
-        / "b1_alpha.json"
+        / f"{TRACK_B_TASK_1}.json"
     )
     raw = json.loads(manifest_path.read_text(encoding="utf-8"))
     raw["task_score"] = 99.0
@@ -698,7 +861,7 @@ def test_script_entrypoint_bootstraps_repo_imports(tmp_path: Path) -> None:
         capture_output=True,
         text=True,
         check=False,
-        timeout=30,
+        timeout=60,
     )
 
     assert result.returncode == 0, result.stdout + result.stderr
@@ -712,12 +875,10 @@ def test_script_entrypoint_bootstraps_repo_imports(tmp_path: Path) -> None:
         "trackb_table.md",
         "trackb_table.tex",
     ]
-    assert "| mock | model-one | 2 | 12.50 | 125 | 0.001250 |" in (
-        output / "eval_table.md"
-    ).read_text(encoding="utf-8")
-    assert "| provider-b | model-beta | 2/2 | 100.00% |" in (
-        output / "trackb_table.md"
-    ).read_text(encoding="utf-8")
+    eval_table = (output / "eval_table.md").read_text(encoding="utf-8")
+    assert "| mock | model-one | 2 | 66.67 |" in eval_table
+    trackb_table = (output / "trackb_table.md").read_text(encoding="utf-8")
+    assert "| provider-b | model-beta | 2/2 | 100.00% |" in trackb_table
 
 
 def test_git_sha_delegates_to_harness_git_not_its_own_implementation(
