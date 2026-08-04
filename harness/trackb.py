@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import shutil
 import time
 from dataclasses import dataclass
@@ -225,6 +226,150 @@ def run_track_b(
     atomic_write_text(out_path, json.dumps(manifest.model_dump(mode="json"), indent=2) + "\n")
     out_path.with_suffix(".log").write_text("\n\n".join(logs), encoding="utf-8")
     return manifest
+
+
+def validate_track_b_semantics(manifest: TrackBManifest) -> None:
+    """Recompute objective truth from the manifest's own recorded stages/metrics,
+    mirroring exactly what run_track_b() above enforces at generation time, so a
+    hand-edited manifest with internally-consistent-but-forged fields cannot pass
+    (GTFS-014). TrackBManifest.validate_rules() alone only checks that a
+    disqualified or objective-failing manifest scores 0 -- it never checks that a
+    *passing* manifest's stages, sec status, or PPA ratios are actually coherent
+    with the metrics it carries.
+    """
+
+    stages = {stage.stage: stage for stage in manifest.stages}
+    expected_ids = {0, 1, 2, 3}
+    if set(stages) != expected_ids:
+        raise ValueError(
+            f"Track B manifest must have exactly stages {sorted(expected_ids)}, "
+            f"got {sorted(stages)}"
+        )
+
+    if manifest.disqualified:
+        if any(stages[i].status != "skip" for i in expected_ids):
+            raise ValueError(
+                "a disqualified manifest's stages must all be skip -- disqualification "
+                "happens before any gate runs"
+            )
+        return
+
+    # Stage 0 (lint) and stage 1 (sim) always actually run for a non-disqualified
+    # manifest -- unlike formal (Track A) or SEC below, nothing ever legitimately
+    # skips them. "fail" is a normal, common outcome (score 0); "skip" is not.
+    if stages[0].name != "lint" or stages[0].status == "skip":
+        raise ValueError("Track B stage 0 (lint) is never legitimately skipped")
+    lint_ok = stages[0].status == "pass"
+
+    if lint_ok:
+        if stages[1].name != "sim" or stages[1].status == "skip":
+            raise ValueError("Track B stage 1 (sim) is never legitimately skipped")
+        sim_ok = stages[1].status == "pass"
+    else:
+        # When lint fails, run_track_b() never actually runs sim -- it appends a
+        # synthetic fail placeholder instead.
+        if stages[1].name != "sim" or stages[1].status != "fail":
+            raise ValueError(
+                "when lint fails, stage 1 (sim) must be the synthetic fail "
+                "placeholder run_track_b() produces, not a real sim result"
+            )
+        sim_ok = False
+
+    correctness_ok: bool
+    if sim_ok:
+        task = resolve_track_b_task(manifest.task_id)
+        if task.objective.behavior_preserving:
+            if stages[2].name != "sec":
+                raise ValueError(
+                    f"{manifest.task_id} requires SEC (stage 2 must be named "
+                    "'sec') per its objective.yaml behavior_preserving flag"
+                )
+            correctness_ok = stages[2].status == "pass"
+            # A Yosys timeout is recorded as sec.status="timeout" but the coarser
+            # TrackBStage.status (pass/fail/skip only) has no timeout value, so
+            # run_sec() folds it into stage status "fail" -- both "fail" and
+            # "timeout" are legitimate for a failed stage, "pass"/"skip" are not.
+            if correctness_ok and manifest.sec.status != "pass":
+                raise ValueError("sec.status must be pass when the SEC stage passed")
+            if not correctness_ok and manifest.sec.status not in {"fail", "timeout"}:
+                raise ValueError(
+                    "sec.status must be fail or timeout when the SEC stage failed"
+                )
+        else:
+            if stages[2].name != "correctness" or stages[2].status != "skip":
+                raise ValueError(
+                    f"{manifest.task_id} does not require SEC; stage 2 must be "
+                    "the skipped 'correctness' placeholder"
+                )
+            correctness_ok = True
+            if manifest.sec.status != "skip":
+                raise ValueError(
+                    "sec.status must be skip for a non-behavior-preserving task"
+                )
+    else:
+        # Sim failed (or never ran because lint failed) -- SEC is never attempted
+        # regardless of whether the task requires it, and stage 2 is always the
+        # synthetic "correctness"/fail placeholder, never the real "sec" stage.
+        if stages[2].name != "correctness" or stages[2].status != "fail":
+            raise ValueError(
+                "when lint or sim fails, stage 2 must be the synthetic "
+                "'correctness'/fail placeholder run_track_b() produces"
+            )
+        correctness_ok = False
+        if manifest.sec.status != "skip":
+            raise ValueError("sec.status must be skip when correctness never ran")
+
+    if correctness_ok:
+        if stages[3].name != "objective":
+            raise ValueError("Track B stage 3 must be named 'objective'")
+        if manifest.objective_pass:
+            if stages[3].status != "pass":
+                raise ValueError("objective_pass=true requires stage 3 to be pass")
+        elif stages[3].status != "fail":
+            raise ValueError("objective_pass=false requires stage 3 to be fail")
+    else:
+        if manifest.objective_pass:
+            raise ValueError(
+                "objective_pass cannot be true when lint/sim/SEC did not all pass"
+            )
+        if stages[3].name != "objective" or stages[3].status != "fail":
+            raise ValueError(
+                "when correctness fails, stage 3 must be the synthetic "
+                "'objective'/fail placeholder run_track_b() produces"
+            )
+
+    if manifest.objective_pass:
+        if manifest.task_score != 100.0:
+            raise ValueError("a passing objective must score exactly 100.0")
+    elif manifest.task_score != 0.0:
+        raise ValueError("objective_pass=false must score 0")
+
+    delta = manifest.ppa_delta
+    if delta.design is not None and delta.baseline is not None:
+        if delta.design.area_um2 is not None and delta.baseline.area_um2:
+            expected = delta.design.area_um2 / delta.baseline.area_um2
+            if delta.area_ratio is not None and not math.isclose(
+                delta.area_ratio, expected, rel_tol=1e-6
+            ):
+                raise ValueError(
+                    "ppa_delta.area_ratio does not match design/baseline area_um2"
+                )
+        if delta.design.power_mw is not None and delta.baseline.power_mw:
+            expected = delta.design.power_mw / delta.baseline.power_mw
+            if delta.power_ratio is not None and not math.isclose(
+                delta.power_ratio, expected, rel_tol=1e-6
+            ):
+                raise ValueError(
+                    "ppa_delta.power_ratio does not match design/baseline power_mw"
+                )
+        if delta.design.wns_ns is not None and delta.baseline.wns_ns is not None:
+            expected = delta.design.wns_ns - delta.baseline.wns_ns
+            if delta.wns_delta_ns is not None and not math.isclose(
+                delta.wns_delta_ns, expected, abs_tol=1e-6
+            ):
+                raise ValueError(
+                    "ppa_delta.wns_delta_ns does not match design/baseline wns_ns"
+                )
 
 
 def _hidden_disqualification_reason(log: str) -> str:
