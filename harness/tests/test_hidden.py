@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -177,7 +178,7 @@ def test_official_registered_task_fails_closed_without_root(
         top_module="demo",
     )
 
-    stage, log = run_sim(
+    stage, log, _hidden_sha256, _hidden_test_count = run_sim(
         task,
         tmp_path / "ref.sv",
         tmp_path / "work",
@@ -218,7 +219,7 @@ load_hidden(globals(), "demo")
     source = tmp_path / "demo.sv"
     source.write_text("module demo; endmodule\n", encoding="utf-8")
     hidden_root = tmp_path / "hidden-secret-root"
-    _write_hidden(
+    hidden_path = _write_hidden(
         hidden_root,
         "demo",
         """
@@ -240,7 +241,7 @@ async def hidden_loaded(dut):
         top_module="demo",
     )
 
-    stage, log = run_sim(
+    stage, log, hidden_sha256, hidden_test_count = run_sim(
         task,
         source,
         work_root,
@@ -255,6 +256,14 @@ async def hidden_loaded(dut):
     assert LEGACY_HIDDEN_ROOT_ENV not in log
     assert "openai-secret-value" not in log
     assert "anthropic-secret-value" not in log
+    # The hidden module defines exactly one test (hidden_loaded); the public smoke
+    # test brings tests_run to 2. The hash binds this manifest to that exact hidden
+    # module revision without the hash itself revealing anything about its content.
+    assert hidden_test_count == 1
+    assert hidden_sha256 == hashlib.sha256(
+        hidden_path.read_text(encoding="utf-8").encode("utf-8")
+    ).hexdigest()
+    assert hidden_sha256 not in log
 
 
 def test_official_staging_rejects_hidden_public_name_collision(
@@ -300,7 +309,7 @@ async def hidden_collision(dut):
         top_module="demo",
     )
 
-    stage, log = run_sim(
+    stage, log, _hidden_sha256, _hidden_test_count = run_sim(
         task,
         tmp_path / "unused.sv",
         work_root,

@@ -37,7 +37,7 @@ def test_zero_or_skipped_cocotb_results_fail_closed(
     monkeypatch.setattr(runner, "_run", fake_run)
     task = resolve_task("toy_task")
 
-    stage, _log = run_sim(
+    stage, _log, _hidden_sha256, _hidden_test_count = run_sim(
         task,
         task.root / "ref" / "ref.sv",
         work_root,

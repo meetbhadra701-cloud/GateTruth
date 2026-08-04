@@ -114,7 +114,7 @@ def run_track_b(
             stages.append(stage)
             logs.append(log)
             if stage["status"] == "pass":
-                stage, log = run_sim(
+                stage, log, _hidden_sha256, _hidden_test_count = run_sim(
                     sim_task,
                     design,
                     work_root,

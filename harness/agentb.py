@@ -317,7 +317,7 @@ def execute_action(
         top_module=top_module,
     )
     if tool == "sb_sim":
-        stage, log = run_sim(task, design, work_root)
+        stage, log, _hidden_sha256, _hidden_test_count = run_sim(task, design, work_root)
         return {"status": stage["status"], "stage": stage, "stdout_tail": tail(log)}, False
 
     if tool == "sb_synth_sta":

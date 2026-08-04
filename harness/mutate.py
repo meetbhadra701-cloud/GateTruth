@@ -230,7 +230,9 @@ def _run_baseline(task_id: str, source: str, *, official: bool) -> dict[str, Any
         if stage["status"] != "pass":
             return {"status": "fail", "stage": "lint", "log": log}
 
-        stage, log = run_sim(task, candidate, work_root, official=official)
+        stage, log, _hidden_sha256, _hidden_test_count = run_sim(
+            task, candidate, work_root, official=official
+        )
         if stage["status"] != "pass":
             return {"status": "fail", "stage": "sim", "log": log}
 
@@ -257,7 +259,9 @@ def _run_one(
         if stage["status"] != "pass":
             return _result(mutant, stillborn=True, killed_by=None, log=log)
 
-        stage, log = run_sim(task, mutated, work_root, official=official)
+        stage, log, _hidden_sha256, _hidden_test_count = run_sim(
+            task, mutated, work_root, official=official
+        )
         if stage["status"] != "pass":
             if HIDDEN_FAILURE_PREFIX in log:
                 # A per-mutant harness/hidden-test setup error, not a mutant-caused
@@ -270,7 +274,7 @@ def _run_one(
             if _is_timeout(log):
                 retry_root = work_root / "timeout_retry"
                 retry_root.mkdir()
-                retry_stage, retry_log = run_sim(
+                retry_stage, retry_log, _hidden_sha256, _hidden_test_count = run_sim(
                     task,
                     mutated,
                     retry_root,

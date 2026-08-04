@@ -125,6 +125,8 @@ def test_baseline_hidden_root_failure_blocks_certification_before_any_mutant_run
         lambda *args, **kwargs: (
             {"stage": 1, "name": "sim", "status": "fail"},
             f"{HIDDEN_FAILURE_PREFIX}GATETRUTH_HIDDEN_ROOT is required for registered task fixture\n",
+            None,
+            None,
         ),
     )
 
@@ -163,6 +165,8 @@ def test_baseline_malformed_hidden_module_also_fails_closed(tmp_path, monkeypatc
         lambda *args, **kwargs: (
             {"stage": 1, "name": "sim", "status": "fail"},
             f"{HIDDEN_FAILURE_PREFIX}hidden module defines no cocotb tests: fixture\n",
+            None,
+            None,
         ),
     )
 

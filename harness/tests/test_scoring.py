@@ -80,6 +80,8 @@ def test_two_passing_designs_with_different_ppa_get_different_scores(
                 "tests_passed": 1,
             },
             "",
+            None,
+            None,
         ),
     )
     monkeypatch.setattr(

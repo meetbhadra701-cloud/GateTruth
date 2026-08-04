@@ -158,14 +158,14 @@ def run_sim(
     *,
     timeout_s: float = 20,
     official: bool = False,
-) -> tuple[dict[str, object], str]:
-    test_dir, test_module, hidden_error = _prepare_sim_tests(
+) -> tuple[dict[str, object], str, str | None, int | None]:
+    test_dir, test_module, hidden_error, hidden_sha256, hidden_test_count = _prepare_sim_tests(
         task,
         work_root,
         official=official,
     )
     if hidden_error is not None:
-        return {"stage": 1, "name": "sim", "status": "fail"}, hidden_error
+        return {"stage": 1, "name": "sim", "status": "fail"}, hidden_error, None, None
 
     script = work_root / "run_cocotb.py"
     build_dir = work_root / "sim_build"
@@ -185,11 +185,12 @@ def run_sim(
     result = _run([sys.executable, str(script)], cwd=REPO_ROOT, env=env, timeout_s=timeout_s)
     output = result.stdout
     if result.returncode != 0:
-        return {"stage": 1, "name": "sim", "status": "fail"}, output
+        return {"stage": 1, "name": "sim", "status": "fail"}, output, None, None
     tests_run, tests_passed = _parse_cocotb_results(results_xml)
     if tests_run <= 0 or tests_passed != tests_run:
-        return {"stage": 1, "name": "sim", "status": "fail"}, output
-    return {"stage": 1, "name": "sim", "status": "pass", "tests_run": tests_run, "tests_passed": tests_passed}, output
+        return {"stage": 1, "name": "sim", "status": "fail"}, output, None, None
+    stage = {"stage": 1, "name": "sim", "status": "pass", "tests_run": tests_run, "tests_passed": tests_passed}
+    return stage, output, hidden_sha256, hidden_test_count
 
 
 def _hidden_kind(task: TaskPackage) -> str | None:
@@ -228,17 +229,17 @@ def _prepare_sim_tests(
     work_root: Path,
     *,
     official: bool,
-) -> tuple[Path, str, str | None]:
+) -> tuple[Path, str, str | None, str | None, int | None]:
     public_dir = task.root / "tb"
     kind = _hidden_kind(task)
     error = official_hidden_preflight(task, official=official)
     if error is not None:
-        return public_dir, "", error
+        return public_dir, "", error, None, None
     public_module = _test_module_name(task)
     if kind is None:
-        return public_dir, public_module, error
+        return public_dir, public_module, error, None, None
     if not official:
-        return public_dir, public_module, None
+        return public_dir, public_module, None, None, None
 
     try:
         hidden_root = read_env("HIDDEN_ROOT")
@@ -277,6 +278,8 @@ def _prepare_sim_tests(
             public_dir,
             public_module,
             f"{HIDDEN_FAILURE_PREFIX}{exc}\n",
+            None,
+            None,
         )
 
     merged_dir = work_root / "official_tb"
@@ -289,7 +292,11 @@ def _prepare_sim_tests(
         + hidden_source.lstrip(),
         encoding="utf-8",
     )
-    return merged_dir, merged_module, None
+    # A hash of the hidden module's own text, not its content -- this is a fingerprint that
+    # binds a manifest to exactly which hidden-vector revision scored it, not a disclosure of
+    # what the vectors test. The hidden root stays outside the public repository regardless.
+    hidden_sha256 = hashlib.sha256(hidden_source.encode("utf-8")).hexdigest()
+    return merged_dir, merged_module, None, hidden_sha256, len(hidden_names)
 
 
 def _cocotb_test_names(tree: ast.Module) -> list[str]:
@@ -486,6 +493,8 @@ def run_task(
         task_package_sha256 = tree_hash(task.root)
     except OSError:
         task_package_sha256 = None
+    hidden_sha256: str | None = None
+    hidden_test_count: int | None = None
     try:
         validate_source_file(submission_path)
     except (OSError, SubmissionValidationError) as exc:
@@ -509,7 +518,7 @@ def run_task(
             stages.append(stage)
             logs.append(log)
             if stage["status"] == "pass":
-                stage, log = run_sim(
+                stage, log, hidden_sha256, hidden_test_count = run_sim(
                     task,
                     submission_path,
                     work_root,
@@ -597,6 +606,10 @@ def run_task(
         data["task_package_sha256"] = task_package_sha256
     if reference_metrics_sha256 is not None:
         data["reference_metrics_sha256"] = reference_metrics_sha256
+    if hidden_sha256 is not None:
+        data["hidden_module_sha256"] = hidden_sha256
+    if hidden_test_count is not None:
+        data["hidden_test_count"] = hidden_test_count
     data["signature"] = compute_manifest_signature(data)
     manifest = ResultManifest.model_validate(data)
     output_path = Path(out)
