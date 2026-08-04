@@ -2,3 +2,4 @@
 | Task | Mutants | Killed | Kill rate (%) |
 |---|---:|---:|---:|
 | t1_gray_counter | 4 | 3 | 75.00 |
+| t1_pwm | 5 | 5 | 100.00 |

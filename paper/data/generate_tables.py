@@ -100,13 +100,13 @@ def generate_tables(
     run_date = generated_date or datetime.now(UTC).date()
     sha = git_sha or harness_git(repo_root=REPO_ROOT)
     tasks = load_tasks(Path(tasks_root), Path(refs_dir))
-    mutations = load_mutations(Path(mutation_dir))
     track_a_ids = frozenset(row.task_id for row in tasks)
     track_b_ids = _canonical_task_ids(Path(agent_tasks_root), "objective.yaml")
     if Path(tasks_root).resolve() == (REPO_ROOT / "tasks").resolve():
         _require_suite_size("Track A", track_a_ids, TRACK_A_SUITE_SIZE)
     if Path(agent_tasks_root).resolve() == (REPO_ROOT / "tasksB").resolve():
         _require_suite_size("Track B", track_b_ids, TRACK_B_SUITE_SIZE)
+    mutations = load_mutations(Path(mutation_dir), track_a_ids)
     evaluations = load_evaluations(Path(eval_dir), track_a_ids)
     agent_evaluations = load_agent_evaluations(Path(agent_eval_dir), track_b_ids)
     metadata = f"generated-on: {run_date.isoformat()} git-sha: {sha}"
@@ -166,12 +166,34 @@ def load_tasks(tasks_root: Path, refs_dir: Path) -> list[TaskRecord]:
     return records
 
 
-def load_mutations(directory: Path) -> list[MutationRecord]:
+def load_mutations(
+    directory: Path,
+    expected_task_ids: frozenset[str] | None = None,
+) -> list[MutationRecord]:
     """Load every per-task report directly inside the one versioned certification
     directory. Intentionally flat, not recursive: results/mutation/ has held
     stray non-certification artifacts before (ad hoc determinism-check repeats),
     and an unbounded walk would silently let one of those overwrite a real
-    task's row instead of only ever reading the certification set itself."""
+    task's row instead of only ever reading the certification set itself.
+
+    Requires exactly the canonical task set (missing or extra reports both
+    rejected) and refuses a report with zero generated mutants: this loader has
+    no signed-provenance record to check yet (that is GTFS-030's still-open
+    scope, a much larger schema/re-certification change), so completeness and a
+    positive mutant count are the two checks available here that stop a
+    partial, unsupported, or fabricated-100%-via-zero-mutants set of reports
+    from silently rendering as a full, real 60-task certification (GTFS-035).
+    """
+
+    expected = (
+        expected_task_ids
+        if expected_task_ids is not None
+        else _canonical_task_ids(REPO_ROOT / "tasks", "task.yaml")
+    )
+    if not expected:
+        raise TableDataError("mutation expected task set must not be empty")
+    if expected_task_ids is None:
+        _require_suite_size("mutation", expected, TRACK_A_SUITE_SIZE)
 
     latest: dict[str, MutationRecord] = {}
     if not directory.is_dir():
@@ -199,14 +221,27 @@ def load_mutations(directory: Path) -> list[MutationRecord]:
                 f"{path} conflicts with an earlier file for the same task"
             )
         total = _integer(raw, "total", path)
+        if total == 0:
+            raise TableDataError(
+                f"mutation report {path} generated zero mutants -- a task with "
+                "no mutants ever tested is a setup failure, not a certified "
+                "100% kill rate"
+            )
         killed = _integer(raw, "killed", path)
         kill_rate = _number(raw, "kill_rate", path)
         if killed > total or kill_rate < 0 or kill_rate > 100:
             raise TableDataError(f"invalid mutation counts in {path}")
-        expected = 100.0 if total == 0 else 100.0 * killed / total
-        if not math.isclose(kill_rate, expected, abs_tol=0.01):
+        expected_rate = 100.0 * killed / total
+        if not math.isclose(kill_rate, expected_rate, abs_tol=0.01):
             raise TableDataError(f"mutation kill rate mismatch in {path}")
         latest[task_id] = MutationRecord(task_id, total, killed, kill_rate)
+
+    actual = frozenset(latest)
+    if actual != expected:
+        raise TableDataError(
+            "mutation certification set mismatch: "
+            + _task_set_mismatch(expected, actual)
+        )
     return [latest[task_id] for task_id in sorted(latest)]
 
 

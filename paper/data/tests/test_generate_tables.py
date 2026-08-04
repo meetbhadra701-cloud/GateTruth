@@ -400,6 +400,14 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path, Path]:
         + "\n",
         encoding="utf-8",
     )
+    (mutations / "cert-002.json").write_text(
+        json.dumps(
+            {"task": TRACK_A_TASK_2, "total": 5, "killed": 5, "kill_rate": 100.0},
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
     # Both tasks pass -> aggregate is exactly the per-task passing score.
     _write_track_a_summary(
@@ -680,7 +688,7 @@ def test_mutation_loader_ignores_a_stray_file_outside_the_scoped_directory(
         encoding="utf-8",
     )
 
-    rows = load_mutations(certification)
+    rows = load_mutations(certification, frozenset({"t1_alpha"}))
 
     assert len(rows) == 1
     assert rows[0].mutants == 10
@@ -702,6 +710,38 @@ def test_mutation_loader_rejects_two_files_claiming_the_same_task(
 
     with pytest.raises(TableDataError, match="duplicate mutation certification"):
         load_mutations(certification)
+
+
+def test_mutation_loader_rejects_zero_mutants_as_a_fabricated_100_percent(
+    tmp_path: Path,
+) -> None:
+    """GTFS-035's exact reproduction: a report with total=0 previously rendered
+    as a 100% kill rate indistinguishable from a task that was actually tested."""
+
+    certification = tmp_path / "certification"
+    certification.mkdir()
+    (certification / "t1_alpha.json").write_text(
+        json.dumps({"task": "t1_alpha", "total": 0, "killed": 0, "kill_rate": 100.0}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(TableDataError, match="zero mutants"):
+        load_mutations(certification, frozenset({"t1_alpha"}))
+
+
+def test_mutation_loader_rejects_a_partial_task_set(tmp_path: Path) -> None:
+    """GTFS-035: a single-task directory must not silently stand in for the
+    full canonical suite -- the old loader had no completeness requirement at all."""
+
+    certification = tmp_path / "certification"
+    certification.mkdir()
+    (certification / "t1_alpha.json").write_text(
+        json.dumps({"task": "t1_alpha", "total": 4, "killed": 4, "kill_rate": 100.0}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(TableDataError, match="mutation certification set mismatch"):
+        load_mutations(certification, frozenset({"t1_alpha", "t2_beta"}))
 
 
 def test_mutation_loader_rejects_a_non_ok_status_report(tmp_path: Path) -> None:
@@ -736,7 +776,7 @@ def test_mutation_loader_ignores_the_summary_file(tmp_path: Path) -> None:
         encoding="utf-8",
     )
 
-    rows = load_mutations(certification)
+    rows = load_mutations(certification, frozenset({"t1_alpha"}))
 
     assert len(rows) == 1
 
