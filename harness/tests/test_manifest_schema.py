@@ -26,6 +26,7 @@ def test_valid_manifest_fixture_loads():
         "wrong_platform.json",
         "bad_stage_metrics.json",
         "gate_fail_nonzero_score.json",
+        "ppa_nonzero_without_passing_flow.json",
         "malformed_signature.json",
     ],
 )
@@ -85,3 +86,36 @@ def test_wrong_stage_name_is_rejected():
 
     with pytest.raises(ValidationError, match=r"must be named 'sim'"):
         ResultManifest.model_validate(_resigned(data))
+
+
+def test_ppa_nonzero_when_sta_stage_failed_is_rejected():
+    """A manifest can pass every correctness gate (lint/sim/formal) and still fail
+    synth/sta/power -- the existing correctness_failed check does not cover that case.
+    A manifest claiming a real ppa/task_score without a fully-passing PPA flow behind
+    it must be rejected regardless of which physical stage failed."""
+
+    data = json.loads((FIXTURES / "valid_manifest.json").read_text())
+    for stage in data["stages"]:
+        if stage["stage"] == 4:
+            stage["status"] = "fail"
+            for key in ("wns_ns", "tns_ns", "fmax_mhz"):
+                stage.pop(key, None)
+
+    with pytest.raises(ValidationError, match=r"ppa and task_score must both be 0"):
+        ResultManifest.model_validate(_resigned(data))
+
+
+def test_ppa_zero_when_sta_stage_failed_is_accepted():
+    """The symmetric positive case: failing synth/sta/power with ppa/task_score
+    correctly zeroed (what the runner actually produces) must still validate."""
+
+    data = json.loads((FIXTURES / "valid_manifest.json").read_text())
+    for stage in data["stages"]:
+        if stage["stage"] == 4:
+            stage["status"] = "fail"
+            for key in ("wns_ns", "tns_ns", "fmax_mhz"):
+                stage.pop(key, None)
+    data["ppa"] = 0.0
+    data["task_score"] = 0.0
+
+    ResultManifest.model_validate(_resigned(data))

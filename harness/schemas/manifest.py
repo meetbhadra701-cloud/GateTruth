@@ -169,6 +169,18 @@ class ResultManifest(BaseModel):
         if correctness_failed and self.task_score != 0:
             raise ValueError("task_score must be 0 when a correctness gate fails")
 
+        ppa_stages_passed = all(
+            stage.status == "pass"
+            for stage in self.stages
+            if stage.stage in {3, 4, 5}
+        )
+        if not ppa_stages_passed and (self.ppa != 0 or self.task_score != 0):
+            raise ValueError(
+                "ppa and task_score must both be 0 unless synth, sta, and power "
+                "(stages 3, 4, 5) all pass -- a manifest cannot report a physical "
+                "quality score without a complete, passing PPA flow behind it"
+            )
+
         return self
 
 
