@@ -206,6 +206,7 @@ def eval_model(
                     temperature=temperature,
                     usage=_empty_usage(),
                     wall_clock_s=time.perf_counter() - started,
+                    max_output_tokens=max_tokens,
                     official_skip_reason=plan.skip_reason,
                 )
                 _write_manifest(manifest, manifest_path)
@@ -230,6 +231,7 @@ def eval_model(
                         temperature=temperature,
                         usage=usage,
                         wall_clock_s=time.perf_counter() - started,
+                        max_output_tokens=max_tokens,
                         generation_error=call_error,
                     )
                     _write_manifest(manifest, manifest_path)
@@ -259,6 +261,7 @@ def eval_model(
                             model=model,
                             temperature=temperature,
                             usage=usage,
+                            max_output_tokens=max_tokens,
                         )
                         _write_manifest(manifest, manifest_path)
                     except Exception as exc:
@@ -277,6 +280,7 @@ def eval_model(
                             temperature=temperature,
                             usage=usage,
                             wall_clock_s=time.perf_counter() - started,
+                            max_output_tokens=max_tokens,
                             generation_error=f"{type(exc).__name__}: {exc}",
                         )
                         _write_manifest(manifest, manifest_path)
@@ -482,6 +486,7 @@ def _merge_generation_fields(
     model: str,
     temperature: TemperatureSetting,
     usage: dict[str, int | float],
+    max_output_tokens: int,
 ) -> ResultManifest:
     data = scored.model_dump(mode="json", exclude_none=True)
     data.update(
@@ -493,6 +498,7 @@ def _merge_generation_fields(
             "tokens_out": int(usage["tokens_out"]),
             "cost_usd": float(usage["cost_usd"]),
             "prompt_version": PROMPT_VERSION,
+            "max_output_tokens": max_output_tokens,
             "signature": "0" * 64,
         }
     )
@@ -508,6 +514,7 @@ def _zero_manifest(
     temperature: TemperatureSetting,
     usage: dict[str, int | float],
     wall_clock_s: float,
+    max_output_tokens: int,
     generation_error: str | None = None,
     official_skip_reason: str | None = None,
 ) -> ResultManifest:
@@ -539,6 +546,7 @@ def _zero_manifest(
         "prompt_version": PROMPT_VERSION,
         "timestamp": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
         "harness_git": harness_git(),
+        "max_output_tokens": max_output_tokens,
         "signature": "0" * 64,
     }
     if generation_error is not None:

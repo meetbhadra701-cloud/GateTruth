@@ -141,6 +141,7 @@ class ResultManifest(BaseModel):
     generation_error: str | None = Field(default=None, min_length=1)
     official_skip_reason: str | None = Field(default=None, min_length=1)
     harness_git: str | None = Field(default=None, min_length=1)
+    max_output_tokens: int | None = Field(default=None, ge=1)
     timestamp: str = Field(min_length=1)
     signature: str = Field(pattern=SHA256_HEX_RE)
 
