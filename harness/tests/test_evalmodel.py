@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -173,6 +174,7 @@ def test_fenced_rtl_scores_end_to_end_and_records_prompt(tmp_path):
     assert manifest.harness_git == evalmodel.harness_git()
     assert manifest.max_output_tokens == 128
     assert manifest.provider_finish_reason == "stop"
+    assert manifest.submission_sha256 == hashlib.sha256(source.encode("utf-8")).hexdigest()
     assert (tmp_path / "mock-eval/toy_task/sample_1.sv").read_text(encoding="utf-8") == source
     task = evalmodel.resolve_task("toy_task")
     prompt, system = build_generation_prompt(task)
@@ -350,7 +352,8 @@ def test_preflight_refuses_before_provider_call(tmp_path, monkeypatch):
 
 
 def test_pipeline_exception_emits_score_zero_manifest(tmp_path, monkeypatch):
-    provider = RecordingProvider([TOY_REF.read_text(encoding="utf-8")], model="mock-crash")
+    source = TOY_REF.read_text(encoding="utf-8")
+    provider = RecordingProvider([source], model="mock-crash")
     provider.spend_path = tmp_path / "spend.json"
     monkeypatch.setattr(
         evalmodel,
@@ -366,6 +369,10 @@ def test_pipeline_exception_emits_score_zero_manifest(tmp_path, monkeypatch):
     assert manifest.signature == json.loads(
         manifest_path(tmp_path, "mock-crash").read_text(encoding="utf-8")
     )["signature"]
+    # run_task() threw after a real extraction succeeded and was written to disk -- that
+    # extraction is genuine (if unscored) evidence from this run, and its hash should still
+    # be recorded even though scoring never completed.
+    assert manifest.submission_sha256 == hashlib.sha256(source.encode("utf-8")).hexdigest()
 
 
 def test_estimate_only_prints_cost_without_provider_or_output(

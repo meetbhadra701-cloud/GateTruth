@@ -143,6 +143,7 @@ class ResultManifest(BaseModel):
     harness_git: str | None = Field(default=None, min_length=1)
     max_output_tokens: int | None = Field(default=None, ge=1)
     provider_finish_reason: str | None = Field(default=None, min_length=1)
+    submission_sha256: str | None = Field(default=None, pattern=SHA256_HEX_RE)
     timestamp: str = Field(min_length=1)
     signature: str = Field(pattern=SHA256_HEX_RE)
 

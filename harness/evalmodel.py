@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import time
@@ -275,6 +276,9 @@ def eval_model(
                         # already on disk, and we deliberately leave it rather than delete it.
                         if source is None:
                             source_path.unlink(missing_ok=True)
+                            submission_sha256 = None
+                        else:
+                            submission_sha256 = hashlib.sha256(source.encode("utf-8")).hexdigest()
                         manifest = _zero_manifest(
                             plan.task,
                             provider_name=provider_name,
@@ -284,6 +288,7 @@ def eval_model(
                             wall_clock_s=time.perf_counter() - started,
                             max_output_tokens=max_tokens,
                             provider_finish_reason=finish_reason,
+                            submission_sha256=submission_sha256,
                             generation_error=f"{type(exc).__name__}: {exc}",
                         )
                         _write_manifest(manifest, manifest_path)
@@ -534,6 +539,7 @@ def _zero_manifest(
     generation_error: str | None = None,
     official_skip_reason: str | None = None,
     provider_finish_reason: str | None = None,
+    submission_sha256: str | None = None,
 ) -> ResultManifest:
     skipped = official_skip_reason is not None
     stages = [
@@ -572,6 +578,8 @@ def _zero_manifest(
         data["official_skip_reason"] = official_skip_reason
     if provider_finish_reason is not None:
         data["provider_finish_reason"] = provider_finish_reason
+    if submission_sha256 is not None:
+        data["submission_sha256"] = submission_sha256
     data["signature"] = compute_manifest_signature(data)
     return ResultManifest.model_validate(data)
 

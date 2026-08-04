@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import math
 import os
@@ -476,6 +477,10 @@ def run_task(
     start = time.perf_counter()
     logs: list[str] = []
     try:
+        submission_sha256 = hashlib.sha256(submission_path.read_bytes()).hexdigest()
+    except OSError:
+        submission_sha256 = None
+    try:
         validate_source_file(submission_path)
     except (OSError, SubmissionValidationError) as exc:
         stages = [
@@ -573,6 +578,8 @@ def run_task(
         "harness_git": harness_git(),
         "signature": "0" * 64,
     }
+    if submission_sha256 is not None:
+        data["submission_sha256"] = submission_sha256
     data["signature"] = compute_manifest_signature(data)
     manifest = ResultManifest.model_validate(data)
     output_path = Path(out)
