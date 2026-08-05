@@ -5,7 +5,7 @@
 # cycle's requests, work-conserving, and bounded-wait fair (every continuously-asserted
 # requester keeps receiving grants). The fixed-priority baseline fails exactly the fairness
 # tests. This tb IS the objective check (add_property). Any diff disqualifies
-# (trackB-agent-cli v0.2). HUMAN REVIEW: PENDING (tb_review in task.yaml - Meet only).
+# (trackB-agent-cli v0.2). HUMAN REVIEW: SIGNED OFF (tb_review in task.yaml).
 
 from random import Random
 

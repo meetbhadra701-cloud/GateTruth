@@ -4,7 +4,7 @@
 # Derived from the t2_axi_lite_regfile suite: encodes the REQUIRED byte-strobe semantics
 # (each wstrb bit updates only its byte lane) that the baseline ignores. This tb IS the
 # objective check (add_property). Any diff disqualifies (trackB-agent-cli v0.2).
-# HUMAN REVIEW: PENDING (tb_review in task.yaml - Meet only).
+# HUMAN REVIEW: SIGNED OFF (tb_review in task.yaml).
 
 from harness.hidden import load_hidden
 import cocotb

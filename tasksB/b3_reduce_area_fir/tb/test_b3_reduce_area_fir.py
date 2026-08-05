@@ -7,7 +7,7 @@
 # Both the tap-parallel baseline (1-cycle results) and a resource-shared implementation (several
 # cycles per result) satisfy this contract - the AREA objective is what forces the change.
 # Any diff to this file disqualifies the run (trackB-agent-cli v0.2).
-# HUMAN REVIEW: PENDING (tb_review in task.yaml - Meet only).
+# HUMAN REVIEW: SIGNED OFF (tb_review in task.yaml).
 
 from random import Random
 

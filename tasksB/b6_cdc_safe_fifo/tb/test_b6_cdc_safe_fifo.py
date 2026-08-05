@@ -7,7 +7,7 @@
 # safety; and (b) loss-free, in-order, duplicate-free data transfer under fast-writer,
 # fast-reader, and near-equal clock ratios. The single-domain binary-pointer baseline fails (a)
 # deterministically. This tb IS the objective check (add_property). Any diff disqualifies
-# (trackB-agent-cli v0.2). HUMAN REVIEW: PENDING (tb_review in task.yaml - Meet only).
+# (trackB-agent-cli v0.2). HUMAN REVIEW: SIGNED OFF (tb_review in task.yaml).
 
 from harness.hidden import load_hidden
 import cocotb

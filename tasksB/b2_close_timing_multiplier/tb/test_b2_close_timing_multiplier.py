@@ -4,7 +4,7 @@
 # Derived from the t3_pipelined_multiplier suite: pins the exact 2-cycle latency and output
 # sequence the agent must preserve while retiming to 8.5 ns. Any diff to this file
 # disqualifies the run (trackB-agent-cli v0.2).
-# HUMAN REVIEW: PENDING (tb_review in task.yaml - Meet only).
+# HUMAN REVIEW: SIGNED OFF (tb_review in task.yaml).
 
 from collections import deque
 from random import Random

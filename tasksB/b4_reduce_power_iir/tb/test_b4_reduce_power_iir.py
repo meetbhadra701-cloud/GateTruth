@@ -4,7 +4,7 @@
 # Derived from the t3_iir_filter_1st_order suite: pins the exact truncating-IIR semantics
 # the agent must preserve while cutting power >=25%. Any diff to this file disqualifies
 # the run (trackB-agent-cli v0.2).
-# HUMAN REVIEW: PENDING (tb_review in task.yaml - Meet only).
+# HUMAN REVIEW: SIGNED OFF (tb_review in task.yaml).
 
 from random import Random
 

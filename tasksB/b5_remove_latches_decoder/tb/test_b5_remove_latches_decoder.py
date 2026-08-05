@@ -4,7 +4,7 @@
 # Derived from the t1_binary_to_onehot_decoder suite: the FULL decode contract, including the
 # in==7 arm the baseline leaves incomplete. This tb IS the objective check (add_property).
 # Any diff to this file disqualifies the run (trackB-agent-cli v0.2).
-# HUMAN REVIEW: PENDING (tb_review in task.yaml - Meet only).
+# HUMAN REVIEW: SIGNED OFF (tb_review in task.yaml).
 
 from harness.hidden import load_hidden
 import cocotb

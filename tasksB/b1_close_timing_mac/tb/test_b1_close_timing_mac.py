@@ -3,7 +3,7 @@
 #
 # Derived from the t3_fixed_point_mac behavioral suite: it pins the exact single-cycle MAC semantics
 # the agent must preserve while closing timing at 16 ns. Any diff to this file disqualifies the run
-# (trackB-agent-cli contract v0.2). HUMAN REVIEW: PENDING (tb_review in task.yaml - Meet only).
+# (trackB-agent-cli contract v0.2). HUMAN REVIEW: SIGNED OFF (tb_review in task.yaml).
 
 from harness.hidden import load_hidden
 import cocotb
