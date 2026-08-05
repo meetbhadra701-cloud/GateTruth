@@ -91,6 +91,86 @@ def test_forced_official_flag_without_hidden_root_fails_closed(
     assert "MATCH task=" not in result.stdout
 
 
+def test_modern_manifest_with_tampered_provenance_hash_is_still_rejected(
+    fresh_reference_manifest: Path, tmp_path: Path
+) -> None:
+    """GTFS-008: the legacy-compatibility fix must only drop a provenance field from
+    comparison when it is *absent* from the recorded original -- a modern manifest that
+    does record submission_sha256 must still be held to it. fresh_reference_manifest
+    (built via a plain run_task() call) always carries submission_sha256, since
+    harness/runner.py computes it unconditionally, regardless of official mode."""
+
+    raw = json.loads(fresh_reference_manifest.read_text(encoding="utf-8"))
+    assert raw["submission_sha256"], "fixture setup did not record submission_sha256"
+    raw["submission_sha256"] = "0" * 64
+    raw["signature"] = compute_manifest_signature(raw)
+    tampered = tmp_path / "tampered_hash.json"
+    tampered.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+
+    result = _run_reproducer(tampered)
+
+    assert result.returncode == 1
+    assert "MISMATCH" in result.stderr
+    assert '"submission_sha256": "' + "0" * 64 + '"' in result.stderr
+
+
+def test_legacy_shaped_manifest_missing_new_provenance_fields_still_reproduces(
+    tmp_path_factory: pytest.TempPathFactory, tmp_path: Path
+) -> None:
+    """GTFS-008: all 420 real manifests under results/eval-16384/ predate submission_sha256,
+    task_package_sha256, reference_metrics_sha256, hidden_module_sha256, hidden_test_count,
+    and docker_digest_source (added by P0-3/P0-4, 2026-08-03 -- after that campaign was
+    committed on 2026-07-30 and earlier). Simulates that exact legacy shape here by scoring
+    officially, then stripping those six fields and re-signing -- exactly what the real
+    historical payload looks like -- and confirms the reproducer still finds a MATCH rather
+    than spuriously failing on fields that simply didn't exist yet."""
+
+    import os
+
+    hidden_root = REPO_ROOT.parent / "codex-SB-101" / "build" / "hidden-staging"
+    if not hidden_root.is_dir():
+        pytest.skip("real hidden-staging tree not present on this machine")
+
+    env = dict(os.environ)
+    env["GATETRUTH_HIDDEN_ROOT"] = str(hidden_root)
+
+    official_path = tmp_path_factory.mktemp("reproduce-legacy-shape") / "official.json"
+    subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "from harness.runner import run_task; import sys; "
+            f"run_task({TASK_ID!r}, {str(REFERENCE)!r}, {str(official_path)!r}, official=True)",
+        ],
+        cwd=REPO_ROOT,
+        env=env,
+        check=True,
+        timeout=120,
+    )
+    raw = json.loads(official_path.read_text(encoding="utf-8"))
+    assert raw["hidden_module_sha256"], "fixture setup did not actually score officially"
+    for field in (
+        "submission_sha256",
+        "task_package_sha256",
+        "reference_metrics_sha256",
+        "hidden_module_sha256",
+        "hidden_test_count",
+        "docker_digest_source",
+    ):
+        raw.pop(field, None)
+    raw["signature"] = compute_manifest_signature(raw)
+    legacy_shaped = tmp_path / "legacy_shaped.json"
+    legacy_shaped.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+    import shutil
+
+    shutil.copy2(REFERENCE, legacy_shaped.with_suffix(".sv"))
+
+    result = _run_reproducer(legacy_shaped, official=True, env=env)
+
+    assert result.returncode == 0, result.stderr
+    assert f"MATCH task={TASK_ID}" in result.stdout
+
+
 def test_official_mode_is_inferred_from_hidden_module_sha256_without_the_flag(
     tmp_path_factory: pytest.TempPathFactory,
 ) -> None:

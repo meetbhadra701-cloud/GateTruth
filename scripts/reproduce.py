@@ -45,6 +45,25 @@ GENERATION_FIELDS = (
     "harness_git",
 )
 
+# GTFS-008: fields added to the manifest schema by P0-3/P0-4 (2026-08-03), well after the 420
+# manifests under results/eval-16384/ were committed (2026-07-30 and earlier). Unlike
+# GENERATION_FIELDS above, run_task() *does* independently recompute every one of these from
+# the submission/task tree/hidden module it just re-ran -- they are real content-integrity
+# checks, not untraceable generation facts -- so a modern manifest that records one of these
+# must still match the reproducer's own freshly computed value exactly; nothing here is ever
+# substituted from the recorded original. The only accommodation is for a *legacy* manifest
+# that predates the field's existence: its absence is a schema-vintage fact, not a scoring
+# discrepancy, so the freshly computed value is dropped from the comparison rather than forced
+# to match a field that was never recorded.
+LEGACY_OPTIONAL_PROVENANCE_FIELDS = (
+    "submission_sha256",
+    "task_package_sha256",
+    "reference_metrics_sha256",
+    "hidden_module_sha256",
+    "hidden_test_count",
+    "docker_digest_source",
+)
+
 
 class ReproductionError(ValueError):
     """Raised when a manifest cannot be reproduced safely."""
@@ -108,6 +127,9 @@ def _candidate_payload(
         if field in original:
             candidate[field] = original[field]
         else:
+            candidate.pop(field, None)
+    for field in LEGACY_OPTIONAL_PROVENANCE_FIELDS:
+        if field not in original:
             candidate.pop(field, None)
     return manifest_signature_payload(candidate)
 
