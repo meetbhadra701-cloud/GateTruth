@@ -27,8 +27,9 @@ repository. For the full contributor workflow and task standards, see
    or weaken tests to pass; never loosen a timeout, sim cap, or scoring constant to
    force a result; never edit acceptance criteria to match an output.
 
-5. **Verify before you claim.** Run `pytest -q` and `ruff check harness/` inside
-   the image and paste the raw output into your PR. "Should pass" is not evidence.
+5. **Verify before you claim.** Run `pytest -q` and
+   `ruff check harness/ scripts/ paper/ external-audit/ site/` inside the image
+   and paste the raw output into your PR. "Should pass" is not evidence.
 
 6. **`external-audit/` is read-only against vendor sources, and its findings are
    private until maintainer sign-off.** This directory audits external RTL

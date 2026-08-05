@@ -14,7 +14,7 @@ Briefly describe the change and link any related issue.
 Paste the raw output of the checks you ran inside the pinned image:
 
 ```
-# pytest -q && ruff check harness/
+# pytest -q && ruff check harness/ scripts/ paper/ external-audit/ site/
 ...
 ```
 
