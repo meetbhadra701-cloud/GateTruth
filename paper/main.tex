@@ -902,7 +902,15 @@ hand; the width-only lint classification additionally depends on
 diagnostic codes generated once from local lint logs (themselves local scratch, like
 \texttt{results/refs/}, and not part of the repository) by
 \texttt{scripts/generate\_lint\_diagnostics\_ledger.py}, and cross-validated against the signed
-manifests before use.
+manifests before use. That cross-validation confirms the ledger's key set exactly matches which
+(model, task) pairs the signed manifests record as lint failures; it does not, and cannot,
+independently confirm that the diagnostic codes recorded against each pair are themselves
+correct, because the raw Verilator log each code was read from is exactly the local scratch
+this paragraph just described as ungitted. A reader with only this repository, not the machine
+the campaign ran on, can therefore verify \emph{which} pairs the 99-of-132 width-only figure
+counts but not independently re-derive \emph{why} from source; regenerating and re-verifying
+that split requires re-running the lint stage of the campaign, which is future work, not
+something this release archive lets a third party check standalone.
 
 \begin{table}[h]
 \centering
