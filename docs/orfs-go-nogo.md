@@ -24,11 +24,6 @@ echo "EXIT:$?"
 
 FAIL. The image built and the native amd64 gcd/sky130hd run started on `x86_64`, but ORFS exited before route during CTS with exit code 2.
 
-Raw logs:
-
-- `results/logs/sb009-orfs-run.log`
-- `results/logs/sb009-orfs-run.err.log`
-
 Key output:
 
 ```text
@@ -39,4 +34,11 @@ Error: cts.tcl, 83 child killed: illegal instruction
 EXIT:2
 ```
 
-The 7200-second timeout was not reached. Per SB-009, this is recorded as the ORFS go/no-go FAIL path; ADR-0006 carries the decision.
+The 7200-second timeout was not reached. This is recorded as the ORFS go/no-go
+FAIL path (internal ticket SB-009) that led to the project's current flow
+choice (Yosys + OpenSTA, not ORFS) for the pinned pipeline `flows/Dockerfile`
+actually uses. The raw run logs and the full architectural decision record are
+maintainer-local project-management artifacts, not part of this repository,
+the same way `results/refs/` and other local-scratch inputs described
+elsewhere in this project are not committed — this file preserves the
+technical finding itself.

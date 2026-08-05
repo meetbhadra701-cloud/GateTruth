@@ -10,7 +10,7 @@ repository. For the full contributor workflow and task standards, see
    `gatetruth:v1` (`flows/Dockerfile`), never on the host — results are only
    meaningful when the toolchain is pinned. Build it with:
    ```bash
-   docker build --platform linux/amd64 -t gatetruth:v1 -f flows/Dockerfile .
+   docker build --platform linux/amd64 -t gatetruth:v1 -f flows/Dockerfile flows
    ```
 
 2. **Never author or alter reference designs or hidden test vectors.** A task's

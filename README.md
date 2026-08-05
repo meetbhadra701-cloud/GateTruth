@@ -166,6 +166,9 @@ never receive provider API keys.
 ```
 tasks/       60 Track A task packages (spec, interface, reference, tests, constraints)
 tasksB/       8 Track B agentic task packages (baseline, objective, budget)
+results/     signed per-sample manifests from every official campaign (Track A,
+             Track B, mutation certification, variance study) -- what the
+             Quickstart's `--results` flag and the paper's tables read from
 harness/     evaluation harness — CLI, scoring, provider adapters, spend ledger
 flows/       pinned Docker image + synthesis/timing/power flow scripts
 scripts/     reproduction and contamination-scan utilities
