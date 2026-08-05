@@ -139,6 +139,42 @@ def test_agentb_tool_call_budget_scores_as_is(tmp_path, monkeypatch):
     assert manifest.stages
 
 
+def test_agentb_done_call_that_exceeds_budget_still_records_budget_exceeded(
+    tmp_path, monkeypatch
+):
+    """GTFS-005: a real official GPT-5 run (b8_axi_byte_enables) completed at 155,657
+    tokens against a 150,000-token budget with budget_exceeded recorded as null,
+    because the loop broke on `done` before ever re-checking the fired limit for that
+    same call. Reproduces the shape here: one call whose configured usage alone pushes
+    the running total past budget.tokens, with `done` as its action."""
+
+    monkeypatch.setattr(
+        agentb,
+        "load_budget",
+        lambda _path: Budget(tokens=100, wall_clock_s=60, tool_calls=5),
+    )
+    script = [{"tool": "done"}]
+    provider = MockProvider(script, tokens_in_per_call=80, tokens_out_per_call=80)
+    out = tmp_path / "over-budget-done.json"
+
+    manifest = run_agent_task("toy_taskB", provider, out=out)
+
+    assert manifest.budget_exceeded == "tokens"
+    assert manifest.tool_calls == 1
+    assert manifest.tokens_in + manifest.tokens_out == 160
+
+
+def test_estimate_prompt_tokens_is_conservative_and_monotonic():
+    assert agentb._estimate_prompt_tokens("") == 1
+    assert agentb._estimate_prompt_tokens("abc") == 1
+    assert agentb._estimate_prompt_tokens("a" * 300) == 100
+    # Never decreases as the prompt grows -- a longer transcript must never free up
+    # more output headroom than a shorter one.
+    assert agentb._estimate_prompt_tokens("a" * 301) >= agentb._estimate_prompt_tokens(
+        "a" * 300
+    )
+
+
 def test_agentb_clamps_per_call_output_without_changing_episode_budget(
     tmp_path,
     monkeypatch,
@@ -169,7 +205,20 @@ def test_agentb_clamps_per_call_output_without_changing_episode_budget(
 
     assert fresh.params[0].max_tokens == PER_CALL_MAX_OUTPUT_TOKENS
     assert fresh.params[0].max_tokens != episode_tokens
-    assert near_exhausted.params[0].max_tokens == remaining_tokens
+
+    # GTFS-005: max_tokens must reserve room for this call's own input tokens out of
+    # what's left, not hand over the entire remaining balance as pure output
+    # allowance -- the first call's prompt is a fixed, reproducible
+    # {"task_id": ..., "transcript": []} payload, so the exact reservation is
+    # computable here rather than merely asserting "less than before".
+    first_call_prompt = json.dumps(
+        {"task_id": "toy_taskB", "transcript": []}, separators=(",", ":")
+    )
+    expected_max_tokens = max(
+        remaining_tokens - agentb._estimate_prompt_tokens(first_call_prompt), 1
+    )
+    assert expected_max_tokens < remaining_tokens, "fixture must exercise a real reservation"
+    assert near_exhausted.params[0].max_tokens == expected_max_tokens
 
 
 def test_agentb_retries_transport_then_completes_without_leaking_spend(

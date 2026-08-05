@@ -88,11 +88,20 @@ def run_agent_task(
                 {"task_id": task_id, "transcript": transcript},
                 separators=(",", ":"),
             )
+            # GTFS-005: `remaining` bounds total tokens left in the combined budget,
+            # but this call's own *input* tokens (the prompt just built, which grows
+            # every turn as the transcript accumulates) also draw from that same
+            # remaining balance. Handing the whole remainder to the provider as an
+            # *output* allowance leaves no room for the input side, so a call could
+            # legitimately spend input+output well past what was actually left --
+            # exactly the unflagged overshoot GTFS-005's evidence found. Reserve a
+            # conservative (pessimistic) estimate of this call's input cost first.
             remaining = max(budget.tokens - _token_total(provider), 1)
+            output_allowance = max(remaining - _estimate_prompt_tokens(prompt), 1)
             params = GenParams(
                 model=str(getattr(provider, "model", "agent")),
                 temperature=float(getattr(provider, "temperature", 0.0)),
-                max_tokens=min(remaining, PER_CALL_MAX_OUTPUT_TOKENS),
+                max_tokens=min(output_allowance, PER_CALL_MAX_OUTPUT_TOKENS),
                 seed=0,
             )
             try:
@@ -150,11 +159,18 @@ def run_agent_task(
                     "observation": observation,
                 }
             )
-            if done:
-                break
-
+            # GTFS-005: check the fired limit before honoring `done`, not after -- a
+            # call whose action happens to be `done` must still have its own token
+            # cost weighed against the budget. Breaking on `done` first (the previous
+            # order) meant a final call that pushed the run over budget recorded
+            # budget_exceeded=None simply because the agent said it was finished in
+            # the same breath -- exactly the completed-but-over-budget GPT-5
+            # b8_axi_byte_enables case (155,657 tokens against a 150,000 budget,
+            # budget_exceeded: null) GTFS-005's evidence found.
             budget_exceeded = _fired_limit(budget, provider, tool_calls, started)
             if budget_exceeded is not None:
+                break
+            if done:
                 break
 
         if official:
@@ -406,6 +422,19 @@ def provider_usage(provider: ProviderAdapter) -> dict[str, int | float]:
 def _token_total(provider: ProviderAdapter) -> int:
     usage = provider_usage(provider)
     return int(usage["tokens_in"]) + int(usage["tokens_out"])
+
+
+def _estimate_prompt_tokens(prompt: str) -> int:
+    """Conservative (pessimistic) token estimate for an about-to-be-sent prompt,
+    used only to reserve output headroom (GTFS-005) -- never to enforce a hard cap,
+    since the real token count is whatever the provider's own tokenizer reports back
+    afterward via provider_usage(). Roughly 1 token per 3 characters deliberately
+    overestimates rather than the more common ~4-characters-per-token rule of thumb:
+    overestimating reserves more input headroom than strictly needed (safe -- it can
+    only under-utilize the output allowance); underestimating is exactly what let a
+    call's real input+output total exceed the remaining budget in the first place."""
+
+    return max(1, -(-len(prompt) // 3))
 
 
 def _fired_limit(
