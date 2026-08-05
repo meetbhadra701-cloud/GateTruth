@@ -96,6 +96,32 @@ def test_trackb_deterministic_signature(tmp_path):
     assert load_manifest_b(tmp_path / "first.json").signature == first.signature
 
 
+def test_trackb_signature_is_stable_across_genuinely_separate_sandboxes(tmp_path):
+    """GTFS-020: the test above reuses one submission directory for both runs, so
+    it would still pass even with the bug this regression exists for -- two calls
+    against the *same* path always agreed, bug or not. submission_dir used to
+    record run_track_b()'s own tempfile.TemporaryDirectory() path (never the
+    caller's submission argument at all, since run_ppa_flows etc. work inside
+    their own work_root), so two byte-identical runs in genuinely independent
+    sandboxes -- the real production shape -- necessarily produced different
+    canonical signatures. Here each run gets its own separate submission
+    directory, proving the property the paper actually claims."""
+
+    sandbox1 = tmp_path / "sandbox1"
+    sandbox2 = tmp_path / "sandbox2"
+    shutil.copytree(FIXTURE, sandbox1)
+    shutil.copytree(FIXTURE, sandbox2)
+    solution = Path("harness/tests/fixtures/toy_taskB_solution/toy_trackb.sv")
+    shutil.copy2(solution, sandbox1 / "design" / "toy_trackb.sv")
+    shutil.copy2(solution, sandbox2 / "design" / "toy_trackb.sv")
+
+    first = run_track_b("toy_taskB", sandbox1, tmp_path / "first.json")
+    second = run_track_b("toy_taskB", sandbox2, tmp_path / "second.json")
+
+    assert first.signature == second.signature
+    assert first.submission_dir == second.submission_dir
+
+
 def test_trackb_manifest_signature_validation(tmp_path):
     submission = copy_fixture(tmp_path)
     run_track_b("toy_taskB", submission, tmp_path / "manifest.json")

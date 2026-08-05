@@ -196,7 +196,16 @@ def run_track_b(
         "docker_digest": docker_digest,
         "docker_digest_source": docker_digest_source,
         "platform": "linux/amd64",
-        "submission_dir": str(submission_root),
+        # A stable logical placeholder, not the real per-run temp sandbox path
+        # (GTFS-020): submission_dir is part of the signed payload, and the real
+        # path is a fresh tempfile.TemporaryDirectory() every run, so two
+        # byte-identical runs in fresh sandboxes would otherwise necessarily get
+        # different canonical signatures, contradicting the paper's canonical-
+        # byte-identity claim. This changes only what new manifests *write* here,
+        # not the signing rule itself (SIGNATURE_EXCLUDED_FIELDS is untouched), so
+        # every already-signed historical manifest's signature stays exactly as
+        # valid as it already was -- no versioned compatibility shim needed.
+        "submission_dir": "submission",
         "submission_sha256": submission_sha256,
         "hidden_module_sha256": hidden_module_sha256,
         "hidden_test_count": hidden_test_count,
