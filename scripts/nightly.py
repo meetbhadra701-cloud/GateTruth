@@ -23,6 +23,15 @@ RESULTS_ROOT = REPO_ROOT / "results" / "nightly"
 REFERENCE_SCORE = 66.67
 ROTATION_SIZE = 6
 ROTATION_NIGHTS = 10
+# Must match nightly.yml's `docker run --cpus=2`: acceptance runs each task's full
+# lint/sim/formal/synth/sta/power pipeline as its own subprocess, and the formal
+# (sec) stage has a fixed ~60s budget. At 4-way parallelism sharing only 2 CPUs, that
+# stage was seen to blow the budget under real contention -- confirmed live on
+# 2026-08-05: t3_iir_filter_1st_order's formal stage failed at wall_clock_s=61.2 on
+# two consecutive CI runs (31019105631, 31021368966) while passing reliably, both
+# solo and under this same reduced concurrency, in local reproduction. Keep this at
+# or below the container's actual CPU allocation, not the task count.
+ACCEPTANCE_PARALLELISM = 2
 
 
 def task_ids(root: Path = REPO_ROOT) -> list[str]:
@@ -87,7 +96,7 @@ def run_nightly(
     work_root = root / "results" / "nightly" / "work" / run_date.isoformat()
     work_root.mkdir(parents=True, exist_ok=True)
 
-    with ThreadPoolExecutor(max_workers=min(4, len(acceptance_tasks))) as pool:
+    with ThreadPoolExecutor(max_workers=min(ACCEPTANCE_PARALLELISM, len(acceptance_tasks))) as pool:
         acceptance = list(
             pool.map(
                 lambda task: _run_acceptance(task, root, work_root),
@@ -239,7 +248,7 @@ def _print_plan(run_date: date, only_task: str | None) -> None:
         run_date.timetuple().tm_yday,
     )
     print(f"date={run_date.isoformat()} day_of_year={run_date.timetuple().tm_yday}")
-    print(f"acceptance_tasks={len(acceptance)} parallelism={min(4, len(acceptance))}")
+    print(f"acceptance_tasks={len(acceptance)} parallelism={min(ACCEPTANCE_PARALLELISM, len(acceptance))}")
     print("mutation_tasks=" + ",".join(mutation) + " sequential=true seed=1337")
     print("site_rebuild=true scheduling_registration=false")
 
