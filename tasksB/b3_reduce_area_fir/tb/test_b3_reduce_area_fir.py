@@ -94,17 +94,28 @@ async def sample_and_expect(dut, model: Model, s: int):
     await Timer(1, units="ns")
 
     got = None
-    for _ in range(MAX_LATENCY):
+    latency = None
+    for i in range(MAX_LATENCY + 1):
         if int(dut.result_valid.value) == 1:
             got = to_signed(int(dut.result_out.value), ACC_WIDTH)
+            latency = i
             break
         await RisingEdge(dut.clk)
         await Timer(1, units="ns")
     assert got is not None, f"no result within {MAX_LATENCY} cycles of sample {s}"
     assert got == expected, f"result {got} != expected {expected} (sample {s})"
 
-    # spacing: give any implementation time to return to idle
-    for _ in range(SAMPLE_SPACING - MAX_LATENCY + 4):
+    # spacing: hold the next sample's acceptance edge at exactly SAMPLE_SPACING
+    # cycles after this one's, however fast or slow this result actually
+    # arrived -- the contract bounds acceptance-to-acceptance spacing, not
+    # result-to-next-acceptance spacing, so idle cycles must be derived from
+    # the observed completion edge, not a fixed offset from MAX_LATENCY.
+    idle = SAMPLE_SPACING - 1 - latency
+    assert idle >= 0, (
+        f"SAMPLE_SPACING={SAMPLE_SPACING} leaves no idle margin for a result "
+        f"arriving at MAX_LATENCY={MAX_LATENCY}"
+    )
+    for _ in range(idle):
         await idle_cycle(dut)
 
 
