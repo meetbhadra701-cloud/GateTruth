@@ -13,6 +13,7 @@ def test_repository_contamination_gate() -> None:
     assert report.hidden_markers == 0
     assert report.hidden_loaders == 68
     assert report.package_canaries == 70
+    assert report.signed_packages_checked == 68
 
 
 def _fixture_canary(suffix: str) -> str:
@@ -55,6 +56,63 @@ def test_generated_result_tree_cannot_leak_a_canary_outside_its_task(
 
     with pytest.raises(ContaminationError, match="canary escaped"):
         run_checks(tmp_path)
+
+
+def _signed_task_package(root: Path, task_id: str, canary: str, *, ref_review: str) -> Path:
+    task_root = root / "tasks" / task_id
+    task_root.mkdir(parents=True)
+    (task_root / "task.yaml").write_text(
+        f"id: {task_id}\ncanary: {canary}\n"
+        f"ref_review: {ref_review}\nhidden_review: {ref_review}\n",
+        encoding="utf-8",
+    )
+    tb_root = task_root / "tb"
+    tb_root.mkdir()
+    (tb_root / f"test_{task_id}.py").write_text(
+        f'load_hidden(globals(), "{task_id}")\n', encoding="utf-8"
+    )
+    return task_root
+
+
+def test_signed_package_with_leftover_pending_boilerplate_fails_closed(
+    tmp_path: Path,
+) -> None:
+    """GTFS-037: once task.yaml's review fields are genuinely signed off, any file in
+    that same package still claiming HUMAN REVIEW: PENDING is a real, verifiable
+    contradiction of the metadata a reviewer can independently check -- this must
+    fail the gate, not pass silently."""
+
+    canary = _fixture_canary("000000000002")
+    task_root = _signed_task_package(
+        tmp_path, "t1_fixture_signed", canary, ref_review="SIGNED-OFF-BY-MEET-2026-08-05"
+    )
+    (task_root / "spec.md").write_text(
+        "# t1_fixture_signed - Spec\nHUMAN REVIEW: PENDING\n", encoding="utf-8"
+    )
+
+    with pytest.raises(ContaminationError, match="stale.*PENDING.*boilerplate"):
+        run_checks(tmp_path)
+
+
+def test_genuinely_pending_package_is_not_flagged_for_its_own_pending_text(
+    tmp_path: Path,
+) -> None:
+    """Sanity check for the fixture above: a package whose task.yaml review fields are
+    still honestly PENDING must not be flagged just because its files also say
+    PENDING -- that boilerplate is accurate for it, and only tightens once the
+    package is actually signed off."""
+
+    canary = _fixture_canary("000000000003")
+    task_root = _signed_task_package(
+        tmp_path, "t1_fixture_pending", canary, ref_review="PENDING"
+    )
+    (task_root / "spec.md").write_text(
+        "# t1_fixture_pending - Spec\nHUMAN REVIEW: PENDING\n", encoding="utf-8"
+    )
+
+    with pytest.raises(ContaminationError, match="expected 60 Track A tasks") as exc_info:
+        run_checks(tmp_path)
+    assert "stale" not in str(exc_info.value)
 
 
 def test_generated_result_tree_without_a_leaked_canary_is_not_flagged_as_leaked(

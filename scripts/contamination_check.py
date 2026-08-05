@@ -8,6 +8,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from harness.schemas.task_yaml import parse_task_yaml_text  # noqa: E402
 CANARY_RE = re.compile(
     r"SILICONBENCH-CANARY-[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-"
     r"[0-9A-F]{4}-[0-9A-F]{12}",
@@ -36,6 +40,13 @@ TEXT_SUFFIXES = {
 }
 TEXT_NAMES = {".gitattributes", ".gitignore", "Dockerfile", "LICENSE"}
 SKIP_DIRS = {".git", ".pytest_cache", ".ruff_cache", "__pycache__", "sim_build"}
+REVIEW_FIELDS = ("ref_review", "hidden_review", "baseline_review", "tb_review")
+STALE_REVIEW_MARKERS = (
+    "HUMAN REVIEW: PENDING",
+    "NOT a signed-off",
+    "DRAFT reference implementation",
+    "(DRAFT,",
+)
 FORBIDDEN = (
     "eb" + "-1a",
     "immi" + "gration",
@@ -58,6 +69,7 @@ class CheckReport:
     scanned_files: int
     hidden_markers: int
     hidden_loaders: int
+    signed_packages_checked: int
 
 
 def run_checks(root: str | Path = REPO_ROOT) -> CheckReport:
@@ -126,6 +138,8 @@ def run_checks(root: str | Path = REPO_ROOT) -> CheckReport:
         else:
             loader_count += 1
 
+    signed_packages_checked = _check_no_stale_review_boilerplate(package_roots, repo, errors)
+
     if errors:
         raise ContaminationError("\n".join(sorted(errors)))
     return CheckReport(
@@ -134,6 +148,7 @@ def run_checks(root: str | Path = REPO_ROOT) -> CheckReport:
         scanned_files=len(text_files),
         hidden_markers=hidden_count,
         hidden_loaders=loader_count,
+        signed_packages_checked=signed_packages_checked,
     )
 
 
@@ -159,6 +174,41 @@ def _canary_owners(package_roots: list[Path]) -> dict[str, Path]:
             raise ContaminationError(f"duplicate task canary: {canary}")
         owners[canary] = root
     return owners
+
+
+def _check_no_stale_review_boilerplate(
+    package_roots: list[Path], repo: Path, errors: list[str]
+) -> int:
+    """A package whose task.yaml review fields are all signed off must not still
+    carry "DRAFT"/"PENDING"/"NOT a signed-off" prose anywhere in its own files
+    (GTFS-037): that prose is a real, verifiable claim about review status, and a
+    reviewer reading it after the sign-off happened sees a direct contradiction of
+    task.yaml even though the metadata itself was never wrong. A package where any
+    review field is still genuinely "PENDING" is untouched -- that boilerplate is
+    accurate for it -- so this only tightens once a package is actually signed.
+    """
+
+    checked = 0
+    for root in package_roots:
+        task_yaml = root / "task.yaml"
+        values = parse_task_yaml_text(task_yaml.read_text(encoding="utf-8"))
+        review_values = [values[key] for key in REVIEW_FIELDS if key in values]
+        if not review_values or any(value == "PENDING" for value in review_values):
+            continue
+        checked += 1
+        for path in sorted(root.rglob("*")):
+            if not path.is_file() or path.name == "task.yaml":
+                continue
+            if path.suffix.lower() not in TEXT_SUFFIXES:
+                continue
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            for marker in STALE_REVIEW_MARKERS:
+                if marker in text:
+                    errors.append(
+                        f"stale {marker!r} boilerplate in signed package "
+                        f"{path.relative_to(repo).as_posix()}"
+                    )
+    return checked
 
 
 def _text_files(repo: Path):
@@ -189,6 +239,7 @@ def main() -> int:
         f"scanned_files={report.scanned_files} "
         f"hidden_markers={report.hidden_markers} "
         f"hidden_loaders={report.hidden_loaders} "
+        f"signed_packages_checked={report.signed_packages_checked} "
         "forbidden_hits=0 canary_leaks=0"
     )
     return 0
