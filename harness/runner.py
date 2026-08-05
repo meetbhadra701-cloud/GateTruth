@@ -534,14 +534,22 @@ def run_task(
     else:
         with tempfile.TemporaryDirectory(prefix="gatetruth-") as temp:
             work_root = Path(temp)
+            # Never let the untrusted submission's own path string reach a
+            # generated Python/Yosys/Tcl script -- a quote or newline in the real
+            # path can break out of naive interpolation there (GTFS-011; Track B
+            # already does exactly this via harness/trackb.py's safe_design copy).
+            # Copy the already-hashed, already-size-validated bytes to a
+            # harness-chosen fixed filename and use only that for every stage.
+            safe_submission_path = work_root / "submission.sv"
+            safe_submission_path.write_bytes(submission_path.read_bytes())
             stages = []
-            stage, log = run_lint(submission_path)
+            stage, log = run_lint(safe_submission_path)
             stages.append(stage)
             logs.append(log)
             if stage["status"] == "pass":
                 stage, log, hidden_sha256, hidden_test_count = run_sim(
                     task,
-                    submission_path,
+                    safe_submission_path,
                     work_root,
                     official=official,
                 )
@@ -550,7 +558,7 @@ def run_task(
             else:
                 stages.append({"stage": 1, "name": "sim", "status": "fail"})
             if stages[-1]["status"] == "pass":
-                stage, log = run_formal(task, submission_path, work_root)
+                stage, log = run_formal(task, safe_submission_path, work_root)
                 stages.append(stage)
                 logs.append(log)
             else:
@@ -562,7 +570,7 @@ def run_task(
             ):
                 flow_stages, log = run_ppa_flows(
                     task,
-                    submission_path,
+                    safe_submission_path,
                     work_root,
                 )
                 stages.extend(flow_stages)

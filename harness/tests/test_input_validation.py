@@ -146,6 +146,50 @@ def test_track_b_rejects_non_allowlisted_module_name_before_tool(
     assert "invalid module name" in manifest.disqualification_reason
 
 
+def test_track_a_copies_submission_to_fixed_harness_name(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """GTFS-011: run_task() used to pass the untrusted submission's own path
+    straight into run_lint/run_sim/run_formal/run_ppa_flows, which embed it into
+    generated Python (run_sim's cocotb runner script) and Yosys/Tcl source -- a
+    quote or newline in that path could break out of the interpolation. Every
+    stage must now only ever see a harness-chosen fixed filename."""
+
+    source = tmp_path / "it's a design; exec('bad').sv"
+    source.write_text("module toy; endmodule\n", encoding="utf-8")
+    seen: list[Path] = []
+
+    def capture_lint(path: Path):
+        seen.append(path)
+        return {"stage": 0, "name": "lint", "status": "fail"}, "stopped"
+
+    monkeypatch.setattr(runner, "run_lint", capture_lint)
+
+    run_task("toy_task", source, tmp_path / "fixed.json")
+
+    assert [path.name for path in seen] == ["submission.sv"]
+
+
+def test_track_a_quote_containing_path_does_not_break_the_generated_sim_script(
+    tmp_path: Path,
+) -> None:
+    """End-to-end proof, not just that the copy happens: a real submission at a
+    path containing a single quote (the exact character that would break out of
+    run_sim's f"...[r'{submission}']" interpolation before the fix) must score
+    exactly like the same content at a normal path, via the real EDA toolchain."""
+
+    toy_ref = Path("harness/tests/fixtures/toy_task/ref/ref.sv").read_text(encoding="utf-8")
+    dangerous = tmp_path / "attacker's \"submission\".sv"
+    dangerous.write_text(toy_ref, encoding="utf-8")
+
+    manifest = run_task("toy_task", dangerous, tmp_path / "dangerous.json")
+
+    assert manifest.task_score == pytest.approx(66.6666666667)
+    assert manifest.ppa == pytest.approx(1.0)
+    assert all(stage.status in {"pass", "skip"} for stage in manifest.stages)
+
+
 def test_track_b_copies_valid_design_to_fixed_harness_name(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
