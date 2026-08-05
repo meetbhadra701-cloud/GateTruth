@@ -7,7 +7,14 @@ from pathlib import Path
 
 import pytest
 
-from paper.data.generate_audit_appendix import AuditAppendixDataError, load_designs, render
+from paper.data.generate_audit_appendix import (
+    AUDIT_DIR,
+    EXPECTED_DESIGN_COUNT,
+    EXPECTED_GENERATION_FLAG,
+    AuditAppendixDataError,
+    load_designs,
+    render,
+)
 
 DESIGN_IDS = ["alpha", "beta", "gamma"]
 
@@ -24,9 +31,11 @@ def _design(
     seed: int = 20260729,
     vendor_commit: str = "a" * 40,
     notes: str = "baseline passed under Icarus Verilog-2012",
+    generation_flag: str | None = EXPECTED_GENERATION_FLAG,
+    include_generation_flag: bool = True,
 ) -> dict:
     kill_rate = 0.0 if mutants_total == 0 else round(100.0 * killed / mutants_total, 4)
-    return {
+    data = {
         "task_id": task_id,
         "status": status,
         "schema_version": schema_version,
@@ -39,6 +48,9 @@ def _design(
         "kill_rate": kill_rate,
         "notes": notes,
     }
+    if include_generation_flag:
+        data["generation_flag"] = generation_flag
+    return data
 
 
 def _write_fixture(
@@ -47,6 +59,7 @@ def _write_fixture(
     designs: list[dict],
     catalog_ids: list[str] | None = None,
     harness_git: str = "b" * 40,
+    summary_generation_flag: str | None = EXPECTED_GENERATION_FLAG,
 ) -> tuple[Path, Path]:
     audit_dir = root / "final-g2012"
     audit_dir.mkdir(parents=True)
@@ -61,6 +74,7 @@ def _write_fixture(
         "schema_version": "1.0",
         "seed": 20260729,
         "vendor_commit": "a" * 40,
+        "generation_flag": summary_generation_flag,
         "designs_requested": len(catalog_ids or DESIGN_IDS),
         "status_counts": {"audited": len(audited), "unsupported": len(unsupported)},
         "tool_versions": {"harness_git": harness_git},
@@ -149,13 +163,107 @@ def test_inconsistent_vendor_commit_across_designs_is_refused(tmp_path: Path) ->
         load_designs(audit_dir, catalog_path, expected_count=3)
 
 
-def test_verilog_2001_note_on_a_g2012_run_is_refused(tmp_path: Path) -> None:
+def test_wrong_generation_flag_is_refused(tmp_path: Path) -> None:
+    """GTFS-040: a design whose actual recorded generation_flag is -g2001 must be
+    refused, even if its free-text notes still (wrongly) describe -g2012 -- the notes
+    are not the source of truth this validator checks anymore."""
+
     bad = _valid_designs()
-    bad[0]["notes"] = "baseline passed under Icarus Verilog-2001"
+    bad[0]["generation_flag"] = "-g2001"
+    bad[0]["notes"] = "baseline passed under Icarus Verilog-2012"
     audit_dir, catalog_path = _write_fixture(tmp_path, designs=bad)
 
-    with pytest.raises(AuditAppendixDataError, match="Verilog-2001 condition"):
+    with pytest.raises(AuditAppendixDataError, match="generation_flag='-g2001'"):
         load_designs(audit_dir, catalog_path, expected_count=3)
+
+
+def test_all_designs_missing_generation_flag_is_a_legitimate_legacy_shape(
+    tmp_path: Path,
+) -> None:
+    """GTFS-040: a whole run that entirely predates the generation_flag field --
+    exactly the shape of the real committed evidence today -- is a legitimate,
+    honestly-unverified legacy state, not an error. The condition claim rests on the
+    same (weaker) notes-based provenance it always did; this fix's job is to stop a
+    *future* run from silently drifting, not to retroactively invalidate a run that
+    never had the chance to record this field at all."""
+
+    bad = [
+        _design(task_id, include_generation_flag=False) for task_id in DESIGN_IDS
+    ]
+    audit_dir, catalog_path = _write_fixture(
+        tmp_path, designs=bad, summary_generation_flag=None
+    )
+    # summary_generation_flag=None still writes the *key* with value None in
+    # _write_fixture()'s dict, which is presence=True -- pop it to match the real
+    # legacy shape (key entirely absent), matching what a pre-GTFS-040 run.json
+    # actually looks like.
+    summary_path = audit_dir / "summary.json"
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    del summary["generation_flag"]
+    summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+
+    audited, unsupported = load_designs(audit_dir, catalog_path, expected_count=3)
+
+    assert len(audited) == 3
+    assert unsupported == []
+
+
+def test_mixed_generation_flag_presence_across_designs_is_refused(
+    tmp_path: Path,
+) -> None:
+    """A run where some per-design files have generation_flag and others don't is
+    not a legitimate legacy shape -- it looks like a partial regeneration or other
+    data-integrity problem, and must be refused, not silently treated as legacy."""
+
+    mixed = _valid_designs()
+    mixed[0] = _design(mixed[0]["task_id"], include_generation_flag=False)
+    audit_dir, catalog_path = _write_fixture(tmp_path, designs=mixed)
+
+    with pytest.raises(AuditAppendixDataError, match="mixed-provenance"):
+        load_designs(audit_dir, catalog_path, expected_count=3)
+
+
+def test_summary_generation_flag_mismatch_is_refused(tmp_path: Path) -> None:
+    audit_dir, catalog_path = _write_fixture(
+        tmp_path, designs=_valid_designs(), summary_generation_flag="-g2001"
+    )
+
+    with pytest.raises(AuditAppendixDataError, match="generation_flag"):
+        load_designs(audit_dir, catalog_path, expected_count=3)
+
+
+def test_summary_generation_flag_presence_disagrees_with_designs_is_refused(
+    tmp_path: Path,
+) -> None:
+    """The designs all have generation_flag but summary.json entirely lacks the key
+    (rather than merely having a wrong value) -- also refused, since a real run
+    always writes the field to both or to neither."""
+
+    audit_dir, catalog_path = _write_fixture(tmp_path, designs=_valid_designs())
+    summary_path = audit_dir / "summary.json"
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    del summary["generation_flag"]
+    summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+
+    with pytest.raises(AuditAppendixDataError, match="generation_flag presence disagrees"):
+        load_designs(audit_dir, catalog_path, expected_count=3)
+
+
+def test_real_committed_audit_evidence_predates_generation_flag_but_still_loads() -> None:
+    """Locks in the real, current state of results/external-audit/rtllm/final-g2012/:
+    it predates GTFS-040 entirely (generation_flag absent from every per-design file
+    and from summary.json), which is the legitimate legacy shape -- accepted, not
+    refused, since a run that never had the chance to record this field is no worse
+    off than it always was. If this test starts failing because the real evidence
+    now carries generation_flag on some but not all files, that indicates a genuine
+    data-integrity problem worth investigating, not a fixture to relax."""
+
+    if not AUDIT_DIR.is_dir():
+        pytest.skip("real external-audit results not present on this machine")
+
+    audited, unsupported = load_designs()
+
+    assert len(audited) + len(unsupported) == EXPECTED_DESIGN_COUNT
 
 
 def test_summary_status_counts_mismatch_is_refused(tmp_path: Path) -> None:

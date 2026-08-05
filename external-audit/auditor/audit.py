@@ -26,6 +26,7 @@ def _base_report(
     seed: int,
     catalog_entry: dict[str, Any],
     golden_source: str,
+    generation_flag: str | None,
 ) -> dict[str, Any]:
     return {
         "schema_version": SCHEMA_VERSION,
@@ -37,6 +38,13 @@ def _base_report(
         or _source_hash(golden_source),
         "testbench_sha256": catalog_entry.get("testbench_sha256"),
         "tool_versions": catalog_entry["_tool_versions"],
+        # GTFS-040: the *actual* flag this run passed to the runner, independently
+        # recorded here rather than inherited from a catalog entry's free-text notes --
+        # notes describe whatever condition was true when the catalog was built, not
+        # necessarily what a later run of this function actually used. None (the
+        # default for runners with no such concept) is a real, honest value, not an
+        # omission -- see paper/data/generate_audit_appendix.py for how it's verified.
+        "generation_flag": generation_flag,
     }
 
 
@@ -85,12 +93,13 @@ def audit_design(
     *,
     timeout_s: float = 20.0,
     retry_timeout_s: float = 60.0,
+    generation_flag: str | None = None,
 ) -> dict[str, Any]:
     """Audit one design, baseline first, with deterministic sequential execution."""
     golden_source = catalog_entry.get("_golden_source")
     if not isinstance(golden_source, str):
         raise ValueError(f"{design_id}: catalog entry has no loaded golden source")
-    base = _base_report(design_id, runner, seed, catalog_entry, golden_source)
+    base = _base_report(design_id, runner, seed, catalog_entry, golden_source, generation_flag)
 
     with tempfile.TemporaryDirectory(
         prefix=f"gatetruth-audit-{runner.suite}-{design_id}-"

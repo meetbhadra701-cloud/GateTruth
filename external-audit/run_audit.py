@@ -135,6 +135,7 @@ def run_rtllm_audit(
             entry,
             timeout_s=timeout_s,
             retry_timeout_s=retry_timeout_s,
+            generation_flag=generation_flag,
         )
         results.append(result)
         _write_json(out_dir / f"{design_id}.json", result)
@@ -161,6 +162,7 @@ def run_rtllm_audit(
                 "indeterminate",
                 "kill_rate",
                 "notes",
+                "generation_flag",
             )
         }
         for result in results
@@ -173,6 +175,10 @@ def run_rtllm_audit(
         "vendor_content_sha256": before_hash,
         "tool_versions": tool_versions,
         "designs_requested": len(selected),
+        # GTFS-040: the flag this whole run actually passed to the runner -- not
+        # inherited from any catalog note. Every per-design file's own generation_flag
+        # must equal this (paper/data/generate_audit_appendix.py verifies both).
+        "generation_flag": generation_flag,
         "status_counts": dict(sorted(status_counts.items())),
         "designs": summary_designs,
         "tasks": summary_designs,

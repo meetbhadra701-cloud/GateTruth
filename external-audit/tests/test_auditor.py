@@ -116,6 +116,52 @@ def test_audit_counts_kills_survivors_and_double_timeouts(monkeypatch):
     assert verdicts["rtllm_foo-m002"]["killed_by"] == "tb-timeout"
 
 
+def test_audit_records_the_actual_generation_flag_not_a_default(monkeypatch):
+    """GTFS-040: generation_flag must be the value this run actually passed to
+    audit_design(), independent of anything in the catalog entry's notes."""
+
+    mutants = [Mutant("rtllm_foo-m000", "logic_inversion", "killed", "mutant-kill")]
+    monkeypatch.setattr(audit_module, "generate_mutants", lambda *_a, **_k: mutants)
+    runner = ScriptedRunner(
+        {
+            "golden": [TbResult(Verdict.PASS, None)],
+            "mutant-kill": [TbResult(Verdict.FAIL, "compile")],
+        }
+    )
+    entry = _catalog_entry("golden")
+    entry["notes"] = "baseline passed under Icarus Verilog-2001"
+
+    report = audit_design("foo", runner, 1337, entry, generation_flag="-g2012")
+
+    assert report["generation_flag"] == "-g2012"
+
+
+def test_unsupported_report_still_records_generation_flag(monkeypatch):
+    """The GTFS-040 field must be present on the unsupported-status path too, not
+    only the fully-audited path -- both share _base_report() via **base."""
+
+    runner = ScriptedRunner({"golden": [TbResult(Verdict.FAIL, "tb")]})
+
+    def fail_if_called(*_args, **_kwargs):
+        raise AssertionError("mutants must not be generated after baseline failure")
+
+    monkeypatch.setattr(audit_module, "generate_mutants", fail_if_called)
+    report = audit_design(
+        "broken", runner, 1337, _catalog_entry("golden"), generation_flag="-g2012"
+    )
+
+    assert report["status"] == "unsupported"
+    assert report["generation_flag"] == "-g2012"
+
+
+def test_audit_defaults_generation_flag_to_none_when_not_supplied():
+    runner = ScriptedRunner({"golden": [TbResult(Verdict.FAIL, "tb")]})
+
+    report = audit_design("foo", runner, 1337, _catalog_entry("golden"))
+
+    assert report["generation_flag"] is None
+
+
 def _rtllm_fixture(tmp_path: Path) -> tuple[Path, dict]:
     design_root = tmp_path / "Arithmetic" / "foo"
     design_root.mkdir(parents=True)

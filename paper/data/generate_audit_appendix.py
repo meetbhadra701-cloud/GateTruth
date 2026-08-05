@@ -10,10 +10,21 @@ mutants_total and kill_rate must equal the arithmetic it implies; the design set
 the 50 designs catalogued in external-audit/results/rtllm/sweep_report.json, with no missing,
 extra, or duplicate entries; summary.json's status_counts must match the per-design files it
 aggregates; and summary.json's tool_versions.harness_git must be a real commit, not "unavailable"
--- a run whose own provenance is unrecoverable is not evidence this appendix will accept. Notes
-claiming an Icarus Verilog-2001 condition are refused outright: this directory's name is the
-paper's own record that its condition is -g2012, and that mismatch is exactly the bug this check
-exists to catch.
+-- a run whose own provenance is unrecoverable is not evidence this appendix will accept.
+
+generation_flag (GTFS-040): external-audit/run_audit.py now independently records the *actual*
+iverilog flag it passed to the runner on every per-design file and on summary.json, rather than
+inheriting an apparent condition from a catalog entry's free-text notes (notes describe whatever
+condition was true when the catalog was built, not necessarily what a *later* run of the same
+design actually used -- a real, previously silent, provenance-drift gap: a -g2001 run against the
+g2012 catalog could emit files whose notes still claimed -g2012). Where the field is present, it
+must equal EXPECTED_GENERATION_FLAG on every design and on summary.json, or the run is refused.
+The real committed campaign predates this field entirely (generation_flag absent from every file),
+so it is treated as a distinct, honestly-unverified legacy state: accepted (its condition rests on
+the pre-existing, weaker notes-based provenance it always had -- no worse than before this field
+existed), but a run where the field is present on *some* files and absent on others is refused
+outright as a data-integrity problem (a partial regeneration), and a run where the summary and the
+per-design files disagree about whether the field exists at all is refused the same way.
 """
 
 from __future__ import annotations
@@ -26,6 +37,7 @@ AUDIT_DIR = REPO_ROOT / "external-audit" / "results" / "rtllm" / "final-g2012"
 CATALOG_PATH = REPO_ROOT / "external-audit" / "results" / "rtllm" / "sweep_report.json"
 OUT_PATH = REPO_ROOT / "paper" / "data" / "build" / "audit_per_design.tex"
 EXPECTED_DESIGN_COUNT = 50
+EXPECTED_GENERATION_FLAG = "-g2012"
 REQUIRED_DESIGN_FIELDS = (
     "task_id",
     "status",
@@ -81,11 +93,13 @@ def _validate_design(data: dict, path: Path) -> None:
             )
     elif data["kill_rate"] != 0.0:
         raise AuditAppendixDataError(f"{path}: mutants_total is 0 but kill_rate != 0")
-    notes = data["notes"]
-    if "verilog-2001" in notes.lower() or "-g2001" in notes:
+    # GTFS-040: generation_flag is legacy-tolerant per file (load_designs() enforces
+    # the cross-file all-present-or-all-absent invariant) -- but wherever it *is*
+    # present, it must be correct.
+    if "generation_flag" in data and data["generation_flag"] != EXPECTED_GENERATION_FLAG:
         raise AuditAppendixDataError(
-            f"{path}: notes describe a Verilog-2001 condition, but {AUDIT_DIR.name!r} is the "
-            f"paper's committed -g2012 audit -- the note's generation flag is wrong: {notes!r}"
+            f"{path}: generation_flag={data['generation_flag']!r}, but {AUDIT_DIR.name!r} "
+            f"is the paper's committed {EXPECTED_GENERATION_FLAG} audit"
         )
 
 
@@ -97,6 +111,7 @@ def _validate_summary(
     schema_versions: set[str],
     seeds: set[int],
     vendor_commits: set[str],
+    all_designs_have_generation_flag: bool,
     expected_count: int,
 ) -> None:
     if summary.get("designs_requested") != expected_count:
@@ -110,6 +125,24 @@ def _validate_summary(
         raise AuditAppendixDataError("summary.json seed disagrees with per-design files")
     if {summary.get("vendor_commit")} != vendor_commits:
         raise AuditAppendixDataError("summary.json vendor_commit disagrees with per-design files")
+    # GTFS-040: generation_flag presence must agree between summary.json and whether
+    # every per-design file has it (a real run always writes it to both, or to
+    # neither if it predates the field) -- a summary claiming the field while the
+    # per-design files lack it, or vice versa, is a data-integrity problem, not a
+    # legitimate legacy shape. Every per-design file that DOES have the field already
+    # had its exact value checked in _validate_design(); this only needs to also
+    # check summary.json's own value once presence itself is confirmed to agree.
+    summary_has_flag = "generation_flag" in summary
+    if summary_has_flag != all_designs_have_generation_flag:
+        raise AuditAppendixDataError(
+            "generation_flag presence disagrees between summary.json "
+            f"({summary_has_flag}) and the per-design files ({all_designs_have_generation_flag})"
+        )
+    if summary_has_flag and summary.get("generation_flag") != EXPECTED_GENERATION_FLAG:
+        raise AuditAppendixDataError(
+            f"summary.json generation_flag={summary.get('generation_flag')!r}, "
+            f"expected {EXPECTED_GENERATION_FLAG!r}"
+        )
     status_counts = summary.get("status_counts", {})
     if status_counts.get("audited") != len(audited) or status_counts.get("unsupported") != len(
         unsupported
@@ -150,6 +183,7 @@ def load_designs(
     schema_versions: set[str] = set()
     seeds: set[int] = set()
     vendor_commits: set[str] = set()
+    generation_flag_presence: set[bool] = set()
 
     for path in sorted(audit_dir.glob("*.json")):
         if path.name == "summary.json":
@@ -163,6 +197,7 @@ def load_designs(
         schema_versions.add(data["schema_version"])
         seeds.add(data["seed"])
         vendor_commits.add(data["vendor_commit"])
+        generation_flag_presence.add("generation_flag" in data)
         (audited if data["status"] == "audited" else unsupported).append(data)
 
     if seen_ids != canonical_ids:
@@ -170,6 +205,16 @@ def load_designs(
             f"design set mismatch: missing={sorted(canonical_ids - seen_ids)}, "
             f"extra={sorted(seen_ids - canonical_ids)}"
         )
+    # GTFS-040: legacy (entirely absent) is a legitimate shape; a genuine mix of
+    # present-on-some/absent-on-others within one run is not -- that is a partial
+    # regeneration or other data-integrity problem, not a run that simply predates
+    # the field.
+    if len(generation_flag_presence) > 1:
+        raise AuditAppendixDataError(
+            "generation_flag is present on some per-design files but not others -- "
+            "a partially regenerated or mixed-provenance run"
+        )
+    all_designs_have_generation_flag = generation_flag_presence == {True}
     _validate_summary(
         summary,
         audited=audited,
@@ -177,6 +222,7 @@ def load_designs(
         schema_versions=schema_versions,
         seeds=seeds,
         vendor_commits=vendor_commits,
+        all_designs_have_generation_flag=all_designs_have_generation_flag,
         expected_count=expected_count,
     )
     return audited, unsupported
