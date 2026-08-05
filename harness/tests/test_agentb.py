@@ -246,6 +246,13 @@ def test_agentb_retries_transport_then_completes_without_leaking_spend(
         }
 
     monkeypatch.setattr(anthropic_module, "post_json", flaky_post)
+    # Patch agentb._retry_sleep, not agentb.time.sleep: `time` is the process-global
+    # module, so patching its `sleep` attribute also captures CPython's own
+    # subprocess.Popen._wait() polling backoff (0.0005s doubling to a 0.05s cap)
+    # whenever a subprocess this test's run_agent_task() call spawns is slow to
+    # reap under load -- exactly what caused two CI-only (never local) flakes on a
+    # shared runner, confirmed by wall-clock timing that lined up with that
+    # subprocess-polling ladder, not with anything agentb.py's own retry loop does.
     monkeypatch.setattr(agentb, "_retry_sleep", delays.append)
     spend_path = tmp_path / "spend.json"
     provider = AnthropicProvider(
@@ -279,7 +286,7 @@ def test_agentb_exhausted_transport_retries_terminate_once(
         raise ProviderTransportError("provider transport error: offline")
 
     monkeypatch.setattr(anthropic_module, "post_json", failed_post)
-    monkeypatch.setattr(agentb.time, "sleep", lambda _seconds: None)
+    monkeypatch.setattr(agentb, "_retry_sleep", lambda _seconds: None)
     spend_path = tmp_path / "spend.json"
     provider = AnthropicProvider(
         "claude-haiku-4-5-20251001",
@@ -320,7 +327,7 @@ def test_agentb_retries_http_529_then_completes(tmp_path, monkeypatch):
         return anthropic_http_response()
 
     monkeypatch.setattr(http_module, "urlopen", overloaded_then_ok)
-    monkeypatch.setattr(agentb.time, "sleep", delays.append)
+    monkeypatch.setattr(agentb, "_retry_sleep", delays.append)
     spend_path = tmp_path / "spend.json"
     provider = AnthropicProvider(
         "claude-haiku-4-5-20251001",
@@ -366,7 +373,7 @@ def test_agentb_retries_corrupt_response_then_completes(
         raise AssertionError(f"unknown response failure: {first_failure}")
 
     monkeypatch.setattr(http_module, "urlopen", corrupt_then_ok)
-    monkeypatch.setattr(agentb.time, "sleep", delays.append)
+    monkeypatch.setattr(agentb, "_retry_sleep", delays.append)
     spend_path = tmp_path / "spend.json"
     provider = AnthropicProvider(
         "claude-haiku-4-5-20251001",
@@ -403,7 +410,7 @@ def test_agentb_retries_openai_empty_completion_then_completes(
         return openai_http_response()
 
     monkeypatch.setattr(http_module, "urlopen", empty_then_ok)
-    monkeypatch.setattr(agentb.time, "sleep", delays.append)
+    monkeypatch.setattr(agentb, "_retry_sleep", delays.append)
     spend_path = tmp_path / "spend.json"
     provider = OpenAIProvider("gpt-5-mini", spend_path=spend_path)
 
@@ -438,7 +445,7 @@ def test_agentb_does_not_retry_http_status_errors(tmp_path, monkeypatch):
         )
 
     monkeypatch.setattr(http_module, "urlopen", bad_request)
-    monkeypatch.setattr(agentb.time, "sleep", delays.append)
+    monkeypatch.setattr(agentb, "_retry_sleep", delays.append)
     spend_path = tmp_path / "spend.json"
     provider = AnthropicProvider(
         "claude-haiku-4-5-20251001",
