@@ -50,6 +50,8 @@ paper/*.aux
 paper/*.log
 paper/*.out
 paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
 
 # compiled paper output
 paper/out/
