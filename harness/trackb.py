@@ -26,6 +26,7 @@ from harness.runner import (
     run_lint,
     run_sim,
     runtime_docker_digest_info,
+    self_declared_image_marker,
 )
 from harness.schemas.canonical_json import compute_manifest_signature
 from harness.schemas.manifest_b import TrackBManifest
@@ -195,6 +196,7 @@ def run_track_b(
         "track": "B",
         "docker_digest": docker_digest,
         "docker_digest_source": docker_digest_source,
+        "image_marker": self_declared_image_marker(),
         "platform": "linux/amd64",
         # A stable logical placeholder, not the real per-run temp sandbox path
         # (GTFS-020): submission_dir is part of the signed payload, and the real

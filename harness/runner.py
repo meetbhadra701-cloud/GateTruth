@@ -124,6 +124,36 @@ def runtime_docker_digest() -> str:
     return runtime_docker_digest_info()[0]
 
 
+def self_declared_image_marker() -> str | None:
+    """Return the content of /etc/gatetruth-image-digest (or the legacy path) if that
+    file exists on this filesystem right now, independent of what runtime_docker_digest_info()
+    resolved docker_digest to for this run (GTFS-002).
+
+    This always reflects the image's own self-report -- baked in at Dockerfile-write
+    time, never independently verified against the actual built content (see
+    runtime_docker_digest_info()'s docstring for why that is architecturally impossible
+    for an image to do about itself). Recording it unconditionally, on every manifest,
+    lets a reader directly compare it against docker_digest without needing separate
+    tooling: when docker_digest_source=="file" the two will agree (docker_digest WAS
+    read from this same file), when =="env" they may legitimately diverge (docker_digest
+    is then the host-verified `docker inspect` answer, and this marker may be stale
+    against it -- exactly the drift GTFS-002's evidence found: real image ID
+    sha256:103f2271... against baked-in marker sha256:bdfe9018...), and when =="default"
+    this will be None (no marker file was even present to read).
+    """
+
+    configured_path = read_env("DOCKER_DIGEST_FILE")
+    paths = (
+        (Path(configured_path),)
+        if configured_path
+        else (DEFAULT_DOCKER_DIGEST_FILE, LEGACY_DOCKER_DIGEST_FILE)
+    )
+    for path in paths:
+        if path.is_file():
+            return path.read_text(encoding="utf-8").strip()
+    return None
+
+
 def _find_top_module(path: Path, fallback: str) -> str:
     if path.exists():
         text = path.read_text(encoding="utf-8")
@@ -610,6 +640,7 @@ def run_task(
         task_score = 0.0
     stages.append({"stage": 6, "name": "route", "status": "skip"})
     docker_digest, docker_digest_source = runtime_docker_digest_info()
+    image_marker = self_declared_image_marker()
     data = {
         "task_id": task.task_id,
         "suite_version": SUITE_VERSION,
@@ -641,6 +672,8 @@ def run_task(
         data["hidden_module_sha256"] = hidden_sha256
     if hidden_test_count is not None:
         data["hidden_test_count"] = hidden_test_count
+    if image_marker is not None:
+        data["image_marker"] = image_marker
     data["signature"] = compute_manifest_signature(data)
     manifest = ResultManifest.model_validate(data)
     output_path = Path(out)

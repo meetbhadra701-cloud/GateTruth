@@ -62,6 +62,9 @@ LEGACY_OPTIONAL_PROVENANCE_FIELDS = (
     "hidden_module_sha256",
     "hidden_test_count",
     "docker_digest_source",
+    # GTFS-002: added after every manifest currently on disk was generated (same
+    # reasoning as the six fields above) -- every real manifest predates it.
+    "image_marker",
 )
 
 

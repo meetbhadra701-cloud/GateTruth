@@ -87,6 +87,25 @@ def test_trackb_records_which_digest_source_actually_scored_it(tmp_path, monkeyp
     assert manifest.docker_digest_source == "env"
 
 
+def test_trackb_records_the_self_declared_image_marker_independently(tmp_path, monkeypatch):
+    """GTFS-002: image_marker reflects /etc/gatetruth-image-digest's own content --
+    independent of what docker_digest resolved to for this run -- so a reader can
+    directly compare a verified docker_digest against the image's self-report without
+    separate tooling. Setting GATETRUTH_DOCKER_DIGEST (docker_digest_source="env")
+    must not change what image_marker reports."""
+
+    submission = copy_fixture(tmp_path)
+    monkeypatch.setenv("GATETRUTH_DOCKER_DIGEST", "sha256:" + "ee" * 32)
+
+    manifest = run_track_b("toy_taskB", submission, tmp_path / "marker.json")
+
+    from harness.runner import self_declared_image_marker
+
+    assert manifest.image_marker == self_declared_image_marker()
+    if manifest.image_marker is not None:
+        assert manifest.image_marker != manifest.docker_digest
+
+
 def test_trackb_deterministic_signature(tmp_path):
     submission = copy_fixture(tmp_path)
     shutil.copy2(Path("harness/tests/fixtures/toy_taskB_solution/toy_trackb.sv"), submission / "design" / "toy_trackb.sv")

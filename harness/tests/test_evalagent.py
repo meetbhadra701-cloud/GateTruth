@@ -54,6 +54,7 @@ def _fake_runner(task_id: str, provider, *, out: str | Path) -> AgentTrackBManif
             "hidden_module_sha256": None,
             "hidden_test_count": None,
             "docker_digest_source": None,
+            "image_marker": None,
             "objective_type": package.objective.objective_type,
             "objective_pass": objective_pass,
             "task_score": 100.0 if objective_pass else 0.0,

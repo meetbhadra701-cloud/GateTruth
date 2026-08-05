@@ -133,6 +133,11 @@ class ResultManifest(BaseModel):
     suite_version: str = Field(min_length=1)
     docker_digest: str = Field(pattern=DOCKER_DIGEST_RE)
     docker_digest_source: Literal["env", "file", "default"] | None = None
+    # GTFS-002: the image's own self-declared /etc/gatetruth-image-digest content,
+    # recorded independently of what docker_digest resolved to for this run -- lets a
+    # reader compare the two directly without separate tooling. Only absent when no
+    # marker file was present to read at all (docker_digest_source=="default").
+    image_marker: str | None = Field(default=None, pattern=DOCKER_DIGEST_RE)
     platform: Platform
     stages: list[StageResult] = Field(min_length=1)
     sec: float = Field(ge=0)

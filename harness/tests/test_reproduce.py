@@ -117,13 +117,13 @@ def test_modern_manifest_with_tampered_provenance_hash_is_still_rejected(
 def test_legacy_shaped_manifest_missing_new_provenance_fields_still_reproduces(
     tmp_path_factory: pytest.TempPathFactory, tmp_path: Path
 ) -> None:
-    """GTFS-008: all 420 real manifests under results/eval-16384/ predate submission_sha256,
-    task_package_sha256, reference_metrics_sha256, hidden_module_sha256, hidden_test_count,
-    and docker_digest_source (added by P0-3/P0-4, 2026-08-03 -- after that campaign was
-    committed on 2026-07-30 and earlier). Simulates that exact legacy shape here by scoring
-    officially, then stripping those six fields and re-signing -- exactly what the real
-    historical payload looks like -- and confirms the reproducer still finds a MATCH rather
-    than spuriously failing on fields that simply didn't exist yet."""
+    """GTFS-008 (+GTFS-002's image_marker, added later the same way): all 420 real
+    manifests under results/eval-16384/ predate submission_sha256, task_package_sha256,
+    reference_metrics_sha256, hidden_module_sha256, hidden_test_count,
+    docker_digest_source, and image_marker. Simulates that exact legacy shape here by
+    scoring officially, then stripping those seven fields and re-signing -- exactly what
+    the real historical payload looks like -- and confirms the reproducer still finds a
+    MATCH rather than spuriously failing on fields that simply didn't exist yet."""
 
     import os
 
@@ -156,6 +156,7 @@ def test_legacy_shaped_manifest_missing_new_provenance_fields_still_reproduces(
         "hidden_module_sha256",
         "hidden_test_count",
         "docker_digest_source",
+        "image_marker",
     ):
         raw.pop(field, None)
     raw["signature"] = compute_manifest_signature(raw)
@@ -169,6 +170,45 @@ def test_legacy_shaped_manifest_missing_new_provenance_fields_still_reproduces(
 
     assert result.returncode == 0, result.stderr
     assert f"MATCH task={TASK_ID}" in result.stdout
+
+
+def test_fresh_manifest_records_image_marker_and_reproduces_it_exactly(
+    fresh_reference_manifest: Path,
+) -> None:
+    """GTFS-002: a manifest generated inside the real image records image_marker (the
+    self-declared /etc/gatetruth-image-digest content) independently of docker_digest.
+    Unlike the six GTFS-008 fields, this one is NOT expected to be absent going
+    forward -- every fresh manifest carries it whenever the marker file exists -- so a
+    modern-to-modern reproduction (both runs read the same file inside the same image)
+    must hold it to an exact match, not silently drop it via
+    LEGACY_OPTIONAL_PROVENANCE_FIELDS."""
+
+    raw = json.loads(fresh_reference_manifest.read_text(encoding="utf-8"))
+    if raw.get("image_marker") is None:
+        pytest.skip("no /etc/gatetruth-image-digest marker file present on this machine")
+
+    result = _run_reproducer(fresh_reference_manifest)
+
+    assert result.returncode == 0, result.stderr
+    assert f"MATCH task={TASK_ID}" in result.stdout
+
+
+def test_modern_manifest_with_tampered_image_marker_is_still_rejected(
+    fresh_reference_manifest: Path, tmp_path: Path
+) -> None:
+    raw = json.loads(fresh_reference_manifest.read_text(encoding="utf-8"))
+    if raw.get("image_marker") is None:
+        pytest.skip("no /etc/gatetruth-image-digest marker file present on this machine")
+    raw["image_marker"] = "sha256:" + "0" * 64
+    raw["signature"] = compute_manifest_signature(raw)
+    tampered = tmp_path / "tampered_marker.json"
+    tampered.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+
+    result = _run_reproducer(tampered)
+
+    assert result.returncode == 1
+    assert "MISMATCH" in result.stderr
+    assert '"image_marker": "sha256:' + "0" * 64 + '"' in result.stderr
 
 
 def test_official_mode_is_inferred_from_hidden_module_sha256_without_the_flag(

@@ -89,6 +89,8 @@ class TrackBManifest(BaseModel):
     track: Literal["B"]
     docker_digest: str = Field(pattern=DOCKER_DIGEST_RE)
     docker_digest_source: Literal["env", "file", "default"] | None = None
+    # GTFS-002: see harness/schemas/manifest.py's identical field for the rationale.
+    image_marker: str | None = Field(default=None, pattern=DOCKER_DIGEST_RE)
     platform: Platform
     submission_dir: str = Field(min_length=1)
     submission_sha256: str | None = Field(default=None, pattern=SHA256_HEX_RE)

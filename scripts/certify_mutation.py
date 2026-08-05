@@ -17,7 +17,10 @@ from datetime import UTC, datetime  # noqa: E402
 from harness.atomic_write import atomic_write_text  # noqa: E402
 from harness.git_provenance import harness_git  # noqa: E402
 from harness.mutate import run_mutation  # noqa: E402
-from harness.runner import runtime_docker_digest_info  # noqa: E402
+from harness.runner import (  # noqa: E402
+    runtime_docker_digest_info,
+    self_declared_image_marker,
+)
 from harness.schemas.canonical_json import compute_manifest_signature  # noqa: E402
 from harness.schemas.mutation_certification import MutationCertificationSummary  # noqa: E402
 
@@ -101,6 +104,7 @@ def main(argv: list[str] | None = None) -> int:
         "any_unsupported": any_unsupported,
         "docker_digest": docker_digest,
         "docker_digest_source": docker_digest_source,
+        "image_marker": self_declared_image_marker(),
         "harness_git": harness_git(),
         "jobs": 1,
         "metric": "simulation_testbench_kill_rate",
