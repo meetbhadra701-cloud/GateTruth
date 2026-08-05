@@ -29,6 +29,17 @@ def atomic_write_text(path: Path, content: str) -> None:
             temp_file.write(content)
             temp_file.flush()
             os.fsync(temp_file.fileno())
+        # mkstemp creates the temp file at mode 0600 (Python's own, deliberately
+        # restrictive default for temp files), and os.replace() preserves that mode
+        # across the rename -- so without this, every file this module ever writes
+        # is owner-only-readable. Harmless when the writer and later reader are the
+        # same process/user, but a real, silent failure the moment they are not: a
+        # GitHub Actions runner (a different uid than the container that wrote a
+        # result file) hit exactly this uploading nightly.yml's results/nightly/*.json
+        # as a workflow artifact -- confirmed directly against the real failed run
+        # (EACCES: permission denied) before writing this fix. Restore the ordinary
+        # world-readable mode a plain path.write_text() would have produced.
+        os.chmod(temp_path, 0o644)
         os.replace(temp_path, path)
     finally:
         temp_path.unlink(missing_ok=True)
@@ -55,6 +66,7 @@ def atomic_write_bytes(path: Path, content: bytes) -> None:
             temp_file.write(content)
             temp_file.flush()
             os.fsync(temp_file.fileno())
+        os.chmod(temp_path, 0o644)  # see atomic_write_text's comment on this line
         os.replace(temp_path, path)
     finally:
         temp_path.unlink(missing_ok=True)
