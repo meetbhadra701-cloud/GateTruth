@@ -216,6 +216,73 @@ def test_pending_generation_signature_is_tamper_evident(tmp_path):
         PendingGeneration.model_validate(raw)
 
 
+def test_score_phase_refuses_an_official_mode_mismatch(tmp_path):
+    """GTFS-009: PendingGeneration previously had no official field at all, so an
+    official=True generation could be silently scored with official=False (or the
+    reverse), and nothing recorded which mode the generation itself actually ran
+    under."""
+
+    provider = RecordingProvider([TOY_REF.read_text(encoding="utf-8")], model="mock-mode")
+    provider.spend_path = tmp_path / "spend.json"
+
+    generate_model_samples(["toy_task"], provider, out_dir=tmp_path, official=False)
+
+    with pytest.raises(ValueError, match="official=False.*official=True"):
+        score_pending_samples(
+            ["toy_task"], out_dir=tmp_path, model="mock-mode", official=True
+        )
+
+
+def test_score_phase_refuses_a_relabeled_model_identity(tmp_path):
+    """GTFS-009's exact reproduction: a pending record generated under one model
+    name, scored under a different declared model name -- the manifest used to
+    silently take the pending record's model, and the summary the score phase's
+    model parameter, disagreeing with each other and with what was really run."""
+
+    source = TOY_REF.read_text(encoding="utf-8")
+    provider = RecordingProvider(
+        [f"```systemverilog\n{source}```"], model="actual-model"
+    )
+    provider.spend_path = tmp_path / "spend.json"
+    generate_model_samples(["toy_task"], provider, out_dir=tmp_path)
+
+    real_root = tmp_path / "actual-model"
+    relabeled_root = tmp_path / "declared-model"
+    real_root.rename(relabeled_root)
+
+    with pytest.raises(ValueError, match="declares model='actual-model'"):
+        score_pending_samples(
+            ["toy_task"], out_dir=tmp_path, model="declared-model"
+        )
+
+
+def test_score_phase_refuses_cross_sample_provider_mismatch(tmp_path):
+    """GTFS-009: nothing verified that every sample being scored together in one
+    pass actually came from the same provider -- the summary silently took
+    whichever sample's provider was processed last."""
+
+    source = TOY_REF.read_text(encoding="utf-8")
+    provider = RecordingProvider(
+        [f"```systemverilog\n{source}```", f"```systemverilog\n{source}```"],
+        model="mock-cross",
+    )
+    provider.spend_path = tmp_path / "spend.json"
+    generate_model_samples(
+        ["toy_task", "t1_gray_counter"], provider, out_dir=tmp_path
+    )
+
+    other_pending = pending_path(tmp_path, "mock-cross", "t1_gray_counter")
+    raw = json.loads(other_pending.read_text(encoding="utf-8"))
+    raw["provider"] = "openai"
+    raw["signature"] = compute_manifest_signature(raw)
+    other_pending.write_text(json.dumps(raw), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="differs from an earlier sample's provider"):
+        score_pending_samples(
+            ["toy_task", "t1_gray_counter"], out_dir=tmp_path, model="mock-cross"
+        )
+
+
 def test_cli_generate_then_score_round_trips(tmp_path, monkeypatch):
     source = TOY_REF.read_text(encoding="utf-8")
     script = tmp_path / "script.json"

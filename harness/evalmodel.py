@@ -413,6 +413,7 @@ def generate_model_samples(
             if plan.skip_reason is not None:
                 pending = _pending_record(
                     plan.task.task_id,
+                    official=official,
                     provider_name=provider_name,
                     model=model,
                     temperature=temperature,
@@ -435,6 +436,7 @@ def generate_model_samples(
                 source_path.unlink(missing_ok=True)
                 pending = _pending_record(
                     plan.task.task_id,
+                    official=official,
                     provider_name=provider_name,
                     model=model,
                     temperature=temperature,
@@ -455,6 +457,7 @@ def generate_model_samples(
                 source_path.unlink(missing_ok=True)
                 pending = _pending_record(
                     plan.task.task_id,
+                    official=official,
                     provider_name=provider_name,
                     model=model,
                     temperature=temperature,
@@ -470,6 +473,7 @@ def generate_model_samples(
             atomic_write_text(source_path, source)
             pending = _pending_record(
                 plan.task.task_id,
+                official=official,
                 provider_name=provider_name,
                 model=model,
                 temperature=temperature,
@@ -533,6 +537,33 @@ def score_pending_samples(
             if pending.task_id != task_id:
                 raise ValueError(
                     f"{pending_path}: pending task_id {pending.task_id!r} != {task_id!r}"
+                )
+            if pending.official != official:
+                raise ValueError(
+                    f"{pending_path}: pending record was generated with "
+                    f"official={pending.official}, but this scoring pass was invoked "
+                    f"with official={official} -- a generation's official/smoke mode "
+                    "cannot change between the generate and score phases"
+                )
+            if pending.model != model:
+                raise ValueError(
+                    f"{pending_path}: pending record declares model={pending.model!r}, "
+                    f"but this scoring pass is for model={model!r} -- a pending record "
+                    "must not be scored under a different model identity than it was "
+                    "generated with"
+                )
+            if provider_name is not None and pending.provider != provider_name:
+                raise ValueError(
+                    f"{pending_path}: pending provider {pending.provider!r} differs from "
+                    f"an earlier sample's provider {provider_name!r} in the same scoring "
+                    "pass -- every sample being scored together must share one provider"
+                )
+            if temperature is not None and pending.temperature != temperature:
+                raise ValueError(
+                    f"{pending_path}: pending temperature {pending.temperature!r} differs "
+                    f"from an earlier sample's temperature {temperature!r} in the same "
+                    "scoring pass -- every sample being scored together must share one "
+                    "temperature"
                 )
             if sample_number == 1:
                 task_skip_reason = pending.official_skip_reason
@@ -654,6 +685,7 @@ def score_pending_samples(
 def _pending_record(
     task_id: str,
     *,
+    official: bool,
     provider_name: str,
     model: str,
     temperature: TemperatureSetting,
@@ -669,6 +701,7 @@ def _pending_record(
         "task_id": task_id,
         "suite_version": SUITE_VERSION,
         "prompt_version": PROMPT_VERSION,
+        "official": official,
         "provider": provider_name,
         "model": model,
         "temperature": temperature,

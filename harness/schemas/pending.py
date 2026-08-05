@@ -52,6 +52,7 @@ class PendingGeneration(BaseModel):
     task_id: str = Field(min_length=1)
     suite_version: str = Field(min_length=1)
     prompt_version: str = Field(min_length=1)
+    official: bool
     provider: str = Field(min_length=1)
     model: str = Field(min_length=1)
     temperature: TemperatureSetting
