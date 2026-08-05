@@ -19,6 +19,8 @@ results/spend.json
 results/spend.json.lock
 results/nightly/
 site/build/
+site/.build.previous/
+site/.build.staging/
 *.log
 .DS_Store
 Thumbs.db
@@ -55,8 +57,9 @@ paper/out/
 # arXiv build bundle (never commit into the public tree)
 paper/*.tar.gz
 
-# local agent tooling
-.claude/skills/
+# local agent tooling (machine-specific paths, e.g. settings.json hooks; nothing
+# under here has ever been committed -- ignore the whole directory, not just skills/)
+.claude/
 
 # External benchmark sources are fetched from pinned revisions and never redistributed.
 external-audit/vendor/
