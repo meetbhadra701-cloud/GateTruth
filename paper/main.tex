@@ -18,9 +18,18 @@
 \usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
 
+% A page consisting solely of a float (e.g. Table 7's 50-row appendix table)
+% otherwise gets LaTeX's default 0pt-plus-1fil glue above it, which stretches
+% to push the float down from the top margin on an otherwise-empty page.
+% Zeroing it makes float-only pages start flush at the top margin like any
+% other page, matching this document's own headings/tables elsewhere.
+\makeatletter
+\setlength{\@fptop}{0pt}
+\makeatother
+
 \title{GateTruth: Auditing the Rigor of RTL Design Benchmarks via Mutation Testing}
 \author{Meet Bhadra \\ Independent Researcher}
-\date{August 3, 2026}
+\date{August 5, 2026}
 
 \hypersetup{
   pdftitle={GateTruth: Auditing the Rigor of RTL Design Benchmarks via Mutation Testing},
@@ -873,7 +882,7 @@ note that no design falls in the interval $[95\%, 100\%)$ --- the \FactsAtHundre
 below 95\% exhaust the audited set, an artifact of the small mutant counts discussed in
 Section~\ref{sec:limitations} rather than a chosen cutoff.
 
-\begin{table}[h]
+\begin{table}[tbp]
 \centering
 \caption{Per-design mutation-kill results for all 50 RTLLM v2.0 designs at vendor commit
 \texttt{41b26896e33b536940116a975626455eed3de65e}, seed \texttt{20260729}, Icarus Verilog 12.0,
@@ -912,7 +921,7 @@ counts but not independently re-derive \emph{why} from source; regenerating and 
 that split requires re-running the lint stage of the campaign, which is future work, not
 something this release archive lets a third party check standalone.
 
-\begin{table}[h]
+\begin{table}[tbp]
 \centering
 \caption{Failure-stage taxonomy by model, 16{,}384-token condition, 60 tasks per model.
 ``No-extr.'' is a response that produced no valid single-module declaration (all three instances
