@@ -28,6 +28,7 @@ from harness.validation import SubmissionValidationError, validate_source_text
 BudgetLimit = Literal["tokens", "wall_clock_s", "tool_calls", "spend_cap"]
 ACTION_TO_KEYS = {
     "read_file": {"tool", "path"},
+    "list_files": {"tool"},
     "write_design": {"tool", "content"},
     "sb_lint": {"tool"},
     "sb_sim": {"tool"},
@@ -36,6 +37,7 @@ ACTION_TO_KEYS = {
 }
 ACTION_PROTOCOL = (
     "Return exactly one JSON object. Supported actions: "
+    '{"tool":"list_files"}, '
     '{"tool":"read_file","path":"relative/path"}, '
     '{"tool":"write_design","content":"complete SystemVerilog"}, '
     '{"tool":"sb_lint"}, {"tool":"sb_sim"}, {"tool":"sb_synth_sta"}, {"tool":"done"}.'
@@ -79,13 +81,23 @@ def run_agent_task(
         tool_root = temp_root / "tool_runs"
         tool_root.mkdir()
 
+        # GTFS-010: a live census of 56 real official transcripts found
+        # read_attempts=110, read_successes=30 -- agents had no way to discover what
+        # to read_file other than guessing filenames (spec.md sometimes worked;
+        # README.md, design.sv, task.md often did not), despite the paper describing
+        # an agent provisioned with a checked-out repository. design/ is the only
+        # allowlisted directory (GTFS-004), so its real inventory is cheap, safe, and
+        # deterministic to hand over up front -- equal information from turn one,
+        # costing no tool_calls budget.
+        design_files = list_design_files(sandbox)
+
         while True:
             budget_exceeded = _fired_limit(budget, provider, tool_calls, started)
             if budget_exceeded is not None:
                 break
 
             prompt = json.dumps(
-                {"task_id": task_id, "transcript": transcript},
+                {"task_id": task_id, "design_files": design_files, "transcript": transcript},
                 separators=(",", ":"),
             )
             # GTFS-005: `remaining` bounds total tokens left in the combined budget,
@@ -308,6 +320,9 @@ def execute_action(
     work_root: Path,
 ) -> tuple[dict[str, Any], bool]:
     tool = action["tool"]
+    if tool == "list_files":
+        return {"status": "ok", "paths": list_design_files(sandbox)}, False
+
     if tool == "read_file":
         target = sandbox_path(sandbox, action["path"])
         if not target.is_relative_to(sandbox / "design"):
@@ -393,6 +408,21 @@ def sandbox_path(sandbox: Path, relative: str) -> Path:
     if not target.is_relative_to(root):
         raise ActionRejected("path escapes the sandbox")
     return target
+
+
+def list_design_files(sandbox: Path) -> list[str]:
+    """GTFS-010: the real, sandbox-relative inventory of the only directory read_file
+    can reach (GTFS-004) -- deterministic and safe to disclose in full, since it names
+    nothing an agent could not already see by successfully guessing it."""
+
+    design_dir = sandbox / "design"
+    if not design_dir.is_dir():
+        return []
+    return sorted(
+        path.relative_to(sandbox).as_posix()
+        for path in design_dir.rglob("*")
+        if path.is_file()
+    )
 
 
 def provider_usage(provider: ProviderAdapter) -> dict[str, int | float]:

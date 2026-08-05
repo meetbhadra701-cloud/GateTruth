@@ -209,10 +209,16 @@ def test_agentb_clamps_per_call_output_without_changing_episode_budget(
     # GTFS-005: max_tokens must reserve room for this call's own input tokens out of
     # what's left, not hand over the entire remaining balance as pure output
     # allowance -- the first call's prompt is a fixed, reproducible
-    # {"task_id": ..., "transcript": []} payload, so the exact reservation is
-    # computable here rather than merely asserting "less than before".
+    # {"task_id": ..., "design_files": [...], "transcript": []} payload (GTFS-010
+    # added design_files), so the exact reservation is computable here rather than
+    # merely asserting "less than before".
     first_call_prompt = json.dumps(
-        {"task_id": "toy_taskB", "transcript": []}, separators=(",", ":")
+        {
+            "task_id": "toy_taskB",
+            "design_files": ["design/toy_trackb.sv"],
+            "transcript": [],
+        },
+        separators=(",", ":"),
     )
     expected_max_tokens = max(
         remaining_tokens - agentb._estimate_prompt_tokens(first_call_prompt), 1
@@ -471,6 +477,48 @@ def test_agentb_rejects_immutable_and_escape_actions_but_continues(tmp_path):
     transcript = json.loads(out.with_suffix(".transcript.json").read_text(encoding="utf-8"))
     assert transcript[0]["observation"]["status"] == "rejected"
     assert "keys must be" in transcript[0]["observation"]["error"]
+
+
+def test_agentb_prompt_discloses_the_design_file_inventory_up_front(tmp_path, monkeypatch):
+    """GTFS-010: a live census of 56 real official transcripts found
+    read_attempts=110, read_successes=30 -- agents had no way to discover what to
+    read_file other than guessing filenames, despite the paper describing an agent
+    provisioned with a checked-out repository. design_files must now appear in the
+    very first prompt, before any tool call, costing no tool_calls budget."""
+
+    captured_prompts: list[str] = []
+    real_generate = MockProvider.generate
+
+    def recording_generate(self, spec, interface, params):
+        captured_prompts.append(spec)
+        return real_generate(self, spec, interface, params)
+
+    monkeypatch.setattr(MockProvider, "generate", recording_generate)
+    script = [{"tool": "done"}]
+    run_agent_task("toy_taskB", MockProvider(script), out=tmp_path / "gtfs010-prompt.json")
+
+    assert captured_prompts, "no prompt was ever sent"
+    first_prompt = json.loads(captured_prompts[0])
+    assert first_prompt["design_files"] == ["design/toy_trackb.sv"]
+    assert first_prompt["transcript"] == []
+
+
+def test_agentb_list_files_tool_reports_the_same_allowlisted_inventory(tmp_path):
+    script = [
+        {"tool": "list_files"},
+        {"tool": "write_design", "content": SOLUTION.read_text(encoding="utf-8")},
+        {"tool": "done"},
+    ]
+    out = tmp_path / "list_files.json"
+    manifest = run_agent_task("toy_taskB", MockProvider(script), out=out)
+
+    transcript = json.loads(out.with_suffix(".transcript.json").read_text(encoding="utf-8"))
+    assert transcript[0]["observation"] == {
+        "status": "ok",
+        "paths": ["design/toy_trackb.sv"],
+    }
+    assert manifest.disqualified is False
+    assert manifest.objective_pass is True
 
 
 @pytest.mark.parametrize(
