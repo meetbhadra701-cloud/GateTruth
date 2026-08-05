@@ -41,7 +41,7 @@ docker run --rm --network none --cap-drop=ALL \
   --mount "type=bind,src=$PWD/build/secure-src,dst=/work,readonly" \
   --mount "type=bind,src=$PWD/build/secure-output,dst=/output" \
   --workdir /work gatetruth:v1 \
-  bash -c "pytest -q -p no:cacheprovider --basetemp=/tmp/gatetruth-pytest && ruff check --no-cache harness/"
+  bash -c "pytest -q -p no:cacheprovider --basetemp=/tmp/gatetruth-pytest && ruff check --no-cache harness/ scripts/ paper/ external-audit/ site/"
 ```
 
 The full isolation contract, including why execution uses a `.git`-free source
