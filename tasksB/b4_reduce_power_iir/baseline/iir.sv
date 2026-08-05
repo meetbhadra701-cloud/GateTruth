@@ -5,7 +5,7 @@
 // Functionally correct first-order IIR whose multiply/add cone computes on EVERY cycle,
 // including cycles with sample_valid low. Measured power 0.4864 mW at 10 ns. The objective
 // is a >=25% power cut with identical cycle behavior (operand isolation achieves -51.9%,
-// verified); eqy SEC vs baseline/ must pass.
+// verified); sec vs baseline/ must pass (Yosys equiv_make/equiv_simple/equiv_induct, not eqy).
 
 module iir_filter_1st_order #(
     parameter int DATA_WIDTH = 8,

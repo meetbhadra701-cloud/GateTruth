@@ -13,7 +13,7 @@ cycle-by-cycle behavior.
 ## Behavior contract
 - Same ports, widths, top-module name; same 2-cycle latency: `out_valid`/`product` on cycle N+2
   reflect `in_valid`/`a`/`b` on cycle N, exactly as the baseline produces them.
-- Sequential equivalence against `baseline/` (eqy) MUST pass. You may re-balance the arithmetic
+- Sequential equivalence against `baseline/` (the harness's `sec` gate: Yosys `equiv_make`/`equiv_simple`/`equiv_induct`, not the separate `eqy` front-end) MUST pass. You may re-balance the arithmetic
   across the two EXISTING register stages (manual retiming — e.g. registering partial products in
   stage 1 and combining in stage 2), but you may NOT add or remove pipeline stages or change any
   output sequence.
