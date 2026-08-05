@@ -12,6 +12,23 @@ def test_mutants_are_deterministic_for_seed():
     assert first == second
 
 
+def test_include_task_specs_controls_and_is_recorded_on_the_report():
+    """GTFS-003: the paper describes a fixed generic operator set, but run_mutation()
+    silently defaulted to include_task_specs=True, adding undisclosed task-specific
+    mutants. This does not change that default (a methodology decision, not a code
+    fix -- see the ledger), but makes the condition explicit, controllable, and
+    recorded on every report. t1_gray_counter's real counts (11 with task-specific
+    mutants included, 8 without) are the ticket's own cited evidence."""
+
+    with_specs = run_mutation(task_id="t1_gray_counter", min_kill=0, seed=1337, include_task_specs=True)
+    without_specs = run_mutation(task_id="t1_gray_counter", min_kill=0, seed=1337, include_task_specs=False)
+
+    assert with_specs["include_task_specs"] is True
+    assert without_specs["include_task_specs"] is False
+    assert with_specs["total_generated"] == 11
+    assert without_specs["total_generated"] == 8
+
+
 def test_sequential_and_parallel_mutation_verdicts_match():
     sequential = run_mutation(
         task_id="t1_gray_counter",
@@ -48,7 +65,7 @@ def test_official_mutation_mode_is_threaded_to_mutant_runs(tmp_path, monkeypatch
     monkeypatch.setattr(
         mutate_module,
         "generate_mutants",
-        lambda _task_id, _source: [mutant],
+        lambda _task_id, _source, *, include_task_specs=True: [mutant],
     )
     monkeypatch.setattr(
         mutate_module,

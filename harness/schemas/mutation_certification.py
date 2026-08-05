@@ -63,7 +63,7 @@ class MutationCertificationSummary(BaseModel):
             raise ValueError("signature does not match canonical certification payload")
         return data
 
-    schema_version: Literal[4]
+    schema_version: Literal[5]
     all_above_floor: bool
     any_unsupported: bool
     docker_digest: str = Field(pattern=DOCKER_DIGEST_RE)
@@ -71,6 +71,13 @@ class MutationCertificationSummary(BaseModel):
     # GTFS-002: see harness/schemas/manifest.py's identical field for the rationale.
     image_marker: str | None = Field(default=None, pattern=DOCKER_DIGEST_RE)
     harness_git: str = Field(min_length=1)
+    # GTFS-003: whether generate_mutants() included task-specific exact-source mutants
+    # (True) or only the fixed generic operator set (False) for every task in this run.
+    # Disclosed explicitly rather than left as an undocumented default -- the paper
+    # describes a generic-only profile; external-audit/auditor/audit.py already always
+    # passes False for the external RTLLM audit (verified directly), independent of
+    # this field, which only ever describes GateTruth's own reference-suite runs.
+    include_task_specs: bool
     jobs: int = Field(ge=1)
     metric: Literal["simulation_testbench_kill_rate"]
     min_kill: float = Field(ge=0, le=100)

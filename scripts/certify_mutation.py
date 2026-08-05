@@ -44,6 +44,20 @@ def main(argv: list[str] | None = None) -> int:
         default=REPO_ROOT / "results" / "mutation" / "certification",
     )
     parser.add_argument("--min-kill", type=float, default=95.0)
+    parser.add_argument(
+        "--no-task-specs",
+        dest="include_task_specs",
+        action="store_false",
+        default=True,
+        help=(
+            "generic-only mutation profile (matches the paper's described fixed "
+            "operator set and external-audit/auditor/audit.py's own condition) -- "
+            "GTFS-003. Default keeps include_task_specs=True, the condition every "
+            "committed certification report was actually certified under; freezing "
+            "which condition the paper claims is a methodology decision, not "
+            "something this flag's default silently makes for you"
+        ),
+    )
     args = parser.parse_args(argv)
 
     tasks = task_ids()
@@ -61,6 +75,7 @@ def main(argv: list[str] | None = None) -> int:
             seed=args.seed,
             jobs=1,
             official=True,
+            include_task_specs=args.include_task_specs,
         )
         write_json(args.out / f"{task_id}.json", report)
         task_summaries[task_id] = {
@@ -99,13 +114,14 @@ def main(argv: list[str] | None = None) -> int:
 
     docker_digest, docker_digest_source = runtime_docker_digest_info()
     summary = {
-        "schema_version": 4,
+        "schema_version": 5,
         "all_above_floor": all_above_floor,
         "any_unsupported": any_unsupported,
         "docker_digest": docker_digest,
         "docker_digest_source": docker_digest_source,
         "image_marker": self_declared_image_marker(),
         "harness_git": harness_git(),
+        "include_task_specs": args.include_task_specs,
         "jobs": 1,
         "metric": "simulation_testbench_kill_rate",
         "min_kill": args.min_kill,

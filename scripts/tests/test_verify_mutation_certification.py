@@ -65,12 +65,13 @@ def real_signed_summary(tmp_path_factory: pytest.TempPathFactory) -> dict:
     }
     docker_digest, docker_digest_source = runtime_docker_digest_info()
     summary = {
-        "schema_version": 4,
+        "schema_version": 5,
         "all_above_floor": task_entry["kill_rate"] >= 95.0,
         "any_unsupported": False,
         "docker_digest": docker_digest,
         "docker_digest_source": docker_digest_source,
         "harness_git": harness_git(),
+        "include_task_specs": True,
         "jobs": 1,
         "metric": "simulation_testbench_kill_rate",
         "min_kill": 95.0,

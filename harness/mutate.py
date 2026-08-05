@@ -33,7 +33,16 @@ from harness.tree_hash import tree_hash
 # GTFS-030: bumped for the new per-task provenance fields (task_package_sha256,
 # reference_rtl_sha256, public_testbench_sha256, hidden_module_sha256, hidden_test_count,
 # harness_git) added to every report this module returns.
-SCHEMA_VERSION = 3
+# GTFS-003: bumped again for the new include_task_specs field -- generate_mutants()
+# always defaulted to include_task_specs=True (task-specific mutants, not the paper's
+# described fixed generic operator set) and nothing recorded which condition a given
+# report used. external-audit/auditor/audit.py already correctly passes
+# include_task_specs=False for the external RTLLM audit (verified directly); this
+# module's own default is left unchanged here (still True, matching every report
+# already on disk) so this fix stays a disclosure/mechanism fix, not a silent
+# reinterpretation of historical numbers -- see GTFS-003's ledger entry for the actual
+# methodology decision, which is not a code change.
+SCHEMA_VERSION = 4
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -43,6 +52,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--official", action="store_true")
+    parser.add_argument(
+        "--no-task-specs",
+        dest="include_task_specs",
+        action="store_false",
+        default=True,
+        help=(
+            "generic-only mutation profile (matches the paper's described fixed "
+            "operator set and external-audit/auditor/audit.py's own condition); "
+            "default keeps include_task_specs=True, the condition every report "
+            "currently on disk was actually certified under"
+        ),
+    )
     parser.add_argument("--json", dest="json_path")
     args = parser.parse_args(argv)
 
@@ -52,6 +73,7 @@ def main(argv: list[str] | None = None) -> int:
         seed=args.seed,
         jobs=args.jobs,
         official=args.official,
+        include_task_specs=args.include_task_specs,
     )
     if args.json_path:
         path = Path(args.json_path)
@@ -92,6 +114,7 @@ def run_mutation(
     seed: int,
     jobs: int = 1,
     official: bool = False,
+    include_task_specs: bool = True,
 ) -> dict[str, Any]:
     task = resolve_task(task_id)
     ref = task.root / "ref" / "ref.sv"
@@ -120,6 +143,7 @@ def run_mutation(
             "seed": seed,
             "jobs": jobs,
             "official": official,
+            "include_task_specs": include_task_specs,
             "min_kill": min_kill,
             "status": "setup_error",
             "status_reason": (
@@ -143,7 +167,7 @@ def run_mutation(
             **provenance,
         }
 
-    mutants = generate_mutants(task_id, source)
+    mutants = generate_mutants(task_id, source, include_task_specs=include_task_specs)
     rng = random.Random(seed)
     rng.shuffle(mutants)
 
@@ -188,6 +212,7 @@ def run_mutation(
             "seed": seed,
             "jobs": jobs,
             "official": official,
+            "include_task_specs": include_task_specs,
             "min_kill": min_kill,
             "status": "unsupported",
             "status_reason": (
@@ -219,6 +244,7 @@ def run_mutation(
         "seed": seed,
         "jobs": jobs,
         "official": official,
+        "include_task_specs": include_task_specs,
         "min_kill": min_kill,
         "status": "ok",
         "status_reason": None,
