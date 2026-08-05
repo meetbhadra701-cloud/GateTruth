@@ -12,9 +12,14 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from datetime import UTC, datetime  # noqa: E402
+
 from harness.atomic_write import atomic_write_text  # noqa: E402
+from harness.git_provenance import harness_git  # noqa: E402
 from harness.mutate import run_mutation  # noqa: E402
 from harness.runner import runtime_docker_digest_info  # noqa: E402
+from harness.schemas.canonical_json import compute_manifest_signature  # noqa: E402
+from harness.schemas.mutation_certification import MutationCertificationSummary  # noqa: E402
 
 EXPECTED_TASKS = 60
 
@@ -66,6 +71,11 @@ def main(argv: list[str] | None = None) -> int:
             "setup_errors": report["setup_errors"],
             "formal_only_kills": report["formal_only_kills"],
             "total": report["total"],
+            "task_package_sha256": report["task_package_sha256"],
+            "reference_rtl_sha256": report["reference_rtl_sha256"],
+            "public_testbench_sha256": report["public_testbench_sha256"],
+            "hidden_module_sha256": report["hidden_module_sha256"],
+            "hidden_test_count": report["hidden_test_count"],
         }
         if report["status"] != "ok":
             any_unsupported = True
@@ -86,18 +96,27 @@ def main(argv: list[str] | None = None) -> int:
 
     docker_digest, docker_digest_source = runtime_docker_digest_info()
     summary = {
-        "schema_version": 3,
+        "schema_version": 4,
         "all_above_floor": all_above_floor,
         "any_unsupported": any_unsupported,
         "docker_digest": docker_digest,
         "docker_digest_source": docker_digest_source,
+        "harness_git": harness_git(),
         "jobs": 1,
         "metric": "simulation_testbench_kill_rate",
         "min_kill": args.min_kill,
         "official": True,
         "seed": args.seed,
         "tasks": task_summaries,
+        "timestamp": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        "signature": "0" * 64,
     }
+    summary["signature"] = compute_manifest_signature(summary)
+    # GTFS-030: validate and sign before writing -- MutationCertificationSummary is the
+    # same schema scripts/verify_mutation_certification.py checks a committed summary
+    # against later, so a summary that fails this pydantic validation should never reach
+    # disk as if it were a clean certification run.
+    MutationCertificationSummary.model_validate(summary)
     write_json(args.out / "summary.json", summary)
     ok_tasks = [item for item in task_summaries.values() if item["status"] == "ok"]
     print(

@@ -53,7 +53,13 @@ def test_official_mutation_mode_is_threaded_to_mutant_runs(tmp_path, monkeypatch
     monkeypatch.setattr(
         mutate_module,
         "_run_baseline",
-        lambda _task_id, _source, *, official: {"status": "pass", "stage": None, "log": ""},
+        lambda _task_id, _source, *, official: {
+            "status": "pass",
+            "stage": None,
+            "log": "",
+            "hidden_module_sha256": None,
+            "hidden_test_count": None,
+        },
     )
 
     def fake_run_one(_task_id, _mutant, *, official):
@@ -182,7 +188,8 @@ def test_zero_generated_mutants_is_unsupported_not_vacuous_100_percent(
     task = _fixture_task(tmp_path)
     monkeypatch.setattr(mutate_module, "resolve_task", lambda _task_id: task)
     monkeypatch.setattr(mutate_module, "_run_baseline", lambda *a, **k: {
-        "status": "pass", "stage": None, "log": ""
+        "status": "pass", "stage": None, "log": "",
+        "hidden_module_sha256": None, "hidden_test_count": None,
     })
     monkeypatch.setattr(mutate_module, "generate_mutants", lambda *_a, **_k: [])
 
@@ -198,7 +205,8 @@ def test_all_mutants_invalid_is_unsupported_not_vacuous_100_percent(tmp_path, mo
     mutants = [_fixture_mutant(0), _fixture_mutant(1)]
     monkeypatch.setattr(mutate_module, "resolve_task", lambda _task_id: task)
     monkeypatch.setattr(mutate_module, "_run_baseline", lambda *a, **k: {
-        "status": "pass", "stage": None, "log": ""
+        "status": "pass", "stage": None, "log": "",
+        "hidden_module_sha256": None, "hidden_test_count": None,
     })
     monkeypatch.setattr(mutate_module, "generate_mutants", lambda *_a, **_k: mutants)
     monkeypatch.setattr(
@@ -233,7 +241,8 @@ def test_formal_only_kill_counts_as_survived_for_the_sim_metric(tmp_path, monkey
     mutants = [_fixture_mutant(0)]
     monkeypatch.setattr(mutate_module, "resolve_task", lambda _task_id: task)
     monkeypatch.setattr(mutate_module, "_run_baseline", lambda *a, **k: {
-        "status": "pass", "stage": None, "log": ""
+        "status": "pass", "stage": None, "log": "",
+        "hidden_module_sha256": None, "hidden_test_count": None,
     })
     monkeypatch.setattr(mutate_module, "generate_mutants", lambda *_a, **_k: mutants)
     monkeypatch.setattr(
@@ -266,7 +275,8 @@ def test_double_timeout_is_indeterminate_and_counts_against_the_rate_not_survive
     mutants = [_fixture_mutant(0), _fixture_mutant(1)]
     monkeypatch.setattr(mutate_module, "resolve_task", lambda _task_id: task)
     monkeypatch.setattr(mutate_module, "_run_baseline", lambda *a, **k: {
-        "status": "pass", "stage": None, "log": ""
+        "status": "pass", "stage": None, "log": "",
+        "hidden_module_sha256": None, "hidden_test_count": None,
     })
     monkeypatch.setattr(mutate_module, "generate_mutants", lambda *_a, **_k: mutants)
 
@@ -305,7 +315,8 @@ def test_count_invariants_hold_with_a_mixed_batch(tmp_path, monkeypatch):
     mutants = [_fixture_mutant(i) for i in range(5)]
     monkeypatch.setattr(mutate_module, "resolve_task", lambda _task_id: task)
     monkeypatch.setattr(mutate_module, "_run_baseline", lambda *a, **k: {
-        "status": "pass", "stage": None, "log": ""
+        "status": "pass", "stage": None, "log": "",
+        "hidden_module_sha256": None, "hidden_test_count": None,
     })
     monkeypatch.setattr(mutate_module, "generate_mutants", lambda *_a, **_k: mutants)
 
@@ -353,7 +364,13 @@ def test_run_baseline_attributes_the_failing_stage(tmp_path, monkeypatch):
 
     result = _run_baseline("fixture", "module m; endmodule\n", official=False)
 
-    assert result == {"status": "fail", "stage": "lint", "log": "syntax error"}
+    assert result == {
+        "status": "fail",
+        "stage": "lint",
+        "log": "syntax error",
+        "hidden_module_sha256": None,
+        "hidden_test_count": None,
+    }
 
 
 def test_mutator_generates_expected_gray_operators():

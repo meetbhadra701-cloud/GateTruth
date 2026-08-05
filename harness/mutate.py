@@ -13,6 +13,7 @@ setup fails the whole task closed instead of misreporting every mutant as
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import random
 import sys
@@ -24,10 +25,15 @@ from typing import Any
 if __package__ is None or __package__ == "":
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from harness.git_provenance import harness_git
 from harness.mutators import Mutant, generate_mutants
 from harness.runner import HIDDEN_FAILURE_PREFIX, resolve_task, run_formal, run_lint, run_sim
+from harness.tree_hash import tree_hash
 
-SCHEMA_VERSION = 2
+# GTFS-030: bumped for the new per-task provenance fields (task_package_sha256,
+# reference_rtl_sha256, public_testbench_sha256, hidden_module_sha256, hidden_test_count,
+# harness_git) added to every report this module returns.
+SCHEMA_VERSION = 3
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -91,6 +97,21 @@ def run_mutation(
     ref = task.root / "ref" / "ref.sv"
     source = ref.read_text(encoding="utf-8")
 
+    # GTFS-030: bind this report to the exact inputs it audited -- the task package
+    # (ref/tb/task.yaml as a whole), the reference RTL that was mutated, and the public
+    # testbench that ran the mutants -- so a later revision to any of them is visible in
+    # newly produced reports rather than silently assumed unchanged. All three are cheap
+    # local hashes and available regardless of whether the baseline run below passes.
+    task_package_sha256 = tree_hash(task.root)
+    reference_rtl_sha256 = hashlib.sha256(source.encode("utf-8")).hexdigest()
+    public_testbench_sha256 = tree_hash(task.root / "tb")
+    provenance = {
+        "task_package_sha256": task_package_sha256,
+        "reference_rtl_sha256": reference_rtl_sha256,
+        "public_testbench_sha256": public_testbench_sha256,
+        "harness_git": harness_git(),
+    }
+
     baseline = _run_baseline(task_id, source, official=official)
     if baseline["status"] != "pass":
         return {
@@ -117,6 +138,9 @@ def run_mutation(
             "kill_rate": 0.0,
             "survivors": [],
             "results": [],
+            "hidden_module_sha256": baseline["hidden_module_sha256"],
+            "hidden_test_count": baseline["hidden_test_count"],
+            **provenance,
         }
 
     mutants = generate_mutants(task_id, source)
@@ -183,6 +207,9 @@ def run_mutation(
             "kill_rate": 0.0,
             "survivors": [],
             "results": results,
+            "hidden_module_sha256": baseline["hidden_module_sha256"],
+            "hidden_test_count": baseline["hidden_test_count"],
+            **provenance,
         }
 
     kill_rate = 100.0 * len(killed) / len(valid)
@@ -207,6 +234,9 @@ def run_mutation(
         "kill_rate": round(kill_rate, 4),
         "survivors": survived,
         "results": results,
+        "hidden_module_sha256": baseline["hidden_module_sha256"],
+        "hidden_test_count": baseline["hidden_test_count"],
+        **provenance,
     }
 
 
@@ -228,19 +258,43 @@ def _run_baseline(task_id: str, source: str, *, official: bool) -> dict[str, Any
 
         stage, log = run_lint(candidate)
         if stage["status"] != "pass":
-            return {"status": "fail", "stage": "lint", "log": log}
+            return {
+                "status": "fail",
+                "stage": "lint",
+                "log": log,
+                "hidden_module_sha256": None,
+                "hidden_test_count": None,
+            }
 
-        stage, log, _hidden_sha256, _hidden_test_count = run_sim(
+        stage, log, hidden_sha256, hidden_test_count = run_sim(
             task, candidate, work_root, official=official
         )
         if stage["status"] != "pass":
-            return {"status": "fail", "stage": "sim", "log": log}
+            return {
+                "status": "fail",
+                "stage": "sim",
+                "log": log,
+                "hidden_module_sha256": hidden_sha256,
+                "hidden_test_count": hidden_test_count,
+            }
 
         stage, log = run_formal(task, candidate, work_root)
         if stage["status"] == "fail":
-            return {"status": "fail", "stage": "formal", "log": log}
+            return {
+                "status": "fail",
+                "stage": "formal",
+                "log": log,
+                "hidden_module_sha256": hidden_sha256,
+                "hidden_test_count": hidden_test_count,
+            }
 
-        return {"status": "pass", "stage": None, "log": ""}
+        return {
+            "status": "pass",
+            "stage": None,
+            "log": "",
+            "hidden_module_sha256": hidden_sha256,
+            "hidden_test_count": hidden_test_count,
+        }
 
 
 def _run_one(
