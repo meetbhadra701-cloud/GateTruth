@@ -18,6 +18,14 @@
 \usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
 
+% Long unhyphenatable \texttt{} operator names (assignment_hold,
+% comparator_boundary_flip, ...) in comma-separated prose lists otherwise
+% overflow the right margin by a few points, because TeX will not break
+% inside typewriter text. \emergencystretch lets TeX loosen inter-word
+% spacing on just those lines in a final pass rather than run past the
+% margin; it affects only lines that would otherwise be overfull.
+\setlength{\emergencystretch}{3em}
+
 % A page consisting solely of a float (e.g. Table 7's 50-row appendix table)
 % otherwise gets LaTeX's default 0pt-plus-1fil glue above it, which stretches
 % to push the float down from the top margin on an otherwise-empty page.
