@@ -76,7 +76,7 @@ jobs:
             --mount "type=bind,src=$SB_SOURCE,dst=/work,readonly" \
             --mount "type=bind,src=$SB_OUTPUT,dst=/output" \
             --workdir /work gatetruth:v1 \
-            ruff check --no-cache harness/ scripts/ paper/
+            ruff check --no-cache harness/ scripts/ paper/ external-audit/ site/
 
       - name: git diff --check (no trailing whitespace / conflict markers)
         # 4b825dc6... is git's well-known empty-tree object ID; diffing against
@@ -91,7 +91,7 @@ jobs:
             --mount "type=bind,src=$SB_OUTPUT,dst=/output" \
             --workdir /work gatetruth:v1 \
             python -m pytest -q -p no:cacheprovider \
-              --basetemp=/tmp/gatetruth-pytest harness/ scripts/ \
+              --basetemp=/tmp/gatetruth-pytest harness/ scripts/ paper/data/tests external-audit/tests site/tests \
             | tee "$SB_OUTPUT/pytest.log"
           tail -n1 "$SB_OUTPUT/pytest.log" | grep -Eq '^[0-9]+ passed' \
             || { echo "::error::pytest did not report an all-passed summary line"; exit 1; }

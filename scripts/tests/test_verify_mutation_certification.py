@@ -44,6 +44,12 @@ def real_signed_summary(tmp_path_factory: pytest.TempPathFactory) -> dict:
     scripts/certify_mutation.py now produces per task, built here directly to avoid
     paying for all 60 tasks in a routine test run."""
 
+    from harness.runner import REPO_ROOT as HARNESS_REPO_ROOT
+
+    hidden_root = HARNESS_REPO_ROOT.parent / "codex-SB-101" / "build" / "hidden-staging"
+    if not hidden_root.is_dir():
+        pytest.skip("real hidden-staging tree not present on this machine")
+
     report = run_mutation(task_id=TASK_ID, min_kill=95.0, seed=1337, jobs=1, official=True)
     assert report["status"] == "ok", report.get("status_reason")
     task_entry = {

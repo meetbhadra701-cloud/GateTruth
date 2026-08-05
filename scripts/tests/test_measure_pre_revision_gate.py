@@ -8,6 +8,8 @@ import re
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from scripts.measure_pre_revision_gate import (
     BASELINE_COMMIT,
     REPO_ROOT,
@@ -18,6 +20,33 @@ from scripts.measure_pre_revision_gate import (
 from scripts.measure_pre_revision_gate import main as measure_main
 
 WORKTREE_LINE = re.compile(r"restored in isolated worktree: (.+)$", re.MULTILINE)
+
+
+def _real_git_history_available() -> bool:
+    """True only if REPO_ROOT is an actual git checkout with BASELINE_COMMIT
+    reachable, not merely present on disk. The security-sandboxed test recipe
+    documented in CONTRIBUTING.md stages the source via `git archive`, which
+    never includes .git/ at all -- every git invocation in this module (worktree
+    add, show, status) then fails with "not a git repository" (exit 128), which
+    is an environment precondition gap, not a real regression. Checked with the
+    git binary itself rather than just testing for a .git/ directory, so this
+    also correctly skips under a shallow checkout that lacks BASELINE_COMMIT."""
+
+    result = subprocess.run(
+        ["git", "cat-file", "-e", f"{BASELINE_COMMIT}^{{commit}}"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+    )
+    return result.returncode == 0
+
+
+requires_git_history = pytest.mark.skipif(
+    not _real_git_history_available(),
+    reason=(
+        "needs a real git checkout with BASELINE_COMMIT reachable; not available "
+        "in the .git-free security-sandboxed source snapshot (see CONTRIBUTING.md)"
+    ),
+)
 
 
 def test_code_fingerprint_ignores_a_comment_that_changed_length() -> None:
@@ -38,6 +67,7 @@ def test_code_fingerprint_still_distinguishes_real_code_changes() -> None:
     assert _code_fingerprint(before) != _code_fingerprint(after)
 
 
+@requires_git_history
 def test_verify_reference_unchanged_accepts_the_real_current_references() -> None:
     """GTFS-037 rewrote every ref.sv's DRAFT/PENDING review banner (comment lines
     only). That must not trip this gate: the mutation generator masks comments
@@ -48,6 +78,7 @@ def test_verify_reference_unchanged_accepts_the_real_current_references() -> Non
         assert verify_reference_unchanged(task_id), task_id
 
 
+@requires_git_history
 def test_verify_reference_unchanged_still_refuses_a_genuine_functional_edit(
     tmp_path: Path,
 ) -> None:
@@ -112,6 +143,7 @@ def _tracked_bytes(relative_path: str) -> bytes:
     ).stdout
 
 
+@requires_git_history
 def test_restore_only_never_touches_the_real_checkout(
     tmp_path: Path, capsys
 ) -> None:
