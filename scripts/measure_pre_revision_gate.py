@@ -49,6 +49,8 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from harness.sv_mask import mask_code  # noqa: E402
+
 # Parent of 978cfff, the first mutation-driven testbench revision.
 BASELINE_COMMIT = "85cb9e7"
 
@@ -74,15 +76,55 @@ REVISED_TASKS = (
 SEED = 1337
 
 
-def verify_reference_unchanged(task_id: str) -> bool:
-    """A changed reference would alter the mutant set and invalidate the comparison."""
+def _code_fingerprint(source: str) -> str:
+    """Reduce source to just its code characters, comments and string contents
+    removed entirely rather than blanked in place.
+
+    harness/sv_mask.mask_code blanks comments and strings character-for-character
+    to preserve source offsets, which is exactly right for the mutation generator's
+    own use (it needs accurate line/column numbers) but wrong for this comparison:
+    two comments of different LENGTH but no semantic difference -- e.g. correcting a
+    stale "DRAFT" review banner to "REVIEWED" -- still blank to a different number of
+    space characters and compare unequal under a raw masked diff. Stripping every
+    masked character down to nothing, rather than to a space, makes the comparison
+    depend only on actual code tokens, matching what the mutation generator can
+    ever actually see.
+    """
+    masked = mask_code(source)
+    return "\n".join(line.replace(" ", "").replace("\t", "") for line in masked.split("\n"))
+
+
+def verify_reference_unchanged(task_id: str, head_ref: str = "HEAD") -> bool:
+    """A changed reference would alter the mutant set and invalidate the comparison.
+
+    Compares code fingerprints (comments and string literals removed, not merely
+    blanked -- see _code_fingerprint) rather than raw bytes: the generator never
+    enumerates a mutation site inside a comment, so a comment-only edit -- e.g.
+    correcting a stale review-status banner -- cannot change the mutant set and
+    must not trip this gate. A raw byte diff would fail closed on exactly that
+    harmless case; this check stays exactly as strict as the invariant it
+    protects, no stricter.
+
+    ``head_ref`` defaults to the real HEAD and exists so tests can point this at a
+    disposable commit instead, without ever checking out anything in REPO_ROOT
+    itself (GTFS-032).
+    """
     ref = f"tasks/{task_id}/ref/ref.sv"
-    result = subprocess.run(
-        ["git", "diff", "--quiet", BASELINE_COMMIT, "HEAD", "--", ref],
+    baseline_text = subprocess.run(
+        ["git", "show", f"{BASELINE_COMMIT}:{ref}"],
         cwd=REPO_ROOT,
-        check=False,
-    )
-    return result.returncode == 0
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    head_text = subprocess.run(
+        ["git", "show", f"{head_ref}:{ref}"],
+        cwd=REPO_ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    return _code_fingerprint(baseline_text) == _code_fingerprint(head_text)
 
 
 def restore_pre_revision_testbench(task_id: str) -> None:
