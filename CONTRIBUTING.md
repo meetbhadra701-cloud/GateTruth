@@ -33,20 +33,29 @@ docker build --platform linux/amd64 -t gatetruth:v1 -f flows/Dockerfile flows
 Run the tests and linter inside the image before opening a PR:
 
 ```bash
-mkdir -p build/secure-src build/secure-output/results
+mkdir -p build/secure-src build/secure-output
 git archive --format=tar HEAD | tar -xf - -C build/secure-src
 chmod -R 0777 build/secure-output
 docker run --rm --network none --cap-drop=ALL \
   --security-opt no-new-privileges --memory=4g --pids-limit=512 --cpus=2 \
   --mount "type=bind,src=$PWD/build/secure-src,dst=/work,readonly" \
   --mount "type=bind,src=$PWD/build/secure-output,dst=/output" \
-  --mount "type=bind,src=$PWD/build/secure-output/results,dst=/work/results" \
   --workdir /work gatetruth:v1 \
   bash -c "pytest -q -p no:cacheprovider --basetemp=/tmp/gatetruth-pytest && ruff check --no-cache harness/"
 ```
 
 The full isolation contract, including why execution uses a `.git`-free source
 snapshot, is documented in [docs/SECURE_EXECUTION.md](docs/SECURE_EXECUTION.md).
+
+This exact command is expected to show a small, named set of failures that
+have nothing to do with your change: `scripts/tests/test_measure_pre_revision_gate.py`
+needs real git history to compare testbench revisions against, which the
+`.git`-free security snapshot deliberately doesn't have, and
+`scripts/tests/test_verify_mutation_certification.py` needs the maintainer's
+private hidden-vector staging tree (`GATETRUTH_HIDDEN_ROOT`), which isn't
+available outside the maintainer's own machine. If your PR's own tests pass
+and these are the only failures, that's the expected, clean result — not a
+sign your environment is broken.
 
 ## Anatomy of a task
 
