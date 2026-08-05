@@ -422,9 +422,56 @@ def test_agentb_rejects_immutable_and_escape_actions_but_continues(tmp_path):
     transcript = json.loads(out.with_suffix(".transcript.json").read_text(encoding="utf-8"))
     assert transcript[0]["observation"]["status"] == "rejected"
     assert "keys must be" in transcript[0]["observation"]["error"]
-    assert transcript[1]["observation"]["status"] == "rejected"
-    assert "escapes the sandbox" in transcript[1]["observation"]["error"]
-    assert transcript[2]["observation"]["status"] == "ok"
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "tb/test_toy_taskB.py",
+        "constraints.sdc",
+        "objective.yaml",
+        "task.yaml",
+        "spec.md",
+        "baseline/toy_trackb.sv",
+    ],
+)
+def test_agentb_read_file_cannot_reach_scored_or_metadata_files(tmp_path, path):
+    """GTFS-004: a live census of 56 real official Track B transcripts found agents
+    successfully reading public testbenches -- read_file had no allowlist, only
+    sandbox-escape protection, contradicting the paper's claim that the tool "cannot
+    reach the testbench, formal properties, constraints, or metadata... at all"
+    (main.tex:497). Reproduces the ticket's own scenario end to end through
+    run_agent_task(), not just execute_action() in isolation."""
+
+    script = [
+        {"tool": "read_file", "path": path},
+        {"tool": "write_design", "content": SOLUTION.read_text(encoding="utf-8")},
+        {"tool": "done"},
+    ]
+    out = tmp_path / f"denied-{path.replace('/', '_')}.json"
+    manifest = run_agent_task("toy_taskB", MockProvider(script), out=out)
+
+    transcript = json.loads(out.with_suffix(".transcript.json").read_text(encoding="utf-8"))
+    assert transcript[0]["observation"]["status"] == "rejected"
+    assert "read_file may only reach design/" in transcript[0]["observation"]["error"]
+    # The rejection must not disqualify or otherwise derail the rest of the episode --
+    # write_design and done still ran, and the design still scores normally.
+    assert manifest.disqualified is False
+    assert manifest.objective_pass is True
+
+
+def test_agentb_read_file_still_reaches_the_agents_own_design(tmp_path):
+    script = [
+        {"tool": "read_file", "path": "design/toy_trackb.sv"},
+        {"tool": "write_design", "content": SOLUTION.read_text(encoding="utf-8")},
+        {"tool": "done"},
+    ]
+    out = tmp_path / "design_read.json"
+    run_agent_task("toy_taskB", MockProvider(script), out=out)
+
+    transcript = json.loads(out.with_suffix(".transcript.json").read_text(encoding="utf-8"))
+    assert transcript[0]["observation"]["status"] == "ok"
+    assert "module toy_trackb" in transcript[0]["observation"]["content"]
 
 
 def test_agentb_spend_cap_abort_is_scored_as_is(tmp_path, monkeypatch):

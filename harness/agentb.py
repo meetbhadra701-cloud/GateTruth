@@ -294,6 +294,22 @@ def execute_action(
     tool = action["tool"]
     if tool == "read_file":
         target = sandbox_path(sandbox, action["path"])
+        if not target.is_relative_to(sandbox / "design"):
+            # GTFS-004: sandbox_path() already stops a path from escaping the sandbox
+            # entirely, but nothing previously stopped it from reaching *inside* the
+            # sandbox to tb/, formal/, constraints.sdc, task.yaml, objective.yaml,
+            # spec.md, or baseline/ -- exactly the paper's claim that read_file "cannot
+            # reach the testbench, formal properties, constraints, or metadata through
+            # this tool at all" (main.tex:497), which a live census of 56 official
+            # transcripts found was false in five real actions. design/ is the only
+            # directory an agent needs read access to: it is the agent's own live
+            # work, already reachable in full through write_design's own responses:
+            # everything else in the sandbox is either scored input the agent must not
+            # see (tb/, formal/, constraints.sdc are all in trackb.py's own
+            # IMMUTABLE_ENTRIES) or content already delivered directly in the agent's
+            # prompt (spec.md, objective/constraint values), so blocking it here
+            # removes no capability the agent is actually meant to have.
+            raise ActionRejected(f"read_file may only reach design/: {action['path']}")
         if not target.is_file():
             raise ActionRejected(f"read target is not a file: {action['path']}")
         return {"status": "ok", "content": target.read_text(encoding="utf-8")}, False

@@ -1,7 +1,7 @@
 [
   {
     "tool": "read_file",
-    "path": "spec.md"
+    "path": "design/toy_trackb.sv"
   },
   {
     "tool": "write_design",
