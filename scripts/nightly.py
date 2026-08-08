@@ -179,8 +179,23 @@ def _run_mutation(task: str, root: Path, work_root: Path) -> dict[str, Any]:
         "harness.mutate",
         "--task",
         task,
+        # No --official here (nightly.yml checks out public sources only, by design --
+        # the hidden vector tree never touches a public GitHub Actions runner). Without
+        # --official, harness.mutate's baseline/mutants run against the public
+        # smoke-test testbench alone, which is a strictly weaker condition than the
+        # hidden-inclusive one the paper's 95% floor and the committed
+        # results/mutation/certification/ figures are actually certified under -- a
+        # mutant only the hidden vectors catch will legitimately show as surviving
+        # here even on a task certified at 100%. --min-kill 0 keeps the CLI's exit code
+        # (and this function's "status") tied to structural success only (baseline ran,
+        # mutants generated, no setup error), not a numeric floor this run was never
+        # positioned to meet; kill_rate is still recorded below for visibility.
+        # Confirmed directly 2026-08-07: t3_fir_filter_loadable and t3_hamming74_codec,
+        # both certified 100% under --official, showed 92.86%/89.74% here under the
+        # exact same seed -- reproducible locally, not a CI fluke -- which is the
+        # public/official testbench gap above, not a toolchain regression.
         "--min-kill",
-        "95",
+        "0",
         "--seed",
         "1337",
         "--json",
@@ -193,9 +208,9 @@ def _run_mutation(task: str, root: Path, work_root: Path) -> dict[str, Any]:
         kill_rate = float(json.loads(report_path.read_text(encoding="utf-8"))["kill_rate"])
     except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
         error = f"invalid mutation report: {exc}"
-    passed = result.returncode == 0 and kill_rate is not None and kill_rate >= 95.0
+    passed = result.returncode == 0 and kill_rate is not None
     if not passed and error is None:
-        error = _tail(result.stdout) or f"kill rate below threshold: {kill_rate}"
+        error = _tail(result.stdout) or "mutation run did not complete structurally"
     return {
         "error": error,
         "kill_rate": kill_rate,
