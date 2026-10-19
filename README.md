@@ -214,10 +214,28 @@ New tasks, bug reports, and model requests are welcome — see
 
 ## Citation
 
-The paper (methodology, reference-suite design, and the full audit results) is
-written and compiles cleanly from [`paper/`](paper/) in this repository; an
-arXiv submission is pending. Until it has a permanent identifier, please cite
-the repository (see [CITATION.cff](CITATION.cff)).
+The peer-accessible preprint is available on **arXiv**:
+[GateTruth: Auditing the Rigor of RTL Design Benchmarks via Mutation Testing](https://arxiv.org/abs/2608.12635)
+(arXiv:2608.12635, 2026). The source is in [`paper/`](paper/); the reproducible
+implementation and evaluation artifacts are in this repository.
+
+If you use the mutation-audit methodology, benchmark, or findings, cite the paper:
+
+```bibtex
+@misc{bhadra2026gatetruth,
+  title         = {GateTruth: Auditing the Rigor of RTL Design Benchmarks via Mutation Testing},
+  author        = {Bhadra, Meet},
+  year          = {2026},
+  eprint        = {2608.12635},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AR},
+  url           = {https://arxiv.org/abs/2608.12635}
+}
+```
+
+For software reuse, the [`CITATION.cff`](CITATION.cff) also provides machine-readable
+citation metadata. Mutation-kill rates measure detection by the chosen testbench and
+mutant set; they are not proof that every mutant violates the natural-language spec.
 
 ## License
 
