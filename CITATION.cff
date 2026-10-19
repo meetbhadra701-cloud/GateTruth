@@ -29,3 +29,15 @@ keywords:
   - electronic design automation
   - power performance area
   - agentic evaluation
+
+preferred-citation:
+  type: article
+  title: "GateTruth: Auditing the Rigor of RTL Design Benchmarks via Mutation Testing"
+  authors:
+    - family-names: Bhadra
+      given-names: Meet
+  year: 2026
+  identifiers:
+    - type: doi
+      value: "10.48550/arXiv.2608.12635"
+  url: "https://arxiv.org/abs/2608.12635"
