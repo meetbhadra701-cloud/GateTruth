@@ -31,7 +31,6 @@ docker info >/dev/null 2>&1  || die "docker daemon not reachable"
 
 # Native Windows Docker needs Windows-style paths for bind mounts (Git Bash); the
 # MSYS_NO_PATHCONV prefix is applied to docker run only, never exported (it breaks git).
-export MSYS_NO_PATHCONV=1
 native() { if command -v cygpath >/dev/null 2>&1; then cygpath -w "$1"; else printf '%s' "$1"; fi; }
 
 OUT="${OUT:-$REPO/build/archxbench-pilot-out}"
