@@ -1,0 +1,121 @@
+{
+  "baseline_record": {
+    "fail_lines": [],
+    "killed_by": null,
+    "outcome": "PASS",
+    "rtl_sha256": "1983517867945c0366257b391691070c75a736da9ef26168ceef8225d6fbc986",
+    "sim_rc": 0,
+    "sim_stdout_sha256": "d351354ec8e8a59a218f6031bbc00227ebc2880ee365b9d591173a43db0ff466",
+    "summary": {
+      "failed": 0,
+      "passed": 8
+    },
+    "testbench_sha256": "0b8197149af4cb72efdf167fa2e8af92d9e2f611ce03457d847f1f15544d6f64",
+    "verdict": "pass",
+    "wall_s": 0.027
+  },
+  "design_id": "mux2to1",
+  "design_state": "BASELINE_PASS",
+  "generation_flag": "-g2012",
+  "input_legality_assumption": "all 2-state input combinations are legal (spec defines no illegal inputs)",
+  "module": "mux_2to1",
+  "per_mutant": [
+    {
+      "category": "EQUIVALENT",
+      "category_reason": "exhaustive simulation and Yosys miter both show no difference",
+      "compiles": true,
+      "description": "or becomes xor",
+      "differs_from_reference_on_inputs": 0,
+      "gatetruth_contract_killed_by": null,
+      "gatetruth_contract_verdict": "survived",
+      "id": "archxbench_mux2to1-m000",
+      "mutant_sha256": "446d65925553d7fc36406da44a3b49d549cd81ca6f53d43b144c653b7bdcd343",
+      "operator": "bitwise_inversion",
+      "source_diff": [
+        "-    assign out = (in0 & ~sel) | (in1 & sel);",
+        "+    assign out = (in0 & ~sel) ^ (in1 & sel);"
+      ],
+      "testbench_fail_lines": [],
+      "testbench_outcome": "PASS",
+      "testbench_summary": {
+        "failed": 0,
+        "passed": 8
+      },
+      "total_input_combinations": 8,
+      "yosys_miter": "equivalent"
+    },
+    {
+      "category": "BEHAVIORAL_KILL",
+      "category_reason": "testbench failed; mutant differs from reference on some input",
+      "compiles": true,
+      "description": "continuous output is inverted",
+      "differs_from_reference_on_inputs": 8,
+      "gatetruth_contract_killed_by": "tb",
+      "gatetruth_contract_verdict": "killed",
+      "id": "archxbench_mux2to1-m001",
+      "mutant_sha256": "6d64a55699ba1e511edd471166259533ab7a9b9d312f40b38b0d1eeecad385fa",
+      "operator": "output_inversion",
+      "source_diff": [
+        "-    assign out = (in0 & ~sel) | (in1 & sel);",
+        "+    assign out = ~((in0 & ~sel) | (in1 & sel));"
+      ],
+      "testbench_fail_lines": [
+        "[FAIL] sel=0, in0=0, in1=0 -> out=1 (Expected: 0)",
+        "[FAIL] sel=0, in0=0, in1=1 -> out=1 (Expected: 0)",
+        "[FAIL] sel=0, in0=1, in1=0 -> out=0 (Expected: 1)",
+        "[FAIL] sel=0, in0=1, in1=1 -> out=0 (Expected: 1)",
+        "[FAIL] sel=1, in0=0, in1=0 -> out=1 (Expected: 0)"
+      ],
+      "testbench_outcome": "TB_FAIL",
+      "testbench_summary": {
+        "failed": 8,
+        "passed": 0
+      },
+      "total_input_combinations": 8,
+      "yosys_miter": "different"
+    }
+  ],
+  "reference_file": "mux_2to1.v",
+  "reference_provenance": "EVALUATOR-AUTHORED (not upstream-issued, not maintainer-reviewed)",
+  "reference_sha256": "1983517867945c0366257b391691070c75a736da9ef26168ceef8225d6fbc986",
+  "reference_vs_oracle": {
+    "input_combinations": 8,
+    "matches_oracle_exhaustively": true,
+    "rows_simulated": 8
+  },
+  "seed": 20260729,
+  "summary": {
+    "analysis_wall_s": 0.088,
+    "behavioral_kill_score": 1.0,
+    "behavioral_kill_score_fraction": "1/1",
+    "category_counts": {
+      "BEHAVIORAL_KILL": 1,
+      "COMPILE_FAILURE": 0,
+      "EQUIVALENT": 1,
+      "INDETERMINATE": 0,
+      "SETUP_ERROR": 0,
+      "SURVIVED": 0,
+      "TIMEOUT": 0
+    },
+    "inconclusive": false,
+    "mutants_compiling": 2,
+    "mutants_generated": 2,
+    "per_operator": {
+      "bitwise_inversion": {
+        "EQUIVALENT": 1
+      },
+      "output_inversion": {
+        "BEHAVIORAL_KILL": 1
+      }
+    },
+    "score_definition": "BEHAVIORAL_KILL / (BEHAVIORAL_KILL + SURVIVED); excludes EQUIVALENT, COMPILE_FAILURE, TIMEOUT, SETUP_ERROR, INDETERMINATE",
+    "valid_nonequivalent_mutants": 1
+  },
+  "testbench_sha256": "0b8197149af4cb72efdf167fa2e8af92d9e2f611ce03457d847f1f15544d6f64",
+  "tool_versions": {
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2",
+    "vvp": "Icarus Verilog runtime version 12.0 (stable) (v12_0)"
+  },
+  "vendor_commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"
+}

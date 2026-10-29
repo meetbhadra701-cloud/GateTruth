@@ -1,0 +1,55 @@
+{
+  "adoption_pilot": {
+    "behavioral_kills": 1,
+    "compile_failed_mutants_not_behavioral_evidence": [],
+    "evaluator_reference_not_upstream_golden": true,
+    "mutant_equivalence_checked": true,
+    "reference_origin": "mux_2to1.v",
+    "requires_independent_validation": true,
+    "target_commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"
+  },
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "generation_flag": "-g2012",
+  "indeterminate": 0,
+  "kill_rate": 50.0,
+  "killed": 1,
+  "mutants_total": 2,
+  "notes": "Pilot; evaluator-supplied reference, not ArchXBench-issued golden RTL",
+  "operator_counts": {
+    "bitwise_inversion": 1,
+    "output_inversion": 1
+  },
+  "per_mutant": [
+    {
+      "description": "or becomes xor",
+      "id": "archxbench_mux2to1-m000",
+      "killed_by": null,
+      "operator": "bitwise_inversion",
+      "verdict": "survived"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "archxbench_mux2to1-m001",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "1983517867945c0366257b391691070c75a736da9ef26168ceef8225d6fbc986",
+  "status": "audited",
+  "suite": "archxbench",
+  "survived": 1,
+  "task_id": "mux2to1",
+  "testbench_sha256": "0b8197149af4cb72efdf167fa2e8af92d9e2f611ce03457d847f1f15544d6f64",
+  "tool_versions": {
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2",
+    "vvp": "Icarus Verilog runtime version 12.0 (stable) (v12_0)"
+  },
+  "vendor_commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"
+}

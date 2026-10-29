@@ -1,0 +1,69 @@
+{
+  "adoption_pilot": {
+    "behavioral_kills": 4,
+    "compile_failed_mutants_not_behavioral_evidence": [],
+    "evaluator_reference_not_upstream_golden": true,
+    "mutant_equivalence_checked": true,
+    "reference_origin": "comparator_4bit.v",
+    "requires_independent_validation": true,
+    "target_commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"
+  },
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "generation_flag": "-g2012",
+  "indeterminate": 0,
+  "kill_rate": 100.0,
+  "killed": 4,
+  "mutants_total": 4,
+  "notes": "Pilot; evaluator-supplied reference, not ArchXBench-issued golden RTL",
+  "operator_counts": {
+    "comparator_boundary_flip": 1,
+    "output_inversion": 3
+  },
+  "per_mutant": [
+    {
+      "description": "equality becomes inequality",
+      "id": "archxbench_comparator4bit-m000",
+      "killed_by": "tb",
+      "operator": "comparator_boundary_flip",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "archxbench_comparator4bit-m001",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "archxbench_comparator4bit-m002",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "archxbench_comparator4bit-m003",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "d74a14ce584f59d41e790d1faca3a8f9ee3a24f9ad3b5f248693fb8014206f9e",
+  "status": "audited",
+  "suite": "archxbench",
+  "survived": 0,
+  "task_id": "comparator4bit",
+  "testbench_sha256": "0df044583a511645214ce0b7b8b838c43ddc43cb023e2c5f41ea9c72eb41d32e",
+  "tool_versions": {
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2",
+    "vvp": "Icarus Verilog runtime version 12.0 (stable) (v12_0)"
+  },
+  "vendor_commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"
+}

@@ -1,0 +1,59 @@
+{
+  "baseline_record": {
+    "fail_lines": [],
+    "killed_by": null,
+    "outcome": "PASS",
+    "rtl_sha256": "207de87b51333d9846e1ffd279aa3b76d6514a0ebf8a2c72309d64dadf64994f",
+    "sim_rc": 0,
+    "sim_stdout_sha256": "d7964589a6b73e2cbe19150e367b7b4ed6eebbdcbaa21b2f674046d1a0f919f3",
+    "summary": {
+      "failed": 0,
+      "passed": 6
+    },
+    "testbench_sha256": "78fe070c07349ccd4275d02bbe2fc66685bd38238937251e4f7e2edda50b9f15",
+    "verdict": "pass",
+    "wall_s": 0.025
+  },
+  "design_id": "decoder2to4",
+  "design_state": "BASELINE_PASS",
+  "generation_flag": "-g2012",
+  "input_legality_assumption": "all 2-state input combinations are legal (spec defines no illegal inputs)",
+  "module": "decoder_2to4",
+  "per_mutant": [],
+  "reference_file": "decoder_2to4.v",
+  "reference_provenance": "EVALUATOR-AUTHORED (not upstream-issued, not maintainer-reviewed)",
+  "reference_sha256": "207de87b51333d9846e1ffd279aa3b76d6514a0ebf8a2c72309d64dadf64994f",
+  "reference_vs_oracle": {
+    "input_combinations": 8,
+    "matches_oracle_exhaustively": true,
+    "rows_simulated": 8
+  },
+  "seed": 20260729,
+  "summary": {
+    "analysis_wall_s": 0.028,
+    "behavioral_kill_score": null,
+    "behavioral_kill_score_fraction": "0/0",
+    "category_counts": {
+      "BEHAVIORAL_KILL": 0,
+      "COMPILE_FAILURE": 0,
+      "EQUIVALENT": 0,
+      "INDETERMINATE": 0,
+      "SETUP_ERROR": 0,
+      "SURVIVED": 0,
+      "TIMEOUT": 0
+    },
+    "inconclusive": true,
+    "mutants_compiling": 0,
+    "mutants_generated": 0,
+    "per_operator": {},
+    "score_definition": "BEHAVIORAL_KILL / (BEHAVIORAL_KILL + SURVIVED); excludes EQUIVALENT, COMPILE_FAILURE, TIMEOUT, SETUP_ERROR, INDETERMINATE",
+    "valid_nonequivalent_mutants": 0
+  },
+  "testbench_sha256": "78fe070c07349ccd4275d02bbe2fc66685bd38238937251e4f7e2edda50b9f15",
+  "tool_versions": {
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2",
+    "vvp": "Icarus Verilog runtime version 12.0 (stable) (v12_0)"
+  },
+  "vendor_commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"
+}

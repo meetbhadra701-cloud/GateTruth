@@ -1,0 +1,55 @@
+{
+  "adoption_pilot": {
+    "behavioral_kills": 2,
+    "compile_failed_mutants_not_behavioral_evidence": [],
+    "evaluator_reference_not_upstream_golden": true,
+    "mutant_equivalence_checked": true,
+    "reference_origin": "decoder_2to4_behavioral_SENSITIVITY.v",
+    "requires_independent_validation": true,
+    "target_commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"
+  },
+  "baseline": {
+    "killed_by": null,
+    "verdict": "pass"
+  },
+  "generation_flag": "-g2012",
+  "indeterminate": 0,
+  "kill_rate": 100.0,
+  "killed": 2,
+  "mutants_total": 2,
+  "notes": "Pilot; evaluator-supplied reference, not ArchXBench-issued golden RTL",
+  "operator_counts": {
+    "output_inversion": 1,
+    "shift_inversion": 1
+  },
+  "per_mutant": [
+    {
+      "description": "left shift becomes right shift",
+      "id": "archxbench_decoder2to4behavioral-m000",
+      "killed_by": "tb",
+      "operator": "shift_inversion",
+      "verdict": "killed"
+    },
+    {
+      "description": "continuous output is inverted",
+      "id": "archxbench_decoder2to4behavioral-m001",
+      "killed_by": "tb",
+      "operator": "output_inversion",
+      "verdict": "killed"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260729,
+  "source_sha256": "a8d6d3d7a34fc3a747681776bf959a9137d7602a574ad71a2f24c21dc368a1fa",
+  "status": "audited",
+  "suite": "archxbench",
+  "survived": 0,
+  "task_id": "decoder2to4behavioral",
+  "testbench_sha256": "78fe070c07349ccd4275d02bbe2fc66685bd38238937251e4f7e2edda50b9f15",
+  "tool_versions": {
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2",
+    "vvp": "Icarus Verilog runtime version 12.0 (stable) (v12_0)"
+  },
+  "vendor_commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"
+}

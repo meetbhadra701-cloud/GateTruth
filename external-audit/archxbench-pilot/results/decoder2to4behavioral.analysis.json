@@ -1,0 +1,125 @@
+{
+  "baseline_record": {
+    "fail_lines": [],
+    "killed_by": null,
+    "outcome": "PASS",
+    "rtl_sha256": "a8d6d3d7a34fc3a747681776bf959a9137d7602a574ad71a2f24c21dc368a1fa",
+    "sim_rc": 0,
+    "sim_stdout_sha256": "d7964589a6b73e2cbe19150e367b7b4ed6eebbdcbaa21b2f674046d1a0f919f3",
+    "summary": {
+      "failed": 0,
+      "passed": 6
+    },
+    "testbench_sha256": "78fe070c07349ccd4275d02bbe2fc66685bd38238937251e4f7e2edda50b9f15",
+    "verdict": "pass",
+    "wall_s": 0.035
+  },
+  "design_id": "decoder2to4behavioral",
+  "design_state": "BASELINE_PASS",
+  "generation_flag": "-g2012",
+  "input_legality_assumption": "all 2-state input combinations are legal (spec defines no illegal inputs)",
+  "module": "decoder_2to4",
+  "per_mutant": [
+    {
+      "category": "BEHAVIORAL_KILL",
+      "category_reason": "testbench failed; mutant differs from reference on some input",
+      "compiles": true,
+      "description": "left shift becomes right shift",
+      "differs_from_reference_on_inputs": 3,
+      "gatetruth_contract_killed_by": "tb",
+      "gatetruth_contract_verdict": "killed",
+      "id": "archxbench_decoder2to4behavioral-m000",
+      "mutant_sha256": "8a225d55973d2e0258dadd421568ce56b941a2fc0f3475970187d3a4bcb19a0d",
+      "operator": "shift_inversion",
+      "source_diff": [
+        "-    assign out = enable ? (4'b0001 << in) : 4'b0000;",
+        "+    assign out = enable ? (4'b0001 >> in) : 4'b0000;"
+      ],
+      "testbench_fail_lines": [
+        "[FAIL] in=01, enable=1 -> out=0000 (Expected: 0010)",
+        "[FAIL] in=10, enable=1 -> out=0000 (Expected: 0100)",
+        "[FAIL] in=11, enable=1 -> out=0000 (Expected: 1000)"
+      ],
+      "testbench_outcome": "TB_FAIL",
+      "testbench_summary": {
+        "failed": 3,
+        "passed": 3
+      },
+      "total_input_combinations": 8,
+      "yosys_miter": "different"
+    },
+    {
+      "category": "BEHAVIORAL_KILL",
+      "category_reason": "testbench failed; mutant differs from reference on some input",
+      "compiles": true,
+      "description": "continuous output is inverted",
+      "differs_from_reference_on_inputs": 8,
+      "gatetruth_contract_killed_by": "tb",
+      "gatetruth_contract_verdict": "killed",
+      "id": "archxbench_decoder2to4behavioral-m001",
+      "mutant_sha256": "36edbb895edaa4e16bb1a6c4b43c6fc4c37c70b5eabb784363f95301951c2904",
+      "operator": "output_inversion",
+      "source_diff": [
+        "-    assign out = enable ? (4'b0001 << in) : 4'b0000;",
+        "+    assign out = ~(enable ? (4'b0001 << in) : 4'b0000);"
+      ],
+      "testbench_fail_lines": [
+        "[FAIL] in=00, enable=1 -> out=1110 (Expected: 0001)",
+        "[FAIL] in=01, enable=1 -> out=1101 (Expected: 0010)",
+        "[FAIL] in=10, enable=1 -> out=1011 (Expected: 0100)",
+        "[FAIL] in=11, enable=1 -> out=0111 (Expected: 1000)",
+        "[FAIL] in=00, enable=0 -> out=1111 (Expected: 0000)"
+      ],
+      "testbench_outcome": "TB_FAIL",
+      "testbench_summary": {
+        "failed": 6,
+        "passed": 0
+      },
+      "total_input_combinations": 8,
+      "yosys_miter": "different"
+    }
+  ],
+  "reference_file": "decoder_2to4_behavioral_SENSITIVITY.v",
+  "reference_provenance": "EVALUATOR-AUTHORED (not upstream-issued, not maintainer-reviewed)",
+  "reference_sha256": "a8d6d3d7a34fc3a747681776bf959a9137d7602a574ad71a2f24c21dc368a1fa",
+  "reference_vs_oracle": {
+    "input_combinations": 8,
+    "matches_oracle_exhaustively": true,
+    "rows_simulated": 8
+  },
+  "seed": 20260729,
+  "summary": {
+    "analysis_wall_s": 0.083,
+    "behavioral_kill_score": 1.0,
+    "behavioral_kill_score_fraction": "2/2",
+    "category_counts": {
+      "BEHAVIORAL_KILL": 2,
+      "COMPILE_FAILURE": 0,
+      "EQUIVALENT": 0,
+      "INDETERMINATE": 0,
+      "SETUP_ERROR": 0,
+      "SURVIVED": 0,
+      "TIMEOUT": 0
+    },
+    "inconclusive": false,
+    "mutants_compiling": 2,
+    "mutants_generated": 2,
+    "per_operator": {
+      "output_inversion": {
+        "BEHAVIORAL_KILL": 1
+      },
+      "shift_inversion": {
+        "BEHAVIORAL_KILL": 1
+      }
+    },
+    "score_definition": "BEHAVIORAL_KILL / (BEHAVIORAL_KILL + SURVIVED); excludes EQUIVALENT, COMPILE_FAILURE, TIMEOUT, SETUP_ERROR, INDETERMINATE",
+    "valid_nonequivalent_mutants": 2
+  },
+  "testbench_sha256": "78fe070c07349ccd4275d02bbe2fc66685bd38238937251e4f7e2edda50b9f15",
+  "tool_versions": {
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2",
+    "vvp": "Icarus Verilog runtime version 12.0 (stable) (v12_0)"
+  },
+  "vendor_commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"
+}
