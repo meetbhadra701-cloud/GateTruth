@@ -1,0 +1,54 @@
+{
+  "archxbench_commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a",
+  "container_os_arch": "Linux x86_64",
+  "docker_image": "gatetruth:v1",
+  "docker_image_id": "sha256:736dc86fdc0117063cc3c6fa053b41ac61d287d3655d6f5665b32c45880bfdfa",
+  "freeze_commit": "585e84ce6bb8d6fdeae7d48c395f727bba7958f8",
+  "freeze_commit_note": "task selection (tasks.json) and evaluator-authored references were committed here before any mutation was run",
+  "gatetruth_commit": "82ba14dfb9350f5c81d4fefa3bfc24078743037f",
+  "gatetruth_uncommitted_files": "0",
+  "host": "MINGW64_NT-10.0-26200-x86_64",
+  "image_note": "gatetruth:v1 was rebuilt from flows/Dockerfile on 2026-10-28; its image ID differs from the ID recorded in external-audit/README.md for earlier audits, so ID equality across rebuilds is NOT guaranteed (the Dockerfile itself documents this).",
+  "manifest_scope_note": "gatetruth_commit is the commit checked out when the one-command reproduction was executed in a clean clone; the report-only commits that follow change no code or result file.",
+  "reproduction_commands": [
+    "git clone https://github.com/meetbhadra701-cloud/GateTruth.git",
+    "git checkout adoption/archxbench-pilot-2026-10-28",
+    "./external-audit/archxbench-pilot/reproduce_archxbench_pilot.sh"
+  ],
+  "seed": 20260729,
+  "source_sha256": {
+    "ArchXBench/level-0/comparator-4bit/tb.v": "0df044583a511645214ce0b7b8b838c43ddc43cb023e2c5f41ea9c72eb41d32e",
+    "ArchXBench/level-0/decoder-2to4/tb.v": "78fe070c07349ccd4275d02bbe2fc66685bd38238937251e4f7e2edda50b9f15",
+    "ArchXBench/level-0/mux2to1/tb.v": "0b8197149af4cb72efdf167fa2e8af92d9e2f611ce03457d847f1f15544d6f64",
+    "external-audit/archxbench-pilot/references/comparator_4bit.v": "d74a14ce584f59d41e790d1faca3a8f9ee3a24f9ad3b5f248693fb8014206f9e",
+    "external-audit/archxbench-pilot/references/decoder_2to4.v": "207de87b51333d9846e1ffd279aa3b76d6514a0ebf8a2c72309d64dadf64994f",
+    "external-audit/archxbench-pilot/references/decoder_2to4_behavioral_SENSITIVITY.v": "a8d6d3d7a34fc3a747681776bf959a9137d7602a574ad71a2f24c21dc368a1fa",
+    "external-audit/archxbench-pilot/references/mux_2to1.v": "1983517867945c0366257b391691070c75a736da9ef26168ceef8225d6fbc986",
+    "external-audit/archxbench-pilot/reproduce_archxbench_pilot.sh": "034d7f3cf033a1dabf268fe610b10a88ee462b282bad48164e377be72a898064",
+    "external-audit/archxbench-pilot/run_pilot.py": "5c488990834010c81e957f03acbcf0b66ef24efdd412d7bb665423682a76b8e8",
+    "external-audit/archxbench-pilot/tasks.json": "06a2790268fdb3ac250471e8948c3d408ca123d8b629bc181d0c1c1e7a00404e",
+    "external-audit/archxbench_analysis.py": "b1b5f9629ef727a73d47056ba4cf82e0f93f2c99c8c150acc97ecb19589f7aa6",
+    "external-audit/archxbench_oracles.py": "b6e5a2ac7d418f8b5a92e0339b21bf2f2831adebf949f96310ae3bf95c2b2a02",
+    "external-audit/archxbench_pilot.py": "85c748714b132e6810111fe857904d6717354bcf71e62966d14facb950f5e0a2",
+    "external-audit/auditor/audit.py": "0bcba97b2e9a23cb4b3766abdeb057664cee2b3e398dfb5b7fa50e5e894ebcdd",
+    "external-audit/auditor/protocol.py": "db2e6ed9c13685f4ee997a028c826f5738a868394bb9080e0f2335fbd37393d7",
+    "flows/Dockerfile": "8c754099e7e8926d2554a2551cb6dfbf05231afa019334f7cd34e5118ec0fafb",
+    "flows/requirements.txt": "0f39d33bace4c74ecf4046275c1c0a1386d440fa299fb1dbca6517ac71db37d7",
+    "harness/mutators/rtl.py": "2bc6963b0145f9cf7e1e099f492f4fd8488e569fb09acb4f32eed3fc4c09e5f8",
+    "harness/sv_mask.py": "f0d92a129063823f9c7e37546e50d6e71823511972ad8d22d8e68ee851ebba78"
+  },
+  "tools": {
+    "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+    "python": "3.11.2",
+    "verilator": "Verilator 5.051 devel rev v5.050-40-g6c20fdb7b (mod)",
+    "vvp": "Icarus Verilog runtime version 12.0 (stable) (v12_0)",
+    "yosys": "Yosys 0.66+228 (git sha1 95b5e4360, Release, Clang /usr/bin/clang++ 18.1.8)"
+  },
+  "verification_runs": {
+    "clean_clone_reproduction": "PILOT_REPRODUCED, results identical to committed results, run1==run2 for all 4 tasks; same host and same locally built image (not an independent machine)",
+    "external_audit_tests": "81 passed (pinned image)",
+    "fail_closed_negative_tests": "non-empty output dir, dirty vendor tree, CRLF-converted testbench: each exit 2 with REPRODUCTION_BLOCKED",
+    "full_repo_pytest": "440 passed, 11 skipped, 0 failed (pinned image, 305.7 s)",
+    "ruff": "All checks passed (harness/ scripts/ paper/ external-audit/ site/)"
+  }
+}

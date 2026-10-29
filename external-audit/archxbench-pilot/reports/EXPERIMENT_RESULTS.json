@@ -1,0 +1,541 @@
+{
+  "aggregate_over_primary_designs": {
+    "behavioral_kill_score": 1.0,
+    "behavioral_kill_score_fraction": "5/5",
+    "category_counts": {
+      "BEHAVIORAL_KILL": 5,
+      "COMPILE_FAILURE": 0,
+      "EQUIVALENT": 1,
+      "INDETERMINATE": 0,
+      "SETUP_ERROR": 0,
+      "SURVIVED": 0,
+      "TIMEOUT": 0
+    },
+    "denominator": "BEHAVIORAL_KILL + SURVIVED over primary designs (see per-design inconclusive flags)",
+    "inconclusive_designs": [
+      "decoder2to4"
+    ],
+    "mutants_generated": 6,
+    "valid_nonequivalent_mutants": 5
+  },
+  "designs": {
+    "comparator4bit": {
+      "baseline_record": {
+        "fail_lines": [],
+        "killed_by": null,
+        "outcome": "PASS",
+        "rtl_sha256": "d74a14ce584f59d41e790d1faca3a8f9ee3a24f9ad3b5f248693fb8014206f9e",
+        "sim_rc": 0,
+        "sim_stdout_sha256": "fdb9a832396325b07f0da047d733ab1f42db416d16dc8760b57fe390de320c7b",
+        "summary": {
+          "failed": 0,
+          "passed": 5
+        },
+        "testbench_sha256": "0df044583a511645214ce0b7b8b838c43ddc43cb023e2c5f41ea9c72eb41d32e",
+        "verdict": "pass",
+        "wall_s": 0.021
+      },
+      "design_id": "comparator4bit",
+      "design_state": "BASELINE_PASS",
+      "generation_flag": "-g2012",
+      "input_legality_assumption": "all 2-state input combinations are legal (spec defines no illegal inputs)",
+      "module": "comparator_4bit",
+      "per_mutant": [
+        {
+          "category": "BEHAVIORAL_KILL",
+          "category_reason": "testbench failed; mutant differs from reference on some input",
+          "compiles": true,
+          "description": "equality becomes inequality",
+          "differs_from_reference_on_inputs": 256,
+          "gatetruth_contract_killed_by": "tb",
+          "gatetruth_contract_verdict": "killed",
+          "id": "archxbench_comparator4bit-m000",
+          "mutant_sha256": "76ed38dce04a04502ea473d9ca2e1fca2cc5c539accf6dd667b8ad67d20ee391",
+          "operator": "comparator_boundary_flip",
+          "source_diff": [
+            "-    assign eq = (a == b);",
+            "+    assign eq = (a != b);"
+          ],
+          "testbench_fail_lines": [
+            "[FAIL] a=0101, b=0101 -> eq=0, gt=0, lt=0 (Expected: eq=1, gt=0, lt=0)",
+            "[FAIL] a=1010, b=0110 -> eq=1, gt=1, lt=0 (Expected: eq=0, gt=1, lt=0)",
+            "[FAIL] a=0011, b=0111 -> eq=1, gt=0, lt=1 (Expected: eq=0, gt=0, lt=1)",
+            "[FAIL] a=0000, b=1111 -> eq=1, gt=0, lt=1 (Expected: eq=0, gt=0, lt=1)",
+            "[FAIL] a=1111, b=0000 -> eq=1, gt=1, lt=0 (Expected: eq=0, gt=1, lt=0)"
+          ],
+          "testbench_outcome": "TB_FAIL",
+          "testbench_summary": {
+            "failed": 5,
+            "passed": 0
+          },
+          "total_input_combinations": 256,
+          "yosys_miter": "different"
+        },
+        {
+          "category": "BEHAVIORAL_KILL",
+          "category_reason": "testbench failed; mutant differs from reference on some input",
+          "compiles": true,
+          "description": "continuous output is inverted",
+          "differs_from_reference_on_inputs": 256,
+          "gatetruth_contract_killed_by": "tb",
+          "gatetruth_contract_verdict": "killed",
+          "id": "archxbench_comparator4bit-m001",
+          "mutant_sha256": "6b6221ed664c7344da14d7215a356658f25f86f4231d34e660bcdd34a6c3c19e",
+          "operator": "output_inversion",
+          "source_diff": [
+            "-    assign gt = (a > b);",
+            "+    assign gt = ~((a > b));"
+          ],
+          "testbench_fail_lines": [
+            "[FAIL] a=0101, b=0101 -> eq=1, gt=1, lt=0 (Expected: eq=1, gt=0, lt=0)",
+            "[FAIL] a=1010, b=0110 -> eq=0, gt=0, lt=0 (Expected: eq=0, gt=1, lt=0)",
+            "[FAIL] a=0011, b=0111 -> eq=0, gt=1, lt=1 (Expected: eq=0, gt=0, lt=1)",
+            "[FAIL] a=0000, b=1111 -> eq=0, gt=1, lt=1 (Expected: eq=0, gt=0, lt=1)",
+            "[FAIL] a=1111, b=0000 -> eq=0, gt=0, lt=0 (Expected: eq=0, gt=1, lt=0)"
+          ],
+          "testbench_outcome": "TB_FAIL",
+          "testbench_summary": {
+            "failed": 5,
+            "passed": 0
+          },
+          "total_input_combinations": 256,
+          "yosys_miter": "different"
+        },
+        {
+          "category": "BEHAVIORAL_KILL",
+          "category_reason": "testbench failed; mutant differs from reference on some input",
+          "compiles": true,
+          "description": "continuous output is inverted",
+          "differs_from_reference_on_inputs": 256,
+          "gatetruth_contract_killed_by": "tb",
+          "gatetruth_contract_verdict": "killed",
+          "id": "archxbench_comparator4bit-m002",
+          "mutant_sha256": "b554cbaa5ca29bbe902e73f1b787478a2b17c0f9806058ada11aff8b34024252",
+          "operator": "output_inversion",
+          "source_diff": [
+            "-    assign eq = (a == b);",
+            "+    assign eq = ~((a == b));"
+          ],
+          "testbench_fail_lines": [
+            "[FAIL] a=0101, b=0101 -> eq=0, gt=0, lt=0 (Expected: eq=1, gt=0, lt=0)",
+            "[FAIL] a=1010, b=0110 -> eq=1, gt=1, lt=0 (Expected: eq=0, gt=1, lt=0)",
+            "[FAIL] a=0011, b=0111 -> eq=1, gt=0, lt=1 (Expected: eq=0, gt=0, lt=1)",
+            "[FAIL] a=0000, b=1111 -> eq=1, gt=0, lt=1 (Expected: eq=0, gt=0, lt=1)",
+            "[FAIL] a=1111, b=0000 -> eq=1, gt=1, lt=0 (Expected: eq=0, gt=1, lt=0)"
+          ],
+          "testbench_outcome": "TB_FAIL",
+          "testbench_summary": {
+            "failed": 5,
+            "passed": 0
+          },
+          "total_input_combinations": 256,
+          "yosys_miter": "different"
+        },
+        {
+          "category": "BEHAVIORAL_KILL",
+          "category_reason": "testbench failed; mutant differs from reference on some input",
+          "compiles": true,
+          "description": "continuous output is inverted",
+          "differs_from_reference_on_inputs": 256,
+          "gatetruth_contract_killed_by": "tb",
+          "gatetruth_contract_verdict": "killed",
+          "id": "archxbench_comparator4bit-m003",
+          "mutant_sha256": "fdbc46113db38d301809f31c0da40f9f89009d699197c9b4ddfba2e9103f661c",
+          "operator": "output_inversion",
+          "source_diff": [
+            "-    assign lt = (a < b);",
+            "+    assign lt = ~((a < b));"
+          ],
+          "testbench_fail_lines": [
+            "[FAIL] a=0101, b=0101 -> eq=1, gt=0, lt=1 (Expected: eq=1, gt=0, lt=0)",
+            "[FAIL] a=1010, b=0110 -> eq=0, gt=1, lt=1 (Expected: eq=0, gt=1, lt=0)",
+            "[FAIL] a=0011, b=0111 -> eq=0, gt=0, lt=0 (Expected: eq=0, gt=0, lt=1)",
+            "[FAIL] a=0000, b=1111 -> eq=0, gt=0, lt=0 (Expected: eq=0, gt=0, lt=1)",
+            "[FAIL] a=1111, b=0000 -> eq=0, gt=1, lt=1 (Expected: eq=0, gt=1, lt=0)"
+          ],
+          "testbench_outcome": "TB_FAIL",
+          "testbench_summary": {
+            "failed": 5,
+            "passed": 0
+          },
+          "total_input_combinations": 256,
+          "yosys_miter": "different"
+        }
+      ],
+      "reference_file": "comparator_4bit.v",
+      "reference_provenance": "EVALUATOR-AUTHORED (not upstream-issued, not maintainer-reviewed)",
+      "reference_sha256": "d74a14ce584f59d41e790d1faca3a8f9ee3a24f9ad3b5f248693fb8014206f9e",
+      "reference_vs_oracle": {
+        "input_combinations": 256,
+        "matches_oracle_exhaustively": true,
+        "rows_simulated": 256
+      },
+      "seed": 20260729,
+      "summary": {
+        "analysis_wall_s": 0.108,
+        "behavioral_kill_score": 1.0,
+        "behavioral_kill_score_fraction": "4/4",
+        "category_counts": {
+          "BEHAVIORAL_KILL": 4,
+          "COMPILE_FAILURE": 0,
+          "EQUIVALENT": 0,
+          "INDETERMINATE": 0,
+          "SETUP_ERROR": 0,
+          "SURVIVED": 0,
+          "TIMEOUT": 0
+        },
+        "inconclusive": false,
+        "mutants_compiling": 4,
+        "mutants_generated": 4,
+        "per_operator": {
+          "comparator_boundary_flip": {
+            "BEHAVIORAL_KILL": 1
+          },
+          "output_inversion": {
+            "BEHAVIORAL_KILL": 3
+          }
+        },
+        "score_definition": "BEHAVIORAL_KILL / (BEHAVIORAL_KILL + SURVIVED); excludes EQUIVALENT, COMPILE_FAILURE, TIMEOUT, SETUP_ERROR, INDETERMINATE",
+        "valid_nonequivalent_mutants": 4
+      },
+      "testbench_sha256": "0df044583a511645214ce0b7b8b838c43ddc43cb023e2c5f41ea9c72eb41d32e",
+      "tool_versions": {
+        "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+        "python": "3.11.2",
+        "vvp": "Icarus Verilog runtime version 12.0 (stable) (v12_0)"
+      },
+      "vendor_commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"
+    },
+    "decoder2to4": {
+      "baseline_record": {
+        "fail_lines": [],
+        "killed_by": null,
+        "outcome": "PASS",
+        "rtl_sha256": "207de87b51333d9846e1ffd279aa3b76d6514a0ebf8a2c72309d64dadf64994f",
+        "sim_rc": 0,
+        "sim_stdout_sha256": "d7964589a6b73e2cbe19150e367b7b4ed6eebbdcbaa21b2f674046d1a0f919f3",
+        "summary": {
+          "failed": 0,
+          "passed": 6
+        },
+        "testbench_sha256": "78fe070c07349ccd4275d02bbe2fc66685bd38238937251e4f7e2edda50b9f15",
+        "verdict": "pass",
+        "wall_s": 0.025
+      },
+      "design_id": "decoder2to4",
+      "design_state": "BASELINE_PASS",
+      "generation_flag": "-g2012",
+      "input_legality_assumption": "all 2-state input combinations are legal (spec defines no illegal inputs)",
+      "module": "decoder_2to4",
+      "per_mutant": [],
+      "reference_file": "decoder_2to4.v",
+      "reference_provenance": "EVALUATOR-AUTHORED (not upstream-issued, not maintainer-reviewed)",
+      "reference_sha256": "207de87b51333d9846e1ffd279aa3b76d6514a0ebf8a2c72309d64dadf64994f",
+      "reference_vs_oracle": {
+        "input_combinations": 8,
+        "matches_oracle_exhaustively": true,
+        "rows_simulated": 8
+      },
+      "seed": 20260729,
+      "summary": {
+        "analysis_wall_s": 0.028,
+        "behavioral_kill_score": null,
+        "behavioral_kill_score_fraction": "0/0",
+        "category_counts": {
+          "BEHAVIORAL_KILL": 0,
+          "COMPILE_FAILURE": 0,
+          "EQUIVALENT": 0,
+          "INDETERMINATE": 0,
+          "SETUP_ERROR": 0,
+          "SURVIVED": 0,
+          "TIMEOUT": 0
+        },
+        "inconclusive": true,
+        "mutants_compiling": 0,
+        "mutants_generated": 0,
+        "per_operator": {},
+        "score_definition": "BEHAVIORAL_KILL / (BEHAVIORAL_KILL + SURVIVED); excludes EQUIVALENT, COMPILE_FAILURE, TIMEOUT, SETUP_ERROR, INDETERMINATE",
+        "valid_nonequivalent_mutants": 0
+      },
+      "testbench_sha256": "78fe070c07349ccd4275d02bbe2fc66685bd38238937251e4f7e2edda50b9f15",
+      "tool_versions": {
+        "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+        "python": "3.11.2",
+        "vvp": "Icarus Verilog runtime version 12.0 (stable) (v12_0)"
+      },
+      "vendor_commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"
+    },
+    "decoder2to4behavioral": {
+      "baseline_record": {
+        "fail_lines": [],
+        "killed_by": null,
+        "outcome": "PASS",
+        "rtl_sha256": "a8d6d3d7a34fc3a747681776bf959a9137d7602a574ad71a2f24c21dc368a1fa",
+        "sim_rc": 0,
+        "sim_stdout_sha256": "d7964589a6b73e2cbe19150e367b7b4ed6eebbdcbaa21b2f674046d1a0f919f3",
+        "summary": {
+          "failed": 0,
+          "passed": 6
+        },
+        "testbench_sha256": "78fe070c07349ccd4275d02bbe2fc66685bd38238937251e4f7e2edda50b9f15",
+        "verdict": "pass",
+        "wall_s": 0.035
+      },
+      "design_id": "decoder2to4behavioral",
+      "design_state": "BASELINE_PASS",
+      "generation_flag": "-g2012",
+      "input_legality_assumption": "all 2-state input combinations are legal (spec defines no illegal inputs)",
+      "module": "decoder_2to4",
+      "per_mutant": [
+        {
+          "category": "BEHAVIORAL_KILL",
+          "category_reason": "testbench failed; mutant differs from reference on some input",
+          "compiles": true,
+          "description": "left shift becomes right shift",
+          "differs_from_reference_on_inputs": 3,
+          "gatetruth_contract_killed_by": "tb",
+          "gatetruth_contract_verdict": "killed",
+          "id": "archxbench_decoder2to4behavioral-m000",
+          "mutant_sha256": "8a225d55973d2e0258dadd421568ce56b941a2fc0f3475970187d3a4bcb19a0d",
+          "operator": "shift_inversion",
+          "source_diff": [
+            "-    assign out = enable ? (4'b0001 << in) : 4'b0000;",
+            "+    assign out = enable ? (4'b0001 >> in) : 4'b0000;"
+          ],
+          "testbench_fail_lines": [
+            "[FAIL] in=01, enable=1 -> out=0000 (Expected: 0010)",
+            "[FAIL] in=10, enable=1 -> out=0000 (Expected: 0100)",
+            "[FAIL] in=11, enable=1 -> out=0000 (Expected: 1000)"
+          ],
+          "testbench_outcome": "TB_FAIL",
+          "testbench_summary": {
+            "failed": 3,
+            "passed": 3
+          },
+          "total_input_combinations": 8,
+          "yosys_miter": "different"
+        },
+        {
+          "category": "BEHAVIORAL_KILL",
+          "category_reason": "testbench failed; mutant differs from reference on some input",
+          "compiles": true,
+          "description": "continuous output is inverted",
+          "differs_from_reference_on_inputs": 8,
+          "gatetruth_contract_killed_by": "tb",
+          "gatetruth_contract_verdict": "killed",
+          "id": "archxbench_decoder2to4behavioral-m001",
+          "mutant_sha256": "36edbb895edaa4e16bb1a6c4b43c6fc4c37c70b5eabb784363f95301951c2904",
+          "operator": "output_inversion",
+          "source_diff": [
+            "-    assign out = enable ? (4'b0001 << in) : 4'b0000;",
+            "+    assign out = ~(enable ? (4'b0001 << in) : 4'b0000);"
+          ],
+          "testbench_fail_lines": [
+            "[FAIL] in=00, enable=1 -> out=1110 (Expected: 0001)",
+            "[FAIL] in=01, enable=1 -> out=1101 (Expected: 0010)",
+            "[FAIL] in=10, enable=1 -> out=1011 (Expected: 0100)",
+            "[FAIL] in=11, enable=1 -> out=0111 (Expected: 1000)",
+            "[FAIL] in=00, enable=0 -> out=1111 (Expected: 0000)"
+          ],
+          "testbench_outcome": "TB_FAIL",
+          "testbench_summary": {
+            "failed": 6,
+            "passed": 0
+          },
+          "total_input_combinations": 8,
+          "yosys_miter": "different"
+        }
+      ],
+      "reference_file": "decoder_2to4_behavioral_SENSITIVITY.v",
+      "reference_provenance": "EVALUATOR-AUTHORED (not upstream-issued, not maintainer-reviewed)",
+      "reference_sha256": "a8d6d3d7a34fc3a747681776bf959a9137d7602a574ad71a2f24c21dc368a1fa",
+      "reference_vs_oracle": {
+        "input_combinations": 8,
+        "matches_oracle_exhaustively": true,
+        "rows_simulated": 8
+      },
+      "seed": 20260729,
+      "summary": {
+        "analysis_wall_s": 0.083,
+        "behavioral_kill_score": 1.0,
+        "behavioral_kill_score_fraction": "2/2",
+        "category_counts": {
+          "BEHAVIORAL_KILL": 2,
+          "COMPILE_FAILURE": 0,
+          "EQUIVALENT": 0,
+          "INDETERMINATE": 0,
+          "SETUP_ERROR": 0,
+          "SURVIVED": 0,
+          "TIMEOUT": 0
+        },
+        "inconclusive": false,
+        "mutants_compiling": 2,
+        "mutants_generated": 2,
+        "per_operator": {
+          "output_inversion": {
+            "BEHAVIORAL_KILL": 1
+          },
+          "shift_inversion": {
+            "BEHAVIORAL_KILL": 1
+          }
+        },
+        "score_definition": "BEHAVIORAL_KILL / (BEHAVIORAL_KILL + SURVIVED); excludes EQUIVALENT, COMPILE_FAILURE, TIMEOUT, SETUP_ERROR, INDETERMINATE",
+        "valid_nonequivalent_mutants": 2
+      },
+      "testbench_sha256": "78fe070c07349ccd4275d02bbe2fc66685bd38238937251e4f7e2edda50b9f15",
+      "tool_versions": {
+        "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+        "python": "3.11.2",
+        "vvp": "Icarus Verilog runtime version 12.0 (stable) (v12_0)"
+      },
+      "vendor_commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"
+    },
+    "mux2to1": {
+      "baseline_record": {
+        "fail_lines": [],
+        "killed_by": null,
+        "outcome": "PASS",
+        "rtl_sha256": "1983517867945c0366257b391691070c75a736da9ef26168ceef8225d6fbc986",
+        "sim_rc": 0,
+        "sim_stdout_sha256": "d351354ec8e8a59a218f6031bbc00227ebc2880ee365b9d591173a43db0ff466",
+        "summary": {
+          "failed": 0,
+          "passed": 8
+        },
+        "testbench_sha256": "0b8197149af4cb72efdf167fa2e8af92d9e2f611ce03457d847f1f15544d6f64",
+        "verdict": "pass",
+        "wall_s": 0.027
+      },
+      "design_id": "mux2to1",
+      "design_state": "BASELINE_PASS",
+      "generation_flag": "-g2012",
+      "input_legality_assumption": "all 2-state input combinations are legal (spec defines no illegal inputs)",
+      "module": "mux_2to1",
+      "per_mutant": [
+        {
+          "category": "EQUIVALENT",
+          "category_reason": "exhaustive simulation and Yosys miter both show no difference",
+          "compiles": true,
+          "description": "or becomes xor",
+          "differs_from_reference_on_inputs": 0,
+          "gatetruth_contract_killed_by": null,
+          "gatetruth_contract_verdict": "survived",
+          "id": "archxbench_mux2to1-m000",
+          "mutant_sha256": "446d65925553d7fc36406da44a3b49d549cd81ca6f53d43b144c653b7bdcd343",
+          "operator": "bitwise_inversion",
+          "source_diff": [
+            "-    assign out = (in0 & ~sel) | (in1 & sel);",
+            "+    assign out = (in0 & ~sel) ^ (in1 & sel);"
+          ],
+          "testbench_fail_lines": [],
+          "testbench_outcome": "PASS",
+          "testbench_summary": {
+            "failed": 0,
+            "passed": 8
+          },
+          "total_input_combinations": 8,
+          "yosys_miter": "equivalent"
+        },
+        {
+          "category": "BEHAVIORAL_KILL",
+          "category_reason": "testbench failed; mutant differs from reference on some input",
+          "compiles": true,
+          "description": "continuous output is inverted",
+          "differs_from_reference_on_inputs": 8,
+          "gatetruth_contract_killed_by": "tb",
+          "gatetruth_contract_verdict": "killed",
+          "id": "archxbench_mux2to1-m001",
+          "mutant_sha256": "6d64a55699ba1e511edd471166259533ab7a9b9d312f40b38b0d1eeecad385fa",
+          "operator": "output_inversion",
+          "source_diff": [
+            "-    assign out = (in0 & ~sel) | (in1 & sel);",
+            "+    assign out = ~((in0 & ~sel) | (in1 & sel));"
+          ],
+          "testbench_fail_lines": [
+            "[FAIL] sel=0, in0=0, in1=0 -> out=1 (Expected: 0)",
+            "[FAIL] sel=0, in0=0, in1=1 -> out=1 (Expected: 0)",
+            "[FAIL] sel=0, in0=1, in1=0 -> out=0 (Expected: 1)",
+            "[FAIL] sel=0, in0=1, in1=1 -> out=0 (Expected: 1)",
+            "[FAIL] sel=1, in0=0, in1=0 -> out=1 (Expected: 0)"
+          ],
+          "testbench_outcome": "TB_FAIL",
+          "testbench_summary": {
+            "failed": 8,
+            "passed": 0
+          },
+          "total_input_combinations": 8,
+          "yosys_miter": "different"
+        }
+      ],
+      "reference_file": "mux_2to1.v",
+      "reference_provenance": "EVALUATOR-AUTHORED (not upstream-issued, not maintainer-reviewed)",
+      "reference_sha256": "1983517867945c0366257b391691070c75a736da9ef26168ceef8225d6fbc986",
+      "reference_vs_oracle": {
+        "input_combinations": 8,
+        "matches_oracle_exhaustively": true,
+        "rows_simulated": 8
+      },
+      "seed": 20260729,
+      "summary": {
+        "analysis_wall_s": 0.088,
+        "behavioral_kill_score": 1.0,
+        "behavioral_kill_score_fraction": "1/1",
+        "category_counts": {
+          "BEHAVIORAL_KILL": 1,
+          "COMPILE_FAILURE": 0,
+          "EQUIVALENT": 1,
+          "INDETERMINATE": 0,
+          "SETUP_ERROR": 0,
+          "SURVIVED": 0,
+          "TIMEOUT": 0
+        },
+        "inconclusive": false,
+        "mutants_compiling": 2,
+        "mutants_generated": 2,
+        "per_operator": {
+          "bitwise_inversion": {
+            "EQUIVALENT": 1
+          },
+          "output_inversion": {
+            "BEHAVIORAL_KILL": 1
+          }
+        },
+        "score_definition": "BEHAVIORAL_KILL / (BEHAVIORAL_KILL + SURVIVED); excludes EQUIVALENT, COMPILE_FAILURE, TIMEOUT, SETUP_ERROR, INDETERMINATE",
+        "valid_nonequivalent_mutants": 1
+      },
+      "testbench_sha256": "0b8197149af4cb72efdf167fa2e8af92d9e2f611ce03457d847f1f15544d6f64",
+      "tool_versions": {
+        "iverilog": "Icarus Verilog version 12.0 (stable) (v12_0)",
+        "python": "3.11.2",
+        "vvp": "Icarus Verilog runtime version 12.0 (stable) (v12_0)"
+      },
+      "vendor_commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"
+    }
+  },
+  "experiment_date": "2026-10-28",
+  "headline_caveat": "The 5/5 figure is over 5 valid non-equivalent mutants in 2 designs; the third design generated zero mutants. It is not evidence of testbench quality or of GateTruth's detection power.",
+  "primary_designs": [
+    "mux2to1",
+    "comparator4bit",
+    "decoder2to4"
+  ],
+  "reference_provenance": "EVALUATOR-AUTHORED; not upstream-issued; not reviewed by ArchXBench maintainers",
+  "reproduction_consistency": "run1 == run2 (wall-clock fields excluded) for all four tasks; committed results reproduced from a clean clone",
+  "scope": "3 primary ArchXBench level-0 tasks (+1 pre-registered supplementary variant), evaluator-authored references, GateTruth harness/mutators/rtl.py generic operators, unmodified upstream testbenches",
+  "score_definition": "BEHAVIORAL_KILL / (BEHAVIORAL_KILL + SURVIVED); excludes EQUIVALENT, COMPILE_FAILURE, TIMEOUT, SETUP_ERROR, INDETERMINATE",
+  "status": "INCONCLUSIVE",
+  "supplementary_designs": [
+    "decoder2to4behavioral"
+  ],
+  "testbench_stimulus_coverage_by_inspection": {
+    "comparator4bit": "5/256 input combinations",
+    "decoder2to4": "6/8 input combinations (enable=0 only with in=00 and in=11)",
+    "mux2to1": "8/8 input combinations"
+  },
+  "yosys_mutate_candidate_counts_not_executed": {
+    "comparator_4bit": 112,
+    "decoder_2to4": 84,
+    "mux_2to1": 33,
+    "note": "output line counts of `yosys mutate -list`; enumeration only, never run against a testbench"
+  }
+}
