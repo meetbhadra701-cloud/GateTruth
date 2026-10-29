@@ -1,0 +1,13 @@
+{
+  "frozen_before_mutation_outcomes": true,
+  "vendor": {"repo": "https://github.com/sureshpurini/ArchXBench", "commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"},
+  "seed": 20260729,
+  "primary": [
+    {"design_id": "mux2to1", "task_path": "level-0/mux2to1", "module": "mux_2to1", "tb_top": "tb_mux_2to1", "reference": "references/mux_2to1.v"},
+    {"design_id": "comparator4bit", "task_path": "level-0/comparator-4bit", "module": "comparator_4bit", "tb_top": "tb_comparator_4bit", "reference": "references/comparator_4bit.v"},
+    {"design_id": "decoder2to4", "task_path": "level-0/decoder-2to4", "module": "decoder_2to4", "tb_top": "tb_decoder_2to4", "reference": "references/decoder_2to4.v"}
+  ],
+  "supplementary": [
+    {"design_id": "decoder2to4behavioral", "task_path": "level-0/decoder-2to4", "module": "decoder_2to4", "tb_top": "tb_decoder_2to4", "reference": "references/decoder_2to4_behavioral_SENSITIVITY.v"}
+  ]
+}
