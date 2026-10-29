@@ -94,8 +94,13 @@ def audit_design(
     timeout_s: float = 20.0,
     retry_timeout_s: float = 60.0,
     generation_flag: str | None = None,
+    mutant_generator: Any = None,
 ) -> dict[str, Any]:
-    """Audit one design, baseline first, with deterministic sequential execution."""
+    """Audit one design, baseline first, with deterministic sequential execution.
+
+    ``mutant_generator`` (default: ``harness.mutators.generate_mutants``) lets an external
+    audit supply an extended, separately labeled operator set without touching the engine.
+    """
     golden_source = catalog_entry.get("_golden_source")
     if not isinstance(golden_source, str):
         raise ValueError(f"{design_id}: catalog entry has no loaded golden source")
@@ -114,7 +119,7 @@ def audit_design(
         if baseline.verdict != Verdict.PASS:
             return _unsupported_report(base, baseline, catalog_entry)
 
-        mutants = generate_mutants(
+        mutants = (mutant_generator or generate_mutants)(
             f"{runner.suite}_{design_id}",
             golden_source,
             include_task_specs=False,

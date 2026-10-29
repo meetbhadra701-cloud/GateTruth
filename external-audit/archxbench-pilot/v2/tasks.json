@@ -1,0 +1,33 @@
+{
+  "frozen_before_v2_mutation_outcomes": true,
+  "operators": "v2",
+  "vendor": {"repo": "https://github.com/sureshpurini/ArchXBench", "commit": "0db0d0de25aad5238393d51bd97ce952e579fa1a"},
+  "seed": 20260729,
+  "primary": [
+    {"design_id": "mux2to1", "task_path": "level-0/mux2to1", "module": "mux_2to1", "tb_top": "tb_mux_2to1", "reference": "references/mux_2to1.v", "kind": "comb"},
+    {"design_id": "comparator4bit", "task_path": "level-0/comparator-4bit", "module": "comparator_4bit", "tb_top": "tb_comparator_4bit", "reference": "references/comparator_4bit.v", "kind": "comb"},
+    {"design_id": "decoder2to4", "task_path": "level-0/decoder-2to4", "module": "decoder_2to4", "tb_top": "tb_decoder_2to4", "reference": "references/decoder_2to4.v", "kind": "comb"},
+    {"design_id": "binaryencoder8to3", "task_path": "level-0/binary-encoder", "module": "binary_encoder_8to3", "tb_top": "tb_binary_encoder_8to3", "reference": "v2/references/binary_encoder_8to3.v", "kind": "comb"},
+    {"design_id": "comparator8bit", "task_path": "level-0/comparator-8bit", "module": "comparator_8bit", "tb_top": "tb_comparator_8bit", "reference": "v2/references/comparator_8bit.v", "kind": "comb"},
+    {"design_id": "decoder3to8", "task_path": "level-0/decoder-3to8", "module": "decoder3to8", "summary_module": "decoder_3to8", "tb_top": "tb_decoder_3to8", "reference": "v2/references/decoder3to8.v", "kind": "comb"},
+    {"design_id": "demux1to2", "task_path": "level-0/demux-1to2", "module": "demux_1to2", "tb_top": "tb_demux_1to2", "reference": "v2/references/demux_1to2.v", "kind": "comb"},
+    {"design_id": "demux1to4", "task_path": "level-0/demux-1to4", "module": "demux_1to4", "tb_top": "tb_demux_1to4", "reference": "v2/references/demux_1to4.v", "kind": "comb"},
+    {"design_id": "mux4to1", "task_path": "level-0/mux4to1", "module": "mux_4to1", "tb_top": "tb_mux_4to1", "reference": "v2/references/mux_4to1.v", "kind": "comb"},
+    {"design_id": "johnsoncounter4", "task_path": "level-0/johnson-counter", "module": "johnson_counter4", "tb_top": "tb_johnson_counter4", "reference": "v2/references/johnson_counter4.v", "kind": "seq"},
+    {"design_id": "ringcounter4", "task_path": "level-0/ring-counter", "module": "ring_counter4", "tb_top": "tb_ring_counter4", "reference": "v2/references/ring_counter4.v", "kind": "seq"},
+    {"design_id": "graycounter8", "task_path": "level-0/gray-counter", "module": "gray_counter8", "tb_top": "tb_gray_counter8", "reference": "v2/references/gray_counter8.v", "kind": "seq"},
+    {"design_id": "upcounter8", "task_path": "level-0/up-counter", "module": "up_counter8", "tb_top": "up_counter8_tb", "reference": "v2/references/up_counter8.v", "kind": "seq"},
+    {"design_id": "clockdiv2", "task_path": "level-0/clock-divide-by-2", "module": "clock_div2", "tb_top": "clock_div2_tb", "reference": "v2/references/clock_div2.v", "kind": "seq"}
+  ],
+  "supplementary": [
+    {"design_id": "decoder2to4behavioral", "task_path": "level-0/decoder-2to4", "module": "decoder_2to4", "tb_top": "tb_decoder_2to4", "reference": "references/decoder_2to4_behavioral_SENSITIVITY.v", "kind": "comb"}
+  ],
+  "excluded": [
+    {"task_path": "level-0/priority-encoder", "reason": "spec leaves out[1:0] undefined when no input is active, but the testbench requires 2'b00; passing needs a semantic the spec does not state"},
+    {"task_path": "level-0/bitmanip-unit", "reason": "spec leaves out2 undefined for every op except unpack and is parameterized; testbench semantics for unspecified outputs cannot be derived from the spec"},
+    {"task_path": "level-0/down-counter", "reason": "spec does not define load-vs-enable priority, reset value, or underflow behavior"},
+    {"task_path": "level-0/piso-regs", "reason": "spec does not fix serial timing relative to load; verdict on a correct design looks sensitive to same-timestamp event ordering at the load edge (conservative exclusion, not verified by simulation)"},
+    {"task_path": "level-0/siso-regs", "reason": "spec leaves shift direction/latency undefined ('LSB or MSB as defined by shift direction') and testbench timing looks race-sensitive (conservative exclusion, not verified)"},
+    {"task_path": "level-0/sipo-regs", "reason": "spec is precise but the testbench samples at a same-timestamp negedge/delay boundary, so the pass verdict looks scheduler-order-sensitive (conservative exclusion, not verified)"}
+  ]
+}

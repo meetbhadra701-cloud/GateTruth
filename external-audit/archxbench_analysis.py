@@ -27,13 +27,19 @@ from __future__ import annotations
 import difflib
 import hashlib
 import json
-import re
 import subprocess
 import tempfile
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from archxbench_oracles import SPECS, exhaustive_testbench, oracle_rows
+from archxbench_formal import (  # noqa: F401  (exhaustive_rows re-exported for tests)
+    behavior_rows,
+    exhaustive_rows,
+    expected_rows,
+    prefix_modules,
+    sby_equivalence,
+)
+from archxbench_oracles import SPECS, is_sequential
 from archxbench_pilot import sim_env
 from harness.mutators import generate_mutants
 
@@ -46,34 +52,13 @@ def _sha(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def exhaustive_rows(iverilog: str, vvp: str, source: str, module: str, work: Path) -> list[str] | None:
-    """Simulate every input combination; return one row per combination (None on error)."""
-    work.mkdir(parents=True, exist_ok=True)
-    (work / "dut.v").write_text(source, encoding="utf-8", newline="")
-    (work / "exh_tb.v").write_text(exhaustive_testbench(module), encoding="utf-8", newline="")
-    try:
-        built = subprocess.run([iverilog, "-g2012", "-s", "gt_exhaustive_tb", "-o",
-                                str(work / "exh.out"), str(work / "dut.v"), str(work / "exh_tb.v")],
-                               capture_output=True, text=True, timeout=60, env=sim_env())
-        if built.returncode != 0:
-            return None
-        ran = subprocess.run([vvp, str(work / "exh.out")], capture_output=True, text=True,
-                             timeout=60, env=sim_env())
-    except (subprocess.TimeoutExpired, OSError):
-        return None
-    if ran.returncode != 0:
-        return None
-    return [line for line in ran.stdout.splitlines() if re.match(r"^\d+ ", line)]
-
-
 def yosys_equivalence(yosys: str, reference: str, mutant: str, module: str, work: Path) -> str:
     """'equivalent' | 'different' | 'unavailable' | 'error' via a combinational SAT miter."""
     work.mkdir(parents=True, exist_ok=True)
-    rename = lambda src, new: re.sub(rf"\bmodule\s+{re.escape(module)}\b", f"module {new}", src)  # noqa: E731
-    (work / "gold.v").write_text(rename(reference, "gt_gold"), encoding="utf-8", newline="")
-    (work / "gate.v").write_text(rename(mutant, "gt_gate"), encoding="utf-8", newline="")
+    (work / "gold.v").write_text(prefix_modules(reference, "gtgold_"), encoding="utf-8", newline="")
+    (work / "gate.v").write_text(prefix_modules(mutant, "gtgate_"), encoding="utf-8", newline="")
     script = ("read_verilog -sv gold.v; read_verilog -sv gate.v; hierarchy -check; proc; flatten; "
-              "opt_clean; miter -equiv -flatten -make_outputs gt_gold gt_gate gt_miter; "
+              f"opt_clean; miter -equiv -flatten -make_outputs gtgold_{module} gtgate_{module} gt_miter; "
               "hierarchy -top gt_miter; sat -verify -prove trigger 0 -show-inputs gt_miter")
     try:
         out = subprocess.run([yosys, "-q", "-p", script], cwd=work, capture_output=True,
@@ -99,8 +84,14 @@ def _effective(records: dict[str, dict], mutant_id: str) -> dict | None:
     return records.get(f"{mutant_id}-retry") or records.get(mutant_id)
 
 
-def _categorize(rec: dict | None, same_as_ref: bool | None, yosys: str) -> tuple[str, str]:
-    """Return (category, reason)."""
+def _categorize(rec: dict | None, same_as_ref: bool | None, yosys: str,
+                sequential: bool = False) -> tuple[str, str]:
+    """Return (category, reason).
+
+    ``yosys`` is the formal verdict (Yosys miter for combinational designs, SBY for sequential
+    ones). For sequential designs a finite trace can only ever show a DIFFERENCE, so
+    EQUIVALENT additionally requires the unbounded proof.
+    """
     if rec is None:
         return "INDETERMINATE", "no run record"
     outcome = rec["outcome"]
@@ -114,6 +105,8 @@ def _categorize(rec: dict | None, same_as_ref: bool | None, yosys: str) -> tuple
         return "INDETERMINATE", outcome
     if same_as_ref is None:
         return "INDETERMINATE", "exhaustive comparison unavailable"
+    if not same_as_ref and yosys == "equivalent":
+        return "INDETERMINATE", "simulation shows a difference but the formal tool proves equivalence (tool disagreement)"
     if outcome == "TB_FAIL":
         if same_as_ref:
             return "INDETERMINATE", "testbench failed but mutant is exhaustively identical to reference"
@@ -121,6 +114,12 @@ def _categorize(rec: dict | None, same_as_ref: bool | None, yosys: str) -> tuple
     # testbench passed
     if not same_as_ref:
         return "SURVIVED", "testbench passed although mutant differs from reference on some input"
+    if sequential:
+        if yosys == "equivalent":
+            return "EQUIVALENT", "SBY/PDR proves outputs equal from reset for all input sequences"
+        return "INDETERMINATE", f"trace identical but unbounded proof status is {yosys}"
+    if yosys == "n/a-legal-assumption":
+        return "EQUIVALENT", "identical on every legal input (exhaustive simulation); differences, if any, only on inputs the spec leaves undefined"
     if yosys == "equivalent":
         return "EQUIVALENT", "exhaustive simulation and Yosys miter both show no difference"
     if yosys == "unavailable":
@@ -130,9 +129,13 @@ def _categorize(rec: dict | None, same_as_ref: bool | None, yosys: str) -> tuple
 
 def analyze_design(*, report: dict, records: dict[str, dict], reference_path: Path, source: str,
                    module: str, design_id: str, iverilog: str, vvp: str, yosys: str,
-                   wall_s: float) -> dict:
-    if module not in SPECS:
+                   wall_s: float, sby: str = "sby", mutant_generator=None,
+                   operators_label: str = "v1") -> dict:
+    sequential = is_sequential(module)
+    legal_restricted = module in SPECS and "legal" in SPECS[module]
+    if module not in SPECS and not sequential:
         raise ValueError(f"no independent oracle for module {module}")
+    generator = mutant_generator or generate_mutants
     base_rec = records.get("baseline")
     result: dict = {
         "design_id": design_id, "module": module, "reference_file": reference_path.name,
@@ -145,8 +148,15 @@ def analyze_design(*, report: dict, records: dict[str, dict], reference_path: Pa
     }
     with tempfile.TemporaryDirectory(prefix="gt-analysis-") as tmp:
         tmp_path = Path(tmp)
-        ref_rows = exhaustive_rows(iverilog, vvp, source, module, tmp_path / "ref")
-        oracle = oracle_rows(module)
+        if sequential or legal_restricted or operators_label != "v1":  # v1 payload stays byte-identical
+            result["input_legality_assumption"] = (
+                "sequential: replay of a fixed reset stimulus (reset-free wrap run + random resets) plus an "
+                "unbounded SBY proof from reset for equivalence" if sequential else
+                "only inputs satisfying the spec's stated assumption (documented in oracles) are compared"
+                if legal_restricted else result["input_legality_assumption"])
+            result["operator_set"] = operators_label
+        ref_rows = behavior_rows(iverilog, vvp, source, module, tmp_path / "ref")
+        oracle = expected_rows(module)
         result["reference_vs_oracle"] = {
             "input_combinations": len(oracle), "rows_simulated": None if ref_rows is None else len(ref_rows),
             "matches_oracle_exhaustively": ref_rows == oracle}
@@ -158,8 +168,8 @@ def analyze_design(*, report: dict, records: dict[str, dict], reference_path: Pa
                 "note": f"baseline did not pass ({base_rec and base_rec['outcome']}); no mutation experiment"})
             return result
         result["design_state"] = "BASELINE_PASS"
-        mutants = {m.id: m for m in generate_mutants(f"archxbench_{design_id}", source,
-                                                     include_task_specs=False)}
+        mutants = {m.id: m for m in generator(f"archxbench_{design_id}", source,
+                                              include_task_specs=False)}
         entries = []
         for item in report["per_mutant"]:
             mutant = mutants[item["id"]]
@@ -168,13 +178,20 @@ def analyze_design(*, report: dict, records: dict[str, dict], reference_path: Pa
             assert first is None or first["rtl_sha256"] == _sha(mutant.source), "mutant source drift"
             same, yos = None, "not-run"
             if rec is not None and rec["outcome"] in ("PASS", "TB_FAIL"):
-                rows = exhaustive_rows(iverilog, vvp, mutant.source, module, tmp_path / mutant.id)
+                rows = behavior_rows(iverilog, vvp, mutant.source, module, tmp_path / mutant.id)
                 same = None if rows is None or ref_rows is None else rows == ref_rows
                 differing = None if same is None else sum(a != b for a, b in zip(rows, ref_rows))
-                yos = yosys_equivalence(yosys, source, mutant.source, module, tmp_path / f"{mutant.id}-y")
+                if sequential:
+                    yos = sby_equivalence(sby, source, mutant.source, module, tmp_path / f"{mutant.id}-y")
+                    if yos == "different":
+                        same = False  # unbounded checker found a distinguishing input sequence
+                elif legal_restricted:
+                    yos = "n/a-legal-assumption"
+                else:
+                    yos = yosys_equivalence(yosys, source, mutant.source, module, tmp_path / f"{mutant.id}-y")
             else:
                 differing = None
-            category, reason = _categorize(rec, same, yos)
+            category, reason = _categorize(rec, same, yos, sequential)
             entries.append({
                 "id": mutant.id, "operator": mutant.operator, "description": mutant.description,
                 "mutant_sha256": _sha(mutant.source), "source_diff": _diff(source, mutant.source),

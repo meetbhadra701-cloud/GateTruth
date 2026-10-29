@@ -21,7 +21,7 @@ sys.path[:0] = [str(AUDIT), str(AUDIT.parent)]
 import archxbench_analysis as analysis  # noqa: E402
 
 
-def run_design(task: dict, vendor: Path, out: Path, tag: str, sha: str, seed: int) -> int:
+def run_design(task: dict, vendor: Path, out: Path, tag: str, sha: str, seed: int, operators: str = "v1") -> int:
     stem = f"{task['design_id']}.{tag}"
     cmd = [sys.executable, str(AUDIT / "archxbench_pilot.py"),
            "--vendor-root", str(vendor), "--expected-vendor-sha", sha,
@@ -30,7 +30,9 @@ def run_design(task: dict, vendor: Path, out: Path, tag: str, sha: str, seed: in
            "--tb-top", task["tb_top"], "--seed", str(seed),
            "--out", str(out / "results" / f"{stem}.report.json"),
            "--analysis-out", str(out / "results" / f"{stem}.analysis.json"),
-           "--log-dir", str(out / "logs" / stem)]
+           "--log-dir", str(out / "logs" / stem), "--operators", operators]
+    if task.get("summary_module"):
+        cmd += ["--summary-module", task["summary_module"]]
     env = {**os.environ, "PYTHONPATH": f"{AUDIT}:{AUDIT.parent}"}
     proc = subprocess.run(cmd, capture_output=True, text=True, env=env)
     (out / "logs").mkdir(parents=True, exist_ok=True)
@@ -47,8 +49,11 @@ def main() -> int:
     ap.add_argument("--vendor-root", required=True, type=Path)
     ap.add_argument("--out", required=True, type=Path)
     ap.add_argument("--committed-results", type=Path)
+    ap.add_argument("--tasks", type=Path, default=HERE / "tasks.json",
+                    help="task list (default: v1 pilot; v2/tasks.json for the extended experiment)")
     a = ap.parse_args()
-    tasks = load(HERE / "tasks.json")
+    tasks = load(a.tasks)
+    operators = tasks.get("operators", "v1")
     sha, seed = tasks["vendor"]["commit"], tasks["seed"]
     (a.out / "results").mkdir(parents=True, exist_ok=True)
     started = time.monotonic()
@@ -57,7 +62,7 @@ def main() -> int:
     exit_codes: dict[str, dict[str, int]] = {}
     for task in all_tasks:
         for tag in ("run1", "run2"):
-            rc = run_design(task, a.vendor_root, a.out, tag, sha, seed)
+            rc = run_design(task, a.vendor_root, a.out, tag, sha, seed, operators)
             exit_codes.setdefault(task["design_id"], {})[tag] = rc
             # rc 0 = audited, 2 = unsupported (baseline failed); anything else is a setup error.
             if rc not in (0, 2):

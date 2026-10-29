@@ -62,11 +62,14 @@ class ArchXBenchRunner:
 
     def __init__(self, testbench: Path, module: str, tb_top: str,
                  iverilog: str = "iverilog", vvp: str = "vvp",
-                 log_dir: Path | None = None):
-        if not all(IDENT.fullmatch(x) for x in (module, tb_top)):
+                 log_dir: Path | None = None, summary_module: str | None = None):
+        # summary_module: the name the testbench prints in its JSON summary, when it differs from
+        # the DUT module (e.g. ArchXBench decoder-3to8 prints "decoder_3to8" for DUT "decoder3to8").
+        if not all(IDENT.fullmatch(x) for x in (module, tb_top, summary_module or module)):
             raise ValueError("invalid Verilog module/top identifier")
         self.testbench = testbench
         self.module = module
+        self.summary_module = summary_module or module
         self.tb_top = tb_top
         self.iverilog = iverilog
         self.vvp = vvp
@@ -145,7 +148,7 @@ class ArchXBenchRunner:
                                 TbResult(Verdict.NOT_RUNNABLE, None),
                                 summary_lines=len(summaries), **base)
         summary = summaries[0]
-        if (summary.get("module") != self.module
+        if (summary.get("module") != self.summary_module
                 or type(summary.get("passed")) is not int
                 or type(summary.get("failed")) is not int
                 or summary["passed"] < 0 or summary["failed"] < 0):
@@ -212,6 +215,12 @@ def main() -> int:
     parser.add_argument("--iverilog", default="iverilog")
     parser.add_argument("--vvp", default="vvp")
     parser.add_argument("--yosys", default="yosys")
+    parser.add_argument("--sby", default="sby")
+    parser.add_argument("--summary-module", help="module name printed in the testbench JSON summary "
+                                                 "(default: --module)")
+    parser.add_argument("--operators", choices=["v1", "v2"], default="v1",
+                        help="v1 = GateTruth harness operators unchanged; v2 = + pilot operator set "
+                             "(external-audit/archxbench_ops_v2.py)")
     a = parser.parse_args()
     if not re.fullmatch(r"[A-Za-z0-9_-]+", a.design_id):
         parser.error("design-id must be a safe single token")
@@ -227,7 +236,7 @@ def main() -> int:
         parser.error("empty reference RTL")
     versions = {"python": platform.python_version(),
                 "iverilog": tool_version(a.iverilog, "-V"), "vvp": tool_version(a.vvp, "-V")}
-    runner = ArchXBenchRunner(tb, a.module, a.tb_top, a.iverilog, a.vvp, a.log_dir)
+    runner = ArchXBenchRunner(tb, a.module, a.tb_top, a.iverilog, a.vvp, a.log_dir, a.summary_module)
     catalog = {
         "_golden_source": source,
         "_vendor_commit": vendor_commit,
@@ -237,7 +246,11 @@ def main() -> int:
         "notes": "Pilot; evaluator-supplied reference, not ArchXBench-issued golden RTL",
     }
     started = time.monotonic()
-    report = audit_design(a.design_id, runner, a.seed, catalog, generation_flag="-g2012")
+    generator = None
+    if a.operators == "v2":
+        from archxbench_ops_v2 import generate_mutants_v2 as generator
+    report = audit_design(a.design_id, runner, a.seed, catalog, generation_flag="-g2012",
+                          mutant_generator=generator)
     wall = round(time.monotonic() - started, 3)
     compile_failed = [m["id"] for m in report["per_mutant"]
                       if runner.records.get(m["id"], {}).get("outcome") == "COMPILE_FAILURE"]
@@ -258,7 +271,8 @@ def main() -> int:
         analysis = archxbench_analysis.analyze_design(
             report=report, records=runner.records, reference_path=a.reference,
             source=source, module=a.module, design_id=a.design_id, iverilog=a.iverilog,
-            vvp=a.vvp, yosys=a.yosys, wall_s=wall)
+            vvp=a.vvp, yosys=a.yosys, wall_s=wall, sby=a.sby, mutant_generator=generator,
+            operators_label=a.operators)
         a.analysis_out.parent.mkdir(parents=True, exist_ok=True)
         a.analysis_out.write_text(json.dumps(analysis, indent=2, sort_keys=True) + "\n")
         print(f"design={a.design_id} category_counts={analysis['summary']['category_counts']}")
