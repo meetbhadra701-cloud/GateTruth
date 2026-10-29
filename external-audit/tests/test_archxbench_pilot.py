@@ -1,7 +1,15 @@
 """Adapter tests using mocked subprocess outputs; no simulator execution claimed."""
 from __future__ import annotations
 import subprocess
+import sys
+from pathlib import Path
 from unittest.mock import patch
+
+AUDIT_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = AUDIT_ROOT.parent
+for import_root in (REPO_ROOT, AUDIT_ROOT):
+    if str(import_root) not in sys.path:
+        sys.path.insert(0, str(import_root)
 
 import pytest
 
