@@ -29,7 +29,8 @@ command -v docker >/dev/null || die "docker not found"
 docker info >/dev/null 2>&1  || die "docker daemon not reachable"
 [ -f "$REPO/flows/Dockerfile" ] || die "not inside a GateTruth checkout: $REPO"
 
-# Native Windows Docker needs Windows-style paths for bind mounts (Git Bash).
+# Native Windows Docker needs Windows-style paths for bind mounts (Git Bash); the
+# MSYS_NO_PATHCONV prefix is applied to docker run only, never exported (it breaks git).
 export MSYS_NO_PATHCONV=1
 native() { if command -v cygpath >/dev/null 2>&1; then cygpath -w "$1"; else printf '%s' "$1"; fi; }
 
@@ -58,7 +59,7 @@ echo "image: $IMAGE_ID"
 
 USER_ARGS=()
 if [ "$(uname -s)" = "Linux" ]; then USER_ARGS=(--user "$(id -u):$(id -g)"); chmod 0777 "$OUT"; fi
-RUN=(docker run --rm --platform linux/amd64 --network none "${USER_ARGS[@]}"
+RUN=(env MSYS_NO_PATHCONV=1 docker run --rm --platform linux/amd64 --network none "${USER_ARGS[@]}"
      --mount "type=bind,src=$(native "$REPO"),dst=/work,readonly"
      --mount "type=bind,src=$(native "$VENDOR"),dst=/vendor/ArchXBench,readonly"
      --mount "type=bind,src=$(native "$OUT"),dst=/out"
